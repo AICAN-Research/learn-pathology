@@ -1,0 +1,33 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Learn Pathology</title>
+</head>
+<body>
+	<h1>Learn Pathology</h1>	
+	<div id="wsi-canvas" style="width: 800px; height: 600px;"></div>
+
+	<script src="{% static 'viewer/openseadragon.min.js' %}"></script>
+	<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/openseadragon/2.4.2/openseadragon.min.js"></script>-->
+	<script type="text/javascript">
+	    var viewer = OpenSeadragon({
+            id: "wsi-canvas",
+            zoomPerScroll: 2, // Scroll speed
+            showNavigator: true, // The navigation window top-right
+	        prefixUrl: "{% static 'viewer/images/' %}", // Where to find OpenSedragon button images
+            tileSources:   {
+                width: {{ width }},
+                height:  {{ height }},
+                tileSize: {{ tile_width }},
+                minLevel: 0,
+                maxLevel: {{ levels }}-1,
+                getTileUrl: function( level, x, y ) {
+                    return "/viewer/tile/" + ({{ levels }} - 1 - level) + "/" + x + "/" + y + "/";
+                }
+            }
+	    });
+	</script>
+</body>
+</html>
