@@ -1,5 +1,5 @@
 from io import BytesIO
-
+import time
 import PIL.Image
 from django.http import HttpResponse, Http404
 from django.shortcuts import render
@@ -7,12 +7,18 @@ import fast
 from PIL import Image
 import numpy as np
 
+
 class SlideCache:
+    """
+    A class to keep a cache of slides in memory.
+    """
+
     def __init__(self):
         self.slides = {}
         fast.Reporter.setGlobalReportMethod(fast.Reporter.COUT)
         importer = fast.WholeSlideImageImporter.New()
-        importer.setFilename('/home/smistad/FAST/data/WSI/A05.svs')
+        #importer.setFilename('/home/smistad/FAST/data/WSI/A05.svs')
+        importer.setFilename('/home/smistad/Downloads/OS-1.tiff')
         image = importer.updateAndGetOutputImagePyramid()
 
         # Count how many OSD levels we need: OSD requires that every level is downsampled by a factor of 2
@@ -23,8 +29,8 @@ class SlideCache:
         smallest_width = image.getLevelWidth(levels-1)
         smallest_height = image.getLevelHeight(levels-1)
         osd_level = 0
-        tile_width = image.getLevelTileWidth(0)
-        tile_height = image.getLevelTileHeight(0)
+        tile_width = 256 #image.getLevelTileWidth(0)
+        tile_height = 256 #image.getLevelTileHeight(0)
         osd_tile_width = {0: tile_width}
         osd_tile_height = {0: tile_height}
         osd_to_fast_level_map = {0: 0}
@@ -72,13 +78,30 @@ class SlideCache:
         if y*height + tile_height >= slide.getLevelHeight(level):
             tile_height = slide.getLevelHeight(level) - y*height - 1
 
+        start = time.time()
         image = access.getPatchAsImage(level, x*width, y*height, tile_width, tile_height)
+        runtime = (time.time() - start) * 1000
+        print('getPatchAsImage took:', runtime, 'ms')
+
+        start = time.time()
+        sharpening = fast.ImageSharpening.New()
+        sharpening.setStandardDeviation(1.5)
+        sharpening.setInputData(image)
+        image = sharpening.updateAndGetOutputImage()
+        runtime = (time.time() - start) * 1000
+        print('Sharpening took:', runtime, 'ms')
+
         #tileAccess = image.getImageAccess(fast.ACCESS_READ)
         #return Image.frombytes(size=(tile_width, tile_height), data=tileAccess.get(), mode='RGB')
 
-        # TODO get rid of asarray conversion
+        # TODO get rid of asarray conversion, and read directly from bytes instead somehow
+        start = time.time()
         image = np.asarray(image)
-        return Image.fromarray(image, mode='RGB')
+        pil_image = Image.fromarray(image, mode='RGB')
+        runtime = (time.time() - start) * 1000
+        print('FAST->numpy->PIL took:', runtime, 'ms')
+        return pil_image
+
 
 slide_cache = SlideCache()
 
@@ -104,7 +127,10 @@ def tile(request, level, x, y):
     try:
         tile = slide_cache.get_tile('A05', fast_level, x, y, width, height)
         if tile.width != target_width: # TODO What about edges cases here.
+            start = time.time()
             tile.thumbnail((target_height, target_width), resample=PIL.Image.BILINEAR)
+            runtime = (time.time() - start) * 1000
+            print('Resize took:', runtime, 'ms')
     except Exception as e:
         print(e)
         return HttpResponse(status=404)
@@ -114,6 +140,9 @@ def tile(request, level, x, y):
 
     print(fast_level, level, x, y, tile.width, tile.height)
     # Convert PIL image to JPEG byte buffer and send back
+    start = time.time()
     buffer = BytesIO()
     tile.save(buffer, 'jpeg') # Set quality
+    runtime = (time.time() - start)*1000
+    print('JPEG conversion took:', runtime, 'ms')
     return HttpResponse(buffer.getvalue(), content_type='image/jpeg')

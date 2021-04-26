@@ -6,7 +6,8 @@
     <title>Learn Pathology</title>
 </head>
 <body>
-	<h1>Learn Pathology</h1>	
+	<h1>Learn Pathology</h1>
+    Full resolution of WSI: {{ width }} x {{ height }}<br>
 	<div id="wsi-canvas" style="width: 800px; height: 600px;"></div>
 
 	<script src="{% static 'viewer/openseadragon.min.js' %}"></script>
@@ -20,7 +21,8 @@
             tileSources:   {
                 width: {{ width }},
                 height:  {{ height }},
-                tileSize: {{ tile_width }},
+                tileWidth: {{ tile_width }},
+                tileHeight: {{ tile_height }},
                 minLevel: 0,
                 maxLevel: {{ levels }}-1,
                 getTileUrl: function( level, x, y ) {
