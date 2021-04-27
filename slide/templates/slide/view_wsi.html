@@ -1,20 +1,13 @@
+{% extends 'slide/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>Learn Pathology</title>
-</head>
-<body>
-       <h1>Learn Pathology</h1>
+{% block content %}
 
-       Choose a WSI to view:<br>
-       {% for slide in slides %}
-           <a href="{% url 'view_wsi' slide.id %}">{{ slide.name }}</a><br>
-       {% endfor %}
-
-    Full resolution of WSI: {{ width }} x {{ height }}<br>
+        Full resolution of WSI: {{ slide.width }} x {{ slide.height }}<br><br>
        <div id="wsi-canvas" style="width: 800px; height: 600px;"></div>
+        </main>
+
+       <div id="right-arrow-overlay" class="overlay">Something interesting here &#8594;</div>
+       <div id="right-arrow-overlay2" class="overlay">Something VERY interesting here &#8594;</div>
 
        <script src="{% static 'slide/openseadragon.min.js' %}"></script>
        <script type="text/javascript">
@@ -32,9 +25,21 @@
                 maxLevel: {{ slide.osd_levels }}-1,
                 getTileUrl: function( level, x, y ) {
                     return "/viewer/tile/{{ slide.id }}/" + ({{ slide.osd_levels }} - 1 - level) + "/" + x + "/" + y + "/";
-                }
+                },
+                overlays: [{
+                    id: 'right-arrow-overlay',
+                    x: 0.6008,
+                    y: 0.1,
+                    placement: 'RIGHT',
+                    checkResize: false
+                },{
+                    id: 'right-arrow-overlay2',
+                    x: 0.3008,
+                    y: 0.3,
+                    placement: 'RIGHT',
+                    checkResize: false
+                }],
             }
            });
        </script>
-</body>
-</html>
+{% endblock %}

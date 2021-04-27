@@ -1,0 +1,13 @@
+* {
+    font-family: Arial, Verdana, sans-serif;
+}
+.overlay {
+    background-color: rgba(255, 255, 255, 0.75);
+    outline: 2px solid white;
+    color: rgb(0,100,200);
+}
+
+main {
+    margin: 0px auto;
+    width: 800px;
+}
