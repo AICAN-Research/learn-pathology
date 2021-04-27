@@ -1,5 +1,3 @@
-from io import BytesIO
-import time
 from django.http import HttpResponse, Http404
 from django.shortcuts import render
 from django.conf import settings
@@ -51,7 +49,7 @@ def tile(request, slide_id, osd_level, x, y):
     """
     slide = slide_cache.get_slide(slide_id)
     try:
-        tile = slide.get_osd_tile(osd_level, x, y)
+        buffer = slide.get_osd_tile_as_buffer(osd_level, x, y)
     except Exception as e:
         print(e)
         return HttpResponse(status=404)
@@ -59,12 +57,4 @@ def tile(request, slide_id, osd_level, x, y):
         print('An error occured while loading a tile', osd_level, x, y)
         return HttpResponse(status=404)
 
-    # Convert PIL image to JPEG byte buffer and send back
-    if settings.PRINT_RUNTIME:
-        start = time.time()
-    buffer = BytesIO()
-    tile.save(buffer, 'jpeg', quality=75)  # TODO Set quality
-    if settings.PRINT_RUNTIME:
-        runtime = (time.time() - start)*1000
-        print('JPEG conversion took:', runtime, 'ms')
     return HttpResponse(buffer.getvalue(), content_type='image/jpeg')

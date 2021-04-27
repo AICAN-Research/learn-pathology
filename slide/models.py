@@ -1,3 +1,5 @@
+from io import BytesIO
+
 from django.db import models
 import fast
 import time
@@ -27,6 +29,7 @@ class Slide(models.Model):
                 'sharpening': Timer('Tile sharpening'),
                 'conversion': Timer('Tile FAST->PIL conversion'),
                 'resize': Timer('Tile resize'),
+                'jpeg': Timer('JPEG Conversion'),
             }
 
             self.timers['import'].start()
@@ -126,7 +129,7 @@ class Slide(models.Model):
         self.load_image()
         return self._tile_width, self._tile_height
 
-    def get_osd_tile(self, osd_level, x, y):
+    def get_osd_tile_as_buffer(self, osd_level, x, y):
         fast_level = self.get_fast_level(osd_level)
         width, height = self.get_osd_tile_size(osd_level)
         access = self._image.getAccess(fast.ACCESS_READ)
@@ -162,10 +165,16 @@ class Slide(models.Model):
             tile.thumbnail((self._tile_height, self._tile_width), resample=Image.BICUBIC)
             self.timers['resize'].stop()
 
+        # Convert PIL image to JPEG byte buffer and send back
+        self.timers['jpeg'].start()
+        buffer = BytesIO()
+        tile.save(buffer, 'jpeg', quality=75)  # TODO Set quality
+        self.timers['jpeg'].stop()
+
         if settings.PRINT_RUNTIME:
             print('Runtimes')
             print('==============================')
             for timer in self.timers.values():
                 timer.print()
 
-        return tile
+        return buffer
