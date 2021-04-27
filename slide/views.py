@@ -14,6 +14,7 @@ class SlideCache:
     def __init__(self):
         # TODO load FAST once
         import fast
+        test = fast.WholeSlideImageImporter.New() # Just to initialize FAST..
         self.slides = {}
 
     def load_slide_to_cache(self, slide_id):
@@ -26,8 +27,7 @@ class SlideCache:
         return self.slides[slide_id]
 
 
-
-# Initialize global slide cache TODO load only once
+# Initialize global slide cache as a global variable. This should only happen once..
 slide_cache = SlideCache()
 
 
@@ -63,7 +63,7 @@ def tile(request, slide_id, osd_level, x, y):
     if settings.PRINT_RUNTIME:
         start = time.time()
     buffer = BytesIO()
-    tile.save(buffer, 'jpeg', quality=75) # TODO Set quality
+    tile.save(buffer, 'jpeg', quality=75)  # TODO Set quality
     if settings.PRINT_RUNTIME:
         runtime = (time.time() - start)*1000
         print('JPEG conversion took:', runtime, 'ms')

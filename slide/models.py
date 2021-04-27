@@ -3,6 +3,9 @@ import fast
 import time
 import numpy as np
 from PIL import Image
+from django.conf import settings
+
+from slide.timing import Timer
 
 
 class Slide(models.Model):
@@ -18,6 +21,15 @@ class Slide(models.Model):
 
     def load_image(self):
         if not hasattr(self, '_image'):
+            self.timers = {
+                'import': Timer('Importing WSI'),
+                'getPatchImage': Timer('getPatchImage function'),
+                'sharpening': Timer('Tile sharpening'),
+                'conversion': Timer('Tile FAST->PIL conversion'),
+                'resize': Timer('Tile resize'),
+            }
+
+            self.timers['import'].start()
             importer = fast.WholeSlideImageImporter.New()
             # importer.setFilename('/home/smistad/FAST/data/WSI/A05.svs')
             importer.setFilename(self.path)
@@ -26,6 +38,7 @@ class Slide(models.Model):
             except:
                 raise RuntimeError('Failed to load slide image pyramid from ' + self.path)
             self._image = image
+            self.timers['import'].stop()
 
             # Count how many OSD levels we need: OSD requires that every level is downsampled by a factor of 2
             # TODO This assumes that every level size of WSI in FAST is a multiple of 2
@@ -124,33 +137,35 @@ class Slide(models.Model):
         if y*height + tile_height >= self._image.getLevelHeight(fast_level):
             tile_height = self._image.getLevelHeight(fast_level) - y*height - 1
 
-        start = time.time()
+        self.timers['getPatchImage'].start()
         image = access.getPatchAsImage(fast_level, x*width, y*height, tile_width, tile_height)
-        runtime = (time.time() - start) * 1000
-        print('getPatchAsImage took:', runtime, 'ms')
+        self.timers['getPatchImage'].stop()
 
-        start = time.time()
+        self.timers['sharpening'].start()
         sharpening = fast.ImageSharpening.New()
         sharpening.setStandardDeviation(1.5)
         sharpening.setInputData(image)
         image = sharpening.updateAndGetOutputImage()
-        runtime = (time.time() - start) * 1000
-        print('Sharpening took:', runtime, 'ms')
+        self.timers['sharpening'].stop()
 
         #tileAccess = image.getImageAccess(fast.ACCESS_READ)
         #return Image.frombytes(size=(tile_width, tile_height), data=tileAccess.get(), mode='RGB')
 
         # TODO get rid of asarray conversion, and read directly from bytes instead somehow
-        start = time.time()
+        self.timers['conversion'].start()
         image = np.asarray(image)
         tile = Image.fromarray(image, mode='RGB')
-        runtime = (time.time() - start) * 1000
-        print('FAST->numpy->PIL took:', runtime, 'ms')
+        self.timers['conversion'].stop()
 
         if tile.width != self._tile_width: # TODO What about edges cases here.
-            start = time.time()
-            tile.thumbnail((self._tile_height, self._tile_width), resample=Image.BILINEAR)
-            runtime = (time.time() - start) * 1000
-            print('Resize took:', runtime, 'ms')
+            self.timers['resize'].start()
+            tile.thumbnail((self._tile_height, self._tile_width), resample=Image.BICUBIC)
+            self.timers['resize'].stop()
+
+        if settings.PRINT_RUNTIME:
+            print('Runtimes')
+            print('==============================')
+            for timer in self.timers.values():
+                timer.print()
 
         return tile
