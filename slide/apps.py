@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class ViewerConfig(AppConfig):
+class SlideConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'viewer'
+    name = 'slide'

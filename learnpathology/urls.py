@@ -15,10 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from viewer import views
+from slide import views
 
 urlpatterns = [
-    path('', views.view_wsi),
-    path('viewer/tile/<int:level>/<int:x>/<int:y>/', views.tile, name="tile"),
+    path('', views.index),
+    path('viewer/<int:slide_id>/', views.view_whole_slide, name="view_wsi"),
+    path('viewer/tile/<int:slide_id>/<int:osd_level>/<int:x>/<int:y>/', views.tile, name="tile"),
     path('admin/', admin.site.urls),
 ]

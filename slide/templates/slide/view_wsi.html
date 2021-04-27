@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Learn Pathology</title>
+</head>
+<body>
+       <h1>Learn Pathology</h1>
+
+       Choose a WSI to view:<br>
+       {% for slide in slides %}
+           <a href="{% url 'view_wsi' slide.id %}">{{ slide.name }}</a><br>
+       {% endfor %}
+
+    Full resolution of WSI: {{ width }} x {{ height }}<br>
+       <div id="wsi-canvas" style="width: 800px; height: 600px;"></div>
+
+       <script src="{% static 'slide/openseadragon.min.js' %}"></script>
+       <script type="text/javascript">
+           var viewer = OpenSeadragon({
+            id: "wsi-canvas",
+            zoomPerScroll: 2, // Scroll speed
+            showNavigator: true, // The navigation window top-right
+           prefixUrl: "{% static 'slide/images/' %}", // Where to find OpenSedragon button images
+            tileSources:   {
+                width: {{ slide.width }},
+                height:  {{ slide.height }},
+                tileWidth: {{ slide.tile_width }},
+                tileHeight: {{ slide.tile_height }},
+                minLevel: 0,
+                maxLevel: {{ slide.osd_levels }}-1,
+                getTileUrl: function( level, x, y ) {
+                    return "/viewer/tile/{{ slide.id }}/" + ({{ slide.osd_levels }} - 1 - level) + "/" + x + "/" + y + "/";
+                }
+            }
+           });
+       </script>
+</body>
+</html>
