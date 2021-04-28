@@ -2,9 +2,20 @@
 {% load static %}
 {% block content %}
 
-        Full resolution of WSI: {{ slide.width }} x {{ slide.height }}<br><br>
-       <div id="wsi-canvas" style="width: 800px; height: 600px;"></div>
-        </main>
+            <p>
+            What is your conclusion from the WSI and the two markers below?
+            <form>
+                <input type="radio" name="choice"> Option 1<br>
+                <input type="radio" name="choice"> Option 2<br>
+                <input type="radio" name="choice"> Option 3<br>
+                <input type="submit" value="Submit Answer">
+                <input type="button" value="View WSI in fullscreen" id="view-fullscreen">
+            </form>
+            </p>
+           <div id="wsi-canvas" style="width: 800px; height: 600px;"></div>
+            <p>
+            Full resolution of WSI: {{ slide.width }} x {{ slide.height }}<br><br>
+            </p>
 
        <div id="right-arrow-overlay" class="overlay">Something interesting here &#8594;</div>
        <div id="right-arrow-overlay2" class="overlay">Something VERY interesting here &#8594;</div>
@@ -29,17 +40,23 @@
                 overlays: [{
                     id: 'right-arrow-overlay',
                     x: 0.6008,
-                    y: 0.1,
+                    y: 0.15,
                     placement: 'RIGHT',
                     checkResize: false
                 },{
                     id: 'right-arrow-overlay2',
-                    x: 0.3008,
+                    x: 0.8,
                     y: 0.3,
                     placement: 'RIGHT',
                     checkResize: false
                 }],
             }
            });
+
+           window.onload = function() {
+               document.getElementById("view-fullscreen").onclick = function() {
+                   viewer.setFullScreen(true);
+               };
+           };
        </script>
 {% endblock %}

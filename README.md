@@ -10,7 +10,6 @@ Learn Pathology is developed by the Norwegian University of Science and Technolo
 and SINTEF Medical Technology, and is released under the permissive MIT license.
 
 The system is built using the following open source technologies:
-* [Python](https://www.python.org)
 * [Django](https://www.djangoproject.com/)
 * [OpenSeadragon](https://openseadragon.github.io)
 * [FAST](https://fast.eriksmistad.no)
