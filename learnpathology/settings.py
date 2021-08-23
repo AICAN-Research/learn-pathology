@@ -129,7 +129,7 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-PRINT_RUNTIME = True  # Disable in deployment
+PRINT_RUNTIME = False  # Disable in deployment
 
 LOGIN_URL = '/user/login/'
 

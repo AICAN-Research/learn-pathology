@@ -20,6 +20,13 @@
             Logged in as admin
             {% endif %}
             {{ request.user.username }}.
+        </p>
+        <p>
+            Menu:
+            <a href="{% url 'task_list' %}">Tasks</a>
+            {% if request.user.is_superuser %}
+            <a href="/admin/">Admin</a>
+            {% endif %}
             <a href="{% url 'logout' %}">Logout</a>
         </p>
     {% endif %}

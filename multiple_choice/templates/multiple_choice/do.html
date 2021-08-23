@@ -4,12 +4,29 @@
 
 <h2>{{ task.question }}</h2>
 
-<form action="">
+<form action="{% url 'multiple_choice:do' task.task_id %}" method="post">
+    {% csrf_token %}
     {% for choice in task.choice_set.all %}
-        <input type="radio" name="choice" value="{{ choice.id }}"> {{ choice.text }}<br>
+        <input type="radio" name="choice" value="{{ choice.id }}">
+        <span
+            {% if answered != 'no' %}
+                {% if choice.correct %}
+                    style="color: green"
+                {% else %}
+                    style="color: red"
+                {% endif %}
+        {% endif %}>
+        {{ choice.text }}</span><br>
     {% endfor %}
     <input type="submit" value="Submit">
 </form>
+{% if answered != 'no' %}
+    {% if answered == 'correct' %}
+        <h2 style="color: green">Correct!</h2>
+    {% else %}
+        <h2 style="color: red">Wrong!</h2>
+    {% endif %}
+{% endif %}
 
 <br>
 
