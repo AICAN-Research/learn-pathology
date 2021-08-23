@@ -10,6 +10,20 @@
 <main>
     <h1>Learn Pathology Prototype</h1>
 
+    {% if request.user.is_authenticated %}
+        <p>
+            {% if request.user.is_teacher %}
+            Logged in as teacher
+            {% elif request.user.is_student %}
+            Logged in as student
+            {% else %}
+            Logged in as admin
+            {% endif %}
+            {{ request.user.username }}.
+            <a href="{% url 'logout' %}">Logout</a>
+        </p>
+    {% endif %}
+
     {% block content %}
     {% endblock %}
 </main>

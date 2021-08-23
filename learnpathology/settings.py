@@ -132,3 +132,5 @@ PRINT_RUNTIME = True  # Disable in deployment
 LOGIN_URL = '/user/login/'
 
 AUTH_USER_MODEL = 'user.User'
+
+LOGIN_REDIRECT_URL = 'frontpage'

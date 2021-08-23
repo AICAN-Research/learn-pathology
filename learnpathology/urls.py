@@ -18,7 +18,7 @@ from django.urls import path, include
 from slide import views
 
 urlpatterns = [
-    path('', views.index),
+    path('', views.index, name='frontpage'),
     path('viewer/<int:slide_id>/', views.view_whole_slide, name="view_wsi"),
     path('viewer/tile/<int:slide_id>/<int:osd_level>/<int:x>/<int:y>/', views.tile, name="tile"),
     path('admin/', admin.site.urls),
