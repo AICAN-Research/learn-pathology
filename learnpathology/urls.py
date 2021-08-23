@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from slide import views
 
 urlpatterns = [
@@ -22,4 +22,5 @@ urlpatterns = [
     path('viewer/<int:slide_id>/', views.view_whole_slide, name="view_wsi"),
     path('viewer/tile/<int:slide_id>/<int:osd_level>/<int:x>/<int:y>/', views.tile, name="tile"),
     path('admin/', admin.site.urls),
+    path('user/', include('user.urls')),
 ]

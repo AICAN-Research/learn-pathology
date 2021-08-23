@@ -1,6 +1,8 @@
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, Http404
 from django.shortcuts import render
 from django.conf import settings
+from user.decorators import student_required
 from .models import Slide
 
 
@@ -28,7 +30,8 @@ class SlideCache:
 # Initialize global slide cache as a global variable. This should only happen once..
 slide_cache = SlideCache()
 
-
+@login_required
+@student_required
 def index(request):
     return render(request, 'slide/index.html', {
         'slides': Slide.objects.all(),

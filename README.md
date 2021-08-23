@@ -15,8 +15,42 @@ The system is built using the following open source technologies:
 * [FAST](https://fast.eriksmistad.no)
 * [OpenSlide](https://openslide.org)
 
+Requirements
+-------------------
+* Python 3
+* For FAST backend you must have OpenCL installed
+
 Development setup
 -------------------
+1. Clone project
+```bash
+git clone https://github.com/AICAN-Research/learn-pathology.git
+cd learn-pathology
+```
+2. Create virtual environment
+```bash
+# Install environment
+pip install virtualenv
+virtualenv -ppython3 environment
+# Activate environment
+source environment/bin/activate # Linux
+environment/Scripts/activate.ps1 # Windows
+# Install dependencies
+pip install -r requirements.txt
+```
+3. Create database
+```bash
+python manage.py migrate
+```
+4. Create super user
+```bash
+python manage.py createsuperuser
+```
+5. Run server
+```bash
+python manage.py runserver
+```
+Open your web browser at http://localhost:8000
 
 Deployment
 -------------------
