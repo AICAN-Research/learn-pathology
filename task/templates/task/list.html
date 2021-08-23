@@ -1,0 +1,8 @@
+{% extends 'learnpathology/base.html' %}
+
+{% block content %}
+<h1>Tasks</h1>
+{% for task in tasks %}
+<a href="{% url task.do_url task.id %}">{{ task.name }}</a><br>
+{% endfor %}
+{% endblock content %}

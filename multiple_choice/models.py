@@ -1,0 +1,22 @@
+from django.db import models
+from slide.models import Slide
+from task.models import Task
+
+
+class MultipleChoice(models.Model):
+    """
+    A multiple choice exercise task
+    """
+    task = models.OneToOneField(Task, on_delete=models.CASCADE)
+    question = models.CharField(max_length=2048)
+    slide = models.OneToOneField(Slide, on_delete=models.CASCADE)
+
+
+class Choice(models.Model):
+    """
+    A choice in a multiple choice task
+    """
+    task = models.ForeignKey(MultipleChoice, on_delete=models.CASCADE)
+    text = models.CharField(max_length=512)
+    correct = models.BooleanField()
+

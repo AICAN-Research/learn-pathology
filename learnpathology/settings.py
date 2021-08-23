@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'learnpathology',
     'user',
     'slide',
+    'task',
+    'multiple_choice',
 ]
 
 MIDDLEWARE = [

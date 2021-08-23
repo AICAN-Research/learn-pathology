@@ -1,17 +1,4 @@
-{% extends 'learnpathology/base.html' %}
 {% load static %}
-{% block content %}
-
-            <p>
-            What is your conclusion from the WSI and the two markers below?
-            <form>
-                <input type="radio" name="choice"> Option 1<br>
-                <input type="radio" name="choice"> Option 2<br>
-                <input type="radio" name="choice"> Option 3<br>
-                <input type="submit" value="Submit Answer">
-                <input type="button" value="View WSI in fullscreen" id="view-fullscreen">
-            </form>
-            </p>
            <div id="wsi-canvas" style="width: 800px; height: 600px;"></div>
             <p>
             Full resolution of WSI: {{ slide.width }} x {{ slide.height }}<br><br>
@@ -59,4 +46,3 @@
                };
            };
        </script>
-{% endblock %}

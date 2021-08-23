@@ -15,12 +15,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from slide import views
+import slide.views
+import task.views
 
 urlpatterns = [
-    path('', views.index, name='frontpage'),
-    path('viewer/<int:slide_id>/', views.view_whole_slide, name="view_wsi"),
-    path('viewer/tile/<int:slide_id>/<int:osd_level>/<int:x>/<int:y>/', views.tile, name="tile"),
+    path('', slide.views.index, name='frontpage'),
+    path('viewer/<int:slide_id>/', slide.views.view_whole_slide, name="view_wsi"),
+    path('viewer/tile/<int:slide_id>/<int:osd_level>/<int:x>/<int:y>/', slide.views.tile, name="tile"),
     path('admin/', admin.site.urls),
     path('user/', include('user.urls')),
+    path('multiple_choice/', include('multiple_choice.urls')),
+    path('tasks/', task.views.list, name='task_list'),
 ]
