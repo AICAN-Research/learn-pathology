@@ -1,1 +1,13 @@
 {% extends 'learnpathology/base.html' %}
+{% block content %}
+<p>
+    {% if slides %}
+        Choose a WSI to view:
+        {% for slide in slides %}
+            - <a href="{% url 'view_wsi' slide.id %}">{{ slide.name }}</a>
+        {% endfor %}
+    {% else %}
+        No slides in DB
+    {% endif %}
+</p>
+{% endblock content %}

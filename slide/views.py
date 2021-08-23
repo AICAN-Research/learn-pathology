@@ -31,13 +31,13 @@ class SlideCache:
 slide_cache = SlideCache()
 
 @login_required
-@student_required
 def index(request):
     return render(request, 'slide/index.html', {
         'slides': Slide.objects.all(),
     })
 
 
+@login_required
 def view_whole_slide(request, slide_id):
     slide = slide_cache.load_slide_to_cache(slide_id)
     return render(request, 'slide/view_wsi.html', {
@@ -46,6 +46,7 @@ def view_whole_slide(request, slide_id):
     })
 
 
+@login_required
 def tile(request, slide_id, osd_level, x, y):
     """
     Gets OSD tile from slide, converts to JPEG and sends to client

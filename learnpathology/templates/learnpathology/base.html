@@ -10,17 +10,6 @@
 <main>
     <h1>Learn Pathology Prototype</h1>
 
-<p>
-    {% if slides %}
-        Choose a WSI to view:
-        {% for slide in slides %}
-            - <a href="{% url 'view_wsi' slide.id %}">{{ slide.name }}</a>
-        {% endfor %}
-    {% else %}
-        No slides in DB
-    {% endif %}
-</p>
-
     {% block content %}
     {% endblock %}
 </main>
