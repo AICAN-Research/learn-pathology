@@ -51,6 +51,11 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 Open your web browser at http://localhost:8000
+6. Add some slides
+- Download some slides from http://openslide.org/demo to your machine
+- Login
+- Go to admin page
+- Press slide, and add some slides to the database
 
 Deployment
 -------------------
