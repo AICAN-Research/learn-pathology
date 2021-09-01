@@ -9,7 +9,7 @@ class MultipleChoice(models.Model):
     """
     task = models.OneToOneField(Task, on_delete=models.CASCADE)
     question = models.CharField(max_length=2048)
-    annotated_slide = models.OneToOneField(AnnotatedSlide, on_delete=models.CASCADE)
+    annotated_slide = models.OneToOneField(AnnotatedSlide, on_delete=models.CASCADE) # TODO Move to Task?
 
 
 class Choice(models.Model):
