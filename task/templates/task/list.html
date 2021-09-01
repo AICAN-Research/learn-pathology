@@ -2,7 +2,9 @@
 
 {% block content %}
 <h1>Tasks</h1>
+<ul>
 {% for task in tasks %}
-<a href="{% url task.do_url task.id %}">{{ task.name }}</a><br>
+    <li><a href="{% url task.do_url task.id %}">{{ task.name }}</a></li>
 {% endfor %}
+</ul>
 {% endblock content %}

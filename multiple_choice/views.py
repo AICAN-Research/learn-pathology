@@ -5,6 +5,9 @@ from slide.views import slide_cache
 
 
 def do(request, task_id):
+    """
+    Student form for answering/viewing a multiple choice task
+    """
     task = MultipleChoice.objects.get(task=task_id)
 
     answered = 'no'
@@ -25,4 +28,22 @@ def do(request, task_id):
     return render(request, 'multiple_choice/do.html', {
         'task': task,
         'answered': answered,
+    })
+
+
+def new(request):
+    """
+    Teacher form for creating a multiple choice task
+    """
+    if request.method == 'POST': # Form was submitted
+        # TODO Validate form
+        # TODO Create Task
+        # TODO Create MultipleChoice, connect it to task
+        # TODO Create all the Choice (s)
+        # Give a message back to the user
+        pass
+
+    slides = Slide.objects.all() # Get all slides, so the teacher can choose which slide to use
+    return render(request, 'multiple_choice/new.html', {
+        'slides': slides
     })
