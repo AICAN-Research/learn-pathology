@@ -2,8 +2,9 @@
 
 <div id="wsi-canvas" style="width: 800px; height: 600px;"></div>
 
-<div id="right-arrow-overlay" class="overlay">Something interesting here &#8594;</div>
-<div id="right-arrow-overlay2" class="overlay">Something VERY interesting here &#8594;</div>
+{% if annotated_slide %}
+    {{ annotated_slide.get_html | safe }}
+{% endif %}
 
 <script src="{% static 'slide/openseadragon.min.js' %}"></script>
 <script type="text/javascript">
@@ -22,19 +23,9 @@
         getTileUrl: function( level, x, y ) {
             return "/viewer/tile/{{ slide.id }}/" + ({{ slide.osd_levels }} - 1 - level) + "/" + x + "/" + y + "/";
         },
-        overlays: [{
-            id: 'right-arrow-overlay',
-            x: 0.6008,
-            y: 0.15,
-            placement: 'RIGHT',
-            checkResize: false
-        },{
-            id: 'right-arrow-overlay2',
-            x: 0.8,
-            y: 0.3,
-            placement: 'RIGHT',
-            checkResize: false
-        }],
+        overlays: [
+            {{ annotated_slide.get_js | safe }}
+            ],
     }
    });
 

@@ -30,6 +30,6 @@
 
 <br>
 
-{% include 'slide/view_wsi.html' with slide=task.slide  %}
+{% include 'slide/view_wsi.html' with slide=task.annotated_slide.slide annotated_slide=task.annotated_slide  %}
 
 {% endblock content %}

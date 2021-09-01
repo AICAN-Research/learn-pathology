@@ -18,7 +18,8 @@ class Task(models.Model):
             for model in models:
                 print(model)
                 try:
-                    if model._meta.get_field('task'):
+                    task_field = model._meta.get_field('task')
+                    if task_field.remote_field.model.__name__ == 'Task':
                         print('has task')
                         try:
                             if model.objects.filter(task=self).exists():
@@ -29,6 +30,7 @@ class Task(models.Model):
                             pass
                 except FieldDoesNotExist:
                     pass
+        raise RuntimeError('Task type not found!')
 
     @property
     def do_url(self):

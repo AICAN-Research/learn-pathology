@@ -24,7 +24,7 @@ def do(request, task_id):
         except Choice.DoesNotExist:
             raise ValueError
 
-    slide_cache.load_slide_to_cache(task.slide.id)
+    slide_cache.load_slide_to_cache(task.annotated_slide.slide.id)
     return render(request, 'multiple_choice/do.html', {
         'task': task,
         'answered': answered,

@@ -178,3 +178,40 @@ class Slide(models.Model):
                 timer.print()
 
         return buffer
+
+
+class AnnotatedSlide(models.Model):
+    """
+    Model for an annotated slide.
+    A slide can have multiple annotations.
+    A task uses an annotated slide.
+    """
+    slide = models.ForeignKey(Slide, on_delete=models.CASCADE)
+
+    def get_html(self):
+        """
+        Get HTML for all annotations
+        """
+        html = ''
+        for pointer in Pointer.objects.filter(annotated_slide=self):
+            html += f'<div id="pointer-{pointer.id}" class="overlay"> {pointer.text} &#8594;</div>'
+        return html
+
+    def get_js(self):
+        """
+        Get JS for all annotations
+        """
+        js = ''
+        for pointer in Pointer.objects.filter(annotated_slide=self):
+            js += f"{{id: 'pointer-{pointer.id}', x: {pointer.position_x}, y: {pointer.position_y}, placement: 'RIGHT', checkResize: false }},"
+        return js
+
+
+class Pointer(models.Model):
+    """
+    A pointer on a slide consisting of a position (x,y) and a text
+    """
+    annotated_slide = models.OneToOneField(AnnotatedSlide, on_delete=models.CASCADE)
+    position_x = models.FloatField()
+    position_y = models.FloatField()
+    text = models.CharField(max_length=256)

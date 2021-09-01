@@ -1,5 +1,5 @@
 from django.db import models
-from slide.models import Slide
+from slide.models import Slide, AnnotatedSlide
 from task.models import Task
 
 
@@ -9,7 +9,7 @@ class MultipleChoice(models.Model):
     """
     task = models.OneToOneField(Task, on_delete=models.CASCADE)
     question = models.CharField(max_length=2048)
-    slide = models.OneToOneField(Slide, on_delete=models.CASCADE)
+    annotated_slide = models.OneToOneField(AnnotatedSlide, on_delete=models.CASCADE)
 
 
 class Choice(models.Model):
