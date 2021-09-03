@@ -23,6 +23,7 @@
         </p>
         <p>
             Menu:
+            <a href="/">Home</a>
             <a href="{% url 'task_list' %}">Tasks</a>
             {% if request.user.is_superuser %}
             <a href="/admin/">Admin</a>
