@@ -2,6 +2,7 @@ from django.shortcuts import render
 from multiple_choice.models import MultipleChoice, Choice
 from slide.models import Slide
 from slide.views import slide_cache
+from user.decorators import teacher_required
 
 
 def do(request, task_id):
@@ -30,7 +31,7 @@ def do(request, task_id):
         'answered': answered,
     })
 
-
+@teacher_required
 def new(request):
     """
     Teacher form for creating a multiple choice task
