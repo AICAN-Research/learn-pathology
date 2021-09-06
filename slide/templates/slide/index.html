@@ -1,13 +1,31 @@
 {% extends 'learnpathology/base.html' %}
 {% block content %}
-<p>
+    <h2>Image database</h2>
+    <p>
+    <a href="/admin/slide/slide/add/">Add a whole slide image to the database</a>
+    </p>
     {% if slides %}
-        Choose a WSI to view:
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>View</th>
+                <th>Tasks</th>
+                <th>Create</th>
+            </tr>
         {% for slide in slides %}
-            - <a href="{% url 'view_wsi' slide.id %}">{{ slide.name }}</a>
+            <tr>
+                <td>{{ slide.name }}</td>
+                <td>{{ slide.description }}</td>
+                <td><a href="{% url 'slide:view_full' slide.id %}">View</a></td>
+                <td><a href="">Tasks</a></td>
+                <td><a href="">Create new task</a></td>
+            </tr>
         {% endfor %}
+        </table>
     {% else %}
+    <p>
         No slides in DB
+    </p>
     {% endif %}
-</p>
 {% endblock content %}

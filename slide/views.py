@@ -36,12 +36,18 @@ def index(request):
         'slides': Slide.objects.all(),
     })
 
+@login_required
+def whole_slide_view_full(request, slide_id):
+    slide = slide_cache.load_slide_to_cache(slide_id)
+    return render(request, 'slide/view_wsi_full.html', {
+        'slide': slide,
+    })
+
 
 @login_required
-def view_whole_slide(request, slide_id):
+def whole_slide_viewer(request, slide_id):
     slide = slide_cache.load_slide_to_cache(slide_id)
     return render(request, 'slide/view_wsi.html', {
-        'slides': Slide.objects.all(),
         'slide': slide,
     })
 
