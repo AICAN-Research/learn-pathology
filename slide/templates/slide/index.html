@@ -2,22 +2,22 @@
 {% block content %}
     <h2>Image database</h2>
     <p>
-    <a href="/admin/slide/slide/add/">Add a whole slide image to the database</a>
+    <a href="{% url 'slide:add' %}">Add a whole slide image to the database</a>
     </p>
     {% if slides %}
         <table>
             <tr>
+                <th>Thumbnail</th>
                 <th>Name</th>
                 <th>Description</th>
-                <th>View</th>
                 <th>Tasks</th>
                 <th>Create</th>
             </tr>
         {% for slide in slides %}
             <tr>
+                <td><a href="{% url 'slide:view_full' slide.id %}"><img src="/slide/thumbnails/{{ slide.id }}.jpg" style="width: 100px"></a></td>
                 <td>{{ slide.name }}</td>
                 <td>{{ slide.description }}</td>
-                <td><a href="{% url 'slide:view_full' slide.id %}">View</a></td>
                 <td><a href="">Tasks</a></td>
                 <td><a href="">Create new task</a></td>
             </tr>

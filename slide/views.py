@@ -1,9 +1,9 @@
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, Http404
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.conf import settings
-from user.decorators import student_required
-from .models import Slide
+from user.decorators import student_required, teacher_required
+from .models import Slide, SlideForm
 
 
 class SlideCache:
@@ -68,3 +68,31 @@ def tile(request, slide_id, osd_level, x, y):
         return HttpResponse(status=404)
 
     return HttpResponse(buffer.getvalue(), content_type='image/jpeg')
+
+
+def create_thumbnail(slide_id):
+    import fast
+    slide = slide_cache.load_slide_to_cache(slide_id)
+    access = slide.image.getAccess(fast.ACCESS_READ)
+    image = access.getLevelAsImage(slide.image.getNrOfLevels()-1)
+    scale = image.getWidth()/image.getHeight()
+    resize = fast.ImageResizer.create(128, round(128*scale)).connect(image)
+    fast.ImageFileExporter\
+        .create(f'thumbnails/{slide_id}.jpg')\
+        .connect(resize)\
+        .run()
+
+@teacher_required
+def add(request):
+    if request.method == 'POST':
+        form = SlideForm(request.POST)
+        if form.is_valid():
+            # Save form and create thumbnail
+            slide = form.save()
+            create_thumbnail(slide.id)
+            # TODO add success message
+            return redirect('slide:view_full', slide.id)
+    else:
+        form = SlideForm()
+
+    return render(request, 'slide/add.html', {'form': form})
