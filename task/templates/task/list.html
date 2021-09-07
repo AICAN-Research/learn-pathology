@@ -1,10 +1,17 @@
 {% extends 'learnpathology/base.html' %}
 
 {% block content %}
-<h1>Tasks</h1>
-<ul>
+<h2>Tasks</h2>
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Type</th>
+    </tr>
 {% for task in tasks %}
-    <li><a href="{% url task.do_url task.id %}">{{ task.name }}</a></li>
+    <tr>
+        <td><a href="{% url task.do_url task.id %}">{{ task.name }}</a></td>
+        <td>{{ task.type }}</td>
+    </tr>
 {% endfor %}
-</ul>
+</table>
 {% endblock content %}
