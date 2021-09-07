@@ -1,3 +1,4 @@
+from django import forms
 from django.db import models
 from slide.models import Slide, AnnotatedSlide
 from task.models import Task
@@ -20,3 +21,29 @@ class Choice(models.Model):
     text = models.CharField(max_length=512)
     correct = models.BooleanField()
 
+
+# Forms
+
+class ChoiceForm(forms.ModelForm):
+
+    text = forms.CharField(widget=forms.TextInput(attrs={"placeholder": "Alternative"}))
+    correct = forms.RadioSelect()
+
+    class Meta:
+        model = Choice
+        fields = ['text', 'correct']
+
+
+class MultipleChoiceForm(forms.ModelForm):
+
+    question = forms.CharField(widget=forms.TextInput())
+
+    # Make multiple choice fields
+    choiceFormset = forms.formset_factory(ChoiceForm, extra=3)
+
+    # TODO Use AnnotatedSlide(s), not Slide, when some are available
+    annotated_slide = forms.ModelChoiceField(queryset=AnnotatedSlide.objects.all())
+
+    class Meta:
+        model = MultipleChoice
+        fields = ['question']

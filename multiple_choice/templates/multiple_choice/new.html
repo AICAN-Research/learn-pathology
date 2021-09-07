@@ -1,1 +1,20 @@
 {% extends 'learnpathology/base.html' %}
+
+{% block content %}
+
+<h2>New multiple choice question</h2>
+
+{#<form method="post" action="{% url 'multiple_choice:new' %}">#}
+<form method="post">
+    {% csrf_token %}
+
+    <table>
+        {{ form.as_table }}
+    </table>
+
+    <br>
+    <input type="submit" value="Submit">
+</form>
+
+
+{% endblock content %}
