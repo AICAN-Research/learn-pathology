@@ -11,11 +11,15 @@
     <tr>
         <th>Name</th>
         <th>Type</th>
+        <th>Edit</th>
+        <th>Delete</th>
     </tr>
 {% for task in tasks %}
     <tr>
         <td><a href="{% url task.do_url task.id %}">{{ task.name }}</a></td>
         <td>{{ task.type }}</td>
+        <td><a href="">Edit</a></td>
+        <td><a href="{% url 'task_delete' task.id %}">Delete</a></td>
     </tr>
 {% endfor %}
 </table>

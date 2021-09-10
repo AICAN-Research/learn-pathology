@@ -36,3 +36,25 @@ class Task(models.Model):
     def do_url(self):
         return self.type + ':do'
 
+    @property
+    def type_model(self):
+        for app in apps.get_app_configs():
+            print(app.name)
+            models = app.get_models()
+            for model in models:
+                print(model)
+                try:
+                    task_field = model._meta.get_field('task')
+                    if task_field.remote_field.model.__name__ == 'Task':
+                        print('has task')
+                        try:
+                            if model.objects.filter(task=self).exists():
+                                print('exists')
+                                return model.objects.get(task=self)
+                        except:
+                            print('err')
+                            pass
+                except FieldDoesNotExist:
+                    pass
+        raise RuntimeError('Task type not found!')
+
