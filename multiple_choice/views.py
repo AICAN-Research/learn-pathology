@@ -43,14 +43,10 @@ def new(request):
 
         if form.is_valid():
 
-            # TODO Create Task
             task = Task()
-            """task_query = Task.objects.all()
-            new_id = task_query.count() + 1
-            task.id = new_id"""
+
             task.save()
 
-            # TODO Create MultipleChoice, connect it to task
             multiple_choice = form.save(commit=False)
             multiple_choice.task = task
             # Insert into DB

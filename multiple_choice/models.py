@@ -41,9 +41,8 @@ class MultipleChoiceForm(forms.ModelForm):
     # Make multiple choice fields
     choiceFormset = forms.formset_factory(ChoiceForm, extra=3)
 
-    # TODO Use AnnotatedSlide(s), not Slide, when some are available
     annotated_slide = forms.ModelChoiceField(queryset=AnnotatedSlide.objects.all())
 
     class Meta:
         model = MultipleChoice
-        fields = ['question']
+        fields = ['question', 'annotated_slide']
