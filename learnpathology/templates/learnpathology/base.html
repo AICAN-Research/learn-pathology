@@ -24,11 +24,11 @@
         <p>
             Menu:
             {% if request.user.is_teacher or request.user.is_superuser %}
-            <a href="{% url 'slide:list' %}">Image list</a>
+            <a href="{% url 'slide:list' %}">Image list</a> -
             {% endif %}
-            <a href="{% url 'task_list' %}">Tasks</a>
+            <a href="{% url 'task_list' %}">Tasks</a> -
             {% if request.user.is_superuser %}
-            <a href="/admin/">Admin</a>
+            <a href="/admin/">Admin</a> -
             {% endif %}
             <a href="{% url 'logout' %}">Logout</a>
         </p>
