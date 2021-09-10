@@ -9,7 +9,9 @@
     {% csrf_token %}
 
     <table>
+        {{ taskForm.as_table }}
         {{ form.as_table }}
+        {{ choiceFormset.as_table }}
     </table>
 
     <br>

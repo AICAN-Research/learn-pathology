@@ -1,5 +1,7 @@
+from django.db import transaction
+from django.forms import formset_factory
 from django.shortcuts import render, redirect, HttpResponse
-from multiple_choice.models import MultipleChoice, Choice, MultipleChoiceForm
+from multiple_choice.models import MultipleChoice, Choice, MultipleChoiceForm, ChoiceForm, TaskForm
 from slide.models import Slide
 from slide.views import slide_cache
 from user.decorators import teacher_required
@@ -37,44 +39,39 @@ def new(request):
     """
     Teacher form for creating a multiple choice task
     """
+    ChoiceFormset = formset_factory(ChoiceForm, extra=5)
     if request.method == 'POST': # Form was submitted
         print("POST")
+        taskForm = TaskForm(request.POST)
         form = MultipleChoiceForm(request.POST)
+        choiceFormset = ChoiceFormset(request.POST)
 
-        if form.is_valid():
+        with transaction.atomic():  # Make save operation atomic
+            if form.is_valid() and taskForm.is_valid() and choiceFormset.is_valid():
+                task = taskForm.save()
+                multiple_choice = form.save(commit=False)
+                multiple_choice.task = task
+                # Insert into DB
+                multiple_choice.save()
 
-            task = Task()
+                for choiceForm in choiceFormset:
+                    choice = choiceForm.save(commit=False)
+                    if len(choice.text) > 0:
+                        choice.task = multiple_choice
+                        choice.save()
 
-            task.save()
-
-            multiple_choice = form.save(commit=False)
-            multiple_choice.task = task
-            # Insert into DB
-            multiple_choice.save()
-
-            # TODO Create all the Choice (s)
-            # for each entry box in form_data:
-            #   if box is used --> create Choice
-            #       if Choice is correct --> mark as correct
-            #   else
-            #       discard box
-
-
-            # Give a message back to the user
-            print("added multiple choice")
-            return redirect('multiple_choice:added_task')
-
-        else:
-            form = MultipleChoiceForm()
-
+                # Give a message back to the user
+                print("added multiple choice")
+                return redirect('multiple_choice:added_task')
     else:
+        taskForm = TaskForm()
         form = MultipleChoiceForm()
-
-    slides = Slide.objects.all() # Get all slides, so the teacher can choose which slide to use
+        choiceFormset = ChoiceFormset()
 
     return render(request, 'multiple_choice/new.html', {
         'form': form,
-        'slides': slides
+        'taskForm': taskForm,
+        'choiceFormset': choiceFormset,
     })
 
 

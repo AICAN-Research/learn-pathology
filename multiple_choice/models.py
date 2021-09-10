@@ -10,7 +10,7 @@ class MultipleChoice(models.Model):
     """
     task = models.OneToOneField(Task, on_delete=models.CASCADE)
     question = models.CharField(max_length=2048)
-    annotated_slide = models.OneToOneField(AnnotatedSlide, on_delete=models.CASCADE) # TODO Move to Task?
+    annotated_slide = models.ForeignKey(AnnotatedSlide, on_delete=models.CASCADE) # TODO Move to Task?
 
 
 class Choice(models.Model):
@@ -24,25 +24,24 @@ class Choice(models.Model):
 
 # Forms
 
-class ChoiceForm(forms.ModelForm):
+class TaskForm(forms.ModelForm):
+    class Meta:
+        model = Task
+        fields = ['name']
 
-    text = forms.CharField(widget=forms.TextInput(attrs={"placeholder": "Alternative"}))
-    correct = forms.RadioSelect()
+class ChoiceForm(forms.ModelForm):
 
     class Meta:
         model = Choice
         fields = ['text', 'correct']
+        labels = {
+            'text': ('Choice text'),
+            'correct': ('Correct?'),
+        }
 
 
 class MultipleChoiceForm(forms.ModelForm):
-
-    question = forms.CharField(widget=forms.TextInput())
-
-    # Make multiple choice fields
-    choiceFormset = forms.formset_factory(ChoiceForm, extra=3)
-
     annotated_slide = forms.ModelChoiceField(queryset=AnnotatedSlide.objects.all())
-
     class Meta:
         model = MultipleChoice
         fields = ['question', 'annotated_slide']
