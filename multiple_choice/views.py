@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.db import transaction
 from django.forms import formset_factory
 from django.shortcuts import render, redirect, HttpResponse
@@ -61,8 +62,8 @@ def new(request):
                         choice.save()
 
                 # Give a message back to the user
-                print("added multiple choice")
-                return redirect('multiple_choice:added_task')
+                messages.add_message(request, messages.SUCCESS, 'Task added successfully!')
+                return redirect('task_list')
     else:
         taskForm = TaskForm()
         form = MultipleChoiceForm()
