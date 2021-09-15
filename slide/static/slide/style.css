@@ -31,3 +31,7 @@ main {
     margin: 0px auto;
     width: 800px;
 }
+
+td {
+    padding: 6px 10px 6px 10px;
+}
