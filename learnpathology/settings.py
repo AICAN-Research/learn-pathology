@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'slide',
     'task',
     'multiple_choice',
+    'course',
 ]
 
 MIDDLEWARE = [
