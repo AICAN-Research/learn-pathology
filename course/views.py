@@ -2,8 +2,16 @@ from django.contrib import messages
 from django.db import transaction
 from django.shortcuts import render, redirect
 
-from course.models import CourseForm
+from course.models import Course, CourseForm
 from user.decorators import teacher_required
+
+
+def index(request):
+    """
+    Show index of available courses
+    """
+    return render(request, "course/index.html",
+                  {'courses': Course.objects.all().order_by('-code')})
 
 
 def course_page(request, course_id):
@@ -22,7 +30,8 @@ def new(request):
     if request.method == 'POST':  # Form was submitted
         courseForm = CourseForm(request.POST)
         if courseForm.is_valid():
-            course = courseForm.save()
+            course = courseForm.save(commit=False)
+            course.save()
             # Give a message back to the user
             messages.add_message(request, messages.SUCCESS, 'Course added successfully!')
             return redirect('/') # use URL /course_list/ for course_page view above
