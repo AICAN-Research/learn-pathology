@@ -1,3 +1,4 @@
+from django import forms
 from django.db import models
 from slide.models import Slide
 from task.models import Task
@@ -15,3 +16,16 @@ class Course(models.Model):
 
     def __str__(self):
         return self.code + " - " + self.title
+
+
+class CourseForm(forms.ModelForm):
+
+    class Meta:
+        model = Course
+        fields = ['code', 'title', 'description', 'teacher']
+        labels = {
+            'code': 'Course code',
+            'title': 'Course name',
+            'description': 'Description',
+            'teacher': 'Teachers'
+        }
