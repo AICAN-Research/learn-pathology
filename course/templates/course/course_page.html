@@ -1,0 +1,75 @@
+{% extends 'learnpathology/base.html' %}
+
+{% block content %}
+
+<h2>Course overview</h2>
+
+    <table>
+    <tr>
+        <th>Course code:</th>
+        <td>{{ course.code }}</td>
+    </tr>
+    <tr>
+        <th>Course name: </th>
+        <td>{{ course.title }}</td>
+    </tr>
+    <tr>
+        <th>Description:</th>
+        <td>{{ course.description }}</td>
+    </tr>
+    <br><br>
+    <tr>
+        {% if request.user.is_teacher or request.user.is_superuser %}
+            <th><a href="">Edit course info</a></th>
+        {% endif %}
+        {% if request.user.is_teacher or request.user.is_superuser %}
+            <th><a href="">Delete course</a></th>
+        {% endif %}
+    </tr>
+    </table>
+
+
+<h3>Tasks</h3>
+
+    <table>
+    <tr>
+        <th>Name</th>
+        <th>Task type</th>
+    </tr>
+    <tr> <!-- TODO: remove this table row -->
+        <td>Example name</td>
+        <td>multiple_choice</td>
+    </tr>
+    {% for task in tasks %}
+        <tr>
+            <td>{{ task.name }}</td>
+            <td>{{ task.type }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+
+
+<h3>Slides</h3>
+
+    <table>
+    <tr>
+        <th>Thumbnail</th>
+        <th>Name</th>
+        <th>Description</th>
+    </tr>
+    <tr> <!-- TODO: remove this table row -->
+        <td>image placeholder</td>
+        <td>Slide name</td>
+        <td>Example description</td>
+    </tr>
+    {% for slide in slides %}
+        <tr>
+            <td><a href="{% url 'slide:view_full' slide.id %}"><img src="/slide/thumbnails/{{ slide.id }}.jpg" style="width: 100px"></a></td>
+            <td>{{ slide.name }}</td>
+            <td>{{ slide.description }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+
+
+{% endblock content %}

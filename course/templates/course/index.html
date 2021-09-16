@@ -8,20 +8,28 @@
     </p>
     {% if courses %}
         <table>
-            <tr>
-                <th>Course code</th>
-                <th>Course name</th>
-                <th>Description</th>
+        <tr>
+            <th>Course code</th>
+            <th>Course name</th>
+            <th>Description</th>
+            {% if request.user.is_teacher or request.user.is_superuser %}
                 <th>Edit</th>
+            {% endif %}
+            {% if request.user.is_teacher or request.user.is_superuser %}
                 <th>Delete</th>
-            </tr>
+            {% endif %}
+        </tr>
         {% for course in courses %}
             <tr>
-                <td>{{ course.code }}</td>
-                <td>{{ course.title }}</td>
+                <td><a href="{% url 'course:view' course.id %}">{{ course.code }}</a></td>
+                <td><a href="{% url 'course:view' course.id %}">{{ course.title }}</a></td>
                 <td>{{ course.description }}</td>
-                <td><a href="">Edit</a></td>
-                <td><a href="">Delete</a></td>
+                {% if request.user.is_teacher or request.user.is_superuser %}
+                    <td><a href="">Edit</a></td>
+                {% endif %}
+                {% if request.user.is_teacher or request.user.is_superuser %}
+                    <td><a href="">Delete</a></td>
+                {% endif %}
             </tr>
         {% endfor %}
         </table>

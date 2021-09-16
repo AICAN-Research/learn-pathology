@@ -3,6 +3,8 @@ from django.db import transaction
 from django.shortcuts import render, redirect
 
 from course.models import Course, CourseForm
+from slide.models import Slide
+from task.models import Task
 from user.decorators import teacher_required
 
 
@@ -10,15 +12,26 @@ def index(request):
     """
     Show index of available courses
     """
+
+    courses = Course.objects.all()
     return render(request, "course/index.html",
-                  {'courses': Course.objects.all().order_by('-code')})
+                  {'courses': Course.objects.all().order_by('code')})
 
 
 def course_page(request, course_id):
-    # Show information about course
-    # List tasks
-    # List slides
-    pass
+    """
+    Display a course page with course information and related slides and tasks
+    """
+
+    course = Course.objects.get(id=course_id)
+    tasks = Task.objects.filter(course__code=course.code)
+    slides = Slide.objects.filter(course__code=course.code)
+
+    return render(request, 'course/course_page.html', {
+        'course': course,
+        'tasks': tasks,
+        'slides': slides,
+    })
 
 
 @teacher_required
@@ -34,8 +47,7 @@ def new(request):
             course.save()
             # Give a message back to the user
             messages.add_message(request, messages.SUCCESS, 'Course added successfully!')
-            return redirect('/') # use URL /course_list/ for course_page view above
-            #return redirect('course_list') # use URL /course_list/ for course_page view above
+            return redirect('course:index')
         else:
             # Render form with errors
             pass

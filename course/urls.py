@@ -5,4 +5,5 @@ app_name = 'course'
 urlpatterns = [
     path('index/', views.index, name='index'),
     path('new/', views.new, name='new'),
+    path('view/<int:course_id>', views.course_page, name='view'),
 ]
