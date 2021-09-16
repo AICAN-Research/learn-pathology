@@ -59,8 +59,40 @@ def new(request):
 
 @teacher_required
 def edit(request, course_id):
-    # form
-    pass
+    """
+    Teacher form for editing a course
+    """
+
+    if request.method == 'POST':  # Form was submitted
+        courseForm = CourseForm(request.POST)
+        if courseForm.is_valid():
+
+            course = courseForm.save(commit=False)
+            # TODO: Calling .save() generates new DB entry? Options:
+            #   - Check each field if altered
+            #   - Find alternative solution --> see django's UpdateView?
+            course.save()
+
+            # Give a message back to the user
+            messages.add_message(request, messages.SUCCESS, 'Course was altered!')
+            print("Changed course")
+            return redirect('course:index')
+
+        else:
+            # Render form with errors
+            pass
+
+    else:  # GET method
+        # Check if course_id is valid (i.e. exists)
+        if course_id in Course.objects.all().values_list('id', flat=True):
+            course = Course.objects.all().get(id=course_id)
+            courseForm = CourseForm(instance=course)
+
+        else:
+            # TODO: Decide on action. Let user create new course??
+            courseForm = CourseForm()
+
+    return render(request, 'course/edit.html', {'form': courseForm})
 
 
 @teacher_required

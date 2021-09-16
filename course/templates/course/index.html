@@ -25,7 +25,7 @@
                 <td><a href="{% url 'course:view' course.id %}">{{ course.title }}</a></td>
                 <td>{{ course.description }}</td>
                 {% if request.user.is_teacher or request.user.is_superuser %}
-                    <td><a href="">Edit</a></td>
+                    <td><a href="{% url 'course:edit' course.id %}">Edit</a></td>
                 {% endif %}
                 {% if request.user.is_teacher or request.user.is_superuser %}
                     <td><a href="">Delete</a></td>
