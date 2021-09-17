@@ -28,7 +28,7 @@
                     <td><a href="{% url 'course:edit' course.id %}">Edit</a></td>
                 {% endif %}
                 {% if request.user.is_teacher or request.user.is_superuser %}
-                    <td><a href="">Delete</a></td>
+                    <td><a href="{% url 'course:delete' course.id %}">Delete</a></td>
                 {% endif %}
             </tr>
         {% endfor %}

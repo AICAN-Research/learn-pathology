@@ -29,3 +29,12 @@ class CourseForm(forms.ModelForm):
             'description': 'Description',
             'teacher': 'Teachers'
         }
+
+
+class DeleteCourseForm(forms.Form):
+
+    confirmDelete = forms.ChoiceField(choices=((True, "Yes, delete"),
+                                               (False, "No, keep course")),
+                                      widget=forms.RadioSelect,
+                                      label=""
+                                      )

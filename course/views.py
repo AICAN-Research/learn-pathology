@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.db import transaction
 from django.shortcuts import render, redirect
 
-from course.models import Course, CourseForm
+from course.models import Course, CourseForm, DeleteCourseForm
 from slide.models import Slide
 from task.models import Task
 from user.decorators import teacher_required
@@ -97,4 +97,40 @@ def edit(request, course_id):
 
 @teacher_required
 def delete(request, course_id):
-    pass
+    """
+    View to delete a course from the course database
+    """
+
+    if request.method == 'POST':  # Form was submitted
+
+        form = DeleteCourseForm(request.POST)
+        if form.is_valid():
+
+            course = Course.objects.get(id=course_id)
+            course_code = course.code
+            course_title = course.title
+            txt = f"{course_code} - {course_title}"
+
+            if form.cleaned_data['confirmDelete'] is True:
+                # TODO Add code to delete database entry
+
+                messages.add_message(request, messages.SUCCESS, f'The course {txt} was deleted')
+            else:
+                messages.add_message(request, messages.SUCCESS, f'The course {txt} was not deleted')
+
+            # Return to course index
+            return redirect('course:index')
+
+
+    else:  # GET method
+        # Render page with course info and "Delete? Yes/No"
+        if course_id in Course.objects.all().values_list('id', flat=True):
+            course = Course.objects.all().get(id=course_id)
+            return render(request, 'course/delete.html',
+                          {'form': DeleteCourseForm(), 'course': course})
+
+        else:
+            messages.add_message(request, messages.WARNING, 'Did not find course')
+            return redirect('course:index')
+
+    return redirect('course:index')
