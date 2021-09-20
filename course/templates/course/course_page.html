@@ -29,17 +29,15 @@
 
 <h3>Tasks</h3>
 
-<a href="">Add task</a> <!-- TODO link to new task page -->
-<br>
+<p>
+    <a href="">Add task</a> <!-- TODO link to new task page -->
+</p>
 
-    <table>
+{% if tasks %}
+<table>
     <tr>
         <th>Name</th>
         <th>Task type</th>
-    </tr>
-    <tr> <!-- TODO: remove this table row -->
-        <td>Example name</td>
-        <td>multiple_choice</td>
     </tr>
     {% for task in tasks %}
         <tr>
@@ -47,24 +45,24 @@
             <td>{{ task.type }}</td>
         </tr>
     {% endfor %}
-    </table>
+</table>
+{% else %}
+No tasks assigned to this course yet.
+{% endif %}
 
 
 <h3>Slides</h3>
 
-<a href="">Add slide</a> <!-- TODO link to new slide page -->
-<br>
+<p>
+    <a href="">Add slide</a> <!-- TODO link to new slide page -->
+</p>
 
-    <table>
+{% if slides %}
+<table>
     <tr>
         <th>Thumbnail</th>
         <th>Name</th>
         <th>Description</th>
-    </tr>
-    <tr> <!-- TODO: remove this table row -->
-        <td>image placeholder</td>
-        <td>Slide name</td>
-        <td>Example description</td>
     </tr>
     {% for slide in slides %}
         <tr>
@@ -73,7 +71,10 @@
             <td>{{ slide.description }}</td>
         </tr>
     {% endfor %}
-    </table>
+</table>
+{% else %}
+No slides assigned to this course yet.
+{% endif %}
 
 
 {% endblock content %}

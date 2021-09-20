@@ -25,8 +25,8 @@ def course_page(request, course_id):
     """
 
     course = Course.objects.get(id=course_id)
-    tasks = Task.objects.filter(course__code=course.code)
-    slides = Slide.objects.filter(course__code=course.code)
+    tasks = Task.objects.filter(course=course)
+    slides = Slide.objects.filter(course=course)
 
     return render(request, 'course/course_page.html', {
         'course': course,
