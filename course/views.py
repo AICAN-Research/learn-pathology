@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.db import transaction
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 
 from course.models import Course
 from course.forms import CourseForm, DeleteCourseForm
@@ -64,34 +64,15 @@ def edit(request, course_id):
     Teacher form for editing a course
     """
 
+    course = get_object_or_404(Course, id=course_id)
+    courseForm = CourseForm(request.POST or None, instance=course)
+
     if request.method == 'POST':  # Form was submitted
-        courseForm = CourseForm(request.POST)
         if courseForm.is_valid():
-
-            course = courseForm.save(commit=False)
-            # TODO: Calling .save() generates new DB entry? Options:
-            #   - Check each field if altered
-            #   - Find alternative solution --> see django's UpdateView?
-            course.save()
-
-            # Give a message back to the user
-            messages.add_message(request, messages.SUCCESS, 'Course was altered!')
-            print("Changed course")
+            courseForm.save()
+            messages.add_message(request, messages.SUCCESS,
+                 f'The course {course.code} - {course.title} was altered!')
             return redirect('course:index')
-
-        else:
-            # Render form with errors
-            pass
-
-    else:  # GET method
-        # Check if course_id is valid (i.e. exists)
-        if course_id in Course.objects.all().values_list('id', flat=True):
-            course = Course.objects.all().get(id=course_id)
-            courseForm = CourseForm(instance=course)
-
-        else:
-            # TODO: Decide on action. Let user create new course??
-            courseForm = CourseForm()
 
     return render(request, 'course/edit.html', {'form': courseForm})
 
@@ -103,25 +84,19 @@ def delete(request, course_id):
     """
 
     if request.method == 'POST':  # Form was submitted
-
         form = DeleteCourseForm(request.POST)
+
         if form.is_valid():
-
             course = Course.objects.get(id=course_id)
-            course_code = course.code
-            course_title = course.title
-            txt = f"{course_code} - {course_title}"
+            txt = f"{course.code} - {course.title}"
 
-            if form.cleaned_data['confirmDelete'] is True:
-                # TODO Add code to delete database entry
-
+            if form.cleaned_data['confirmDelete']:
+                course.delete()
                 messages.add_message(request, messages.SUCCESS, f'The course {txt} was deleted')
             else:
                 messages.add_message(request, messages.SUCCESS, f'The course {txt} was not deleted')
 
-            # Return to course index
             return redirect('course:index')
-
 
     else:  # GET method
         # Render page with course info and "Delete? Yes/No"
@@ -130,7 +105,7 @@ def delete(request, course_id):
             return render(request, 'course/delete.html',
                           {'form': DeleteCourseForm(), 'course': course})
 
-        else:
+        else:  # In case user enters invalid URL directly
             messages.add_message(request, messages.WARNING, 'Did not find course')
             return redirect('course:index')
 

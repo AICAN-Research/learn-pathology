@@ -18,8 +18,5 @@ class CourseForm(forms.ModelForm):
 
 class DeleteCourseForm(forms.Form):
 
-    confirmDelete = forms.ChoiceField(choices=((True, "Yes, delete"),
-                                               (False, "No, keep course")),
-                                      widget=forms.RadioSelect,
-                                      label=""
-                                      )
+    confirmDelete = forms.BooleanField(label="Yes, I want to delete the course",
+                                       required=False)
