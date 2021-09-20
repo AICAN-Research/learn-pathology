@@ -1,3 +1,4 @@
 django==3.2.*
 pyfast==4.0
 pillow==8.*
+pyyaml==5.*

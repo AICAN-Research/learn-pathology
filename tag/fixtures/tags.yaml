@@ -1,0 +1,25 @@
+- model: tag.tag
+  pk: 1
+  fields:
+    name: Lung
+    is_organ: True
+- model: tag.tag
+  pk: 2
+  fields:
+    name: Breast
+    is_organ: True
+- model: tag.tag
+  pk: 3
+  fields:
+    name: Liver
+    is_organ: True
+- model: tag.tag
+  pk: 4
+  fields:
+    name: Skin
+    is_organ: True
+- model: tag.tag
+  pk: 5
+  fields:
+    name: Inflammation
+    is_system: True

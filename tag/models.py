@@ -4,8 +4,8 @@ from django.forms import ModelForm
 
 class Tag(models.Model):
     name = models.CharField(max_length=255)
-    is_organ = models.BooleanField(help_text='Is this an organ tag?')
-    is_system = models.BooleanField(help_text='Is this a system tag?')
+    is_organ = models.BooleanField(help_text='Is this an organ tag?', default=False)
+    is_system = models.BooleanField(help_text='Is this a system tag?', default=False)
 
     def __str__(self):
         return self.name
