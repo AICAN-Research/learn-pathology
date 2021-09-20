@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'task',
     'multiple_choice',
     'course',
+    'tag',
 ]
 
 MIDDLEWARE = [

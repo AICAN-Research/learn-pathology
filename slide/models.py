@@ -1,16 +1,12 @@
 from io import BytesIO
-import os
-
-from django.core.exceptions import ValidationError
 from django.db import models
 import fast
 import time
 import numpy as np
 from PIL import Image
 from django.conf import settings
-from django.forms import ModelForm
-
 from slide.timing import Timer
+from tag.models import Tag
 
 
 class Slide(models.Model):
@@ -21,6 +17,7 @@ class Slide(models.Model):
     path = models.CharField(max_length=1024)
     description = models.TextField()
     pathology = models.BooleanField(default=False, help_text='Does the slide show pathology or not')
+    tags = models.ManyToManyField(Tag)
 
     def __str__(self):
         return self.name
@@ -209,21 +206,6 @@ class AnnotatedSlide(models.Model):
         for pointer in Pointer.objects.filter(annotated_slide=self):
             js += f"{{id: 'pointer-{pointer.id}', x: {pointer.position_x}, y: {pointer.position_y}, placement: 'RIGHT', checkResize: false }},"
         return js
-
-
-class SlideForm(ModelForm):
-    class Meta:
-        model = Slide
-        fields = ['name', 'description', 'path', 'pathology']
-
-    def clean_path(self):
-        data = self.cleaned_data['path']
-        if not os.path.exists(data):
-            raise ValidationError("Path does not point to a file")
-
-        # Always return a value to use as the new cleaned data, even if
-        # this method didn't change it.
-        return data
 
 
 class Pointer(models.Model):

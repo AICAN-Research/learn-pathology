@@ -1,9 +1,12 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect
 from django.conf import settings
 from user.decorators import student_required, teacher_required
-from .models import Slide, SlideForm
+from .models import Slide
+from .forms import SlideForm
 
 
 class SlideCache:
@@ -84,12 +87,19 @@ def create_thumbnail(slide_id):
 def add(request):
     if request.method == 'POST':
         form = SlideForm(request.POST)
-        if form.is_valid():
-            # Save form and create thumbnail
-            slide = form.save()
-            create_thumbnail(slide.id)
-            # TODO add success message
-            return redirect('slide:view_full', slide.id)
+        with transaction.atomic():
+            if form.is_valid():
+                # Save form and create thumbnail
+                slide = form.save()
+                create_thumbnail(slide.id)
+
+                organ_tags = form.cleaned_data['organ_tags']
+                system_tags = form.cleaned_data['system_tags']
+                other_tags = form.cleaned_data['other_tags']
+                slide.tags.set(organ_tags | system_tags | other_tags)
+
+                messages.add_message(request, messages.SUCCESS, 'Image added to database')
+                return redirect('slide:view_full', slide.id)
     else:
         form = SlideForm()
 

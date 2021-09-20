@@ -30,5 +30,6 @@ urlpatterns = [
     path('slide/', include('slide.urls')),
     path('tasks/', task.views.list, name='task_list'),
     path('task/delete/<int:task_id>/', task.views.delete, name='task_delete'),
+    path('tag/', include('tag.urls')),
     path('course/', include('course.urls')),
 ]
