@@ -4,6 +4,8 @@ from django.db import transaction
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect
 from django.conf import settings
+
+from tag.models import Tag
 from user.decorators import student_required, teacher_required
 from .models import Slide
 from .forms import SlideForm
@@ -35,8 +37,24 @@ slide_cache = SlideCache()
 
 
 def index(request):
+    slides = Slide.objects.all()
+
+    # Filters
+    organs = request.GET.getlist('organ[]')
+    if len(organs) > 0: slides = slides.filter(tags__in=organs)
+    systems = request.GET.getlist('system[]')
+    if len(systems) > 0: slides = slides.filter(tags__in=systems)
+    tags = request.GET.getlist('tag[]')
+    if len(tags) > 0: slides = slides.filter(tags__in=systems)
+
     return render(request, 'slide/index.html', {
-        'slides': Slide.objects.all(),
+        'slides': slides,
+        'organ_tags': Tag.objects.filter(is_organ=True),
+        'system_tags': Tag.objects.filter(is_system=True),
+        'other_tags': Tag.objects.filter(is_system=False, is_organ=False),
+        'selected_organ_tags': organs,
+        'selected_system_tags': systems,
+        'selected_other_tags': tags,
     })
 
 

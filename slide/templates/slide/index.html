@@ -1,8 +1,33 @@
 {% extends 'learnpathology/base.html' %}
 {% block content %}
     <h2>Image database</h2>
+    {% if user.is_superuser or user.is_teacher %}
     <p>
-    <a href="{% url 'slide:add' %}">Add a whole slide image to the database</a>
+        <a href="{% url 'slide:add' %}">Add a whole slide image to the database</a>
+    </p>
+    {% endif %}
+    <p>
+        <form>
+            <b>Filter:</b>
+            Organ:
+            <select name="organ[]" multiple class="filter" style="width:20%">
+                {% for tag in organ_tags %}
+                    <option value="{{ tag.id }}"{% if tag.id|slugify in selected_organ_tags %} selected="selected"{% endif %}>{{ tag.name }}</option>
+                {% endfor %}
+            </select>
+            System:
+            <select name="system[]" multiple class="filter">
+                {% for tag in system_tags %}
+                    <option value="{{ tag.id }}"{% if tag.id|slugify in selected_system_tags %} selected="selected"{% endif %}>{{ tag.name }}</option>
+                {% endfor %}
+            </select>
+            Tag:
+            <select name="tag[]" multiple class="filter">
+                {% for tag in other_tags %}
+                    <option value="{{ tag.id }}"{% if tag.id|slugify in selected_other_tags %} selected="selected"{% endif %}>{{ tag.name }}</option>
+                {% endfor %}
+            </select>
+        </form>
     </p>
     {% if slides %}
         <table>
@@ -25,7 +50,7 @@
         </table>
     {% else %}
     <p>
-        No slides in DB
+        No slides found with current filter.
     </p>
     {% endif %}
 {% endblock content %}
