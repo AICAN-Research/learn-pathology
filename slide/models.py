@@ -20,6 +20,7 @@ class Slide(models.Model):
     name = models.CharField(max_length=255)
     path = models.CharField(max_length=1024)
     description = models.TextField()
+    pathology = models.BooleanField(default=False, help_text='Does the slide show pathology or not')
 
     def __str__(self):
         return self.name
@@ -213,7 +214,7 @@ class AnnotatedSlide(models.Model):
 class SlideForm(ModelForm):
     class Meta:
         model = Slide
-        fields = ['name', 'description', 'path']
+        fields = ['name', 'description', 'path', 'pathology']
 
     def clean_path(self):
         data = self.cleaned_data['path']
