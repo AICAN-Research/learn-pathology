@@ -1,0 +1,41 @@
+{% extends 'learnpathology/base.html' %}
+
+{% block content %}
+
+    <h2>Course database</h2>
+    <p>
+    <a href="{% url 'course:new' %}">Add a course to the database</a>
+    </p>
+    {% if courses %}
+        <table>
+        <tr>
+            <th>Course code</th>
+            <th>Course name</th>
+            <th>Description</th>
+            {% if request.user.is_teacher or request.user.is_superuser %}
+                <th>Edit</th>
+            {% endif %}
+            {% if request.user.is_teacher or request.user.is_superuser %}
+                <th>Delete</th>
+            {% endif %}
+        </tr>
+        {% for course in courses %}
+            <tr>
+                <td><a href="{% url 'course:view' course.id %}">{{ course.code }}</a></td>
+                <td><a href="{% url 'course:view' course.id %}">{{ course.title }}</a></td>
+                <td>{{ course.description }}</td>
+                {% if request.user.is_teacher or request.user.is_superuser %}
+                    <td><a href="{% url 'course:edit' course.id %}">Edit</a></td>
+                {% endif %}
+                {% if request.user.is_teacher or request.user.is_superuser %}
+                    <td><a href="{% url 'course:delete' course.id %}">Delete</a></td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+        </table>
+    {% else %}
+    <p>
+        No courses in DB
+    </p>
+    {% endif %}
+{% endblock content %}
