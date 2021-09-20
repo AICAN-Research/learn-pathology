@@ -1,6 +1,5 @@
 from io import BytesIO
 import os
-
 from django.core.exceptions import ValidationError
 from django.db import models
 import fast

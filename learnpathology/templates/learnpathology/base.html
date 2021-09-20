@@ -27,6 +27,7 @@
             <a href="{% url 'slide:list' %}">Images</a> -
             {% endif %}
             <a href="{% url 'task_list' %}">Tasks</a> -
+            <a href="{% url 'tag:index' %}">Tags</a> -
             {% if request.user.is_superuser %}
             <a href="/admin/">Admin</a> -
             {% endif %}

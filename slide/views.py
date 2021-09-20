@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect
@@ -88,7 +89,7 @@ def add(request):
             # Save form and create thumbnail
             slide = form.save()
             create_thumbnail(slide.id)
-            # TODO add success message
+            messages.add_message(request, messages.SUCCESS, 'Image added to database')
             return redirect('slide:view_full', slide.id)
     else:
         form = SlideForm()

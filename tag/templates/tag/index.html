@@ -1,0 +1,27 @@
+{% extends 'learnpathology/base.html' %}
+{% block content %}
+    <h2>Tags</h2>
+    <p>
+    <a href="{% url 'tag:new' %}">Add a new tag</a>
+    </p>
+    {% if tags %}
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+        {% for tag in tags %}
+            <tr>
+                <td>{{ tag.name }}</td>
+                <td><a href="{% url 'tag:edit' tag.id %}">Edit</a></td>
+                <td><a href="{% url 'tag:delete' tag.id %}">Delete</a></td>
+            </tr>
+        {% endfor %}
+        </table>
+    {% else %}
+    <p>
+        No tags in DB
+    </p>
+    {% endif %}
+{% endblock content %}
