@@ -2,7 +2,8 @@ from django.contrib import messages
 from django.db import transaction
 from django.shortcuts import render, redirect
 
-from course.models import Course, CourseForm, DeleteCourseForm
+from course.models import Course
+from course.forms import CourseForm, DeleteCourseForm
 from slide.models import Slide
 from task.models import Task
 from user.decorators import teacher_required
