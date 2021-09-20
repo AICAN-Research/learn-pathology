@@ -1,0 +1,80 @@
+{% extends 'learnpathology/base.html' %}
+
+{% block content %}
+
+<h2>Course overview</h2>
+
+    <table>
+    <tr>
+        {% if request.user.is_teacher or request.user.is_superuser %}
+            <th><a href="{% url 'course:edit' course.id %}">Edit course info</a></th>
+            <th><a href="{% url 'course:delete' course.id %}">Delete course</a></th>
+        {% endif %}
+    </tr>
+
+    <tr>
+        <th>Course code:</th>
+        <td>{{ course.code }}</td>
+    </tr>
+    <tr>
+        <th>Course name: </th>
+        <td>{{ course.title }}</td>
+    </tr>
+    <tr>
+        <th>Description:</th>
+        <td>{{ course.description }}</td>
+    </tr>
+    </table>
+
+
+<h3>Tasks</h3>
+
+<p>
+    <a href="">Add task</a> <!-- TODO link to new task page -->
+</p>
+
+{% if tasks %}
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Task type</th>
+    </tr>
+    {% for task in tasks %}
+        <tr>
+            <td>{{ task.name }}</td>
+            <td>{{ task.type }}</td>
+        </tr>
+    {% endfor %}
+</table>
+{% else %}
+No tasks assigned to this course yet.
+{% endif %}
+
+
+<h3>Slides</h3>
+
+<p>
+    <a href="">Add slide</a> <!-- TODO link to new slide page -->
+</p>
+
+{% if slides %}
+<table>
+    <tr>
+        <th>Thumbnail</th>
+        <th>Name</th>
+        <th>Description</th>
+    </tr>
+    {% for slide in slides %}
+        <tr>
+            <td><a href="{% url 'slide:view_full' slide.id %}"><img src="/slide/thumbnails/{{ slide.id }}.jpg" style="width: 100px"></a></td>
+            <td>{{ slide.name }}</td>
+            <td>{{ slide.description }}</td>
+        </tr>
+    {% endfor %}
+</table>
+{% else %}
+No slides assigned to this course yet.
+{% endif %}
+
+
+{% endblock content %}
