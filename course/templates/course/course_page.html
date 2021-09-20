@@ -6,6 +6,13 @@
 
     <table>
     <tr>
+        {% if request.user.is_teacher or request.user.is_superuser %}
+            <th><a href="{% url 'course:edit' course.id %}">Edit course info</a></th>
+            <th><a href="{% url 'course:delete' course.id %}">Delete course</a></th>
+        {% endif %}
+    </tr>
+
+    <tr>
         <th>Course code:</th>
         <td>{{ course.code }}</td>
     </tr>
@@ -17,19 +24,13 @@
         <th>Description:</th>
         <td>{{ course.description }}</td>
     </tr>
-    <br><br>
-    <tr>
-        {% if request.user.is_teacher or request.user.is_superuser %}
-            <th><a href="">Edit course info</a></th>
-        {% endif %}
-        {% if request.user.is_teacher or request.user.is_superuser %}
-            <th><a href="">Delete course</a></th>
-        {% endif %}
-    </tr>
     </table>
 
 
 <h3>Tasks</h3>
+
+<a href="">Add task</a> <!-- TODO link to new task page -->
+<br>
 
     <table>
     <tr>
@@ -50,6 +51,9 @@
 
 
 <h3>Slides</h3>
+
+<a href="">Add slide</a> <!-- TODO link to new slide page -->
+<br>
 
     <table>
     <tr>
