@@ -11,6 +11,7 @@
    var viewer = OpenSeadragon({
     id: "wsi-canvas",
     zoomPerScroll: 2, // Scroll speed
+   zoomPerClick: 1, // disable click to zoom
     showNavigator: true, // The navigation window top-right
    prefixUrl: "{% static 'slide/images/' %}", // Where to find OpenSedragon button images
     tileSources:   {
@@ -28,18 +29,44 @@
             ],
     }
    });
+   viewer.innerTracker.keyHandler = null;
 
-   viewer.addHandler('canvas-click', function(event) {
+   var counter = 1;
+   viewer.addHandler('canvas-double-click', function(event) {
         // The canvas-click event gives us a position in web coordinates.
         var webPoint = event.position;
 
         // Convert that to viewport coordinates, the lingua franca of OpenSeadragon coordinates.
         var viewportPoint = viewer.viewport.pointFromPixel(webPoint);
 
-        // Convert from viewport coordinates to image coordinates.
-        var imagePoint = viewer.viewport.viewportToImageCoordinates(viewportPoint);
+        // Create overlay
+        let textDiv = document.createElement("div");
+        textDiv.className = "overlay";
+        let strCounter = counter.toString();
+        textDiv.id = "pointer-" + strCounter;
+        textDiv.innerHTML = '<a>X</a> ' +
+            '<input type="hidden" name="pointer-' + strCounter + '-x" value="' + viewportPoint.x.toString() + '"> ' +
+            '<input type="hidden" name="pointer-' + strCounter + '-y" value="' + viewportPoint.y.toString() + '"> ' +
+            '<input type="text" name="pointer-' + strCounter + '-text"> &#8594;';
+        counter += 1;
 
-        // Show the results.
-        console.log(webPoint.toString(), viewportPoint.toString(), imagePoint.toString());
+        viewer.addOverlay(textDiv, viewportPoint, OpenSeadragon.Placement.RIGHT);
+        $("#" + textDiv.id + " input[type=text]").focus();
+
+         // MouseTracker is required for links to function in overlays
+        var asd = new OpenSeadragon.MouseTracker({
+            element: textDiv.id,
+            clickHandler: function(event) {
+                var target = event.originalEvent.target;
+                if(target.matches('input')) {
+                    target.focus();
+                } else if(target.matches('a')) {
+                    // Event handler for deleting:
+                    viewer.removeOverlay(textDiv.id);
+                }
+            }
+        });
     });
+
+
 </script>

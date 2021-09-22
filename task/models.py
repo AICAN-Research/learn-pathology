@@ -2,6 +2,7 @@ from django.db import models
 from django.core.exceptions import FieldDoesNotExist
 from django.apps import apps
 from django.conf import settings
+from slide.models import AnnotatedSlide
 
 
 class Task(models.Model):
@@ -9,6 +10,7 @@ class Task(models.Model):
     A generic base model for tasks, exercise etc.
     """
     name = models.CharField(max_length=256)
+    annotated_slide = models.ForeignKey(AnnotatedSlide, on_delete=models.CASCADE)
 
     @property
     def type(self):
@@ -16,6 +18,7 @@ class Task(models.Model):
             print(app.name)
             models = app.get_models()
             for model in models:
+                if str(model).find('AnnotatedSlide') >= 0: continue
                 print(model)
                 try:
                     task_field = model._meta.get_field('task')
