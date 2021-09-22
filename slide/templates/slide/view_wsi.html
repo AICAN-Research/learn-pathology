@@ -8,8 +8,11 @@
 
 <script src="{% static 'slide/openseadragon.min.js' %}"></script>
 <script type="text/javascript">
+    let buttonElement = document.createElement("button");
+    buttonElement.innerText = "Screenshot";
     let screenshotButton = new OpenSeadragon.Button({
         tooltip: 'Screenshot',
+        element: buttonElement,
         //srcRest: `/images/Browser_Chrome.png`,
         //srcGroup: `/images/Browser_Chrome.png`,
         //srcHover: `/images/Browser_Chrome.png`,
@@ -23,8 +26,11 @@
             });
         }
     });
+    let overlayElement = document.createElement("button");
+    overlayElement.innerText = "Toggle Annotations";
     let overlayButton = new OpenSeadragon.Button({
         tooltip: 'Toggle Annotations',
+        element: overlayElement,
         //srcRest: `/images/Browser_Chrome.png`,
         //srcGroup: `/images/Browser_Chrome.png`,
         //srcHover: `/images/Browser_Chrome.png`,
