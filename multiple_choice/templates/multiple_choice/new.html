@@ -14,6 +14,9 @@
         {{ choiceFormset.as_table }}
     </table>
 
+    <h3>Annotate WSI:</h3>
+    {% include 'slide/view_wsi_and_annotate.html' with slide=slide  %}
+
     <br>
     <input type="submit" value="Submit">
 </form>

@@ -8,21 +8,6 @@
 
 <script src="{% static 'slide/openseadragon.min.js' %}"></script>
 <script type="text/javascript">
-      let screenshotButton = new OpenSeadragon.Button({
-        tooltip: 'Screenshot',
-        //srcRest: `/images/Browser_Chrome.png`,
-        //srcGroup: `/images/Browser_Chrome.png`,
-        //srcHover: `/images/Browser_Chrome.png`,
-        //srcDown: `/images/Browser_Chrome.png`,
-        onClick: function() {
-           console.log('Click!');
-           html2canvas($("#wsi-canvas")[0]).then(canvas => {
-               console.log('as!');
-               console.log(canvas);
-               document.body.appendChild(canvas);
-           });
-        }
-      });
    var viewer = OpenSeadragon({
     id: "wsi-canvas",
     zoomPerScroll: 2, // Scroll speed
@@ -43,5 +28,18 @@
             ],
     }
    });
-   viewer.addControl(screenshotButton.element, { anchor: OpenSeadragon.ControlAnchor.TOP_LEFT });
+
+   viewer.addHandler('canvas-click', function(event) {
+        // The canvas-click event gives us a position in web coordinates.
+        var webPoint = event.position;
+
+        // Convert that to viewport coordinates, the lingua franca of OpenSeadragon coordinates.
+        var viewportPoint = viewer.viewport.pointFromPixel(webPoint);
+
+        // Convert from viewport coordinates to image coordinates.
+        var imagePoint = viewer.viewport.viewportToImageCoordinates(viewportPoint);
+
+        // Show the results.
+        console.log(webPoint.toString(), viewportPoint.toString(), imagePoint.toString());
+    });
 </script>

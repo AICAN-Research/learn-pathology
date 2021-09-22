@@ -2,7 +2,8 @@ from django.contrib import messages
 from django.db import transaction
 from django.forms import formset_factory
 from django.shortcuts import render, redirect, HttpResponse
-from multiple_choice.models import MultipleChoice, Choice, MultipleChoiceForm, ChoiceForm, TaskForm
+from multiple_choice.models import MultipleChoice, Choice
+from multiple_choice.forms import MultipleChoiceForm, ChoiceForm, TaskForm
 from slide.models import Slide
 from slide.views import slide_cache
 from user.decorators import teacher_required
@@ -36,10 +37,16 @@ def do(request, task_id):
     })
 
 @teacher_required
-def new(request):
+def new(request, slide_id):
     """
     Teacher form for creating a multiple choice task
     """
+
+    # Get slide
+    slide = Slide.objects.get(pk=slide_id)
+    slide_cache.load_slide_to_cache(slide.id)
+
+    # Process forms
     ChoiceFormset = formset_factory(ChoiceForm, extra=5)
     if request.method == 'POST': # Form was submitted
         print("POST")
@@ -70,6 +77,7 @@ def new(request):
         choiceFormset = ChoiceFormset()
 
     return render(request, 'multiple_choice/new.html', {
+        'slide': slide,
         'form': form,
         'taskForm': taskForm,
         'choiceFormset': choiceFormset,

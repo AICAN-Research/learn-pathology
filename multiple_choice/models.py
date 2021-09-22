@@ -1,4 +1,3 @@
-from django import forms
 from django.db import models
 from slide.models import Slide, AnnotatedSlide
 from task.models import Task
@@ -22,26 +21,3 @@ class Choice(models.Model):
     correct = models.BooleanField()
 
 
-# Forms
-
-class TaskForm(forms.ModelForm):
-    class Meta:
-        model = Task
-        fields = ['name']
-
-class ChoiceForm(forms.ModelForm):
-
-    class Meta:
-        model = Choice
-        fields = ['text', 'correct']
-        labels = {
-            'text': ('Choice text'),
-            'correct': ('Correct?'),
-        }
-
-
-class MultipleChoiceForm(forms.ModelForm):
-    annotated_slide = forms.ModelChoiceField(queryset=AnnotatedSlide.objects.all())
-    class Meta:
-        model = MultipleChoice
-        fields = ['question', 'annotated_slide']
