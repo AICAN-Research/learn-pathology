@@ -6,5 +6,5 @@ app_name = 'multiple_choice'
 urlpatterns = [
     path('do/<int:task_id>/', views.do, name='do'),
     path('new/addedtask', views.added_task, name='added_task'),
-    path('new/', views.new, name='new'),
+    path('new/<int:slide_id>/', views.new, name='new'),
 ]

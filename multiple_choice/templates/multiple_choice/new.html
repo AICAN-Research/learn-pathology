@@ -4,7 +4,6 @@
 
 <h2>New multiple choice question</h2>
 
-{#<form method="post" action="{% url 'multiple_choice:new' %}">#}
 <form method="post">
     {% csrf_token %}
 
@@ -14,9 +13,12 @@
         {{ choiceFormset.as_table }}
     </table>
 
+    <h3>Annotate WSI</h3>
+    Double click where you want to add annotations:
+    {% include 'slide/view_wsi_and_annotate.html' with slide=slide  %}
+
     <br>
     <input type="submit" value="Submit">
 </form>
-
 
 {% endblock content %}

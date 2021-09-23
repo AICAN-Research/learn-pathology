@@ -212,7 +212,7 @@ class Pointer(models.Model):
     """
     A pointer on a slide consisting of a position (x,y) and a text
     """
-    annotated_slide = models.OneToOneField(AnnotatedSlide, on_delete=models.CASCADE)
+    annotated_slide = models.ForeignKey(AnnotatedSlide, on_delete=models.CASCADE)
     position_x = models.FloatField()
     position_y = models.FloatField()
     text = models.CharField(max_length=256)

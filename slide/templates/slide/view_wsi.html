@@ -8,30 +8,58 @@
 
 <script src="{% static 'slide/openseadragon.min.js' %}"></script>
 <script type="text/javascript">
-   var viewer = OpenSeadragon({
-    id: "wsi-canvas",
-    zoomPerScroll: 2, // Scroll speed
-    showNavigator: true, // The navigation window top-right
-   prefixUrl: "{% static 'slide/images/' %}", // Where to find OpenSedragon button images
-    tileSources:   {
-        width: {{ slide.width }},
-        height:  {{ slide.height }},
-        tileWidth: {{ slide.tile_width }},
-        tileHeight: {{ slide.tile_height }},
-        minLevel: 0,
-        maxLevel: {{ slide.osd_levels }}-1,
-        getTileUrl: function( level, x, y ) {
-            return "/viewer/tile/{{ slide.id }}/" + ({{ slide.osd_levels }} - 1 - level) + "/" + x + "/" + y + "/";
-        },
-        overlays: [
-            {{ annotated_slide.get_js | safe }}
+    let buttonElement = document.createElement("button");
+    buttonElement.innerText = "Screenshot";
+    let screenshotButton = new OpenSeadragon.Button({
+        tooltip: 'Screenshot',
+        element: buttonElement,
+        //srcRest: `/images/Browser_Chrome.png`,
+        //srcGroup: `/images/Browser_Chrome.png`,
+        //srcHover: `/images/Browser_Chrome.png`,
+        //srcDown: `/images/Browser_Chrome.png`,
+        onClick: function () {
+            console.log('Click!');
+            html2canvas($("#wsi-canvas")[0]).then(canvas => {
+                console.log('as!');
+                console.log(canvas);
+                document.body.appendChild(canvas);
+            });
+        }
+    });
+    let overlayElement = document.createElement("button");
+    overlayElement.innerText = "Toggle Annotations";
+    let overlayButton = new OpenSeadragon.Button({
+        tooltip: 'Toggle Annotations',
+        element: overlayElement,
+        //srcRest: `/images/Browser_Chrome.png`,
+        //srcGroup: `/images/Browser_Chrome.png`,
+        //srcHover: `/images/Browser_Chrome.png`,
+        //srcDown: `/images/Browser_Chrome.png`,
+        onClick: function () {
+            console.log('Click!');
+            $(".overlay").toggle();
+        }
+    });
+    var viewer = OpenSeadragon({
+        id: "wsi-canvas",
+        zoomPerScroll: 2, // Scroll speed
+        showNavigator: true, // The navigation window top-right
+        prefixUrl: "{% static 'slide/images/' %}", // Where to find OpenSedragon button images
+        tileSources: {
+            width: {{ slide.width }},
+            height:  {{ slide.height }},
+            tileWidth: {{ slide.tile_width }},
+            tileHeight: {{ slide.tile_height }},
+            minLevel: 0,
+            maxLevel: {{ slide.osd_levels }}-1,
+            getTileUrl: function (level, x, y) {
+                return "/viewer/tile/{{ slide.id }}/" + ({{ slide.osd_levels }} -1 - level) + "/" + x + "/" + y + "/";
+            },
+            overlays: [
+                {{ annotated_slide.get_js | safe }}
             ],
-    }
-   });
-
-   window.onload = function() {
-       document.getElementById("view-fullscreen").onclick = function() {
-           viewer.setFullScreen(true);
-       };
-   };
+        }
+    });
+    viewer.addControl(screenshotButton.element, {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
+    viewer.addControl(overlayButton.element, {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
 </script>
