@@ -54,7 +54,7 @@ No tasks assigned to this course yet.
 <h3>Slides</h3>
 
 <p>
-    <a href="">Add slide</a> <!-- TODO link to new slide page -->
+    <a href="{% url 'course:slide_selection' course.id %}" >Add slide</a>
 </p>
 
 {% if slides %}
