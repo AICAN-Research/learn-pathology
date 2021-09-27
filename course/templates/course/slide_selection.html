@@ -1,0 +1,105 @@
+{% extends 'learnpathology/base.html' %}
+
+{% block content %}
+
+
+<h2>Add slides to course</h2>
+
+<p>
+    Select slide(s) to add to the following course
+</p>
+
+
+<p>
+    <table>
+    <tr>
+        <th>Course code:</th><td>{{ course.code }}</td>
+    </tr>
+    <tr>
+        <th>Course name:</th><td>{{ course.title }}</td>
+    </tr>
+    <tr>
+        <th>Description:</th><td>{{ course.description }}</td>
+    </tr>
+    </table>
+</p>
+
+
+{% comment %}
+<form>
+    <p>
+        <b>Filter:</b>
+        Organ:
+        <select name="organ[]" multiple class="filter" style="width:20%">
+            {% for tag in organ_tags %}
+                <option value="{{ tag.id }}"{% if tag.id|slugify in selected_organ_tags %} selected="selected"{% endif %}>{{ tag.name }}</option>
+            {% endfor %}
+        </select>
+        System:
+        <select name="system[]" multiple class="filter">
+            {% for tag in system_tags %}
+                <option value="{{ tag.id }}"{% if tag.id|slugify in selected_system_tags %} selected="selected"{% endif %}>{{ tag.name }}</option>
+            {% endfor %}
+        </select>
+        Tag:
+        <select name="tag[]" multiple class="filter">
+            {% for tag in other_tags %}
+                <option value="{{ tag.id }}"{% if tag.id|slugify in selected_other_tags %} selected="selected"{% endif %}>{{ tag.name }}</option>
+            {% endfor %}
+        </select>
+    </p>
+</form>
+{% endcomment %}
+
+
+{% if slides %}
+
+    <form method="post">
+    {%  csrf_token %}
+
+        <table>
+            <tr>
+                <th>Selection</th>
+                <th>Thumbnail</th>
+                <th>Name</th>
+                <th>Description</th>
+            </tr>
+        {% for slide in slides %}
+            <tr>
+            {% if slide.id in selection %}
+                <th><input type="checkbox" name="slide_selection" value="{{ slide.id }}" checked></th>
+            {% else %}
+                <th><input type="checkbox" name="slide_selection" value="{{ slide.id }}"></th>
+            {% endif %}
+                <td><a href="{% url 'slide:view_full' slide.id %}"><img src="/slide/thumbnails/{{ slide.id }}.jpg" style="width: 100px"></a></td>
+                <td>{{ slide.name }}</td>
+                <td>{{ slide.description }}</td>
+            </tr>
+        {% endfor %}
+        </table>
+
+        <input type="submit" value="Add selected slides">
+    </form>
+{% else %}
+    <p>
+        No slides found with current filter.
+    </p>
+{% endif %}
+
+
+{% comment %}
+<form method="post">
+    {% csrf_token %}
+
+    <table>
+        {{ selection }}
+    </table>
+
+    <br>
+    <input type="submit" value="Update selection">
+</form>
+{% endcomment %}
+
+
+
+{% endblock content %}

@@ -3,8 +3,9 @@ from django.db import transaction
 from django.shortcuts import render, redirect, get_object_or_404
 
 from course.models import Course
-from course.forms import CourseForm, DeleteCourseForm
+from course.forms import CourseForm, DeleteCourseForm, SlideSelectionForm
 from slide.models import Slide
+from tag.models import Tag
 from task.models import Task
 from user.decorators import teacher_required
 
@@ -110,3 +111,63 @@ def delete(request, course_id):
             return redirect('course:index')
 
     return redirect('course:index')
+
+
+@teacher_required
+def slide_selection(request, course_id):
+    """
+    Teacher form for adding slide(s) to a course
+    """
+
+    course = get_object_or_404(Course, id=course_id)
+
+    allSlides = Slide.objects.all()
+    """filteredSlides = Slide.objects.all()
+
+    # Filters
+    organs = request.GET.getlist('organ[]')
+    if len(organs) > 0:
+        filteredSlides = filteredSlides.filter(tags__in=organs)
+    systems = request.GET.getlist('system[]')
+    if len(systems) > 0:
+        filteredSlides = filteredSlides.filter(tags__in=systems)
+    tags = request.GET.getlist('tag[]')
+    if len(tags) > 0:
+        filteredSlides = filteredSlides.filter(tags__in=systems)"""
+
+
+    if request.method == 'POST':  # Form was submitted
+
+        selectedSlides = [int(slide_id) for slide_id in request.POST.getlist('slide_selection')]
+
+        for slide in allSlides:
+            # If selected, but not currently in course
+            if slide.id in selectedSlides and slide not in course.slide.all():
+                course.slide.add(slide)
+            # If unselected, but currently in course
+            elif slide.id not in selectedSlides and slide in course.slide.all():
+                course.slide.remove(slide)
+
+        course.save()
+        # Give a message back to the user
+        messages.add_message(request, messages.SUCCESS,
+                             'The course slides were updated')
+        return redirect('course:view', course_id)
+
+    else:  # GET
+        selectedSlides = [slide.id for slide in course.slide.all()]
+
+    context = {
+        'course': course,
+        'selection': selectedSlides,
+        'slides': allSlides,
+        #'filtered_slides': filteredSlides,
+        #'organ_tags': Tag.objects.filter(is_organ=True),
+        #'system_tags': Tag.objects.filter(is_system=True),
+        #'other_tags': Tag.objects.filter(is_system=False, is_organ=False),
+        #'selected_organ_tags': organs,
+        #'selected_system_tags': systems,
+        #'selected_other_tags': tags,
+    }
+
+    return render(request, 'course/slide_selection.html', context)
