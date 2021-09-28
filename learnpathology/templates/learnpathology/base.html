@@ -16,56 +16,62 @@
 <body>
 <main>
     <script>setTheme('theme_default')</script>
-    <h1>LearnPathology</h1>
 
-    {% if request.user.is_authenticated %}
-        <div id="menuWrapper" class="menu">
-            <div id="menu">
-                <div id="userImage"  style="text-align: center;color: white;">
-                    {% if request.user.is_teacher %}
-                        <script>setTheme('theme_teacher')</script>
-                        Logged in as teacher
-                    {% else request.user.is_superuser%}
-                        <script>setTheme('theme_default')</script>
-                        Logged in as admin
-                    {% else %}
-                    <!-- {% elif request.user.is_student %} -->
-                        <script>setTheme('theme_student')</script>
-                        Logged in as student
-                    {% endif %}
-                    {{ request.user.username }}.
-                </div>
-                <ul>
-                    <li class="menuItem"><a href="{% url 'task_list' %}">Tasks</a></li>
-                    {% if request.user.is_teacher or request.user.is_superuser%}
-                        <!-- specific options for teachers or superuser -->
-                        <li class="menuItem"><a href="{% url 'course:index' %}">Courses</a></li>
-                        <li class="menuItem"><a href="{% url 'slide:list' %}">Images</a></li>
-                    {% elif request.user.is_student %}
-                        <!-- specific options for students-->
-                    {% elif request.user.is_superuser %}
-                        <!-- specific options for superuser-->
-                        <li class="menuItem"><a href="/admin/">Admin</a></li>
-                    {% else %}
-                        <!-- Options available to any type of user-->
-                        <li class="menuItem"><a href="{% url 'task_list' %}">Tasks</a></li>
-                        <li class="menuItem"><a href="{% url 'tag:index' %}">Tags</a></li>
-                    {% endif %}
-                    <li class="menuItem"><a href="{% url 'logout' %}">Logout</a></li>
-                </ul>
+    <header id="header" class="header">
+        <div id="header">
+            <div id="logoContainer" class="logoContainer">
+                <img class="logoImage" src="{% static 'learnpathology/images/logo_v0.png' %}" alt="LearnPathology logo">
             </div>
         </div>
+        <div id="navContainer" class="navContainer">
+            <ul class="navigation">
+                {% if request.user.is_authenticated %}
+                    <div id="userImage"  style="text-align: center;color: white;">
+                        {% if request.user.is_teacher or request.user.is_superuser%}
+                            <!-- specific options for teachers or superuser -->
+                            <li class="menuItem menuButton"><a href="{% url 'course:index' %}">Courses</a></li>
+                            <li class="menuItem menuButton"><a href="{% url 'slide:list' %}">Images</a></li>
+                        {% endif %}
+                        {% if request.user.is_student %}
+                            <!-- specific options for students-->
+                        {% endif %}
+                        <!-- Options available to any type of user-->
+                        <li class="menuItem menuButton"><a href="{% url 'task_list' %}">Tasks</a></li>
+                        <li class="menuItem menuButton"><a href="{% url 'tag:index' %}">Tags</a></li>
+                        <li class="menuItem menuButton"><a href="{% url 'logout' %}">Logout</a></li>
+                        {% if request.user.is_superuser %}
+                            <!-- specific options for superuser-->
+                            <li class="menuItem menuButton"><a href="/admin/">Admin</a></li>
+                        {% endif %}
 
-    {% endif %}
-    <div id="header"><img class="logoImage" src="{% static 'learnpathology/images/logo_v0.png' %}" alt="LearnPathology logo"></div>
-
+                        {% if request.user.is_teacher %}
+                            <script>setTheme('theme_teacher')</script>
+                            <li class="menuItem menuInfo">Logged in as teacher {{ request.user.username }}</li>
+                        {% elif request.user.is_superuser %}
+                            <script>setTheme('theme_default')</script>
+                            <li class="menuItem menuInfo">Logged in as admin {{ request.user.username }}</li>
+                        {% else %}
+                        {# {% elif request.user.is_student %} #}
+                            <script>setTheme('theme_student')</script>
+                            <li class="menuItem menuInfo">Logged in as student {{ request.user.username }}</li>
+                        {% endif %}
+                    </div>
+            {% endif %}
+            </ul>
+        </div>
+    </header>
     {% if messages %}
     {% for message in messages %}
     <div{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
     {% endfor %}
     {% endif %}
+
+    <div class="pageContent">
+        <div class="card">
         {% block content %}
         {% endblock %}
+        </div>
+    </div>
 </main>
 </body>
 </html>

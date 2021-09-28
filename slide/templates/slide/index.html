@@ -1,6 +1,6 @@
 {% extends 'learnpathology/base.html' %}
 {% block content %}
-    <h2>Image database</h2>
+    <h1>Image database</h1>
     {% if user.is_superuser or user.is_teacher %}
     <p>
         <a href="{% url 'slide:add' %}">Add a whole slide image to the database</a>

@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<h2>{{ task.question }}</h2>
+<h1>{{ task.question }}</h1>
 
 <form action="{% url 'multiple_choice:do' task.task_id %}" method="post">
     {% csrf_token %}
@@ -22,9 +22,9 @@
 </form>
 {% if answered != 'no' %}
     {% if answered == 'correct' %}
-        <h2 style="color: green">Correct!</h2>
+        <a style="color: green">Correct!</a>
     {% else %}
-        <h2 style="color: red">Wrong!</h2>
+        <a style="color: red">Wrong!</a>
     {% endif %}
 {% endif %}
 
