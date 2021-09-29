@@ -113,6 +113,15 @@ def delete(request, course_id):
     return redirect('course:index')
 
 
+
+def union(list1, list2):
+    """
+    Returns the union (non-repetitive) of two lists.
+    Helper function for slide and task selection
+    """
+    return list(set(list1) | set(list2))
+
+
 @teacher_required
 def slide_selection(request, course_id):
     """
@@ -122,7 +131,7 @@ def slide_selection(request, course_id):
     course = get_object_or_404(Course, id=course_id)
 
     allSlides = Slide.objects.all()
-    """filteredSlides = Slide.objects.all()
+    filteredSlides = Slide.objects.all()
 
     # Filters
     organs = request.GET.getlist('organ[]')
@@ -133,19 +142,29 @@ def slide_selection(request, course_id):
         filteredSlides = filteredSlides.filter(tags__in=systems)
     tags = request.GET.getlist('tag[]')
     if len(tags) > 0:
-        filteredSlides = filteredSlides.filter(tags__in=systems)"""
+        filteredSlides = filteredSlides.filter(tags__in=systems)
 
 
     if request.method == 'POST':  # Form was submitted
 
-        selectedSlides = [int(slide_id) for slide_id in request.POST.getlist('slide_selection')]
+        """
+        - Get previous slide selection from request.session['']
+        - Get current selection from current request (request.POST.getlist())
+        - Get the union of the two selections both previously selected slides
+            (not displayed) and currently selected from the filtered slides
+        """
+
+        curr_selection = [int(slide_id) for slide_id in request.POST.getlist('slide_selection')]
+        prev_selection = request.session['selected_slides']
+        union_curr_and_prev_selection = union(curr_selection, prev_selection)
+        request.session['selected_slides'] = union_curr_and_prev_selection
 
         for slide in allSlides:
             # If selected, but not currently in course
-            if slide.id in selectedSlides and slide not in course.slide.all():
+            if slide.id in union_curr_and_prev_selection and slide not in course.slide.all():
                 course.slide.add(slide)
             # If unselected, but currently in course
-            elif slide.id not in selectedSlides and slide in course.slide.all():
+            elif slide.id not in union_curr_and_prev_selection and slide in course.slide.all():
                 course.slide.remove(slide)
 
         course.save()
@@ -155,19 +174,84 @@ def slide_selection(request, course_id):
         return redirect('course:view', course_id)
 
     else:  # GET
-        selectedSlides = [slide.id for slide in course.slide.all()]
+        # Initialize slide selection with slides currently in course
+        request.session['selected_slides'] = [slide.id for slide in course.slide.all()]
 
     context = {
         'course': course,
-        'selection': selectedSlides,
+        'selection': request.session['selected_slides'],
         'slides': allSlides,
-        #'filtered_slides': filteredSlides,
-        #'organ_tags': Tag.objects.filter(is_organ=True),
-        #'system_tags': Tag.objects.filter(is_system=True),
-        #'other_tags': Tag.objects.filter(is_system=False, is_organ=False),
-        #'selected_organ_tags': organs,
-        #'selected_system_tags': systems,
-        #'selected_other_tags': tags,
+        'filtered_slides': filteredSlides,
+        'organ_tags': Tag.objects.filter(is_organ=True),
+        'system_tags': Tag.objects.filter(is_system=True),
+        'other_tags': Tag.objects.filter(is_system=False, is_organ=False),
+        'selected_organ_tags': organs,
+        'selected_system_tags': systems,
+        'selected_other_tags': tags,
     }
 
     return render(request, 'course/slide_selection.html', context)
+
+
+@teacher_required
+def task_selection(request, course_id):
+    """
+    Teacher form for adding task(s) to a course
+    """
+
+    course = get_object_or_404(Course, id=course_id)
+
+    allTasks = Task.objects.all()
+    filteredTasks = Task.objects.all()
+
+    # Filters
+    organs = request.GET.getlist('organ[]')
+    if len(organs) > 0:
+        filteredTasks = filteredTasks.filter(tags__in=organs)
+    systems = request.GET.getlist('system[]')
+    if len(systems) > 0:
+        filteredTasks = filteredTasks.filter(tags__in=systems)
+    tags = request.GET.getlist('tag[]')
+    if len(tags) > 0:
+        filteredTasks = filteredTasks.filter(tags__in=systems)
+
+
+    if request.method == 'POST':  # Form was submitted
+
+        curr_selection = [int(slide_id) for slide_id in request.POST.getlist('task_selection')]
+        prev_selection = request.session['selected_tasks']
+        union_curr_and_prev_selection = union(curr_selection, prev_selection)
+        request.session['selected_slides'] = union_curr_and_prev_selection
+
+        for task in allTasks:
+            # If selected, but not currently in course
+            if task.id in union_curr_and_prev_selection and task not in course.task.all():
+                course.task.add(task)
+            # If unselected, but currently in course
+            elif task.id not in union_curr_and_prev_selection and task in course.task.all():
+                course.task.remove(task)
+
+        course.save()
+        # Give a message back to the user
+        messages.add_message(request, messages.SUCCESS,
+                             'The course slides were updated')
+        return redirect('course:view', course_id)
+
+    else:  # GET
+        # Initialize slide selection with slides currently in course
+        request.session['selected_tasks'] = [slide.id for slide in course.slide.all()]
+
+    context = {
+        'course': course,
+        'selection': request.session['selected_tasks'],
+        'tasks': allTasks,
+        'filtered_tasks': filteredTasks,
+        'organ_tags': Tag.objects.filter(is_organ=True),
+        'system_tags': Tag.objects.filter(is_system=True),
+        'other_tags': Tag.objects.filter(is_system=False, is_organ=False),
+        'selected_organ_tags': organs,
+        'selected_system_tags': systems,
+        'selected_other_tags': tags,
+    }
+
+    return render(request, 'course/task_selection.html', context)

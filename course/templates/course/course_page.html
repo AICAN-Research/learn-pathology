@@ -30,7 +30,7 @@
 <h3>Tasks</h3>
 
 <p>
-    <a href="">Add task</a> <!-- TODO link to new task page -->
+    <a href="{% url 'course:task_selection' course.id %}">Add task</a>
 </p>
 
 {% if tasks %}
@@ -47,7 +47,7 @@
     {% endfor %}
 </table>
 {% else %}
-No tasks assigned to this course yet.
+    No tasks assigned to this course yet.
 {% endif %}
 
 
@@ -73,7 +73,7 @@ No tasks assigned to this course yet.
     {% endfor %}
 </table>
 {% else %}
-No slides assigned to this course yet.
+    No slides assigned to this course yet.
 {% endif %}
 
 

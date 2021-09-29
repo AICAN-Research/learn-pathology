@@ -9,4 +9,5 @@ urlpatterns = [
     path('delete/<int:course_id>', views.delete, name='delete'),
     path('view/<int:course_id>', views.course_page, name='view'),
     path('slide_selection/<int:course_id>', views.slide_selection, name='slide_selection'),
+    path('task_selection/<int:course_id>', views.task_selection, name='task_selection'),
 ]

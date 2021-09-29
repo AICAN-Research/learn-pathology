@@ -3,10 +3,8 @@
 {% block content %}
 
 
-<h2>Add slides to course</h2>
-
 <p>
-    Select slide(s) to add to the course {{ course.code }} - {{ course.title }}
+    Select task(s) to add to the course {{ course.code }} - {{ course.title }}
 </p>
 
 
@@ -36,7 +34,7 @@
 
 
 
-{% if filtered_slides %}
+{% if filtered_tasks %}
 
     <form method="post">
     {%  csrf_token %}
@@ -44,20 +42,26 @@
         <table>
             <tr>
                 <th>Selection</th>
-                <th>Thumbnail</th>
+                <th>Slide</th>
                 <th>Name</th>
-                <th>Description</th>
+                <th>Type</th>
+                <th>Question</th>
             </tr>
-        {% for slide in filtered_slides %}
+        {% for task in filtered_tasks %}
             <tr>
-            {% if slide.id in selection %}
-                <th><input type="checkbox" name="slide_selection" value="{{ slide.id }}" checked></th>
+            {% if task.id in selection %}
+                <th><input type="checkbox" name="task_selection" value="{{ task.id }}" checked></th>
             {% else %}
-                <th><input type="checkbox" name="slide_selection" value="{{ slide.id }}"></th>
+                <th><input type="checkbox" name="task_selection" value="{{ task.id }}"></th>
             {% endif %}
-                <td><a href="{% url 'slide:view_full' slide.id %}"><img src="/slide/thumbnails/{{ slide.id }}.jpg" style="width: 100px"></a></td>
-                <td>{{ slide.name }}</td>
-                <td>{{ slide.description }}</td>
+                <td>
+                    <a href="{% url 'slide:view_full' task.annotated_slide.slide.id %}">
+                        <img src="/slide/thumbnails/{{ task.annotated_slide.slide.id }}.jpg" style="width: 100px">
+                    </a>
+                </td>
+                <td>{{ task.name }}</td>
+                <td>{{ task.type }}</td>
+                <td>**question here**</td>
             </tr>
         {% endfor %}
         </table>
