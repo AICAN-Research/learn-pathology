@@ -15,6 +15,8 @@
                     <option value="{{ tag.id }}"{% if tag.id|slugify in selected_organ_tags %} selected="selected"{% endif %}>{{ tag.name }}</option>
                 {% endfor %}
             </select>
+            Pathology: <input type="checkbox" {% if selected_pathology %}checked="checked"{% endif %} name="pathology" onchange="this.form.submit();">
+            Histology: <input type="checkbox" {% if selected_histology %}checked="checked"{% endif %} name="histology" onchange="this.form.submit();">
             System:
             <select name="system[]" multiple class="filter">
                 {% for tag in system_tags %}

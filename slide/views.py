@@ -46,6 +46,15 @@ def index(request):
     if len(systems) > 0: slides = slides.filter(tags__in=systems)
     tags = request.GET.getlist('tag[]')
     if len(tags) > 0: slides = slides.filter(tags__in=systems)
+    selected_pathology = request.GET.get('pathology', False)
+    selected_histology = request.GET.get('histology', False)
+    if not selected_pathology and not selected_histology:
+        selected_pathology = True
+        selected_histology = True
+    if selected_pathology and not selected_histology:
+        slides = slides.filter(pathology=True)
+    elif not selected_pathology and selected_histology:
+        slides = slides.filter(pathology=False)
 
     return render(request, 'slide/index.html', {
         'slides': slides,
@@ -55,6 +64,8 @@ def index(request):
         'selected_organ_tags': organs,
         'selected_system_tags': systems,
         'selected_other_tags': tags,
+        'selected_pathology': selected_pathology,
+        'selected_histology': selected_histology,
     })
 
 
