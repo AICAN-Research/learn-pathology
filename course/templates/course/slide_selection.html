@@ -1,4 +1,5 @@
 {% extends 'learnpathology/base.html' %}
+{% load to_class_name %}
 
 {% block content %}
 
@@ -54,16 +55,17 @@
             <th></th>
         </tr>
         {% for slide in filtered_slides %}
-            {% if slide not in slides_in_course %}
-                <tr>
-                    <td><a href="{% url 'slide:view_full' slide.id %}">
-                        <img src="/slide/thumbnails/{{ slide.id }}.jpg" style="width: 100px">
-                    </a></td>
-                    <td>{{ slide.name }}</td>
-                    <td>{{ slide.description }}</td>
-                    <td><input id="add_button" type="button" value="Add" course_id={{ course.id }} slide_id={{ slide.id }} ></td>
-                </tr>
-            {% endif %}
+            <tr>
+                <td><a href="{% url 'slide:view_full' slide.id %}">
+                    <img src="/slide/thumbnails/{{ slide.id }}.jpg" style="width: 100px">
+                </a></td>
+                <td>{{ slide.name }}</td>
+                <td>{{ slide.description }}</td>
+                <td>
+                    <input id="add_button" type="button" value="Add" course_id={{ course.id }}
+                            model_name={{ slide | to_class_name }} instance_id={{ slide.id }} >
+                </td>
+            </tr>
         {% endfor %}
         </table>
     </form>
@@ -94,7 +96,10 @@
                 </a></td>
                 <td>{{ slide.name }}</td>
                 <td>{{ slide.description }}</td>
-                    <td><input id="remove_button" type="button" value="Remove" course_id={{ course.id }} slide_id={{ slide.id }} ></td>
+                <td>
+                    <input id="remove_button" type="button" value="Remove" course_id={{ course.id }}
+                            model_name={{ slide | to_class_name }} instance_id={{ slide.id }} >
+                </td>
             </tr>
         {% endfor %}
         </table>

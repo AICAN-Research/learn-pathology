@@ -10,6 +10,6 @@ urlpatterns = [
     path('view/<int:course_id>', views.course_page, name='view'),
     path('slide_selection/<int:course_id>', views.slide_selection, name='slide_selection'),
     path('task_selection/<int:course_id>', views.task_selection, name='task_selection'),
-    path('add_slide', views.add_slide_to_course, name='add_slide'),
-    path('remove_slide', views.remove_slide_from_course, name='remove_slide'),
+    path('add_item', views.add_to_course, name='add_item'),
+    path('remove_item', views.remove_from_course, name='remove_item'),
 ]

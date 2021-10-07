@@ -1,3 +1,5 @@
+import sys
+
 from django.contrib import messages
 from django.db import transaction
 from django.shortcuts import render, redirect, get_object_or_404
@@ -129,6 +131,7 @@ def slide_selection(request, course_id):
     """
 
     course = get_object_or_404(Course, id=course_id)
+    slidesInCourse = [slide for slide in course.slide.all()]
 
     # Filter slides by tags
     filteredSlides = Slide.objects.all()
@@ -142,26 +145,12 @@ def slide_selection(request, course_id):
     if len(tags) > 0:
         filteredSlides = filteredSlides.filter(tags__in=systems)
 
-
-    if request.method == 'POST':  # Form was submitted
-
-        course.save()
-        # Give a message back to the user
-        messages.add_message(request, messages.SUCCESS,
-                             'The course slides were updated')
-        return redirect('course:view', course_id)
-
-
-    else:  # GET
-
-        slidesInCourse = [slide for slide in course.slide.all()]
-        # Get filtered slides that are not in course
-        slidesXor = []
-        for slide in filteredSlides:
-            if slide not in slidesInCourse:
-                slidesXor.append(slide)
-        filteredSlides = slidesXor
-
+    # Get list of the filtered slides that are NOT in course
+    slidesXor = []
+    for slide in filteredSlides:
+        if slide not in slidesInCourse:
+            slidesXor.append(slide)
+    filteredSlides = slidesXor
 
     context = {
         'course': course,
@@ -179,103 +168,85 @@ def slide_selection(request, course_id):
 
 
 @teacher_required
-def add_slide_to_course(request):
-    """
-    View to handle button press adding a slide to a course
-    """
-
-    course_id = int(request.GET.get('course_id'))
-    course = Course.objects.get(id=course_id)
-    slide = Slide.objects.get(id=request.GET.get('slide_id'))
-
-    if request.method == 'GET':
-        course.slide.add(slide)
-        course.save()
-        messages.add_message(request, messages.SUCCESS,
-                             message="Added slide to course")
-
-    return redirect('course:slide_selection', course_id=course_id)
-
-
-@teacher_required
-def remove_slide_from_course(request):
-    """
-    View to handle button press removing a slide from a course
-    """
-
-    course_id = int(request.GET.get('course_id'))
-    course = Course.objects.get(id=course_id)
-    slide = Slide.objects.get(id=request.GET.get('slide_id'))
-
-    if request.method == 'GET':
-        course.slide.remove(slide)
-        course.save()
-        messages.add_message(request, messages.SUCCESS,
-                             message="Removed slide from course")
-
-    return redirect('course:slide_selection', course_id=course_id)
-
-
-
-@teacher_required
 def task_selection(request, course_id):
     """
     Teacher form for adding task(s) to a course
     """
 
     course = get_object_or_404(Course, id=course_id)
+    tasksInCourse = [task for task in course.task.all()]
 
-    allTasks = Task.objects.all()
-    filteredTasks = Task.objects.all()
-
-    # Filters
-    organs = request.GET.getlist('organ[]')
-    if len(organs) > 0:
-        filteredTasks = filteredTasks.filter(tags__in=organs)
-    systems = request.GET.getlist('system[]')
-    if len(systems) > 0:
-        filteredTasks = filteredTasks.filter(tags__in=systems)
-    tags = request.GET.getlist('tag[]')
-    if len(tags) > 0:
-        filteredTasks = filteredTasks.filter(tags__in=systems)
-
-
-    if request.method == 'POST':  # Form was submitted
-
-        curr_selection = [int(task_id) for task_id in request.POST.getlist('task_selection')]
-        prev_selection = request.session['selected_tasks']
-        union_curr_and_prev_selection = union(curr_selection, prev_selection)
-        request.session['selected_tasks'] = union_curr_and_prev_selection
-
-        for task in allTasks:
-            # If selected, but not currently in course
-            if task.id in curr_selection and task not in course.task.all():
-                course.task.add(task)
-            # If unselected, but currently in course
-            elif task.id not in curr_selection and task in course.task.all():
-                course.task.remove(task)
-
-        course.save()
-        # Give a message back to the user
-        messages.add_message(request, messages.SUCCESS,
-                             'Tasks in the course were updated')
-        return redirect('course:view', course_id)
-
-    else:  # GET
-        # Initialize slide selection with slides currently in course
-        request.session['selected_tasks'] = [task.id for task in course.task.all()]
+    # Get list of the tasks that are NOT in course
+    otherTasks = Task.objects.all()
+    tasksXor = []
+    for task in otherTasks:
+        if task not in tasksInCourse:
+            tasksXor.append(task)
+    otherTasks = tasksXor
 
     context = {
         'course': course,
-        'selection': request.session['selected_tasks'],
-        'tasks': allTasks,
-        'filtered_tasks': filteredTasks,
-        'organ_tags': Tag.objects.filter(is_organ=True),
-        'system_tags': Tag.objects.filter(is_system=True),
-        'other_tags': Tag.objects.filter(is_system=False, is_organ=False),
-        'selected_organ_tags': organs,
-        'selected_system_tags': systems,
-        'selected_other_tags': tags,
+        'tasks_in_course': tasksInCourse,
+        'filtered_tasks': otherTasks,
     }
 
     return render(request, 'course/task_selection.html', context)
+
+
+@teacher_required
+def add_to_course(request):
+    """
+    View to handle button for adding an item to a course
+    """
+
+    course_id = int(request.GET.get('course_id'))
+    course = Course.objects.get(id=course_id)
+
+    model_name = request.GET.get('model_name')
+    instance_id = int(request.GET.get('instance_id'))
+
+    if request.method == 'GET':
+
+        model = getattr(sys.modules[__name__], model_name)
+        item_to_add = model.objects.get(id=instance_id)
+
+        # Have defined explicitly for each model to avoid name mismatch in course.<attribute>
+        if model_name == Slide.__name__:
+            course.slide.add(item_to_add)
+        elif model_name == Task.__name__:
+            course.task.add(item_to_add)
+
+        course.save()
+        messages.add_message(request, messages.SUCCESS,
+                             message=f"Added {model_name} (id={instance_id}) to course")
+
+    return redirect('course:slide_selection', course_id=course_id)
+
+
+@teacher_required
+def remove_from_course(request):
+    """
+    View to handle button for removing an item from a course
+    """
+
+    course_id = int(request.GET.get('course_id'))
+    course = Course.objects.get(id=course_id)
+    model_name = request.GET.get('model_name')
+    instance_id = int(request.GET.get('instance_id'))
+
+    if request.method == 'GET':
+
+        model = getattr(sys.modules[__name__], model_name)
+        item_to_add = model.objects.get(id=instance_id)
+
+        # Have defined explicitly for each model to avoid name mismatch in course.<attribute>
+        if model_name == Slide.__name__:
+            course.slide.remove(item_to_add)
+        elif model_name == Task.__name__:
+            course.task.remove(item_to_add)
+
+        course.save()
+        messages.add_message(request, messages.SUCCESS,
+                             message=f"Removed {model_name} (id={instance_id}) to course")
+
+    return redirect('course:slide_selection', course_id=course_id)

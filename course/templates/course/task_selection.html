@@ -1,10 +1,19 @@
 {% extends 'learnpathology/base.html' %}
+{% load to_class_name %}
 
 {% block content %}
 
 
+<h1>Add tasks to course</h1>
+
 <p>
     Select task(s) to add to the course {{ course.code }} - {{ course.title }}
+</p>
+
+<p>
+    <a href="{% url 'course:view' course.id %}">
+        <input type="button" value="Return to course page">
+    </a>
 </p>
 
 
@@ -36,32 +45,27 @@
 
 {% if filtered_tasks %}
 
-    <form method="post">
-    {%  csrf_token %}
-
+    <form>
         <table>
             <tr>
-                <th>Selection</th>
                 <th>Slide</th>
-                <th>Name</th>
-                <th>Type</th>
-                <th>Question</th>
+                <th>Task name</th>
+                <th>Task type</th>
+                <th></th>
             </tr>
         {% for task in filtered_tasks %}
             <tr>
-            {% if task.id in selection %}
-                <th><input type="checkbox" name="task_selection" value="{{ task.id }}" checked></th>
-            {% else %}
-                <th><input type="checkbox" name="task_selection" value="{{ task.id }}"></th>
-            {% endif %}
                 <td>
                     <a href="{% url 'slide:view_full' task.annotated_slide.slide.id %}">
-                        <img src="/slide/thumbnails/{{ task.annotated_slide.slide.id }}.jpg" style="width: 100px">
+                        <img src="/slide/thumbnails/{{ task.annotated_slide.slide.id }}.jpg" style="width: 60px">
                     </a>
                 </td>
                 <td>{{ task.name }}</td>
                 <td>{{ task.type }}</td>
-                <td>**question here**</td>
+                <td>
+                    <input id="add_button" type="button" value="Add" course_id={{ course.id }}
+                            model_name={{ task | to_class_name }} instance_id={{ task.id }} >
+                </td>
             </tr>
         {% endfor %}
         </table>
@@ -70,10 +74,46 @@
     </form>
 {% else %}
     <p>
-        No slides found with current filter.
+        No tasks found with current filter.
     </p>
 {% endif %}
 
+
+
+<h2>Tasks in course</h2>
+
+
+{% if tasks_in_course %}
+    <form>
+        <table>
+        <tr>
+            <th>Thumbnail</th>
+            <th>Task name</th>
+            <th>Task type</th>
+            <th></th>
+        </tr>
+        {% for task in tasks_in_course %}
+            <tr>
+                <td>
+                    <a href="{% url 'slide:view_full' task.annotated_slide.slide.id %}">
+                        <img src="/slide/thumbnails/{{ task.annotated_slide.slide.id }}.jpg" style="width: 60px">
+                    </a>
+                </td>
+                <td>{{ task.name }}</td>
+                <td>{{ task.type }}</td>
+                <td>
+                    <input id="remove_button" type="button" value="Remove" course_id={{ course.id }}
+                            model_name={{ task | to_class_name }} instance_id={{ task.id }} >
+                </td>
+            </tr>
+        {% endfor %}
+        </table>
+    </form>
+{% else %}
+    <p>
+        No slides have been added to the course.
+    </p>
+{% endif %}
 
 
 {% endblock content %}
