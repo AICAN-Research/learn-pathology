@@ -211,9 +211,9 @@ def add_to_course(request):
         item_to_add = model.objects.get(id=instance_id)
 
         # Have defined explicitly for each model to avoid name mismatch in course.<attribute>
-        if model_name == Slide.__name__:
+        if model == Slide:
             course.slide.add(item_to_add)
-        elif model_name == Task.__name__:
+        elif model == Task:
             course.task.add(item_to_add)
 
         course.save()
@@ -240,9 +240,9 @@ def remove_from_course(request):
         item_to_add = model.objects.get(id=instance_id)
 
         # Have defined explicitly for each model to avoid name mismatch in course.<attribute>
-        if model_name == Slide.__name__:
+        if model == Slide:
             course.slide.remove(item_to_add)
-        elif model_name == Task.__name__:
+        elif model == Task:
             course.task.remove(item_to_add)
 
         course.save()
