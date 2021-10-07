@@ -200,7 +200,7 @@ def add_slide_to_course(request):
 @teacher_required
 def remove_slide_from_course(request):
     """
-    View to handle button press adding a slide to a course
+    View to handle button press removing a slide from a course
     """
 
     course_id = int(request.GET.get('course_id'))

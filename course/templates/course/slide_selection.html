@@ -9,6 +9,11 @@
     Select slide(s) to add to the course {{ course.code }} - {{ course.title }}
 </p>
 
+<p>
+    <a href="{% url 'course:view' course.id %}">
+        <input type="button" value="Return to course page">
+    </a>
+</p>
 
 
 
