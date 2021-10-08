@@ -17,6 +17,7 @@
 </p>
 
 
+{% comment %}
 <form>
     <p>
         <b>Filter:</b>
@@ -40,7 +41,7 @@
         </select>
     </p>
 </form>
-
+{% endcomment %}
 
 
 {% if filtered_tasks %}
@@ -69,8 +70,6 @@
             </tr>
         {% endfor %}
         </table>
-
-        <input type="submit" value="Add selected slides">
     </form>
 {% else %}
     <p>
