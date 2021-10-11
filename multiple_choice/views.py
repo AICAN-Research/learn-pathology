@@ -119,9 +119,9 @@ def edit(request, task_id):
     choices = Choice.objects.filter(task=multiple_choice)
 
     # Get slide and pointers
-    slide = task.annotated_slide.slide
+    annotated_slide = task.annotated_slide
+    slide = annotated_slide.slide
     slide_cache.load_slide_to_cache(slide.id)
-    pointers = Pointer.objects.filter(annotated_slide=task.annotated_slide)
 
     # Process forms
     if request.method == 'POST': # Form was submitted
@@ -134,41 +134,39 @@ def edit(request, task_id):
         #pointers = Pointer.objects.filter(annotated_slide=task.annotated_slide)
 
         with transaction.atomic():  # Make save operation atomic
-            if task_form.is_valid():
-                if multiple_choice_form.is_valid():
-                    if choice_formset.is_valid():
+            if task_form.is_valid() and multiple_choice_form.is_valid() and choice_formset.is_valid():
 
-                        # Save instance data to database
-                        task_form.save()
-                        multiple_choice = multiple_choice_form.save()
+                # Save instance data to database
+                task_form.save()
+                multiple_choice = multiple_choice_form.save()
 
-                        # Create annotated slide
-                        """slide = AnnotatedSlide()
-                        slide.slide = slide
-                        slide.save()"""
+                # Create annotated slide
+                """slide = AnnotatedSlide()
+                slide.slide = slide
+                slide.save()"""
 
-                        for choiceForm in choice_formset:
-                            choice = choiceForm.save(commit=False)
-                            if len(choice.text) > 0:
-                                choice.task = multiple_choice
-                                choice.save()
+                for choiceForm in choice_formset:
+                    choice = choiceForm.save(commit=False)
+                    if len(choice.text) > 0:
+                        choice.task = multiple_choice
+                        choice.save()
 
-                        # Store annotations (pointers)
-                        """for key in request.POST:
-                            print(key, request.POST[key])
-                            if key.startswith('pointer-') and key.endswith('-text'):
-                                prefix = key[:-len('text')]
-                                pointer = Pointer()
-                                pointer.text = request.POST[key]
-                                pointer.position_x = float(request.POST[prefix + 'x'])
-                                pointer.position_y = float(request.POST[prefix + 'x'])
-                                pointer.annotated_slide = slide
-                                pointer.save()"""
+                # Store annotations (pointers)
+                """for key in request.POST:
+                    print(key, request.POST[key])
+                    if key.startswith('pointer-') and key.endswith('-text'):
+                        prefix = key[:-len('text')]
+                        pointer = Pointer()
+                        pointer.text = request.POST[key]
+                        pointer.position_x = float(request.POST[prefix + 'x'])
+                        pointer.position_y = float(request.POST[prefix + 'x'])
+                        pointer.annotated_slide = slide
+                        pointer.save()"""
 
-                        messages.add_message(request, messages.SUCCESS,
-                             f'The task {task.name} was altered!')
+                messages.add_message(request, messages.SUCCESS,
+                     f'The task {task.name} was altered!')
 
-                        return redirect('task_list')
+                return redirect('task_list')
 
     else:  # GET
         task_form = TaskForm(instance=task)
@@ -177,6 +175,7 @@ def edit(request, task_id):
 
     context = {
         'slide': slide,
+        'annotated_slide': annotated_slide,
         'taskForm': task_form,
         'multipleChoiceForm': multiple_choice_form,
         'choiceFormset': choice_formset,
