@@ -18,10 +18,10 @@
     <script>setTheme('theme_default')</script>
 
     <header id="header" class="header">
-        <div id="header">
-            <div id="logoContainer" class="logoContainer">
-                <img class="logoImage" src="{% static 'learnpathology/images/logo_v0.png' %}" alt="LearnPathology logo">
-            </div>
+        <div id="logSmallContainer" class="logoSmallContainer">
+            <a href="{% url 'frontpage' %}" style="align-content: center;display: flex;position: relative">
+                <img class="logoSmallImage" src="{% static 'learnpathology/images/logo_small.png' %}" alt="LearnPathology logo small">
+            </a>
         </div>
         <div id="navContainer" class="navContainer">
             <ul class="navigation">
@@ -30,14 +30,14 @@
                         {% if request.user.is_teacher or request.user.is_superuser%}
                             <!-- specific options for teachers or superuser -->
                             <li class="menuItem menuButton"><a href="{% url 'course:index' %}">Courses</a></li>
-                            <li class="menuItem menuButton"><a href="{% url 'slide:list' %}">Images</a></li>
+                            <li class="menuItem menuButton"><a href="{% url 'tag:index' %}">Tags</a></li>
                         {% endif %}
                         {% if request.user.is_student %}
                             <!-- specific options for students-->
                         {% endif %}
                         <!-- Options available to any type of user-->
                         <li class="menuItem menuButton"><a href="{% url 'task_list' %}">Tasks</a></li>
-                        <li class="menuItem menuButton"><a href="{% url 'tag:index' %}">Tags</a></li>
+                        <li class="menuItem menuButton"><a href="{% url 'slide:list' %}">Images</a></li>
                         <li class="menuItem menuButton"><a href="{% url 'logout' %}">Logout</a></li>
                         {% if request.user.is_superuser %}
                             <!-- specific options for superuser-->
@@ -68,10 +68,17 @@
 
     <div class="pageContent">
         <div class="card">
-        {% block content %}
-        {% endblock %}
+            {% block content %}
+            {% endblock %}
+        </div>
+
+        <!-- background logo watermark -->
+        <div id="logoContainer" class="logoBGContainer">
+            <img class="logoBGImage setLogTranslucent" src="{% static 'learnpathology/images/logo_gs_dark.png' %}" alt="LearnPathology logo">
         </div>
     </div>
+
+
 </main>
 </body>
 </html>

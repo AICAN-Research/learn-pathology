@@ -3,8 +3,9 @@
     --text-size: large;
     --h1-size: large;
     --menu-width: 300px;
-    --header-height: 200px;
-    --image-height: 180px;
+    --header-height: 70px;
+    --logo-bg-width: 40%;
+    --logo-small-height: 60px;
     --shadow: rgba(0, 0, 0, 0.5); /*rgba(0, 0, 102, 0.5);*/
     --button-text-colour: #ffffff;
 }
@@ -21,6 +22,10 @@ main {
     --button-colour: #a3c042;
     --text-colour: #37522e;
     --text-colour-dark: #3b3a30;
+    --logo-hue: 240deg;
+    --logo-saturation: 20;
+    --logo-brightness: 10;
+    --logo-opacity: 60%;
 }
 
 /*.theme_student{
@@ -40,6 +45,10 @@ main {
     --button-colour: #40a1d0;
     --text-colour:#e0876a;
     --text-colour-dark: #663626;
+    --logo-hue: 180deg;
+    --logo-saturation: 50;
+    --logo-brightness: 0;
+    --logo-opacity: 20%;
 }
 
 .theme_default{
@@ -50,6 +59,10 @@ main {
     --button-colour: #d27575;
     --text-colour: #6f6f6f;
     --text-colour-dark: #424242;
+    --logo-hue: 130deg;
+    --logo-saturation: 20;
+    --logo-brightness: 10;
+    --logo-opacity: 60%;
 }
 
 body {
@@ -73,28 +86,53 @@ body {
     horiz-align: right;
 }
 
-.logoImage {
+.setLogoColor {filter: saturate(var(--logo-saturation)) hue-rotate(var(--logo-hue))}
+.setLogTranslucent{filter: brightness(var(--logo-brightness)) opacity(var(--logo-opacity))}
+.logoBGImage {
     position: relative;
     border: 0px;
-    max-height: var(--image-height);
+    left: 0;
 }
 
-.logoContainer {
+.logoBGContainer {
+    position: fixed;
+    display: flex;
+    justify-content: left;
+    align-items: center;  /* centre the image vertically */
+    vertical-align: middle;
+    bottom: 0px;
+    left: 0px;
+    padding: 50px;
+    float:right;
+    width: var(--logo-bg-width);
+    z-index: -1;
+}
+
+.logoSmallImage {
+    position: relative;
+    border: 0px;
+    left: 0;
+    max-height: var(--logo-small-height);
+}
+
+.logoSmallContainer {
     position: absolute;
     display: flex;
     justify-content: center;
     align-items: center;  /* centre the image vertically */
     vertical-align: middle;
-    top: 0px;
+    bottom: 0px;
     right: 0px;
     padding-right: 50px;
-    height: var(--header-height);
+    margin: 5px;
     float:right;
+    max-height: var(--header-height);
+    z-index: -1;
 }
-
 .card {
     margin: 0 auto;
     margin-top: 30px;
+    margin-bottom: 0px;
     font-family: var(--font-family);
     color: var(--text-colour-dark);
     position: relative;
@@ -108,22 +146,23 @@ body {
     padding: 10px;
     height: fit-content;
     width: fit-content;
-    min-width: 100px;
-    max-height: 500px;
+    min-height: 2rem;
+    min-width: 2rem;
     max-width: 70%;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
-.card .wsi-canvas{
-    max-width: 100%;
-}
-
-.card h1,h2,h3{
+.card>h1,h2,h3{
     position: fixed;
     display: block;
-    transform: translateY(-85px);
+    /*transform: translateY(-85px);*/
+    margin-top: -70px;
     color: var(--text-colour);
     z-index: 1;
+}
+
+.card.h1{
+    overflow-y: visible;
 }
 
 .card a{
@@ -140,11 +179,13 @@ body {
     text-align: center;
 }
 
-.wsi_canvas{
+.card > .wsi_canvas{
+    max-width: 100%;
     width: 100%;
-    height: 800px;
+    height: calc(50em - 100px);
     align-content: center;
 }
+
 .navContainer {
     position: absolute;
     bottom: 10px;
@@ -197,13 +238,13 @@ body {
     position: fixed;
     top: var(--header-height);
     width: 100%;
-    height: 100%;
     float: right;
     box-sizing: border-box;
     padding-top: 40px;
-    float: right;
     overflow-y: scroll;
     background-color: var(--background);
+    bottom: 0px;
+    z-index: -1;
 }
 
 #content {
