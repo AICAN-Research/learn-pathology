@@ -17,6 +17,9 @@
 </p>
 
 
+
+<h2>Available tasks</h2>
+
 {% comment %}
 <form>
     <p>
@@ -64,8 +67,9 @@
                 <td>{{ task.name }}</td>
                 <td>{{ task.type }}</td>
                 <td>
-                    <input id="add_button" type="button" value="Add" course_id={{ course.id }}
-                            model_name={{ task | to_class_name }} instance_id={{ task.id }} >
+                    <button class="add_button" data-course_id={{ course.id }} data-model_name={{ task | to_class_name }} data-instance_id={{ task.id }} >
+                        Add
+                    </button>
                 </td>
             </tr>
         {% endfor %}
@@ -101,8 +105,9 @@
                 <td>{{ task.name }}</td>
                 <td>{{ task.type }}</td>
                 <td>
-                    <input id="remove_button" type="button" value="Remove" course_id={{ course.id }}
-                            model_name={{ task | to_class_name }} instance_id={{ task.id }} >
+                    <button class="remove_button" data-course_id={{ course.id }} data-model_name={{ task | to_class_name }} data-instance_id={{ task.id }} >
+                        Remove
+                    </button>
                 </td>
             </tr>
         {% endfor %}

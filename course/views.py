@@ -1,7 +1,9 @@
+import json
 import sys
 
 from django.contrib import messages
 from django.db import transaction
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 
 from course.models import Course
@@ -115,15 +117,6 @@ def delete(request, course_id):
     return redirect('course:index')
 
 
-
-def union(list1, list2):
-    """
-    Returns the union (non-repetitive) of two lists.
-    Helper function for slide and task selection
-    """
-    return list(set(list1) | set(list2))
-
-
 @teacher_required
 def slide_selection(request, course_id):
     """
@@ -176,18 +169,35 @@ def task_selection(request, course_id):
     course = get_object_or_404(Course, id=course_id)
     tasksInCourse = [task for task in course.task.all()]
 
+    # Filter slides by tags
+    filteredTasks = Task.objects.all()
+    """organs = request.GET.getlist('organ[]')
+    if len(organs) > 0:
+        filteredTasks = filteredTasks.filter(tags__in=organs)
+    systems = request.GET.getlist('system[]')
+    if len(systems) > 0:
+        filteredTasks = filteredTasks.filter(tags__in=systems)
+    tags = request.GET.getlist('tag[]')
+    if len(tags) > 0:
+        filteredTasks = filteredTasks.filter(tags__in=systems)"""
+
     # Get list of the tasks that are NOT in course
-    otherTasks = Task.objects.all()
     tasksXor = []
-    for task in otherTasks:
+    for task in filteredTasks:
         if task not in tasksInCourse:
             tasksXor.append(task)
-    otherTasks = tasksXor
+    filteredTasks = tasksXor
 
     context = {
         'course': course,
         'tasks_in_course': tasksInCourse,
-        'filtered_tasks': otherTasks,
+        'filtered_tasks': filteredTasks,
+        #'organ_tags': Tag.objects.filter(is_organ=True),
+        #'system_tags': Tag.objects.filter(is_system=True),
+        #'other_tags': Tag.objects.filter(is_system=False, is_organ=False),
+        #'selected_organ_tags': organs,
+        #'selected_system_tags': systems,
+        #'selected_other_tags': tags,
     }
 
     return render(request, 'course/task_selection.html', context)
@@ -201,7 +211,6 @@ def add_to_course(request):
 
     course_id = int(request.GET.get('course_id'))
     course = Course.objects.get(id=course_id)
-
     model_name = request.GET.get('model_name')
     instance_id = int(request.GET.get('instance_id'))
 
@@ -217,10 +226,8 @@ def add_to_course(request):
             course.task.add(item_to_add)
 
         course.save()
-        messages.add_message(request, messages.SUCCESS,
-                             message=f"Added {model_name} (id={instance_id}) to course")
 
-    return redirect('course:slide_selection', course_id=course_id)
+    return JsonResponse(data={})
 
 
 @teacher_required
@@ -246,7 +253,5 @@ def remove_from_course(request):
             course.task.remove(item_to_add)
 
         course.save()
-        messages.add_message(request, messages.SUCCESS,
-                             message=f"Removed {model_name} (id={instance_id}) to course")
 
-    return redirect('course:slide_selection', course_id=course_id)
+    return JsonResponse(data={})

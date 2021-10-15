@@ -1,5 +1,6 @@
 {% extends 'learnpathology/base.html' %}
 {% load to_class_name %}
+{% load static %}
 
 {% block content %}
 
@@ -62,8 +63,9 @@
                 <td>{{ slide.name }}</td>
                 <td>{{ slide.description }}</td>
                 <td>
-                    <input id="add_button" type="button" value="Add" course_id={{ course.id }}
-                            model_name={{ slide | to_class_name }} instance_id={{ slide.id }} >
+                    <button class="add_button" data-course_id={{ course.id }} data-model_name={{ slide | to_class_name }} data-instance_id={{ slide.id }} >
+                        Add
+                    </button>
                 </td>
             </tr>
         {% endfor %}
@@ -97,8 +99,9 @@
                 <td>{{ slide.name }}</td>
                 <td>{{ slide.description }}</td>
                 <td>
-                    <input id="remove_button" type="button" value="Remove" course_id={{ course.id }}
-                            model_name={{ slide | to_class_name }} instance_id={{ slide.id }} >
+                    <button class="remove_button" data-course_id={{ course.id }} data-model_name={{ slide | to_class_name }} data-instance_id={{ slide.id }} >
+                        Remove
+                    </button>
                 </td>
             </tr>
         {% endfor %}
