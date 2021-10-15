@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 
 from course.models import Course
-from course.forms import CourseForm, DeleteCourseForm, SlideSelectionForm
+from course.forms import CourseForm, DeleteCourseForm
 from slide.models import Slide
 from tag.models import Tag
 from task.models import Task
