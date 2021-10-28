@@ -29,9 +29,7 @@
         </p>
         <p>
             Menu:
-            {% if request.user.is_teacher or request.user.is_superuser %}
             <a href="{% url 'course:index' %}">Courses</a> -
-            {% endif %}
             {% if request.user.is_teacher or request.user.is_superuser %}
             <a href="{% url 'slide:list' %}">Images</a> -
             {% endif %}
