@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-    $('.add_button').on('click', function() {
+    $('.add_button').click(function(event) {
 
         $(this).attr("disabled", true); // disable buttons
 
@@ -18,20 +18,16 @@ $(document).ready(function() {
                 'instance_id': instance_id,
             },
             success: function (xml) {
-                $(this).attr("disabled", false); // re-enable upon success
                 location.reload();  // Using .reload() method
             },
             error: function (result) {
                 alert('Error occurred when adding item to course');
-                $(this).attr("disabled", false); // re-enable even if not successful
             }
         });
+        event.preventDefault();
     });
 
-    $('.remove_button').on('click',function () {
-
-        $(this).attr("disabled", true); // disable buttons
-
+    $('.remove_button').click(function (event) {
         var course_id = $(this).data('course_id');
         var model_name = $(this).data('model_name');
         var instance_id = $(this).data('instance_id');
@@ -46,14 +42,13 @@ $(document).ready(function() {
                 'instance_id': instance_id,
             },
             success: function (xml) {
-                $(this).attr("disabled", false); // re-enable upon success
                 location.reload();  // Using .reload() method
             },
             error: function(result) {
-                $(this).attr("disabled", false); // re-enable even if not successful
                 alert('Error occurred when removing item from course');
             }
         });
+        event.preventDefault();
 
     });
 
