@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" integrity="sha512-nMNlpuaDPrqlEls3IX/Q56H36qvBASwb3ipuo3MxeWbsQB1881ox0cRv7UPTgBlriqoynt35KjEwgGUeUXIPnw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="{% static 'slide/utilities.js' %}"></script>
     <script src="{% static 'slide/filter.js' %}"></script>
+    <script src="{% static 'course/button.js' %}"></script>
 </head>
 <body>
 <main>
@@ -29,9 +30,7 @@
         </p>
         <p>
             Menu:
-            {% if request.user.is_teacher or request.user.is_superuser %}
             <a href="{% url 'course:index' %}">Courses</a> -
-            {% endif %}
             {% if request.user.is_teacher or request.user.is_superuser %}
             <a href="{% url 'slide:list' %}">Images</a> -
             {% endif %}

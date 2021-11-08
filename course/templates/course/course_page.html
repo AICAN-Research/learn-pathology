@@ -29,33 +29,39 @@
 
 <h3>Tasks</h3>
 
-<p>
-    <a href="">Add task</a> <!-- TODO link to new task page -->
-</p>
+{% if request.user.is_teacher or request.user.is_superuser %}
+    <p>
+        <a href="{% url 'course:task_selection' course.id %}">Add task</a>
+    </p>
+{% endif %}
 
 {% if tasks %}
 <table>
     <tr>
         <th>Name</th>
         <th>Task type</th>
+        <th>Do task</th>
     </tr>
     {% for task in tasks %}
         <tr>
-            <td>{{ task.name }}</td>
+            <td><a href="{% url task.do_url task.id %}">{{ task.name }}</a></td>
             <td>{{ task.type }}</td>
+            <td><a href="{% url task.do_url task.id %}">Do task</a></td>
         </tr>
     {% endfor %}
 </table>
 {% else %}
-No tasks assigned to this course yet.
+    No tasks assigned to this course yet.
 {% endif %}
 
 
 <h3>Slides</h3>
 
-<p>
-    <a href="">Add slide</a> <!-- TODO link to new slide page -->
-</p>
+{% if request.user.is_teacher or request.user.is_superuser %}
+    <p>
+        <a href="{% url 'course:slide_selection' course.id %}" >Add or remove slides</a>
+    </p>
+{% endif %}
 
 {% if slides %}
 <table>
@@ -67,13 +73,13 @@ No tasks assigned to this course yet.
     {% for slide in slides %}
         <tr>
             <td><a href="{% url 'slide:view_full' slide.id %}"><img src="/slide/thumbnails/{{ slide.id }}.jpg" style="width: 100px"></a></td>
-            <td>{{ slide.name }}</td>
+            <td><a href="{% url 'slide:view_full' slide.id %}">{{ slide.name }}</a></td>
             <td>{{ slide.description }}</td>
         </tr>
     {% endfor %}
 </table>
 {% else %}
-No slides assigned to this course yet.
+    No slides assigned to this course yet.
 {% endif %}
 
 
