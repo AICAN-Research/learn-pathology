@@ -19,11 +19,25 @@
         //srcDown: `/images/Browser_Chrome.png`,
         onClick: function () {
             console.log('Click!');
+            // Hide toolbar:
+            let toolbar = document.getElementsByClassName("openseadragon-container")[0].childNodes[1];
+            toolbar.style.display = "none";
             html2canvas($("#wsi-canvas")[0]).then(canvas => {
-                console.log('as!');
-                console.log(canvas);
-                document.body.appendChild(canvas);
-            });
+                var now = new Date();
+                var formattedDate = now.format("yyyy-MM-dd hh-mm-ss");
+                console.log(now);
+                // Trigger download
+                var link = document.createElement('a');
+                link.href = canvas.toDataURL("image/jpeg");
+                link.download = 'LearnPathology Screenshot ' + formattedDate + '.jpg';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }).then(x => {
+                // Display toolbar again
+                let toolbar = document.getElementsByClassName("openseadragon-container")[0].childNodes[1];
+                toolbar.style.display = "block";
+            })
         }
     });
     let overlayElement = document.createElement("button");
@@ -60,6 +74,7 @@
             ],
         }
     });
+
     viewer.addControl(screenshotButton.element, {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
     viewer.addControl(overlayButton.element, {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
 </script>
