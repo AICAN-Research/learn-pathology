@@ -5,6 +5,7 @@
     --menu-width: 300px;
     --header-height: 70px;
     --logo-bg-width: 40%;
+    --sintef-wm-width: 20%;
     --logo-small-height: 60px;
     --shadow: rgba(0, 0, 0, 0.5); /*rgba(0, 0, 102, 0.5);*/
     --button-text-colour: #ffffff;
@@ -17,6 +18,7 @@ main {
 .theme_teacher{
     --background-card: #ffffff;
     --background-header: #eaece5;
+    --background-collapsed-menu: #c4c4c4;
     --background: #83bafc;
     --background-dark: #5c716e;
     --button-colour: #a3c042;
@@ -40,6 +42,7 @@ main {
 .theme_student{
     --background-card: #ffffff;
     --background-header: #f9ccac;
+    --background-collapsed-menu: #c4c4c4;
     --background:#fbefcc;
     --background-dark: #f4a688;
     --button-colour: #40a1d0;
@@ -54,6 +57,7 @@ main {
 .theme_default{
     --background-card: #ffffff;
     --background-header: #afafaf;
+    --background-collapsed-menu: #c4c4c4;
     --background: #dedede;
     --background-dark: #414141;
     --button-colour: #d27575;
@@ -87,11 +91,18 @@ body {
 }
 
 .setLogoColor {filter: saturate(var(--logo-saturation)) hue-rotate(var(--logo-hue))}
-.setLogTranslucent{filter: brightness(var(--logo-brightness)) opacity(var(--logo-opacity))}
+.setLogoTranslucent{filter: brightness(var(--logo-brightness)) opacity(var(--logo-opacity))}
 .logoBGImage {
     position: relative;
     border: 0px;
     left: 0;
+}
+
+.sintefWMImage {
+    position: relative;
+    border: 0px;
+    right: 0;
+    width: var(--sintef-wm-width);
 }
 
 .logoBGContainer {
@@ -104,8 +115,22 @@ body {
     left: 0px;
     padding: 50px;
     float:right;
-    width: var(--logo-bg-width);
+    width: 100%;
     z-index: -1;
+}
+
+.sintefWatermark {
+    position: fixed;
+    display: flex;
+    justify-content: right;
+    align-items: center;  /* centre the image vertically */
+    vertical-align: middle;
+    bottom: 0px;
+    left: 0px;
+    padding: 50px;
+    float:left;
+    z-index: -1;
+    width: 100%;
 }
 
 .logoSmallImage {
@@ -129,7 +154,7 @@ body {
     max-height: var(--header-height);
     z-index: -1;
 }
-.card {
+.myCard {
     margin: 0 auto;
     margin-top: 30px;
     margin-bottom: 0px;
@@ -152,7 +177,7 @@ body {
     overflow-y: auto;
 }
 
-.card>h1,h2,h3{
+.myCard>h1,h2,h3{
     position: fixed;
     display: block;
     /*transform: translateY(-85px);*/
@@ -161,25 +186,25 @@ body {
     z-index: 1;
 }
 
-.card.h1{
+.myCard.h1{
     overflow-y: visible;
 }
 
-.card a{
+.myCard a{
     color: var(--text-colour);
 }
 
-.card form,p,table{
+.myCard form,p,table{
     position: relative;
     color: var(--text-colour);
     z-index: 0;
 }
 
-.card tr, td, th{
+.myCard tr, td, th{
     text-align: center;
 }
 
-.card > .wsi_canvas{
+.myCard > .wsi_canvas{
     max-width: 100%;
     width: 100%;
     height: calc(50em - 100px);
@@ -237,13 +262,15 @@ body {
 .pageContent {
     position: fixed;
     top: var(--header-height);
-    width: 100%;
+    padding-top: 10px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
     float: right;
     box-sizing: border-box;
-    padding-top: 40px;
-    overflow-y: scroll;
+    /*padding-top: 40px;*/
+    overflow-y: auto;
     background-color: var(--background);
-    bottom: 0px;
     z-index: -1;
 }
 
@@ -253,3 +280,7 @@ body {
     width: fit-content;
 }
 
+.content-card card{
+    all: inherit;
+    width: 90%;
+}

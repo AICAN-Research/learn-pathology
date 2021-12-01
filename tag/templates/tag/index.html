@@ -1,11 +1,16 @@
 {% extends 'learnpathology/base.html' %}
 {% block content %}
+    <div class="container">
     <h1>Tags</h1>
+    </div>
+    <div class="card mx-auto text-center" style="width: 90%">
+    <div class="card-body">
+    <div class="card-text">
     <p>
     <a href="{% url 'tag:new' %}">Add a new tag</a>
     </p>
     {% if tags %}
-        <table>
+        <table class="table">
             <tr>
                 <th>Name</th>
                 <th>Edit</th>
@@ -24,4 +29,7 @@
         No tags in DB
     </p>
     {% endif %}
+    </div>
+    </div>
+    </div>
 {% endblock content %}

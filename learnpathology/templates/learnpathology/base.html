@@ -3,6 +3,7 @@
 <html lang="en" class="theme_default">
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>LearnPathology</title>
     <link rel="stylesheet" href="{% static 'slide/style.css' %}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -12,54 +13,64 @@
     <link rel="stylesheet" href="{% static 'learnpathology/learnpathology.css' %}">
     <script src="{% static 'learnpathology/learnpathology.js' %}"></script>
     <script src="{% static 'slide/filter.js' %}"></script>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+
 </head>
 <body>
-<main>
-    <script>setTheme('theme_default')</script>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous"></script>
 
-    <header id="header" class="header">
-        <div id="logSmallContainer" class="logoSmallContainer">
-            <a href="{% url 'frontpage' %}" style="align-content: center;display: flex;position: relative">
-                <img class="logoSmallImage" src="{% static 'learnpathology/images/logo_small.png' %}" alt="LearnPathology logo small">
-            </a>
-        </div>
-        <div id="navContainer" class="navContainer">
-            <ul class="navigation">
-                {% if request.user.is_authenticated %}
-                    <div id="userImage"  style="text-align: center;color: white;">
-                        {% if request.user.is_teacher or request.user.is_superuser%}
-                            <!-- specific options for teachers or superuser -->
-                            <li class="menuItem menuButton"><a href="{% url 'course:index' %}">Courses</a></li>
-                            <li class="menuItem menuButton"><a href="{% url 'tag:index' %}">Tags</a></li>
-                        {% endif %}
-                        {% if request.user.is_student %}
-                            <!-- specific options for students-->
-                        {% endif %}
-                        <!-- Options available to any type of user-->
-                        <li class="menuItem menuButton"><a href="{% url 'task_list' %}">Tasks</a></li>
-                        <li class="menuItem menuButton"><a href="{% url 'slide:list' %}">Images</a></li>
-                        <li class="menuItem menuButton"><a href="{% url 'logout' %}">Logout</a></li>
-                        {% if request.user.is_superuser %}
-                            <!-- specific options for superuser-->
-                            <li class="menuItem menuButton"><a href="/admin/">Admin</a></li>
-                        {% endif %}
+<script>setTheme('theme_default')</script>
+<nav class="navbar fixed-top navbar-expand-lg container-flex" style="background-color: var(--background-header);height: var(--header-height); padding: 0rem 1rem;">
+    <a class="navbar-brand" href="{% url 'frontpage' %}" style="">
+        <img class="logoSmallImage" src="{% static 'learnpathology/images/logo_small.png' %}" alt="LearnPathology logo small">
+    </a>
 
-                        {% if request.user.is_teacher %}
-                            <script>setTheme('theme_teacher')</script>
-                            <li class="menuItem menuInfo">Logged in as teacher {{ request.user.username }}</li>
-                        {% elif request.user.is_superuser %}
-                            <script>setTheme('theme_default')</script>
-                            <li class="menuItem menuInfo">Logged in as admin {{ request.user.username }}</li>
-                        {% else %}
-                        {# {% elif request.user.is_student %} #}
-                            <script>setTheme('theme_student')</script>
-                            <li class="menuItem menuInfo">Logged in as student {{ request.user.username }}</li>
-                        {% endif %}
-                    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navMenu" aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        <img src="{%  static 'learnpathology/images/icons/menu.svg' %}">
+    </button>
+
+    <div class="collapse navbar-collapse" id="navMenu" style="background-color: var(--background-header); padding-left: 1rem; border-radius: 0rem 0rem 1rem 1rem">
+        <ul class="navbar-nav mr-auto">
+        {% if request.user.is_authenticated %}
+            {% if request.user.is_teacher or request.user.is_superuser%}
+                <!-- specific options for teachers or superuser -->
+                <li class="nav-item"><a class="nav-link active" href="{% url 'course:index' %}">Courses</a></li>
+                <li class="nav-item"><a class="nav-link active" href="{% url 'tag:index' %}">Tags</a></li>
             {% endif %}
-            </ul>
-        </div>
-    </header>
+            {% if request.user.is_student %}
+                <!-- specific options for students-->
+            {% endif %}
+            <!-- Options available to any type of user-->
+            <li class="nav-item"><a class="nav-link active" href="{% url 'task_list' %}">Tasks</a></li>
+            <li class="nav-item"><a class="nav-link active" href="{% url 'slide:list' %}">Images</a></li>
+            <li class="nav-item"><a class="nav-link active" href="{% url 'logout' %}">Logout</a></li>
+            {% if request.user.is_superuser %}
+                <!-- specific options for superuser-->
+                <li class="nav-item"><a class="nav-link active" href="/admin/">Admin</a></li>
+            {% endif %}
+
+            {% if request.user.is_teacher %}
+                <script>setTheme('theme_teacher')</script>
+                <li class="nav-item"><span class="navbar-text">Logged in as teacher {{ request.user.username }}</span></li>
+            {% elif request.user.is_superuser %}
+                <script>setTheme('theme_default')</script>
+                <li class="nav-item"><span class="navbar-text">Logged in as admin {{ request.user.username }}</span></li>
+            {% else %}
+            {# {% elif request.user.is_student %} #}
+                <script>setTheme('theme_student')</script>
+                <li class="nav-item"><span class="navbar-text">Logged in as student {{ request.user.username }}</span></li>
+            {% endif %}
+        {% endif %}
+        </ul>
+    </div>
+</nav>
+
+<div class="container-fluid">
     {% if messages %}
     {% for message in messages %}
     <div{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
@@ -67,18 +78,22 @@
     {% endif %}
 
     <div class="pageContent">
-        <div class="card">
-            {% block content %}
-            {% endblock %}
-        </div>
+        {% block content %}
+        {% endblock %}
 
         <!-- background logo watermark -->
         <div id="logoContainer" class="logoBGContainer">
-            <img class="logoBGImage setLogTranslucent" src="{% static 'learnpathology/images/logo_gs_dark.png' %}" alt="LearnPathology logo">
+            <img class="logoBGImage setLogoTranslucent" src="{% static 'learnpathology/images/logo_gs_dark.png' %}" alt="LearnPathology logo">
         </div>
+
+        <!-- background SINTEF watermark. Uncomment the next three lines to show it  -->
+{#        <div id="sintefWatermark" class="sintefWatermark">#}
+{#            <img class="sintefWMImage setLogoTranslucent" src="{% static 'learnpathology/images/sintef_wm.png' %}" alt="sintef logo">#}
+{#        </div>#}
     </div>
 
 
-</main>
+</div>
+
 </body>
 </html>

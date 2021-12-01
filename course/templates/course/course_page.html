@@ -1,10 +1,14 @@
 {% extends 'learnpathology/base.html' %}
 
 {% block content %}
+<div class="container">
+<h1>Course overview</h1>
+</div>
 
-<h2>Course overview</h2>
-
-    <table>
+<div class="card mx-auto text-center" style="width: 90%">
+<div class="card-body">
+<div class="card-text">
+    <table class="table">
     <tr>
         {% if request.user.is_teacher or request.user.is_superuser %}
             <th><a href="{% url 'course:edit' course.id %}">Edit course info</a></th>
@@ -75,6 +79,8 @@ No tasks assigned to this course yet.
 {% else %}
 No slides assigned to this course yet.
 {% endif %}
-
+</div>
+</div>
+</div>
 
 {% endblock content %}

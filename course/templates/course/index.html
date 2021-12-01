@@ -1,13 +1,17 @@
 {% extends 'learnpathology/base.html' %}
 
 {% block content %}
-
+<div class="container">
     <h1>Course database</h1>
     <p>
     <a href="{% url 'course:new' %}">Add a course to the database</a>
     </p>
+</div>
+<div class="card mx-auto text-center" style="width: 90%">
+<div class="card-body">
+<div class="card-text">
     {% if courses %}
-        <table>
+        <table class="table">
         <tr>
             <th>Course code</th>
             <th>Course name</th>
@@ -38,4 +42,7 @@
         No courses in DB
     </p>
     {% endif %}
+</div>
+</div>
+</div>
 {% endblock content %}

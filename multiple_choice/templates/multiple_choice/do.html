@@ -1,10 +1,14 @@
 {% extends "learnpathology/base.html" %}
 
 {% block content %}
-
+<div class="container">
 <h1>{{ task.question }}</h1>
+</div>
 
-<form action="{% url 'multiple_choice:do' task.task_id %}" method="post">
+<div class="card mx-auto text-center" style="width: 90%">
+<div class="card-body">
+<div class="card-text">
+<form class="form" action="{% url 'multiple_choice:do' task.task_id %}" method="post">
     {% csrf_token %}
     {% for choice in task.choice_set.all %}
         <input type="radio" name="choice" value="{{ choice.id }}">
@@ -31,5 +35,7 @@
 <br>
 
 {% include 'slide/view_wsi.html' with slide=task.task.annotated_slide.slide annotated_slide=task.task.annotated_slide  %}
-
+</div>
+</div>
+</div>
 {% endblock content %}
