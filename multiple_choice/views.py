@@ -66,6 +66,11 @@ def new(request, slide_id):
                 task.annotated_slide = annotated_slide
                 task.save()
 
+                organ_tags = form.cleaned_data['organ_tags']
+                system_tags = form.cleaned_data['system_tags']
+                other_tags = form.cleaned_data['other_tags']
+                task.tags.set(organ_tags | system_tags | other_tags)
+
                 # Create multiple choice
                 multiple_choice = form.save(commit=False)
                 multiple_choice.task = task
