@@ -36,6 +36,7 @@ def do(request, task_id):
         'answered': answered,
     })
 
+
 @teacher_required
 def new(request, slide_id):
     """
@@ -66,9 +67,9 @@ def new(request, slide_id):
                 task.annotated_slide = annotated_slide
                 task.save()
 
-                organ_tags = form.cleaned_data['organ_tags']
-                system_tags = form.cleaned_data['system_tags']
-                other_tags = form.cleaned_data['other_tags']
+                organ_tags = taskForm.cleaned_data['organ_tags']
+                system_tags = taskForm.cleaned_data['system_tags']
+                other_tags = taskForm.cleaned_data['other_tags']
                 task.tags.set(organ_tags | system_tags | other_tags)
 
                 # Create multiple choice
@@ -142,7 +143,13 @@ def edit(request, task_id):
             if task_form.is_valid() and multiple_choice_form.is_valid() and choice_formset.is_valid():
 
                 # Save instance data to database
-                task_form.save()
+                task = task_form.save()
+
+                organ_tags = task_form.cleaned_data['organ_tags']
+                system_tags = task_form.cleaned_data['system_tags']
+                other_tags = task_form.cleaned_data['other_tags']
+                task.tags.set(organ_tags | system_tags | other_tags)
+
                 multiple_choice = multiple_choice_form.save()
 
                 # Create annotated slide
@@ -171,10 +178,14 @@ def edit(request, task_id):
                 messages.add_message(request, messages.SUCCESS,
                      f'The task {task.name} was altered!')
 
-                return redirect('task_list')
+        return redirect('task_list')
 
     else:  # GET
-        task_form = TaskForm(instance=task)
+        task_form = TaskForm(instance=task)#, initial=task.tags.all())
+        task_form.fields['organ_tags'].initial = task.tags.filter(is_organ=True)
+        task_form.fields['system_tags'].initial = task.tags.filter(is_system=True)
+        task_form.fields['other_tags'].initial = task.tags.filter(is_organ=False, is_system=False)
+
         multiple_choice_form = MultipleChoiceForm(instance=task.multiplechoice)
         choice_formset = ChoiceFormset(queryset=choices)
 

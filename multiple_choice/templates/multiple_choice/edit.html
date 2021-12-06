@@ -10,6 +10,7 @@
     <table>
         <tr>{{ taskForm }}</tr>
         <tr>{{ multipleChoiceForm }}</tr>
+        <tr><td>{{ "" }}</td> <th>{{ "Check box if correct" }}</th></tr>
         {{ choiceFormset.management_form }}
         {% for choiceForm in choiceFormset %}
             {{ choiceForm.id }} <!-- Need to explicitly render form id when not iterating through all fields -->
