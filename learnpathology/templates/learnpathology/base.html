@@ -31,11 +31,11 @@
         <p>
             Menu:
             <a href="{% url 'course:index' %}">Courses</a> -
-            {% if request.user.is_teacher or request.user.is_superuser %}
             <a href="{% url 'slide:list' %}">Images</a> -
-            {% endif %}
             <a href="{% url 'task_list' %}">Tasks</a> -
+            {% if request.user.is_teacher or request.user.is_superuser %}
             <a href="{% url 'tag:index' %}">Tags</a> -
+            {% endif %}
             {% if request.user.is_superuser %}
             <a href="/admin/">Admin</a> -
             {% endif %}

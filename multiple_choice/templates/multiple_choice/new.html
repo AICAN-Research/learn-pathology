@@ -8,9 +8,17 @@
     {% csrf_token %}
 
     <table>
-        {{ taskForm.as_table }}
-        {{ form.as_table }}
-        {{ choiceFormset.as_table }}
+        <tr>{{ taskForm }}</tr>
+        <tr>{{ form }}</tr>
+        <tr><td>{{ "" }}</td> <th>{{ "Check box if correct" }}</th></tr>
+        {{ choiceFormset.management_form }}
+        {% for choiceForm in choiceFormset %}
+            {{ choiceForm.id }} <!-- Need to explicitly render form id when not iterating through all fields -->
+            <tr>
+                <th>{{ "Choice" }}</th>
+                <td>{{ choiceForm.text }} {{ choiceForm.correct }}</td>
+            </tr>
+        {% endfor %}
     </table>
 
     <h3>Annotate WSI</h3>
