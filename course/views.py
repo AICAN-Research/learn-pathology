@@ -136,7 +136,7 @@ def slide_selection(request, course_id):
         filteredSlides = filteredSlides.filter(tags__in=systems)
     tags = request.GET.getlist('tag[]')
     if len(tags) > 0:
-        filteredSlides = filteredSlides.filter(tags__in=systems)
+        filteredSlides = filteredSlides.filter(tags__in=tags)
 
     # Get list of the filtered slides that are NOT in course
     slidesXor = []
@@ -179,7 +179,7 @@ def task_selection(request, course_id):
         filteredTasks = filteredTasks.filter(tags__in=systems)
     tags = request.GET.getlist('tag[]')
     if len(tags) > 0:
-        filteredTasks = filteredTasks.filter(tags__in=systems)
+        filteredTasks = filteredTasks.filter(tags__in=tags)
 
     # Get list of the tasks that are NOT in course
     tasksXor = []

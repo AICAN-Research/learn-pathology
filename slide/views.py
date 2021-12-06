@@ -45,7 +45,7 @@ def index(request):
     systems = request.GET.getlist('system[]')
     if len(systems) > 0: slides = slides.filter(tags__in=systems)
     tags = request.GET.getlist('tag[]')
-    if len(tags) > 0: slides = slides.filter(tags__in=systems)
+    if len(tags) > 0: slides = slides.filter(tags__in=tags)
     selected_pathology = request.GET.get('pathology', False)
     selected_histology = request.GET.get('histology', False)
     if not selected_pathology and not selected_histology:

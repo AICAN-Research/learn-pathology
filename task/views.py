@@ -20,7 +20,7 @@ def list(request):
         tasks = tasks.filter(tags__in=systems)
     tags = request.GET.getlist('tag[]')
     if len(tags) > 0:
-        tasks = tasks.filter(tags__in=systems)
+        tasks = tasks.filter(tags__in=tags)
 
     selected_pathology = request.GET.get('pathology', False)
     selected_histology = request.GET.get('histology', False)
