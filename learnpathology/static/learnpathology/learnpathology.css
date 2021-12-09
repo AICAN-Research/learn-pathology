@@ -205,9 +205,6 @@ body {
 }
 
 .myCard > .wsi_canvas{
-    max-width: 100%;
-    width: 100%;
-    height: calc(50em - 100px);
     align-content: center;
 }
 
@@ -283,4 +280,8 @@ body {
 .content-card card{
     all: inherit;
     width: 90%;
+}
+
+.fill {
+    height: 100%;
 }

@@ -1,7 +1,5 @@
 {% load static %}
-
-<div id="wsi-canvas" class="wsi_canvas"></div>
-
+<div id="wsi-canvas" class="wsi_canvas" style="width:100%;height:100%"></div>
 {% if annotated_slide %}
     {{ annotated_slide.get_html | safe }}
 {% endif %}
