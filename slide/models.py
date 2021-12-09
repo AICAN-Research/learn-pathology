@@ -34,11 +34,9 @@ class Slide(models.Model):
             }
 
             self.timers['import'].start()
-            importer = fast.WholeSlideImageImporter.New()
-            # importer.setFilename('/home/smistad/FAST/data/WSI/A05.svs')
-            importer.setFilename(self.path)
+            importer = fast.WholeSlideImageImporter.create(self.path)
             try:
-                image = importer.updateAndGetOutputImagePyramid()
+                image = importer.runAndGetOutputData()
             except:
                 raise RuntimeError('Failed to load slide image pyramid from ' + self.path)
             self._image = image
@@ -146,10 +144,8 @@ class Slide(models.Model):
         self.timers['getPatchImage'].stop()
 
         self.timers['sharpening'].start()
-        sharpening = fast.ImageSharpening.New()
-        sharpening.setStandardDeviation(1.5)
-        sharpening.setInputData(image)
-        image = sharpening.updateAndGetOutputImage()
+        sharpening = fast.ImageSharpening.create(1.5).connect(image)
+        image = sharpening.runAndGetOutputData()
         self.timers['sharpening'].stop()
 
         #tileAccess = image.getImageAccess(fast.ACCESS_READ)
