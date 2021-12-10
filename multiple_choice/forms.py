@@ -1,15 +1,32 @@
-from django import forms
+from django.forms import ModelForm, ModelMultipleChoiceField
 from multiple_choice.models import Choice, MultipleChoice
 from task.models import Task
+from tag.models import Tag
 
 
-class TaskForm(forms.ModelForm):
+class TaskForm(ModelForm):
     class Meta:
         model = Task
-        fields = ['name']
+        fields = ['name', 'pathology', 'organ_tags', 'system_tags', 'other_tags']
+
+    organ_tags = ModelMultipleChoiceField(
+        queryset=Tag.objects.filter(is_organ=True),
+        required=False,
+        blank=True,
+    )
+    system_tags = ModelMultipleChoiceField(
+        queryset=Tag.objects.filter(is_system=True),
+        required=False,
+        blank=True,
+    )
+    other_tags = ModelMultipleChoiceField(
+        queryset=Tag.objects.filter(is_organ=False, is_system=False),
+        required=False,
+        blank=True,
+    )
 
 
-class ChoiceForm(forms.ModelForm):
+class ChoiceForm(ModelForm):
     class Meta:
         model = Choice
         fields = ['text', 'correct']
@@ -19,7 +36,7 @@ class ChoiceForm(forms.ModelForm):
         }
 
 
-class MultipleChoiceForm(forms.ModelForm):
+class MultipleChoiceForm(ModelForm):
     class Meta:
         model = MultipleChoice
         fields = ['question']

@@ -136,7 +136,7 @@ def slide_selection(request, course_id):
         filteredSlides = filteredSlides.filter(tags__in=systems)
     tags = request.GET.getlist('tag[]')
     if len(tags) > 0:
-        filteredSlides = filteredSlides.filter(tags__in=systems)
+        filteredSlides = filteredSlides.filter(tags__in=tags)
 
     # Get list of the filtered slides that are NOT in course
     slidesXor = []
@@ -171,7 +171,7 @@ def task_selection(request, course_id):
 
     # Filter slides by tags
     filteredTasks = Task.objects.all()
-    """organs = request.GET.getlist('organ[]')
+    organs = request.GET.getlist('organ[]')
     if len(organs) > 0:
         filteredTasks = filteredTasks.filter(tags__in=organs)
     systems = request.GET.getlist('system[]')
@@ -179,7 +179,7 @@ def task_selection(request, course_id):
         filteredTasks = filteredTasks.filter(tags__in=systems)
     tags = request.GET.getlist('tag[]')
     if len(tags) > 0:
-        filteredTasks = filteredTasks.filter(tags__in=systems)"""
+        filteredTasks = filteredTasks.filter(tags__in=tags)
 
     # Get list of the tasks that are NOT in course
     tasksXor = []
@@ -192,12 +192,12 @@ def task_selection(request, course_id):
         'course': course,
         'tasks_in_course': tasksInCourse,
         'filtered_tasks': filteredTasks,
-        #'organ_tags': Tag.objects.filter(is_organ=True),
-        #'system_tags': Tag.objects.filter(is_system=True),
-        #'other_tags': Tag.objects.filter(is_system=False, is_organ=False),
-        #'selected_organ_tags': organs,
-        #'selected_system_tags': systems,
-        #'selected_other_tags': tags,
+        'organ_tags': Tag.objects.filter(is_organ=True),
+        'system_tags': Tag.objects.filter(is_system=True),
+        'other_tags': Tag.objects.filter(is_system=False, is_organ=False),
+        'selected_organ_tags': organs,
+        'selected_system_tags': systems,
+        'selected_other_tags': tags,
     }
 
     return render(request, 'course/task_selection.html', context)

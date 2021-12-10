@@ -1,28 +1,68 @@
 {% extends 'learnpathology/base.html' %}
+{% load to_class_name %}
 
 {% block content %}
-<div class="container">
-    <h1>Task</h1>
-</div>
-<div class="card mx-auto text-center" style="width: 90%">
-<div class="card-body">
-<div class="card-text">
-    <table class="table">
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Edit</th>
-            <th>Delete</th>
-        </tr>
-    {% for task in tasks %}
-        <tr>
-            <td><a href="{% url task.do_url task.id %}">{{ task.name }}</a></td>
-            <td>{{ task.type }}</td>
-            <td><a href="">Edit</a></td>
-            <td><a href="{% url 'task_delete' task.id %}">Delete</a></td>
-        </tr>
-    {% endfor %}
-    </table>
+    <div class="container">
+        <h1>Tasks</h1>
+    </div>
+
+    <div class="card mx-auto text-center" style="width: 90%">
+        <div class="card-body">
+            <div class="card-text">
+    <p>
+        <form>
+            <b>Filter:</b>
+            Organ:
+            <select name="organ[]" multiple class="filter" style="width:20%">
+                {% for tag in organ_tags %}
+                    <option value="{{ tag.id }}"{% if tag.id|slugify in selected_organ_tags %} selected="selected"{% endif %}>{{ tag.name }}</option>
+                {% endfor %}
+            </select>
+            Pathology: <input type="checkbox" {% if selected_pathology %}checked="checked"{% endif %} name="pathology" onchange="this.form.submit();">
+            Histology: <input type="checkbox" {% if selected_histology %}checked="checked"{% endif %} name="histology" onchange="this.form.submit();">
+            System:
+            <select name="system[]" multiple class="filter">
+                {% for tag in system_tags %}
+                    <option value="{{ tag.id }}"{% if tag.id|slugify in selected_system_tags %} selected="selected"{% endif %}>{{ tag.name }}</option>
+                {% endfor %}
+            </select>
+            Tag:
+            <select name="tag[]" multiple class="filter">
+                {% for tag in other_tags %}
+                    <option value="{{ tag.id }}"{% if tag.id|slugify in selected_other_tags %} selected="selected"{% endif %}>{{ tag.name }}</option>
+                {% endfor %}
+            </select>
+        </form>
+    </p>
+    {% if tasks %}
+        <table class="table">
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Attempt task</th>
+                {% if request.user.is_teacher or request.user.is_superuser %}
+                    <th>Edit</th>
+                    <th>Delete</th>
+                {% endif %}
+            </tr>
+            {% for task in tasks %}
+                <tr>
+                    <td><a href="{% url task.do_url task.id %}">{{ task.name }}</a></td>
+                    <td>{{ task.type }}</td>
+                    <td><a href="{% url 'multiple_choice:do' task.id %}">Do task</a></td>
+                    {% if request.user.is_teacher or request.user.is_superuser %}
+                        <td><a href="{% url 'multiple_choice:edit' task.id %}">Edit</a></td>
+                        <td><a href="{% url 'task_delete' task.id %}">Delete</a></td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+    <p>
+        No tasks found with current filter.
+    </p>
+    {% endif %}
+
 </div>
 </div>
 </div>
