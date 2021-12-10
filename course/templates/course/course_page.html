@@ -28,63 +28,72 @@
         <th>Description:</th>
         <td>{{ course.description }}</td>
     </tr>
-    </table>
 
 
-<h3>Tasks</h3>
-
-{% if request.user.is_teacher or request.user.is_superuser %}
-    <p>
-        <a href="{% url 'course:task_selection' course.id %}">Add task</a>
-    </p>
-{% endif %}
-
-{% if tasks %}
-<table>
     <tr>
-        <th>Name</th>
-        <th>Task type</th>
-        <th>Do task</th>
+        <th>Tasks</th>
+        <td>
+        {% if request.user.is_teacher or request.user.is_superuser %}
+            <p>
+                <a href="{% url 'course:task_selection' course.id %}">Add task</a>
+            </p>
+        {% endif %}
+
+        {% if tasks %}
+        <table class="table">
+            <thead class="thead-light">
+            <tr>
+                <th>Name</th>
+                <th>Task type</th>
+                <th>Do task</th>
+            </tr>
+            </thead>
+            {% for task in tasks %}
+                <tr>
+                    <td><a href="{% url task.do_url task.id %}">{{ task.name }}</a></td>
+                    <td>{{ task.type }}</td>
+                    <td><a href="{% url task.do_url task.id %}">Do task</a></td>
+                </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+            No tasks assigned to this course yet.
+        {% endif %}
+        </td>
     </tr>
-    {% for task in tasks %}
-        <tr>
-            <td><a href="{% url task.do_url task.id %}">{{ task.name }}</a></td>
-            <td>{{ task.type }}</td>
-            <td><a href="{% url task.do_url task.id %}">Do task</a></td>
-        </tr>
-    {% endfor %}
-</table>
-{% else %}
-    No tasks assigned to this course yet.
-{% endif %}
 
-
-<h3>Slides</h3>
-
-{% if request.user.is_teacher or request.user.is_superuser %}
-    <p>
-        <a href="{% url 'course:slide_selection' course.id %}" >Add or remove slides</a>
-    </p>
-{% endif %}
-
-{% if slides %}
-<table>
     <tr>
-        <th>Thumbnail</th>
-        <th>Name</th>
-        <th>Description</th>
+        <th>Slides</th>
+        <td>
+        {% if request.user.is_teacher or request.user.is_superuser %}
+            <p>
+                <a href="{% url 'course:slide_selection' course.id %}" >Add or remove slides</a>
+            </p>
+        {% endif %}
+
+        {% if slides %}
+        <table class="table">
+            <thead class="thead-light">
+            <tr>
+                <th>Thumbnail</th>
+                <th>Name</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            {% for slide in slides %}
+                <tr>
+                    <td><a href="{% url 'slide:view_full' slide.id %}"><img src="/slide/thumbnails/{{ slide.id }}.jpg" style="width: 100px"></a></td>
+                    <td><a href="{% url 'slide:view_full' slide.id %}">{{ slide.name }}</a></td>
+                    <td>{{ slide.description }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+            No slides assigned to this course yet.
+        {% endif %}
+    </td>
     </tr>
-    {% for slide in slides %}
-        <tr>
-            <td><a href="{% url 'slide:view_full' slide.id %}"><img src="/slide/thumbnails/{{ slide.id }}.jpg" style="width: 100px"></a></td>
-            <td><a href="{% url 'slide:view_full' slide.id %}">{{ slide.name }}</a></td>
-            <td>{{ slide.description }}</td>
-        </tr>
-    {% endfor %}
 </table>
-{% else %}
-    No slides assigned to this course yet.
-{% endif %}
 </div>
 </div>
 </div>

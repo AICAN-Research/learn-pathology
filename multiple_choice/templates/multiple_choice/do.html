@@ -6,36 +6,42 @@
 </div>
 
 <div class="card mx-auto text-center" style="width: 90%; height: 100%">
-<div class="card-body">
-<div class="card-text" style="height:100%">
-<form class="form" action="{% url 'multiple_choice:do' task.task_id %}" method="post">
-    {% csrf_token %}
-    {% for choice in task.choice_set.all %}
-        <input type="radio" name="choice" value="{{ choice.id }}">
-        <span
-            {% if answered != 'no' %}
-                {% if choice.correct %}
-                    style="color: green"
-                {% else %}
-                    style="color: red"
-                {% endif %}
-        {% endif %}>
-        {{ choice.text }}</span><br>
-    {% endfor %}
-    <input type="submit" value="Submit">
-</form>
-{% if answered != 'no' %}
-    {% if answered == 'correct' %}
-        <a style="color: green">Correct!</a>
-    {% else %}
-        <a style="color: red">Wrong!</a>
-    {% endif %}
-{% endif %}
+<div class="card-body" style="height: 100%">
+    <div class="row">
+        <div class="col"></div>
+        <div class="col">
+        <form class="form-check text-left" action="{% url 'multiple_choice:do' task.task_id %}" method="post">
+            {% csrf_token %}
+            {% for choice in task.choice_set.all %}
+                <input class="form-check-input" type="radio" name="choice" value="{{ choice.id }}">
+                <span
+                    {% if answered != 'no' %}
+                        {% if choice.correct %}
+                            style="color: green"
+                        {% else %}
+                            style="color: red"
+                        {% endif %}
+                {% endif %}>
+                {{ choice.text }}</span><br>
+            {% endfor %}
+            <input type="submit" value="Submit">
+        </form>
+        {% if answered != 'no' %}
+            {% if answered == 'correct' %}
+                <a style="color: green; font-size: large; font-weight: bold">Correct!</a>
+            {% else %}
+                <a style="color: red; font-size: large; font-weight: bold">Wrong!</a>
+            {% endif %}
+        {% endif %}
+        </div>
+        <div class="col"></div>
+    </div>
 
 <br>
 
 {% include 'slide/view_wsi.html' with slide=task.task.annotated_slide.slide annotated_slide=task.task.annotated_slide  %}
-</div>
+
+
 </div>
 </div>
 {% endblock content %}

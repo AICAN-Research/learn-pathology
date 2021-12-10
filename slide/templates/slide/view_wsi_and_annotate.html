@@ -1,33 +1,37 @@
 {% load static %}
 
-<div id="wsi-canvas"  class="wsi_canvas"></div>
+<div class="container fill" style="display: table; min-height: 600px">
+<p>Double click where you want to add annotations:</p>
+
+<div id="wsi-canvas"  class="wsi_canvas" style="width:100%;height:100%; display: table-row"></div>
 
 {% if annotated_slide %}
     {{ annotated_slide.get_html | safe }}
 {% endif %}
+</div>
 
 <script src="{% static 'slide/openseadragon.min.js' %}"></script>
 <script type="text/javascript">
    var viewer = OpenSeadragon({
-    id: "wsi-canvas",
-    zoomPerScroll: 2, // Scroll speed
-   zoomPerClick: 1, // disable click to zoom
-    showNavigator: true, // The navigation window top-right
-   prefixUrl: "{% static 'slide/images/' %}", // Where to find OpenSedragon button images
-    tileSources:   {
-        width: {{ slide.width }},
-        height:  {{ slide.height }},
-        tileWidth: {{ slide.tile_width }},
-        tileHeight: {{ slide.tile_height }},
-        minLevel: 0,
-        maxLevel: {{ slide.osd_levels }}-1,
-        getTileUrl: function( level, x, y ) {
-            return "/viewer/tile/{{ slide.id }}/" + ({{ slide.osd_levels }} - 1 - level) + "/" + x + "/" + y + "/";
-        },
-        overlays: [
-            {{ annotated_slide.get_js | safe }}
-            ],
-    }
+       id: "wsi-canvas",
+       zoomPerScroll: 2, // Scroll speed
+       zoomPerClick: 1, // disable click to zoom
+       showNavigator: true, // The navigation window top-right
+       prefixUrl: "{% static 'slide/images/' %}", // Where to find OpenSedragon button images
+       tileSources:   {
+           width: {{ slide.width }},
+           height:  {{ slide.height }},
+           tileWidth: {{ slide.tile_width }},
+           tileHeight: {{ slide.tile_height }},
+           minLevel: 0,
+           maxLevel: {{ slide.osd_levels }}-1,
+           getTileUrl: function( level, x, y ) {
+               return "/viewer/tile/{{ slide.id }}/" + ({{ slide.osd_levels }} - 1 - level) + "/" + x + "/" + y + "/";
+               },
+           overlays: [
+               {{ annotated_slide.get_js | safe }}
+           ],
+       }
    });
    viewer.innerTracker.keyHandler = null;
 
