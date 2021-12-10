@@ -91,7 +91,7 @@ def new(request, slide_id):
                         pointer = Pointer()
                         pointer.text = request.POST[key]
                         pointer.position_x = float(request.POST[prefix+'x'])
-                        pointer.position_y = float(request.POST[prefix+'x'])
+                        pointer.position_y = float(request.POST[prefix+'y'])
                         pointer.annotated_slide = annotated_slide
                         pointer.save()
 
@@ -171,7 +171,7 @@ def edit(request, task_id):
                         pointer = Pointer()
                         pointer.text = request.POST[key]
                         pointer.position_x = float(request.POST[prefix + 'x'])
-                        pointer.position_y = float(request.POST[prefix + 'x'])
+                        pointer.position_y = float(request.POST[prefix + 'y'])
                         pointer.annotated_slide = slide
                         pointer.save()"""
 
