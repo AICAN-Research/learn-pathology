@@ -2,8 +2,13 @@
 {% load to_class_name %}
 
 {% block content %}
+    <div class="container">
+        <h1>Tasks</h1>
+    </div>
 
-    <h2>Tasks</h2>
+    <div class="card mx-auto text-center" style="width: 90%">
+        <div class="card-body">
+            <div class="card-text">
     <p>
         <form>
             <b>Filter:</b>
@@ -30,7 +35,7 @@
         </form>
     </p>
     {% if tasks %}
-        <table>
+        <table class="table">
             <tr>
                 <th>Name</th>
                 <th>Type</th>
@@ -58,4 +63,7 @@
     </p>
     {% endif %}
 
+</div>
+</div>
+</div>
 {% endblock content %}

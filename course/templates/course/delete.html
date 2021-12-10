@@ -1,10 +1,13 @@
 {% extends 'learnpathology/base.html' %}
 
 {% block content %}
-
-<h2>Remove course</h2>
-
-    <table>
+<div class="container">
+    <h1>Remove course</h1>
+</div>
+<div class="card mx-auto text-center" style="width: 90%">
+<div class="card-body">
+<div class="card-text">
+    <table class="table">
     <tr>
         <th>Course code:</th>
         <td>{{ course.code }}</td>
@@ -23,12 +26,14 @@
 
 <h3>Are you sure you want to delete this course?</h3>
 
-    <form method="post">
+    <form class="form" method="post">
         {% csrf_token %}
         {{ form }}
         <br>
         <input type="submit" value="Confirm choice">
     </form>
 
-
+</div>
+</div>
+</div>
 {% endblock content %}

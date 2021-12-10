@@ -1,0 +1,287 @@
+:root{
+    --font-family:Calibri, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --text-size: large;
+    --h1-size: large;
+    --menu-width: 300px;
+    --header-height: 70px;
+    --logo-bg-width: 40%;
+    --sintef-wm-width: 20%;
+    --logo-small-height: 60px;
+    --shadow: rgba(0, 0, 0, 0.5); /*rgba(0, 0, 102, 0.5);*/
+    --button-text-colour: #ffffff;
+}
+
+main {
+    width: 100%;  /* Set to 800 px in slide/static/slide/style.css */
+}
+
+.theme_teacher{
+    --background-card: #ffffff;
+    --background-header: #eaece5;
+    --background-collapsed-menu: #c4c4c4;
+    --background: #83bafc;
+    --background-dark: #5c716e;
+    --button-colour: #a3c042;
+    --text-colour: #37522e;
+    --text-colour-dark: #3b3a30;
+    --logo-hue: 240deg;
+    --logo-saturation: 20;
+    --logo-brightness: 10;
+    --logo-opacity: 60%;
+}
+
+/*.theme_student{
+    --background-header: #deeaee;
+    --background:#0066cc;
+    --background-dark:#003366;
+    --button-colour: #afd275;
+    --text-color:#003399;
+    --text-color-dark:#000066;
+}*/
+
+.theme_student{
+    --background-card: #ffffff;
+    --background-header: #f9ccac;
+    --background-collapsed-menu: #c4c4c4;
+    --background:#fbefcc;
+    --background-dark: #f4a688;
+    --button-colour: #40a1d0;
+    --text-colour:#e0876a;
+    --text-colour-dark: #663626;
+    --logo-hue: 180deg;
+    --logo-saturation: 50;
+    --logo-brightness: 0;
+    --logo-opacity: 20%;
+}
+
+.theme_default{
+    --background-card: #ffffff;
+    --background-header: #afafaf;
+    --background-collapsed-menu: #c4c4c4;
+    --background: #dedede;
+    --background-dark: #414141;
+    --button-colour: #d27575;
+    --text-colour: #6f6f6f;
+    --text-colour-dark: #424242;
+    --logo-hue: 130deg;
+    --logo-saturation: 20;
+    --logo-brightness: 10;
+    --logo-opacity: 60%;
+}
+
+body {
+    background-color: var(--background);
+    color: var(--text-colour);
+    margin: 0;
+    padding: 0;
+    font-size: var(--text-size);
+    font-family: var(--font-family);
+}
+
+.header {
+    background-color: var(--background-header);
+    width: 100%;
+    top: 0px;
+    height: var(--header-height);
+    color: var(--button-text-colour);
+    position: fixed;
+    display: inline-block;
+    vertical-align: middle;
+    horiz-align: right;
+}
+
+.setLogoColor {filter: saturate(var(--logo-saturation)) hue-rotate(var(--logo-hue))}
+.setLogoTranslucent{filter: brightness(var(--logo-brightness)) opacity(var(--logo-opacity))}
+.logoBGImage {
+    position: relative;
+    border: 0px;
+    left: 0;
+}
+
+.sintefWMImage {
+    position: relative;
+    border: 0px;
+    right: 0;
+    width: var(--sintef-wm-width);
+}
+
+.logoBGContainer {
+    position: fixed;
+    display: flex;
+    justify-content: left;
+    align-items: center;  /* centre the image vertically */
+    vertical-align: middle;
+    bottom: 0px;
+    left: 0px;
+    padding: 50px;
+    float:right;
+    width: 100%;
+    z-index: -1;
+}
+
+.sintefWatermark {
+    position: fixed;
+    display: flex;
+    justify-content: right;
+    align-items: center;  /* centre the image vertically */
+    vertical-align: middle;
+    bottom: 0px;
+    left: 0px;
+    padding: 50px;
+    float:left;
+    z-index: -1;
+    width: 100%;
+}
+
+.logoSmallImage {
+    position: relative;
+    border: 0px;
+    left: 0;
+    max-height: var(--logo-small-height);
+}
+
+.logoSmallContainer {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;  /* centre the image vertically */
+    vertical-align: middle;
+    bottom: 0px;
+    right: 0px;
+    padding-right: 50px;
+    margin: 5px;
+    float:right;
+    max-height: var(--header-height);
+    z-index: -1;
+}
+.myCard {
+    margin: 0 auto;
+    margin-top: 30px;
+    margin-bottom: 0px;
+    font-family: var(--font-family);
+    color: var(--text-colour-dark);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--background-card);
+    background-clip: border-box;
+    border: 0 solid rgba(0, 0, 0, 0.125);
+    border-radius: 1rem;
+    box-shadow: 0 0 10px 5px var(--shadow);
+    padding: 10px;
+    height: fit-content;
+    width: fit-content;
+    min-height: 2rem;
+    min-width: 2rem;
+    max-width: 70%;
+    overflow-y: auto;
+}
+
+.myCard>h1,h2,h3{
+    position: fixed;
+    display: block;
+    /*transform: translateY(-85px);*/
+    margin-top: -70px;
+    color: var(--text-colour);
+    z-index: 1;
+}
+
+.myCard.h1{
+    overflow-y: visible;
+}
+
+.myCard a{
+    color: var(--text-colour);
+}
+
+.myCard form,p,table{
+    position: relative;
+    color: var(--text-colour);
+    z-index: 0;
+}
+
+.myCard tr, td, th{
+    text-align: center;
+}
+
+.myCard > .wsi_canvas{
+    align-content: center;
+}
+
+.navContainer {
+    position: absolute;
+    bottom: 10px;
+    flex-direction: row;!important;
+}
+.navigation{
+    display: inline;
+    list-style: none;
+}
+
+.navigation .menuItem{
+    float: left;
+    padding: 10px;
+    margin-left: 50px;
+    min-width: 100px;
+    font-family: var(--font-family);
+    text-align: center;
+    display: inline;
+}
+
+.navigation .menuButton{
+    background-color: var(--button-colour);
+    background-clip: border-box;
+    border: 0 solid rgba(0, 0, 0, 0.125);
+    border-radius: 1rem;
+    color: var(--button-text-colour);
+}
+
+.navigation .menuInfo{
+    color: var(--text-colour-dark)
+}
+
+.navigation a {
+    color: var(--button-text-colour);
+    text-decoration: underline;
+}
+
+.navigation a:hover {
+    text-decoration: none;
+}
+
+.annotation_teacher{
+    background-color: rgba(255, 255, 255, 0.75);
+    outline: 2px solid white;
+    color: var(--text-colour-dark);
+    font-size: 20px;
+}
+
+.pageContent {
+    position: fixed;
+    top: var(--header-height);
+    padding-top: 10px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+    float: right;
+    box-sizing: border-box;
+    /*padding-top: 40px;*/
+    overflow-y: auto;
+    background-color: var(--background);
+    z-index: -1;
+}
+
+#content {
+    width: -webkit-fit-content;
+    width: -moz-fit-content;
+    width: fit-content;
+}
+
+.content-card card{
+    all: inherit;
+    width: 90%;
+}
+
+.fill {
+    height: 100%;
+}

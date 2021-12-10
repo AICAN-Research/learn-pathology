@@ -1,14 +1,19 @@
 import os
 from django.core.exceptions import ValidationError
-from django.forms import ModelForm,  ModelMultipleChoiceField
+from django.forms import ModelForm,  ModelMultipleChoiceField, FileInput, FileField
 from slide.models import Slide
 from tag.models import Tag
 
 
 class SlideForm(ModelForm):
+    image_file = FileField()
     class Meta:
         model = Slide
-        fields = ['name', 'description', 'path', 'pathology', 'organ_tags', 'system_tags', 'other_tags']
+        fields = ['name', 'description', 'image_file', 'pathology', 'organ_tags', 'system_tags', 'other_tags']
+        exclude = ['path']
+        widgets = {
+            'image_file': FileInput(),
+        }
 
     organ_tags = ModelMultipleChoiceField(
         queryset=Tag.objects.filter(is_organ=True),
@@ -34,3 +39,8 @@ class SlideForm(ModelForm):
         # Always return a value to use as the new cleaned data, even if
         # this method didn't change it.
         return data
+
+    def save(self, file_path='', **kwargs):
+        # Update the created Slide object with the location of the uploaded file
+        self.instance.path = file_path
+        return super().save(**kwargs)

@@ -2,11 +2,12 @@
 {% load static %}
 
 {% block content %}
+<div class="container fill">
 <h1>Image - {{ slide.name }}</h1>
 <p>
     {{ slide.description }}
 </p>
-<div id="wsi-canvas" style="width: 800px; height: 600px;"></div>
+<div id="wsi-canvas" class="wsi_canvas" style="width:100%;height:100%"></div>
 
 <script src="{% static 'slide/openseadragon.min.js' %}"></script>
 <script type="text/javascript">
