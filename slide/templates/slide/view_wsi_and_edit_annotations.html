@@ -2,10 +2,6 @@
 
 <div id="wsi-canvas" style="width: 800px; height: 600px;"></div> <!-- TODO: Fix size here -->
 
-{% if annotated_slide %}
-    {{ annotated_slide.get_html | safe }}
-{% endif %}
-
 <script src="{% static 'slide/openseadragon.min.js' %}"></script>
 <script type="text/javascript">
    var viewer = OpenSeadragon({
@@ -25,35 +21,28 @@
             return "/viewer/tile/{{ slide.id }}/" + ({{ slide.osd_levels }} - 1 - level) + "/" + x + "/" + y + "/";
         },
         overlays: [
-            {{ annotated_slide.get_js | safe }}
             ],
     }
    });
    viewer.innerTracker.keyHandler = null;
 
+
    var counter = 1;
-   viewer.addHandler('canvas-double-click', function(event) {
-        // The canvas-click event gives us a position in web coordinates.
-        var webPoint = event.position;
+   function addPointer(viewportPoint, text) {
+       // Create overlay
+       let textDiv = document.createElement("div");
+       textDiv.className = "overlay";
+       let strCounter = counter.toString();
+       textDiv.id = "pointer-" + strCounter;
+       textDiv.innerHTML = '<a>X</a> ' +
+           '<input type="hidden" name="pointer-' + strCounter + '-x" value="' + viewportPoint.x.toString() + '"> ' +
+           '<input type="hidden" name="pointer-' + strCounter + '-y" value="' + viewportPoint.y.toString() + '"> ' +
+           '<input type="text" name="pointer-' + strCounter + '-text" value="' + text + '"> &#8594;';
+       counter += 1;
 
-        // Convert that to viewport coordinates, the lingua franca of OpenSeadragon coordinates.
-        var viewportPoint = viewer.viewport.pointFromPixel(webPoint);
+       viewer.addOverlay(textDiv, viewportPoint, OpenSeadragon.Placement.RIGHT);
 
-        // Create overlay
-        let textDiv = document.createElement("div");
-        textDiv.className = "overlay";
-        let strCounter = counter.toString();
-        textDiv.id = "pointer-" + strCounter;
-        textDiv.innerHTML = '<a>X</a> ' +
-            '<input type="hidden" name="pointer-' + strCounter + '-x" value="' + viewportPoint.x.toString() + '"> ' +
-            '<input type="hidden" name="pointer-' + strCounter + '-y" value="' + viewportPoint.y.toString() + '"> ' +
-            '<input type="text" name="pointer-' + strCounter + '-text"> &#8594;';
-        counter += 1;
-
-        viewer.addOverlay(textDiv, viewportPoint, OpenSeadragon.Placement.RIGHT);
-        $("#" + textDiv.id + " input[type=text]").focus();
-
-         // MouseTracker is required for links to function in overlays
+        // MouseTracker is required for links to function in overlays
         var asd = new OpenSeadragon.MouseTracker({
             element: textDiv.id,
             clickHandler: function(event) {
@@ -66,6 +55,21 @@
                 }
             }
         });
+        return textDiv;
+   }
+
+   {% for pointer in pointers %}
+       addPointer(new OpenSeadragon.Point({{pointer.position_x}}, {{ pointer.position_y }}), '{{ pointer.text }}');
+   {% endfor %}
+
+   viewer.addHandler('canvas-double-click', function(event) {
+        // The canvas-click event gives us a position in web coordinates.
+        var webPoint = event.position;
+
+        // Convert that to viewport coordinates, the lingua franca of OpenSeadragon coordinates.
+        var viewportPoint = viewer.viewport.pointFromPixel(webPoint);
+        var textDiv = addPointer(viewportPoint, '');
+        $("#" + textDiv.id + " input[type=text]").focus();
     });
 
 

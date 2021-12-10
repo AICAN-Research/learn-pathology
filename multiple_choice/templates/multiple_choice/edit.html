@@ -25,15 +25,9 @@
     <input type="submit" value="Update multiple choice">
     <br>
 
-    {% comment %}
     <h3>Annotate WSI</h3>
     Double click where you want to add annotations:
-    {% include 'slide/view_wsi_and_edit_annotations.html' with slide=slide and pointers=pointers  %}
-    {% endcomment %}
-
-    <h3>View WSI</h3>
-    Double click where you want to add annotations:
-    {% include 'slide/view_wsi.html' with slide=slide  %}
+    {% include 'slide/view_wsi_and_edit_annotations.html' with slide=slide pointers=pointers  %}
 
 </form>
 

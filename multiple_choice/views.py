@@ -152,11 +152,6 @@ def edit(request, task_id):
 
                 multiple_choice = multiple_choice_form.save()
 
-                # Create annotated slide
-                """slide = AnnotatedSlide()
-                slide.slide = slide
-                slide.save()"""
-
                 for choiceForm in choice_formset:
                     choice = choiceForm.save(commit=False)
                     if len(choice.text) > 0:
@@ -164,7 +159,10 @@ def edit(request, task_id):
                         choice.save()
 
                 # Store annotations (pointers)
-                """for key in request.POST:
+                # Delete old pointers first
+                Pointer.objects.filter(annotated_slide=annotated_slide).delete()
+                # Add all current pointers
+                for key in request.POST:
                     print(key, request.POST[key])
                     if key.startswith('pointer-') and key.endswith('-text'):
                         prefix = key[:-len('text')]
@@ -172,8 +170,8 @@ def edit(request, task_id):
                         pointer.text = request.POST[key]
                         pointer.position_x = float(request.POST[prefix + 'x'])
                         pointer.position_y = float(request.POST[prefix + 'y'])
-                        pointer.annotated_slide = slide
-                        pointer.save()"""
+                        pointer.annotated_slide = annotated_slide
+                        pointer.save()
 
                 messages.add_message(request, messages.SUCCESS,
                      f'The task {task.name} was altered!')
@@ -195,5 +193,6 @@ def edit(request, task_id):
         'taskForm': task_form,
         'multipleChoiceForm': multiple_choice_form,
         'choiceFormset': choice_formset,
+        'pointers': Pointer.objects.filter(annotated_slide=annotated_slide),
     }
     return render(request, 'multiple_choice/edit.html', context)
