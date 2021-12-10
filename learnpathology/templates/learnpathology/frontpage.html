@@ -1,6 +1,9 @@
- {% extends 'learnpathology/base.html' %}
+{% extends 'learnpathology/base.html' %}
+{% load static %}
+{% block content %}
+    <p class="text-center" style="align-self: center; margin-bottom: 50px">Welcome to LearnPathology. Then AICAN online learning platform</p>
 
- {% block content %}
- <h2>Welcome to LearnPathology</h2>
-
- {% endblock %}
+    <div class="container text-center">
+    <img src="{% static 'learnpathology/images/logo_v0.png' %}" alt="FastPathology logo" style="max-width: 400px;align-self: center">
+    </div>
+{% endblock %}

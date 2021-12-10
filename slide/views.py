@@ -1,9 +1,12 @@
+import os.path
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect
 from django.conf import settings
+from django.core.files.uploadedfile import UploadedFile
 
 from tag.models import Tag
 from user.decorators import student_required, teacher_required
@@ -115,11 +118,12 @@ def create_thumbnail(slide_id):
 @teacher_required
 def add(request):
     if request.method == 'POST':
-        form = SlideForm(request.POST)
+        form = SlideForm(request.POST, request.FILES)
         with transaction.atomic():
             if form.is_valid():
                 # Save form and create thumbnail
-                slide = form.save()
+                file_path = store_file_in_db(form.files['image_file'])
+                slide = form.save(file_path)
                 create_thumbnail(slide.id)
 
                 organ_tags = form.cleaned_data['organ_tags']
@@ -133,3 +137,16 @@ def add(request):
         form = SlideForm()
 
     return render(request, 'slide/add.html', {'form': form})
+
+
+def store_file_in_db(f: UploadedFile):
+    destination_path = os.path.join(os.getcwd(), 'uploaded_images', f.name)  # TODO: improve destination path according to future DB
+    # TODO: Ask the user if to substitute or keep both files
+    if os.path.exists(destination_path):
+        os.remove(destination_path)
+
+    with open(destination_path, 'wb+') as destination:
+        for chunk in f.chunks():
+            destination.write(chunk)
+
+    return destination_path

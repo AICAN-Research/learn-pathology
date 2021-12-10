@@ -1,13 +1,17 @@
 {% extends 'learnpathology/base.html' %}
 
 {% block content %}
+<div class="container">
+<h1>New multiple choice question</h1>
+</div>
 
-<h2>New multiple choice question</h2>
-
-<form method="post">
+<div class="card mx-auto text-center" style="width: 90%">
+<div class="card-body">
+<div class="card-text">
+<form class="form" method="post">
     {% csrf_token %}
 
-    <table>
+    <table class="table">
         {{ taskForm.as_table }}
         {{ form.as_table }}
         {{ choiceFormset.as_table }}
@@ -20,5 +24,7 @@
     <br>
     <input type="submit" value="Submit">
 </form>
-
+</div>
+</div>
+</div>
 {% endblock content %}

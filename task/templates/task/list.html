@@ -1,22 +1,29 @@
 {% extends 'learnpathology/base.html' %}
 
 {% block content %}
-<h2>Tasks</h2>
-
-<table>
-    <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Edit</th>
-        <th>Delete</th>
-    </tr>
-{% for task in tasks %}
-    <tr>
-        <td><a href="{% url task.do_url task.id %}">{{ task.name }}</a></td>
-        <td>{{ task.type }}</td>
-        <td><a href="">Edit</a></td>
-        <td><a href="{% url 'task_delete' task.id %}">Delete</a></td>
-    </tr>
-{% endfor %}
-</table>
+<div class="container">
+    <h1>Task</h1>
+</div>
+<div class="card mx-auto text-center" style="width: 90%">
+<div class="card-body">
+<div class="card-text">
+    <table class="table">
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+    {% for task in tasks %}
+        <tr>
+            <td><a href="{% url task.do_url task.id %}">{{ task.name }}</a></td>
+            <td>{{ task.type }}</td>
+            <td><a href="">Edit</a></td>
+            <td><a href="{% url 'task_delete' task.id %}">Delete</a></td>
+        </tr>
+    {% endfor %}
+    </table>
+</div>
+</div>
+</div>
 {% endblock content %}
