@@ -3,6 +3,7 @@ from django.core.exceptions import FieldDoesNotExist
 from django.apps import apps
 from django.conf import settings
 from slide.models import AnnotatedSlide
+from tag.models import Tag
 
 
 class Task(models.Model):
@@ -11,6 +12,8 @@ class Task(models.Model):
     """
     name = models.CharField(max_length=256)
     annotated_slide = models.ForeignKey(AnnotatedSlide, on_delete=models.CASCADE)
+    pathology = models.BooleanField(default=False, help_text='Is the task about pathology or not (general histology)')
+    tags = models.ManyToManyField(Tag)
 
     @property
     def type(self):

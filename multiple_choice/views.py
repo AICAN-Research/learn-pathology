@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.db import transaction
-from django.forms import formset_factory
-from django.shortcuts import render, redirect, HttpResponse
+from django.forms import formset_factory, inlineformset_factory, modelformset_factory
+from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 from multiple_choice.models import MultipleChoice, Choice
 from multiple_choice.forms import MultipleChoiceForm, ChoiceForm, TaskForm
 from slide.models import Slide, Pointer, AnnotatedSlide
@@ -36,6 +36,7 @@ def do(request, task_id):
         'answered': answered,
     })
 
+
 @teacher_required
 def new(request, slide_id):
     """
@@ -66,6 +67,11 @@ def new(request, slide_id):
                 task.annotated_slide = annotated_slide
                 task.save()
 
+                organ_tags = taskForm.cleaned_data['organ_tags']
+                system_tags = taskForm.cleaned_data['system_tags']
+                other_tags = taskForm.cleaned_data['other_tags']
+                task.tags.set(organ_tags | system_tags | other_tags)
+
                 # Create multiple choice
                 multiple_choice = form.save(commit=False)
                 multiple_choice.task = task
@@ -85,7 +91,7 @@ def new(request, slide_id):
                         pointer = Pointer()
                         pointer.text = request.POST[key]
                         pointer.position_x = float(request.POST[prefix+'x'])
-                        pointer.position_y = float(request.POST[prefix+'x'])
+                        pointer.position_y = float(request.POST[prefix+'y'])
                         pointer.annotated_slide = annotated_slide
                         pointer.save()
 
@@ -105,5 +111,88 @@ def new(request, slide_id):
     })
 
 
-def added_task(request):
-    return HttpResponse("Successfully added task")
+@teacher_required
+def edit(request, task_id):
+    """
+    Teacher form for editing a multiple choice task
+    """
+
+    ChoiceFormset = modelformset_factory(Choice, form=ChoiceForm, extra=5)
+
+    # Get model instances from database
+    task = get_object_or_404(Task, id=task_id)
+    multiple_choice = get_object_or_404(MultipleChoice, task=task)
+    choices = Choice.objects.filter(task=multiple_choice)
+
+    # Get slide and pointers
+    annotated_slide = task.annotated_slide
+    slide = annotated_slide.slide
+    slide_cache.load_slide_to_cache(slide.id)
+
+    # Process forms
+    if request.method == 'POST': # Form was submitted
+
+        # Get submitted forms
+        task_form = TaskForm(request.POST or None, instance=task)
+        multiple_choice_form = MultipleChoiceForm(request.POST or None, instance=multiple_choice)
+        choice_formset = ChoiceFormset(request.POST)
+
+        #pointers = Pointer.objects.filter(annotated_slide=task.annotated_slide)
+
+        with transaction.atomic():  # Make save operation atomic
+            if task_form.is_valid() and multiple_choice_form.is_valid() and choice_formset.is_valid():
+
+                # Save instance data to database
+                task = task_form.save()
+
+                organ_tags = task_form.cleaned_data['organ_tags']
+                system_tags = task_form.cleaned_data['system_tags']
+                other_tags = task_form.cleaned_data['other_tags']
+                task.tags.set(organ_tags | system_tags | other_tags)
+
+                multiple_choice = multiple_choice_form.save()
+
+                for choiceForm in choice_formset:
+                    choice = choiceForm.save(commit=False)
+                    if len(choice.text) > 0:
+                        choice.task = multiple_choice
+                        choice.save()
+
+                # Store annotations (pointers)
+                # Delete old pointers first
+                Pointer.objects.filter(annotated_slide=annotated_slide).delete()
+                # Add all current pointers
+                for key in request.POST:
+                    print(key, request.POST[key])
+                    if key.startswith('pointer-') and key.endswith('-text'):
+                        prefix = key[:-len('text')]
+                        pointer = Pointer()
+                        pointer.text = request.POST[key]
+                        pointer.position_x = float(request.POST[prefix + 'x'])
+                        pointer.position_y = float(request.POST[prefix + 'y'])
+                        pointer.annotated_slide = annotated_slide
+                        pointer.save()
+
+                messages.add_message(request, messages.SUCCESS,
+                     f'The task {task.name} was altered!')
+
+        return redirect('task_list')
+
+    else:  # GET
+        task_form = TaskForm(instance=task)#, initial=task.tags.all())
+        task_form.fields['organ_tags'].initial = task.tags.filter(is_organ=True)
+        task_form.fields['system_tags'].initial = task.tags.filter(is_system=True)
+        task_form.fields['other_tags'].initial = task.tags.filter(is_organ=False, is_system=False)
+
+        multiple_choice_form = MultipleChoiceForm(instance=task.multiplechoice)
+        choice_formset = ChoiceFormset(queryset=choices)
+
+    context = {
+        'slide': slide,
+        'annotated_slide': annotated_slide,
+        'taskForm': task_form,
+        'multipleChoiceForm': multiple_choice_form,
+        'choiceFormset': choice_formset,
+        'pointers': Pointer.objects.filter(annotated_slide=annotated_slide),
+    }
+    return render(request, 'multiple_choice/edit.html', context)

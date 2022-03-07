@@ -38,13 +38,13 @@
         {% if request.user.is_authenticated %}
             {% if request.user.is_teacher or request.user.is_superuser%}
                 <!-- specific options for teachers or superuser -->
-                <li class="nav-item"><a class="nav-link active" href="{% url 'course:index' %}">Courses</a></li>
                 <li class="nav-item"><a class="nav-link active" href="{% url 'tag:index' %}">Tags</a></li>
             {% endif %}
             {% if request.user.is_student %}
                 <!-- specific options for students-->
             {% endif %}
             <!-- Options available to any type of user-->
+            <li class="nav-item"><a class="nav-link active" href="{% url 'course:index' %}">Courses</a></li>
             <li class="nav-item"><a class="nav-link active" href="{% url 'task_list' %}">Tasks</a></li>
             <li class="nav-item"><a class="nav-link active" href="{% url 'slide:list' %}">Images</a></li>
             <li class="nav-item"><a class="nav-link active" href="{% url 'logout' %}">Logout</a></li>

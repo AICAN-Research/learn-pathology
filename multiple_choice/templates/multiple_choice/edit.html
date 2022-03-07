@@ -1,19 +1,15 @@
 {% extends 'learnpathology/base.html' %}
 
 {% block content %}
-<div class="container">
-<h1>New multiple choice question</h1>
-</div>
 
-<div class="card mx-auto text-center" style="width: 90%">
-<div class="card-body">
-<div class="card-text">
-<form class="form" method="post">
+<h2>Edit multiple choice</h2>
+
+<form method="post">
     {% csrf_token %}
 
-    <table class="table">
+    <table>
         <tr>{{ taskForm }}</tr>
-        <tr>{{ form }}</tr>
+        <tr>{{ multipleChoiceForm }}</tr>
         <tr><td>{{ "" }}</td> <th>{{ "Check box if correct" }}</th></tr>
         {{ choiceFormset.management_form }}
         {% for choiceForm in choiceFormset %}
@@ -25,20 +21,15 @@
         {% endfor %}
     </table>
 
-    <table class="table">
-        <tr>
-        <th>Annotate WSI</th>
-        <td>
+    <br>
+    <input type="submit" value="Update multiple choice">
+    <br>
 
-            {% include 'slide/view_wsi_and_annotate.html' with slide=slide  %}
+    <h3>Annotate WSI</h3>
+    Double click where you want to add annotations:
+    {% include 'slide/view_wsi_and_edit_annotations.html' with slide=slide pointers=pointers  %}
 
-            <br>
-            <input type="submit" value="Submit">
-        </td>
-        </tr>
-    </table>
 </form>
-</div>
-</div>
-</div>
+
+
 {% endblock content %}
