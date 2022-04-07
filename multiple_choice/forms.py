@@ -7,20 +7,20 @@ from tag.models import Tag
 class TaskForm(ModelForm):
     class Meta:
         model = Task
-        fields = ['name', 'pathology', 'organ_tags', 'system_tags', 'other_tags']
+        fields = ['name', 'pathology', 'organ_tags', 'stain_tags', 'other_tags']
 
     organ_tags = ModelMultipleChoiceField(
         queryset=Tag.objects.filter(is_organ=True),
         required=False,
         blank=True,
     )
-    system_tags = ModelMultipleChoiceField(
-        queryset=Tag.objects.filter(is_system=True),
+    stain_tags = ModelMultipleChoiceField(
+        queryset=Tag.objects.filter(is_stain=True),
         required=False,
         blank=True,
     )
     other_tags = ModelMultipleChoiceField(
-        queryset=Tag.objects.filter(is_organ=False, is_system=False),
+        queryset=Tag.objects.filter(is_organ=False, is_stain=False),
         required=False,
         blank=True,
     )
