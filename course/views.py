@@ -131,9 +131,9 @@ def slide_selection(request, course_id):
     organs = request.GET.getlist('organ[]')
     if len(organs) > 0:
         filteredSlides = filteredSlides.filter(tags__in=organs)
-    systems = request.GET.getlist('system[]')
-    if len(systems) > 0:
-        filteredSlides = filteredSlides.filter(tags__in=systems)
+    stains = request.GET.getlist('stain[]')
+    if len(stains) > 0:
+        filteredSlides = filteredSlides.filter(tags__in=stains)
     tags = request.GET.getlist('tag[]')
     if len(tags) > 0:
         filteredSlides = filteredSlides.filter(tags__in=tags)
@@ -150,10 +150,10 @@ def slide_selection(request, course_id):
         'slides_in_course': slidesInCourse,
         'filtered_slides': filteredSlides,
         'organ_tags': Tag.objects.filter(is_organ=True),
-        'system_tags': Tag.objects.filter(is_system=True),
-        'other_tags': Tag.objects.filter(is_system=False, is_organ=False),
+        'stain_tags': Tag.objects.filter(is_stain=True),
+        'other_tags': Tag.objects.filter(is_stain=False, is_organ=False),
         'selected_organ_tags': organs,
-        'selected_system_tags': systems,
+        'selected_stain_tags': stains,
         'selected_other_tags': tags,
     }
 
@@ -174,9 +174,9 @@ def task_selection(request, course_id):
     organs = request.GET.getlist('organ[]')
     if len(organs) > 0:
         filteredTasks = filteredTasks.filter(tags__in=organs)
-    systems = request.GET.getlist('system[]')
-    if len(systems) > 0:
-        filteredTasks = filteredTasks.filter(tags__in=systems)
+    stains = request.GET.getlist('stain[]')
+    if len(stains) > 0:
+        filteredTasks = filteredTasks.filter(tags__in=stains)
     tags = request.GET.getlist('tag[]')
     if len(tags) > 0:
         filteredTasks = filteredTasks.filter(tags__in=tags)
@@ -193,10 +193,10 @@ def task_selection(request, course_id):
         'tasks_in_course': tasksInCourse,
         'filtered_tasks': filteredTasks,
         'organ_tags': Tag.objects.filter(is_organ=True),
-        'system_tags': Tag.objects.filter(is_system=True),
-        'other_tags': Tag.objects.filter(is_system=False, is_organ=False),
+        'stain_tags': Tag.objects.filter(is_stain=True),
+        'other_tags': Tag.objects.filter(is_stain=False, is_organ=False),
         'selected_organ_tags': organs,
-        'selected_system_tags': systems,
+        'selected_stain_tags': stains,
         'selected_other_tags': tags,
     }
 

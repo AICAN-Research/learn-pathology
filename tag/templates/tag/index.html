@@ -1,21 +1,36 @@
 {% extends 'learnpathology/base.html' %}
 {% block content %}
-    <div class="container">
-    <h1>Tags</h1>
-    </div>
-    <div class="card mx-auto text-center" style="width: 90%">
-    <div class="card-body">
-    <div class="card-text">
+<div class="container">
+<h1>Tags</h1>
+</div>
+<div class="card mx-auto text-center" style="width: 90%">
+<div class="card-body">
+<div class="card-text">
+
+    {% if user.is_superuser or user.is_teacher %}
     <p>
     <a href="{% url 'tag:new' %}">Add a new tag</a>
     </p>
+    {% endif %}
+
+    <p>
+        <form class="form">
+            <b>Filters:</b>
+            Organ tags: <input type="checkbox" {% if selected_organs %}checked="checked"{% endif %} name="organs" onchange="this.form.submit();">
+            Stain tags: <input type="checkbox" {% if selected_stains %}checked="checked"{% endif %} name="stains" onchange="this.form.submit();">
+            Other tags: <input type="checkbox" {% if selected_others %}checked="checked"{% endif %} name="others" onchange="this.form.submit();">
+        </form>
+    </p>
+
     {% if tags %}
         <table class="table">
+        <thead class="thead-light">
             <tr>
                 <th>Name</th>
                 <th>Edit</th>
                 <th>Delete</th>
             </tr>
+        </thead>
         {% for tag in tags %}
             <tr>
                 <td>{{ tag.name }}</td>
@@ -29,7 +44,8 @@
         No tags in DB
     </p>
     {% endif %}
-    </div>
-    </div>
-    </div>
+
+</div>
+</div>
+</div>
 {% endblock content %}
