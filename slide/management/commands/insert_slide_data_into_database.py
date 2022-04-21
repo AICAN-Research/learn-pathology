@@ -37,28 +37,35 @@ def read_csv_file(filename):
                 data[i].append(c)
             i += 1
 
-        return data
+    return data
 
 
 def sort_data_by_row(data):
     d = {}
     headers = data[0]
     samples = data[1:]  # skip header
-    for sample in samples:  # For each row
+    for i, sample in enumerate(samples):  # For each row
         entry = {}
-        for idx, header in enumerate(headers):  # Iterate over headers
-            entry[str(header)] = sample[idx]
-        d[str(sample[0])] = entry
+        for j, header in enumerate(headers):  # Iterate over headers
+            entry[str(header)] = sample[j]
+        d[i] = entry
 
     return d
 
 
-def match_file_name_to_wsi(slide_name, slide_folder):
-    for filename in os.listdir(slide_folder):
-        if filename == slide_name:
-            return os.path.join(slide_folder, filename)
+def match_file_name_to_wsi(file_name, slide_folder):
+    for fn in os.listdir(slide_folder):
+        if fn == file_name:
+            # print(f'Found WSI file "{fn}" matching "{file_name}"')
+            return os.path.join(slide_folder, fn)
 
-    raise NoMatchingFileError(f"No WSI file matching {slide_name} was found")
+    raise NoMatchingFileError(f"No WSI file matching {file_name} was found")
+
+
+def match_file_in_subfolder_to_wsi(file_name, slide_folder):
+    for folder in os.listdir(slide_folder):
+        _path = os.path.join(slide_folder, folder)
+        return match_file_name_to_wsi(file_name, slide_folder=_path)
 
 
 # =====================================
@@ -82,24 +89,44 @@ class Command(BaseCommand):
 
     """
 
-    help = "Load slide metadata from CSV file into database and add tags"
+    help = 'Load slide metadata from CSV file into database and add tags'
 
     def add_arguments(self, parser):
-        parser.add_argument("file_path", type=str)
-        parser.add_argument("slide_folder", type=str)
+        # Positional arguments
+        parser.add_argument('file_path', type=str, help='Path to csv file with slide data')
+        parser.add_argument('slide_folder', type=str, help='Path to folder containing WSIs')
+
+        # Named (optional) arguments
+        parser.add_argument(
+            '-sf', '--subfolders',
+            action='store_true',
+            help='Flag to use to parse subfolders of "path_folder" '
+                 '(e.g. each WSI is stored in its own subfolder)',
+        )
 
     def handle(self, *args, **options):
 
-        file_path = options["file_path"]
-        slide_folder = options["slide_folder"]
+        file_path = options['file_path']
+        slide_folder = options['slide_folder']
+        parse_subfolders = options['subfolders']
+
         data = read_csv_file(file_path)
         data_dict = sort_data_by_row(data)
 
         new_paths = []
-        for file_name, slide_data in data_dict.items():
+        for key, slide_data in data_dict.items():
+
+            organ = slide_data['organ']
+            if len(organ) == 0:  # no data entered --> skip
+                continue
+
+            file_name = slide_data['file_name']
 
             try:
-                path_to_slide = match_file_name_to_wsi(file_name, slide_folder)
+                if parse_subfolders:
+                    path_to_slide = match_file_in_subfolder_to_wsi(file_name, slide_folder)
+                else:
+                    path_to_slide = match_file_name_to_wsi(file_name, slide_folder)
             except NoMatchingFileError as exc:
                 print(f"{exc.__class__.__name__}: {exc.msg}")
                 continue
@@ -142,26 +169,21 @@ class Command(BaseCommand):
 
             # ==== Add tags to slide (and to DB where missing) ====
             organ = slide_data['organ']
-            tissue = slide_data['tissue']
-            staining = slide_data['staining']
+            stain = slide_data['staining']
+            other = slide_data['other_tags']
 
             # Handle tags not existing in the DB yet
             if organ not in list(Tag.objects.filter(is_organ=True).values_list('name', flat=True)):
-                tag = Tag(name=organ, is_organ=True, is_tissue=False, is_staining=False)
+                tag = Tag(name=organ, is_organ=True, is_stain=False)
                 tag.save()
-            if tissue not in list(Tag.objects.filter(is_tissue=True).values_list('name', flat=True)):
-                tag = Tag(name=tissue, is_organ=False, is_tissue=True, is_staining=False)
+            if stain not in list(Tag.objects.filter(is_stain=True).values_list('name', flat=True)):
+                tag = Tag(name=stain, is_organ=False, is_stain=True)
                 tag.save()
-            if staining not in list(Tag.objects.filter(is_staining=True).values_list('name', flat=True)):
-                tag = Tag(name=staining, is_organ=False, is_tissue=False, is_staining=True)
-                tag.save()
+            # TODO: Handle other tags
 
             # Retrieve querysets for tags and add to slide
-            organ_tag = Tag.objects.filter(name=organ, is_organ=True,
-                                           is_tissue=False, is_staining=False)
-            tissue_tag = Tag.objects.filter(name=tissue, is_organ=False,
-                                            is_tissue=True, is_staining=False)
-            staining_tag = Tag.objects.filter(name=staining, is_organ=False,
-                                              is_tissue=False, is_staining=True)
+            organ_tag = Tag.objects.filter(name=organ, is_organ=True, is_stain=False)
+            stain_tag = Tag.objects.filter(name=stain, is_organ=False, is_stain=True)
+            other_tags = Tag.objects.filter(name=other, is_organ=False, is_stain=False)
             # NB: Overwrites existing Slide-Tag relationships
-            slide.tags.set(organ_tag | tissue_tag | staining_tag)
+            slide.tags.set(organ_tag | stain_tag)  # TODO: other_tags
