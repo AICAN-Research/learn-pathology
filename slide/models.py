@@ -1,3 +1,4 @@
+import threading
 from io import BytesIO
 from django.db import models
 import fast
@@ -50,16 +51,22 @@ class Slide(models.Model):
             smallest_width = image.getLevelWidth(levels-1)
             smallest_height = image.getLevelHeight(levels-1)
             osd_level = 0
-            tile_width = 256 #image.getLevelTileWidth(0)
-            tile_height = 256 #image.getLevelTileHeight(0)
+            tile_width = 256
+            tile_height = 256
+            if self.path.endswith('.vsi'):  # TODO Hack for now
+                tile_width = image.getLevelTileWidth(0)
+                tile_height = image.getLevelTileHeight(0)
             osd_tile_width = {0: tile_width}
             osd_tile_height = {0: tile_height}
             osd_to_fast_level_map = {0: 0}
             print('Smallest width', smallest_width)
             while abs(current_width - smallest_width/2) > 1:
                 print(osd_level, current_width, current_height)
-                current_width /= 2
-                current_height /= 2
+                current_width = int(current_width/2)
+                current_height = int(current_height/2)
+                if self.path.endswith('.vsi'): # TODO Hack for now
+                    current_width += current_width % tile_width
+                    current_height += current_height % tile_height
                 osd_level += 1
                 # If current_width is closer to previous FAST level width, than the next FAST level width, then use that.
                 if osd_to_fast_level_map[osd_level-1] < levels-1 and abs(current_width - image.getLevelWidth(osd_to_fast_level_map[osd_level-1]+1)) < 1:
@@ -72,6 +79,8 @@ class Slide(models.Model):
                     osd_tile_height[osd_level] = osd_tile_height[osd_level-1]*2
                     osd_to_fast_level_map[osd_level] = osd_to_fast_level_map[osd_level - 1]
                     print('Map to previous', osd_to_fast_level_map[osd_level])
+                if current_width < 1024:
+                    break
             print('Total OSD levels', osd_level+1)
             self._fast_levels = image.getNrOfLevels()
             self._osd_levels = osd_level+1
