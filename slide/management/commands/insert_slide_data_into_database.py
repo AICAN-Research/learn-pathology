@@ -1,8 +1,11 @@
 import csv
 import os
+import shutil
+
 from django.core.management import BaseCommand
 from django.db import transaction
 
+from learnpathology.settings import BASE_DIR
 from slide.models import Slide
 from tag.models import Tag
 from slide.views import create_thumbnail
@@ -56,7 +59,7 @@ def sort_data_by_row(data):
 def match_file_name_to_wsi(file_name, slide_folder):
     for fn in os.listdir(slide_folder):
         if fn == file_name:
-            # print(f'Found WSI file "{fn}" matching "{file_name}"')
+            print(f'Found WSI file matching "{file_name}"')
             return os.path.join(slide_folder, fn)
 
     raise NoMatchingFileError(f"No WSI file matching {file_name} was found")
@@ -65,7 +68,13 @@ def match_file_name_to_wsi(file_name, slide_folder):
 def match_file_in_subfolder_to_wsi(file_name, slide_folder):
     for folder in os.listdir(slide_folder):
         _path = os.path.join(slide_folder, folder)
-        return match_file_name_to_wsi(file_name, slide_folder=_path)
+        try:
+            path_to_slide = match_file_name_to_wsi(file_name, slide_folder=_path)
+            return path_to_slide
+        except NoMatchingFileError as exc:
+            print(f"No WSI file matching {file_name} was found in path {_path}. Continuing search...")
+
+    raise NoMatchingFileError(f"No WSI file matching {file_name} was found in subfolders")
 
 
 # =====================================
@@ -137,32 +146,45 @@ class Command(BaseCommand):
             if (path_to_slide not in existing_slide_paths) \
                     and (path_to_slide not in new_paths):
 
-                if slide_data['is_pathology'] == 'Yes':
+                # Histology/pathology boolean flag
+                if slide_data['histology_pathology'] == 'pathology':
                     is_pathology = True
-                elif slide_data['is_pathology'] == 'No':
+                elif slide_data['histology_pathology'] == 'histology':
                     is_pathology = False
                 else:
                     # Not valid, skip entry
                     continue
 
-                slide_name = slide_data['slide_name']           # get name from slide_data (csv file)
-                description = slide_data['description']
-
                 # Insert new slide into database
                 with transaction.atomic():
                     slide = Slide(
-                        name=slide_name,
+                        name=slide_data['new_slide_name'],   # get new name from slide_data
+                        # name=slide_data['slide_name'],   # get name from slide_data (csv file)
                         path=path_to_slide,
-                        description=description,
+                        description=slide_data['description'],
                         pathology=is_pathology,
                     )
                     slide.save()
-                    create_thumbnail(slide.id)  # TODO: Generates an error -- fix
+
+                    if path_to_slide.endswith('.vsi'):
+                        # Copy thumbnail.jpg file from data source to project files
+                        shutil.copyfile(
+                            src=os.path.join(os.path.split(path_to_slide)[0], 'thumbnail.jpg'),
+                            dst=os.path.join(BASE_DIR, f'thumbnails/{slide.id}.jpg')
+                        )
+
                     new_paths.append(path_to_slide)  # to ensure duplicates aren't added
 
             else:  # Path already exists, retrieve existing entry
                 #try:
                 slide = Slide.objects.get(path=path_to_slide)
+                # Copy thumbnail.jpg file from data source to project files
+                if str(slide.id) + '.jpg' not in os.listdir("../../../thumbnails") \
+                        and path_to_slide.endswith('.vsi'):
+                    shutil.copyfile(
+                        src=os.path.join(os.path.split(path_to_slide)[0], 'thumbnail.jpg'),
+                        dst=os.path.join(BASE_DIR, f'thumbnails/{slide.id}.jpg')
+                    )
                 #except Exception as exc:
                 #    # TODO: Catch exception if > 1 entry with same path exists
                 #    pass
@@ -170,7 +192,8 @@ class Command(BaseCommand):
             # ==== Add tags to slide (and to DB where missing) ====
             organ = slide_data['organ']
             stain = slide_data['staining']
-            other = slide_data['other_tags']
+            # TODO: Handle other tags
+            #other = slide_data['other_tags']
 
             # Handle tags not existing in the DB yet
             if organ not in list(Tag.objects.filter(is_organ=True).values_list('name', flat=True)):
@@ -184,6 +207,6 @@ class Command(BaseCommand):
             # Retrieve querysets for tags and add to slide
             organ_tag = Tag.objects.filter(name=organ, is_organ=True, is_stain=False)
             stain_tag = Tag.objects.filter(name=stain, is_organ=False, is_stain=True)
-            other_tags = Tag.objects.filter(name=other, is_organ=False, is_stain=False)
+            #other_tags = Tag.objects.filter(name=other, is_organ=False, is_stain=False)
             # NB: Overwrites existing Slide-Tag relationships
             slide.tags.set(organ_tag | stain_tag)  # TODO: other_tags
