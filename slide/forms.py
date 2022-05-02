@@ -9,7 +9,7 @@ class SlideForm(ModelForm):
     image_file = FileField()
     class Meta:
         model = Slide
-        fields = ['name', 'description', 'image_file', 'pathology', 'organ_tags', 'system_tags', 'other_tags']
+        fields = ['name', 'description', 'image_file', 'pathology', 'organ_tags', 'stain_tags', 'other_tags']
         exclude = ['path']
         widgets = {
             'image_file': FileInput(),
@@ -20,13 +20,13 @@ class SlideForm(ModelForm):
         required=False,
         blank=True,
     )
-    system_tags = ModelMultipleChoiceField(
-        queryset=Tag.objects.filter(is_system=True),
+    stain_tags = ModelMultipleChoiceField(
+        queryset=Tag.objects.filter(is_stain=True),
         required=False,
         blank=True,
     )
     other_tags = ModelMultipleChoiceField(
-        queryset=Tag.objects.filter(is_organ=False, is_system=False),
+        queryset=Tag.objects.filter(is_organ=False, is_stain=False),
         required=False,
         blank=True,
     )

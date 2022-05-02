@@ -21,8 +21,8 @@
 - model: tag.tag
   pk: 5
   fields:
-    name: Inflammation
-    is_system: True
+    name: HE
+    is_stain: True
 - model: tag.tag
   pk: 6
   fields:

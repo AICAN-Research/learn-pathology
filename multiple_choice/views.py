@@ -68,9 +68,9 @@ def new(request, slide_id):
                 task.save()
 
                 organ_tags = taskForm.cleaned_data['organ_tags']
-                system_tags = taskForm.cleaned_data['system_tags']
+                stain_tags = taskForm.cleaned_data['stain_tags']
                 other_tags = taskForm.cleaned_data['other_tags']
-                task.tags.set(organ_tags | system_tags | other_tags)
+                task.tags.set(organ_tags | stain_tags | other_tags)
 
                 # Create multiple choice
                 multiple_choice = form.save(commit=False)
@@ -146,9 +146,9 @@ def edit(request, task_id):
                 task = task_form.save()
 
                 organ_tags = task_form.cleaned_data['organ_tags']
-                system_tags = task_form.cleaned_data['system_tags']
+                stain_tags = task_form.cleaned_data['stain_tags']
                 other_tags = task_form.cleaned_data['other_tags']
-                task.tags.set(organ_tags | system_tags | other_tags)
+                task.tags.set(organ_tags | stain_tags | other_tags)
 
                 multiple_choice = multiple_choice_form.save()
 
@@ -181,8 +181,8 @@ def edit(request, task_id):
     else:  # GET
         task_form = TaskForm(instance=task)#, initial=task.tags.all())
         task_form.fields['organ_tags'].initial = task.tags.filter(is_organ=True)
-        task_form.fields['system_tags'].initial = task.tags.filter(is_system=True)
-        task_form.fields['other_tags'].initial = task.tags.filter(is_organ=False, is_system=False)
+        task_form.fields['stain_tags'].initial = task.tags.filter(is_stain=True)
+        task_form.fields['other_tags'].initial = task.tags.filter(is_stain=False, is_organ=False)
 
         multiple_choice_form = MultipleChoiceForm(instance=task.multiplechoice)
         choice_formset = ChoiceFormset(queryset=choices)
