@@ -2,34 +2,96 @@
 
 {% block content %}
 
-<h2>Edit multiple choice</h2>
+<div class="container">
+<h1>Edit multiple choice</h1>
+</div>
+
+<div class="card mx-auto text-center" style="width: 90%">
+<div class="card-body">
+<div class="card-text">
+
+<p>
+    Update the information you wish to update, then click the
+    <i>Update multiple choice</i> button
+</p>
 
 <form method="post">
     {% csrf_token %}
+    {{ taskForm.management_form }}
+    <table class="table">
+        <thead class="thead-light">
+        <tr><th>Multiple choice info</th><th></th></tr>
+        </thead>
+        <tr>
+            <th>{{ taskForm.name.label }} (short, decriptive)</th>
+            <td>{{ taskForm.name }}</td>
+        </tr>
+        <tr>
+            <th>{{ multipleChoiceForm.question.label }}</th>
+            <td>{{ multipleChoiceForm.question }}</td>
+        </tr>
+        <tr>
+            <th>{{ multipleChoiceForm.instructions.label }}</th>
+            <td>{{ multipleChoiceForm.instructions }}</td>
+        </tr>
+        <tr>
+            <th>Is the question about pathology?</th>
+            <td>{{ taskForm.pathology }}</td>
+        </tr>
 
-    <table>
-        <tr>{{ taskForm }}</tr>
-        <tr>{{ multipleChoiceForm }}</tr>
-        <tr><td>{{ "" }}</td> <th>{{ "Check box if correct" }}</th></tr>
+
+        <thead class="thead-light">
+        <tr><th>Task metadata and tagging</th><th></th></tr>
+        </thead>
+        <!-- <tr>{{ taskForm }}</tr> -->
+        <tr>
+            <th>{{ taskForm.organ_tags.label }}</th>
+            <td>{{ taskForm.organ_tags }}</td>
+        </tr>
+        <tr>
+            <th>{{ taskForm.stain_tags.label }}</th>
+            <td>{{ taskForm.stain_tags }}</td>
+        </tr>
+        <tr>
+            <th>{{ taskForm.other_tags.label }}</th>
+            <td>{{ taskForm.other_tags }}</td>
+        </tr>
+
+        <thead class="thead-light">
+        <tr>
+            <th>Answer alternatives</th>
+            <th>Check box if alternative is correct</th>
+        </tr>
+        </thead>
         {{ choiceFormset.management_form }}
         {% for choiceForm in choiceFormset %}
             {{ choiceForm.id }} <!-- Need to explicitly render form id when not iterating through all fields -->
             <tr>
-                <th>{{ "Choice" }}</th>
+                <td>{{ "Option" }}</td>
                 <td>{{ choiceForm.text }} {{ choiceForm.correct }}</td>
             </tr>
         {% endfor %}
     </table>
 
-    <br>
-    <input type="submit" value="Update multiple choice">
-    <br>
+    <table class="table">
+        <thead class="thead-light">
+        <tr><th>Annotate WSI</th></tr>
+        </thead>
+        <tr>
+        <td>
 
-    <h3>Annotate WSI</h3>
-    Double click where you want to add annotations:
-    {% include 'slide/view_wsi_and_edit_annotations.html' with slide=slide pointers=pointers  %}
+            {% include 'slide/view_wsi_and_annotate.html' with slide=slide  %}
+
+            <br>
+            <input type="submit" value="Update multiple choice">
+        </td>
+        </tr>
+    </table>
 
 </form>
 
 
+</div>
+</div>
+</div>
 {% endblock content %}

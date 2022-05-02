@@ -26,12 +26,12 @@
             <td>{{ taskForm.name }}</td>
         </tr>
         <tr>
-            <th>{{ form.question.label }}</th>
-            <td>{{ form.question }}</td>
+            <th>{{ multipleChoiceForm.question.label }}</th>
+            <td>{{ multipleChoiceForm.question }}</td>
         </tr>
         <tr>
-            <th>{{ form.instructions.label }}</th>
-            <td>{{ form.instructions }}</td>
+            <th>{{ multipleChoiceForm.instructions.label }}</th>
+            <td>{{ multipleChoiceForm.instructions }}</td>
         </tr>
         <tr>
             <th>Is the question about pathology?</th>
@@ -73,10 +73,11 @@
     </table>
 
     <table class="table">
+        <thead class="thead-light">
+        <tr><th>Annotate WSI</th></tr>
+        </thead>
         <tr>
-        <th>Annotate WSI</th>
         <td>
-
             {% include 'slide/view_wsi_and_annotate.html' with slide=slide  %}
 
             <br>
@@ -84,6 +85,7 @@
         </td>
         </tr>
     </table>
+
 </form>
 
 
