@@ -14,9 +14,7 @@
     Add tags and annotate the slide (optional)
 </p>
 
-<table class="table">
-
-    <form class="form" method="post">
+<form class="form" method="post">
     {% csrf_token %}
     {{ taskForm.management_form }}
     <table class="table">
@@ -86,9 +84,8 @@
         </td>
         </tr>
     </table>
-    </form>
+</form>
 
-</table>
 
 </div>
 </div>
