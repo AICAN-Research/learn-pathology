@@ -51,33 +51,33 @@ def new(request, slide_id):
     ChoiceFormset = formset_factory(ChoiceForm, extra=5)
     if request.method == 'POST': # Form was submitted
         print("POST")
-        taskForm = TaskForm(request.POST)
-        form = MultipleChoiceForm(request.POST)
-        choiceFormset = ChoiceFormset(request.POST)
+        task_form = TaskForm(request.POST)
+        multiple_choice_form = MultipleChoiceForm(request.POST)
+        choice_formset = ChoiceFormset(request.POST)
 
         with transaction.atomic():  # Make save operation atomic
-            if form.is_valid() and taskForm.is_valid() and choiceFormset.is_valid():
+            if multiple_choice_form.is_valid() and task_form.is_valid() and choice_formset.is_valid():
                 # Create annotated slide
                 annotated_slide = AnnotatedSlide()
                 annotated_slide.slide = slide
                 annotated_slide.save()
 
                 # Create task
-                task = taskForm.save(commit=False)
+                task = task_form.save(commit=False)
                 task.annotated_slide = annotated_slide
                 task.save()
 
-                organ_tags = taskForm.cleaned_data['organ_tags']
-                stain_tags = taskForm.cleaned_data['stain_tags']
-                other_tags = taskForm.cleaned_data['other_tags']
+                organ_tags = task_form.cleaned_data['organ_tags']
+                stain_tags = task_form.cleaned_data['stain_tags']
+                other_tags = task_form.cleaned_data['other_tags']
                 task.tags.set(organ_tags | stain_tags | other_tags)
 
                 # Create multiple choice
-                multiple_choice = form.save(commit=False)
+                multiple_choice = multiple_choice_form.save(commit=False)
                 multiple_choice.task = task
                 multiple_choice.save()
 
-                for choiceForm in choiceFormset:
+                for choiceForm in choice_formset:
                     choice = choiceForm.save(commit=False)
                     if len(choice.text) > 0:
                         choice.task = multiple_choice
@@ -99,15 +99,15 @@ def new(request, slide_id):
                 messages.add_message(request, messages.SUCCESS, 'Task added successfully!')
                 return redirect('task_list')
     else:
-        taskForm = TaskForm()
-        form = MultipleChoiceForm()
-        choiceFormset = ChoiceFormset()
+        task_form = TaskForm()
+        multiple_choice_form = MultipleChoiceForm()
+        choice_formset = ChoiceFormset()
 
     return render(request, 'multiple_choice/new.html', {
         'slide': slide,
-        'form': form,
-        'taskForm': taskForm,
-        'choiceFormset': choiceFormset,
+        'multipleChoiceForm': multiple_choice_form,
+        'taskForm': task_form,
+        'choiceFormset': choice_formset,
     })
 
 
