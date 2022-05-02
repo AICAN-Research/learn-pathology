@@ -25,12 +25,18 @@
         {% endfor %}
     </table>
 
-    <h3>Annotate WSI</h3>
-    Double click where you want to add annotations:
-    {% include 'slide/view_wsi_and_annotate.html' with slide=slide  %}
+    <table class="table">
+        <tr>
+        <th>Annotate WSI</th>
+        <td>
 
-    <br>
-    <input type="submit" value="Submit">
+            {% include 'slide/view_wsi_and_annotate.html' with slide=slide  %}
+
+            <br>
+            <input type="submit" value="Submit">
+        </td>
+        </tr>
+    </table>
 </form>
 </div>
 </div>

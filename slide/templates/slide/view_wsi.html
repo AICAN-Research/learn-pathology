@@ -1,9 +1,10 @@
 {% load static %}
-<div id="wsi-canvas" class="wsi_canvas" style="width:100%;height:100%"></div>
+<div class="container fill" style="display: table">
+<div id="wsi-canvas" class="wsi_canvas" style="width:100%;height:100%;display: table-row"></div>
 {% if annotated_slide %}
     {{ annotated_slide.get_html | safe }}
 {% endif %}
-
+</div>
 <script src="{% static 'slide/openseadragon.min.js' %}"></script>
 <script type="text/javascript">
     let buttonElement = document.createElement("button");

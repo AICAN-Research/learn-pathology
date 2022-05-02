@@ -2,14 +2,15 @@
 {% load to_class_name %}
 
 {% block content %}
-
-
+<div class="container">
 <h1>Add tasks to course</h1>
-
 <p>
     Select task(s) to add to the course {{ course.code }} - {{ course.title }}
 </p>
-
+</div>
+<div class="card mx-auto text-center" style="width: 90%">
+<div class="card-body">
+<div class="card-text">
 <p>
     <a href="{% url 'course:view' course.id %}">
         <input type="button" value="Return to course page">
@@ -17,105 +18,114 @@
 </p>
 
 
-
-<h2>Available tasks</h2>
-
-<form>
-    <p>
-        <b>Filter:</b>
-        Organ:
-        <select name="organ[]" multiple class="filter" style="width:20%">
-            {% for tag in organ_tags %}
-                <option value="{{ tag.id }}"{% if tag.id|slugify in selected_organ_tags %} selected="selected"{% endif %}>{{ tag.name }}</option>
-            {% endfor %}
-        </select>
-        Stain:
-        <select name="stain[]" multiple class="filter">
-            {% for tag in stain_tags %}
-                <option value="{{ tag.id }}"{% if tag.id|slugify in selected_stain_tags %} selected="selected"{% endif %}>{{ tag.name }}</option>
-            {% endfor %}
-        </select>
-        Tag:
-        <select name="tag[]" multiple class="filter">
-            {% for tag in other_tags %}
-                <option value="{{ tag.id }}"{% if tag.id|slugify in selected_other_tags %} selected="selected"{% endif %}>{{ tag.name }}</option>
-            {% endfor %}
-        </select>
-    </p>
-</form>
-
-
-{% if filtered_tasks %}
+<table class="table">
+<tr>
+    <th>Available tasks</th>
 
     <form>
-        <table>
+        <p>
+            <b>Filter:</b>
+            Organ:
+            <select name="organ[]" multiple class="filter" style="width:20%">
+                {% for tag in organ_tags %}
+                    <option value="{{ tag.id }}"{% if tag.id|slugify in selected_organ_tags %} selected="selected"{% endif %}>{{ tag.name }}</option>
+                {% endfor %}
+            </select>
+            Stain:
+            <select name="stain[]" multiple class="filter">
+                {% for tag in stain_tags %}
+                    <option value="{{ tag.id }}"{% if tag.id|slugify in selected_stain_tags %} selected="selected"{% endif %}>{{ tag.name }}</option>
+                {% endfor %}
+            </select>
+            Tag:
+            <select name="tag[]" multiple class="filter">
+                {% for tag in other_tags %}
+                    <option value="{{ tag.id }}"{% if tag.id|slugify in selected_other_tags %} selected="selected"{% endif %}>{{ tag.name }}</option>
+                {% endfor %}
+            </select>
+        </p>
+    </form>
+
+    <td>
+    {% if filtered_tasks %}
+
+        <form class="form">
+            <table class="table">
+                <thead class="thead-light">
+                <tr>
+                    <th>Slide</th>
+                    <th>Task name</th>
+                    <th>Task type</th>
+                    <th></th>
+                </tr>
+                </thead>
+            {% for task in filtered_tasks %}
+                <tr>
+                    <td>
+                        <a href="{% url 'slide:view_full' task.annotated_slide.slide.id %}">
+                            <img src="/slide/thumbnails/{{ task.annotated_slide.slide.id }}.jpg" style="width: 60px">
+                        </a>
+                    </td>
+                    <td>{{ task.name }}</td>
+                    <td>{{ task.type }}</td>
+                    <td>
+                        <button class="add_button" data-course_id={{ course.id }} data-model_name={{ task | to_class_name }} data-instance_id={{ task.id }} >
+                            Add
+                        </button>
+                    </td>
+                </tr>
+            {% endfor %}
+            </table>
+        </form>
+    {% else %}
+        <p>
+            No tasks found with current filter.
+        </p>
+    {% endif %}
+    </td>
+</tr>
+<tr>
+    <th>Tasks in course</th>
+
+    <td>
+    {% if tasks_in_course %}
+        <form class="form">
+            <table class="table">
+            <thead class="thead-light">
             <tr>
-                <th>Slide</th>
+                <th>Thumbnail</th>
                 <th>Task name</th>
                 <th>Task type</th>
                 <th></th>
             </tr>
-        {% for task in filtered_tasks %}
-            <tr>
-                <td>
-                    <a href="{% url 'slide:view_full' task.annotated_slide.slide.id %}">
-                        <img src="/slide/thumbnails/{{ task.annotated_slide.slide.id }}.jpg" style="width: 60px">
-                    </a>
-                </td>
-                <td>{{ task.name }}</td>
-                <td>{{ task.type }}</td>
-                <td>
-                    <button class="add_button" data-course_id={{ course.id }} data-model_name={{ task | to_class_name }} data-instance_id={{ task.id }} >
-                        Add
-                    </button>
-                </td>
-            </tr>
-        {% endfor %}
-        </table>
-    </form>
-{% else %}
-    <p>
-        No tasks found with current filter.
-    </p>
-{% endif %}
-
-
-
-<h2>Tasks in course</h2>
-
-
-{% if tasks_in_course %}
-    <form>
-        <table>
-        <tr>
-            <th>Thumbnail</th>
-            <th>Task name</th>
-            <th>Task type</th>
-            <th></th>
-        </tr>
-        {% for task in tasks_in_course %}
-            <tr>
-                <td>
-                    <a href="{% url 'slide:view_full' task.annotated_slide.slide.id %}">
-                        <img src="/slide/thumbnails/{{ task.annotated_slide.slide.id }}.jpg" style="width: 60px">
-                    </a>
-                </td>
-                <td>{{ task.name }}</td>
-                <td>{{ task.type }}</td>
-                <td>
-                    <button class="remove_button" data-course_id={{ course.id }} data-model_name={{ task | to_class_name }} data-instance_id={{ task.id }} >
-                        Remove
-                    </button>
-                </td>
-            </tr>
-        {% endfor %}
-        </table>
-    </form>
-{% else %}
-    <p>
-        No slides have been added to the course.
-    </p>
-{% endif %}
-
-
+            </thead>
+            {% for task in tasks_in_course %}
+                <tr>
+                    <td>
+                        <a href="{% url 'slide:view_full' task.annotated_slide.slide.id %}">
+                            <img src="/slide/thumbnails/{{ task.annotated_slide.slide.id }}.jpg" style="width: 60px">
+                        </a>
+                    </td>
+                    <td>{{ task.name }}</td>
+                    <td>{{ task.type }}</td>
+                    <td>
+                        <button class="remove_button" data-course_id={{ course.id }} data-model_name={{ task | to_class_name }} data-instance_id={{ task.id }} >
+                            Remove
+                        </button>
+                    </td>
+                </tr>
+            {% endfor %}
+            </table>
+        </form>
+    {% else %}
+        <p>
+            No slides have been added to the course.
+        </p>
+    {% endif %}
+    </td>
+</tr>
+</table>
+</div>
+</div>
+</div>
 {% endblock content %}

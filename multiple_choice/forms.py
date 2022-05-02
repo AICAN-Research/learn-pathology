@@ -39,4 +39,4 @@ class ChoiceForm(ModelForm):
 class MultipleChoiceForm(ModelForm):
     class Meta:
         model = MultipleChoice
-        fields = ['question']
+        fields = ['question', 'instructions']
