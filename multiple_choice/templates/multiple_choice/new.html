@@ -8,18 +8,67 @@
 <div class="card mx-auto text-center" style="width: 90%">
 <div class="card-body">
 <div class="card-text">
-<form class="form" method="post">
-    {% csrf_token %}
 
+<p>
+    Enter the name, question and answers for the multiple choice.
+    Add tags and annotate the slide (optional)
+</p>
+
+<table class="table">
+
+    <form class="form" method="post">
+    {% csrf_token %}
+    {{ taskForm.management_form }}
     <table class="table">
-        <tr>{{ taskForm }}</tr>
-        <tr>{{ form }}</tr>
-        <tr><td>{{ "" }}</td> <th>{{ "Check box if correct" }}</th></tr>
+        <thead class="thead-light">
+        <tr><th>Multiple choice info</th><th></th></tr>
+        </thead>
+        <tr>
+            <th>{{ taskForm.name.label }} (short, decriptive)</th>
+            <td>{{ taskForm.name }}</td>
+        </tr>
+        <tr>
+            <th>{{ form.question.label }}</th>
+            <td>{{ form.question }}</td>
+        </tr>
+        <tr>
+            <th>{{ form.instructions.label }}</th>
+            <td>{{ form.instructions }}</td>
+        </tr>
+        <tr>
+            <th>Is the question about pathology?</th>
+            <td>{{ taskForm.pathology }}</td>
+        </tr>
+
+
+        <thead class="thead-light">
+        <tr><th>Task metadata and tagging</th><th></th></tr>
+        </thead>
+        <!-- <tr>{{ taskForm }}</tr> -->
+        <tr>
+            <th>{{ taskForm.organ_tags.label }}</th>
+            <td>{{ taskForm.organ_tags }}</td>
+        </tr>
+        <tr>
+            <th>{{ taskForm.stain_tags.label }}</th>
+            <td>{{ taskForm.stain_tags }}</td>
+        </tr>
+        <tr>
+            <th>{{ taskForm.other_tags.label }}</th>
+            <td>{{ taskForm.other_tags }}</td>
+        </tr>
+
+        <thead class="thead-light">
+        <tr>
+            <th>Answer alternatives</th>
+            <th>Check box if alternative is correct</th>
+        </tr>
+        </thead>
         {{ choiceFormset.management_form }}
         {% for choiceForm in choiceFormset %}
             {{ choiceForm.id }} <!-- Need to explicitly render form id when not iterating through all fields -->
             <tr>
-                <th>{{ "Choice" }}</th>
+                <td>{{ "Option" }}</td>
                 <td>{{ choiceForm.text }} {{ choiceForm.correct }}</td>
             </tr>
         {% endfor %}
@@ -37,7 +86,10 @@
         </td>
         </tr>
     </table>
-</form>
+    </form>
+
+</table>
+
 </div>
 </div>
 </div>
