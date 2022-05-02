@@ -12,6 +12,7 @@
 <div class="card-text">
     {% if courses %}
         <table class="table">
+        <thead class="thead-light">
         <tr>
             <th>Course code</th>
             <th>Course name</th>
@@ -23,6 +24,7 @@
                 <th>Delete</th>
             {% endif %}
         </tr>
+        </thead>
         {% for course in courses %}
             <tr>
                 <td><a href="{% url 'course:view' course.id %}">{{ course.code }}</a></td>

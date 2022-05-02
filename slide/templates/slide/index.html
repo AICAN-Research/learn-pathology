@@ -12,6 +12,20 @@
         <a href="{% url 'slide:add' %}">Add a whole slide image to the database</a>
     </p>
     {% endif %}
+
+    <p>
+        <form class="form">
+            <b>Search</b> (in names, descriptions):
+            {% if search_query %}
+                <input type="text" name="search" placeholder="Search names, descriptions..."
+                       value="{{ search_query }}">
+            {% else %}
+                <input type="text" name="search">
+            {% endif %}
+            <input type="submit" name="submit_button" value="Submit">
+            <input type="submit" name="submit_button" value="Clear search">
+        </form>
+    </p>
     <p>
         <form class="form">
             <b>Filter:</b>
@@ -23,11 +37,11 @@
             </select>
             Pathology: <input type="checkbox" {% if selected_pathology %}checked="checked"{% endif %} name="pathology" onchange="this.form.submit();">
             Histology: <input type="checkbox" {% if selected_histology %}checked="checked"{% endif %} name="histology" onchange="this.form.submit();">
-            System:
-            <select name="system[]" multiple class="filter">
-                {% for tag in system_tags %}
-                    <option value="{{ tag.id }}"{% if tag.id|slugify in selected_system_tags %} selected="selected"{% endif %}>{{ tag.name }}</option>
-                {% endfor %}
+            Stain:
+            <select name="stain[]" multiple class="filter">
+            {% for tag in stain_tags %}
+                <option value="{{ tag.id }}"{% if tag.id|slugify in selected_stain_tags %} selected="selected"{% endif %}>{{ tag.name }}</option>
+            {% endfor %}
             </select>
             Tag:
             <select name="tag[]" multiple class="filter">
@@ -37,8 +51,47 @@
             </select>
         </form>
     </p>
-    {% if slides %}
+
+    {% if search_query %}
+
+        {% if search_result %}
+            <h4>Search results</h4>
+            <table class="table">
+            <thead class="thead-light">
+                <tr>
+                    <th>Thumbnail</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Tasks</th>
+                    {% if request.user.is_teacher or request.user.is_superuser %}
+                    <th>Create task</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            {% for slide in search_result %}
+                <tr>
+                    <td><a href="{% url 'slide:view_full' slide.id %}"><img src="/slide/thumbnails/{{ slide.id }}.jpg" style="width: 100px"></a></td>
+                    <td>{{ slide.name }}</td>
+                    <td>{{ slide.description }}</td>
+                    <td><a href="">Tasks</a></td>
+                    {% if request.user.is_teacher or request.user.is_superuser %}
+                    <td><a href="{% url 'multiple_choice:new' slide.id %}">Create new task</a></td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+            </table>
+        {% else %}
+            <p>
+                No slides found with search.
+            </p>
+        {% endif %}
+
+    {% else %}
+
+        {% if slides %}
+        <h4>All images</h4>
         <table class="table">
+        <thead class="thead-light">
             <tr>
                 <th>Thumbnail</th>
                 <th>Name</th>
@@ -48,6 +101,7 @@
                 <th>Create task</th>
                 {% endif %}
             </tr>
+        </thead>
         {% for slide in slides %}
             <tr>
                 <td><a href="{% url 'slide:view_full' slide.id %}"><img src="/slide/thumbnails/{{ slide.id }}.jpg" style="width: 100px"></a></td>
@@ -60,10 +114,12 @@
             </tr>
         {% endfor %}
         </table>
-    {% else %}
-    <p>
-        No slides found with current filter.
-    </p>
+        {% else %}
+        <p>
+            No slides found with current filter.
+        </p>
+        {% endif %}
+
     {% endif %}
 </div>
 </div>

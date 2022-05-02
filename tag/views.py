@@ -5,7 +5,33 @@ from .models import Tag, TagForm
 
 
 def index(request):
-    return render(request, 'tag/index.html', {'tags': Tag.objects.all()})
+    tags = Tag.objects.all()
+    selected_organs = request.GET.get('organs', False)
+    selected_stains = request.GET.get('stains', False)
+    selected_others = request.GET.get('others', False)
+
+    if not selected_organs and not selected_stains and not selected_others:
+        selected_organs = True
+        selected_stains = True
+        selected_others = True
+        tags = Tag.objects.all()
+    else:  # at least one of the categories is selected
+        tags = Tag.objects.none()
+        if selected_organs:
+            tags = tags.union(Tag.objects.filter(is_organ=True))
+        if selected_stains:
+            tags = tags.union(Tag.objects.filter(is_stain=True))
+        if selected_others:
+            tags = tags.union(Tag.objects.filter(is_organ=False, is_stain=False))
+
+    context = {
+        'tags': tags,
+        'selected_organs': selected_organs,
+        'selected_stains': selected_stains,
+        'selected_others': selected_others,
+    }
+
+    return render(request, 'tag/index.html', context)
 
 
 def new(request):

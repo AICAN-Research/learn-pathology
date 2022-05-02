@@ -15,9 +15,9 @@ def list(request):
     organs = request.GET.getlist('organ[]')
     if len(organs) > 0:
         tasks = tasks.filter(tags__in=organs)
-    systems = request.GET.getlist('system[]')
-    if len(systems) > 0:
-        tasks = tasks.filter(tags__in=systems)
+    stains = request.GET.getlist('stain[]')
+    if len(stains) > 0:
+        tasks = tasks.filter(tags__in=stains)
     tags = request.GET.getlist('tag[]')
     if len(tags) > 0:
         tasks = tasks.filter(tags__in=tags)
@@ -35,10 +35,10 @@ def list(request):
     return render(request, "task/list.html", {
         'tasks': tasks.order_by('-id'),
         'organ_tags': Tag.objects.filter(is_organ=True),
-        'system_tags': Tag.objects.filter(is_system=True),
-        'other_tags': Tag.objects.filter(is_system=False, is_organ=False),
+        'stain_tags': Tag.objects.filter(is_stain=True),
+        'other_tags': Tag.objects.filter(is_stain=False, is_organ=False),
         'selected_organ_tags': organs,
-        'selected_system_tags': systems,
+        'selected_stain_tags': stains,
         'selected_other_tags': tags,
         'selected_pathology': selected_pathology,
         'selected_histology': selected_histology,

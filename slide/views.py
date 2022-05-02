@@ -3,6 +3,7 @@ import os.path
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
+from django.db.models import Q
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect
 from django.conf import settings
@@ -45,8 +46,8 @@ def index(request):
     # Filters
     organs = request.GET.getlist('organ[]')
     if len(organs) > 0: slides = slides.filter(tags__in=organs)
-    systems = request.GET.getlist('system[]')
-    if len(systems) > 0: slides = slides.filter(tags__in=systems)
+    stains = request.GET.getlist('stain[]')
+    if len(stains) > 0: slides = slides.filter(tags__in=stains)
     tags = request.GET.getlist('tag[]')
     if len(tags) > 0: slides = slides.filter(tags__in=tags)
     selected_pathology = request.GET.get('pathology', False)
@@ -59,13 +60,30 @@ def index(request):
     elif not selected_pathology and selected_histology:
         slides = slides.filter(pathology=False)
 
+    # Handle search and search results
+    if request.GET.get('submit_button') == 'Clear search':
+        search_query = None
+        search_result = None
+    else:
+        search_query = request.GET.get('search')
+        if search_query is not None and len(search_query) > 0:
+            filter_result = Slide.objects.filter(
+                Q(name__contains=search_query) | Q(description__contains=search_query)
+            )
+            search_result = filter_result
+        else:
+            search_query = None
+            search_result = None
+
     return render(request, 'slide/index.html', {
         'slides': slides,
+        'search_query': search_query,
+        'search_result': search_result,
         'organ_tags': Tag.objects.filter(is_organ=True),
-        'system_tags': Tag.objects.filter(is_system=True),
-        'other_tags': Tag.objects.filter(is_system=False, is_organ=False),
+        'stain_tags': Tag.objects.filter(is_stain=True),
+        'other_tags': Tag.objects.filter(is_organ=False, is_stain=False),
         'selected_organ_tags': organs,
-        'selected_system_tags': systems,
+        'selected_stain_tags': stains,
         'selected_other_tags': tags,
         'selected_pathology': selected_pathology,
         'selected_histology': selected_histology,
@@ -127,9 +145,9 @@ def add(request):
                 create_thumbnail(slide.id)
 
                 organ_tags = form.cleaned_data['organ_tags']
-                system_tags = form.cleaned_data['system_tags']
+                stain_tags = form.cleaned_data['stain_tags']
                 other_tags = form.cleaned_data['other_tags']
-                slide.tags.set(organ_tags | system_tags | other_tags)
+                slide.tags.set(organ_tags | stain_tags | other_tags)
 
                 messages.add_message(request, messages.SUCCESS, 'Image added to database')
                 return redirect('slide:view_full', slide.id)
