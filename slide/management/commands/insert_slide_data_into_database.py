@@ -125,6 +125,9 @@ class Command(BaseCommand):
         new_paths = []
         for key, slide_data in data_dict.items():
 
+            slide_ready = slide_data['Ready']
+            if not slide_ready:  # implicit conversion: string-->bool
+                continue
             organ = slide_data['organ']
             if len(organ) == 0:  # no data entered --> skip
                 continue
