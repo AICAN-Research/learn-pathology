@@ -59,7 +59,7 @@ def sort_data_by_row(data):
 def match_file_name_to_wsi(file_name, slide_folder):
     for fn in os.listdir(slide_folder):
         if fn == file_name:
-            print(f'Found WSI file matching "{file_name}"')
+            #print(f'Found WSI file matching "{file_name}"')
             return os.path.join(slide_folder, fn)
 
     raise NoMatchingFileError(f"No WSI file matching {file_name} was found")
@@ -72,7 +72,8 @@ def match_file_in_subfolder_to_wsi(file_name, slide_folder):
             path_to_slide = match_file_name_to_wsi(file_name, slide_folder=_path)
             return path_to_slide
         except NoMatchingFileError as exc:
-            print(f"No WSI file matching {file_name} was found in path {_path}. Continuing search...")
+            #print(f"No WSI file matching {file_name} was found in path {_path}. Continuing search...")
+            continue
 
     raise NoMatchingFileError(f"No WSI file matching {file_name} was found in subfolders")
 
