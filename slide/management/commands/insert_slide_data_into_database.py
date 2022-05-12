@@ -123,6 +123,7 @@ class Command(BaseCommand):
         data = read_csv_file(file_path)
         data_dict = sort_data_by_row(data)
 
+        thumbnails_dir = os.path.join(BASE_DIR, 'thumbnails')
         new_paths = []
         for key, slide_data in data_dict.items():
 
@@ -174,7 +175,7 @@ class Command(BaseCommand):
                         # Copy thumbnail.jpg file from data source to project files
                         shutil.copyfile(
                             src=os.path.join(os.path.split(path_to_slide)[0], 'thumbnail.jpg'),
-                            dst=os.path.join(BASE_DIR, f'thumbnails/{slide.id}.jpg')
+                            dst=os.path.join(thumbnails_dir, f'{slide.id}.jpg')
                         )
 
                     new_paths.append(path_to_slide)  # to ensure duplicates aren't added
@@ -183,11 +184,11 @@ class Command(BaseCommand):
                 #try:
                 slide = Slide.objects.get(path=path_to_slide)
                 # Copy thumbnail.jpg file from data source to project files
-                if str(slide.id) + '.jpg' not in os.listdir("../../../thumbnails") \
+                if str(slide.id) + '.jpg' not in os.listdir(thumbnails_dir) \
                         and path_to_slide.endswith('.vsi'):
                     shutil.copyfile(
                         src=os.path.join(os.path.split(path_to_slide)[0], 'thumbnail.jpg'),
-                        dst=os.path.join(BASE_DIR, f'thumbnails/{slide.id}.jpg')
+                        dst=os.path.join(thumbnails_dir, f'{slide.id}.jpg')
                     )
                 #except Exception as exc:
                 #    # TODO: Catch exception if > 1 entry with same path exists
