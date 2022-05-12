@@ -26,7 +26,7 @@ class NoMatchingFileError(Exception):
 def read_csv_file(filename):
     print(f"Reading {filename} as .csv")
 
-    with open(filename, newline='') as csvfile:
+    with open(filename, newline='', encoding='utf-8-sig') as csvfile:
         reader = csv.reader(
             csvfile, delimiter=';', #quotechar='|',
             skipinitialspace=True,
