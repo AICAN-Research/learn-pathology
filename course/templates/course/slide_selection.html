@@ -34,10 +34,10 @@
                     <option value="{{ tag.id }}"{% if tag.id|slugify in selected_organ_tags %} selected="selected"{% endif %}>{{ tag.name }}</option>
                 {% endfor %}
             </select>
-            System:
-            <select name="system[]" multiple class="filter">
-                {% for tag in system_tags %}
-                    <option value="{{ tag.id }}"{% if tag.id|slugify in selected_system_tags %} selected="selected"{% endif %}>{{ tag.name }}</option>
+            Stain:
+            <select name="stain[]" multiple class="filter">
+                {% for tag in stain_tags %}
+                    <option value="{{ tag.id }}"{% if tag.id|slugify in selected_stain_tags %} selected="selected"{% endif %}>{{ tag.name }}</option>
                 {% endfor %}
             </select>
             Tag:
