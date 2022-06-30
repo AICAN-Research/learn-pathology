@@ -64,9 +64,9 @@ class Slide(models.Model):
                 print(osd_level, current_width, current_height)
                 current_width = int(current_width/2)
                 current_height = int(current_height/2)
-                if self.path.endswith('.vsi'): # TODO Hack for now
-                    current_width += current_width % tile_width
-                    current_height += current_height % tile_height
+                #if self.path.endswith('.vsi'): # TODO Hack for now
+                #    current_width += current_width % tile_width
+                #    current_height += current_height % tile_height
                 osd_level += 1
                 # If current_width is closer to previous FAST level width, than the next FAST level width, then use that.
                 if osd_to_fast_level_map[osd_level-1] < levels-1 and abs(current_width - image.getLevelWidth(osd_to_fast_level_map[osd_level-1]+1)) < 1:
