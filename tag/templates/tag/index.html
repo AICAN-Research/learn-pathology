@@ -34,8 +34,10 @@
         {% for tag in tags %}
             <tr>
                 <td>{{ tag.name }}</td>
-                <td><a href="{% url 'tag:edit' tag.id %}">Edit</a></td>
-                <td><a href="{% url 'tag:delete' tag.id %}">Delete</a></td>
+                {% if user.is_teacher or user.is_superuser %}
+                    <td><a href="{% url 'tag:edit' tag.id %}">Edit</a></td>
+                    <td><a href="{% url 'tag:delete' tag.id %}">Delete</a></td>
+                {% endif %}
             </tr>
         {% endfor %}
         </table>
