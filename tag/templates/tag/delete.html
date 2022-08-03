@@ -1,0 +1,41 @@
+{% extends 'learnpathology/base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>Remove tag</h1>
+</div>
+<div class="card mx-auto text-center" style="width: 90%">
+<div class="card-body">
+<div class="card-text">
+    <table class="table">
+    <tr>
+        <th>Tag:</th>
+        <td>{{ tag.name }}</td>
+    </tr>
+    <tr>
+        <th>Tag type: </th>
+        {% if tag.is_organ %}
+            <td>Organ</td>
+        {% elif tag.is_stain %}
+            <td>Stain</td>
+        {% else %}
+            <td>Other</td>
+        {% endif %}
+    </tr>
+
+    <form method="post">
+        {% csrf_token %}
+        <tr>
+            <th>Are you sure you want to delete this tag?</th>
+            <td>{{ form.as_p }}</td>
+        </tr>
+        <tr>
+                <th></th>
+                <td><input type="submit" value="Confirm choice"></td>
+        </tr>
+    </form>
+    </table>
+</div>
+</div>
+</div>
+{% endblock content %}
