@@ -1,7 +1,8 @@
 from django.contrib import messages
 from django.http import HttpResponseNotFound
 from django.shortcuts import render, redirect
-from .models import Tag, TagForm
+from tag.models import Tag, TagForm
+from user.decorators import teacher_required
 
 
 def index(request):
@@ -34,6 +35,7 @@ def index(request):
     return render(request, 'tag/index.html', context)
 
 
+@teacher_required
 def new(request):
     if request.method == 'POST':
         form = TagForm(request.POST)
@@ -47,6 +49,7 @@ def new(request):
     return render(request, 'tag/new.html', {'form': form})
 
 
+@teacher_required
 def edit(request, tag_id):
     try:
         tag = Tag.objects.get(pk=tag_id)
@@ -61,6 +64,7 @@ def edit(request, tag_id):
         return HttpResponseNotFound()
 
 
+@teacher_required
 def delete(request, tag_id):
     try:
         tag = Tag.objects.get(pk=tag_id)
