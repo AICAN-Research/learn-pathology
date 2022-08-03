@@ -21,19 +21,17 @@
         <td>{{ course.description }}</td>
     </tr>
 
-    <tr>
-    <th>Are you sure you want to delete this course?</th>
-    <td>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-        </form>
-    </td>
-    </tr>
-    <tr>
-        <th></th>
-        <td><input type="submit" value="Confirm choice"></td>
-    </tr>
+    <form method="post">
+        {% csrf_token %}
+        <tr>
+            <th>Are you sure you want to delete this course?</th>
+            <td>{{ form.as_p }}</td>
+        </tr>
+        <tr>
+                <th></th>
+                <td><input type="submit" value="Confirm choice"></td>
+        </tr>
+    </form>
     </table>
 </div>
 </div>
