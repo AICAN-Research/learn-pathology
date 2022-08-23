@@ -1,5 +1,5 @@
 from django.db import models
-from django.forms import ModelForm
+from django import forms
 
 
 class Tag(models.Model):
@@ -11,7 +11,13 @@ class Tag(models.Model):
         return self.name
 
 
-class TagForm(ModelForm):
+class TagForm(forms.ModelForm):
     class Meta:
         model = Tag
         fields = ['name', 'is_organ', 'is_stain']
+
+
+class DeleteTagForm(forms.Form):
+    confirmDelete = forms.BooleanField(label="Yes, I want to delete the tag",
+                                       required=False)
+

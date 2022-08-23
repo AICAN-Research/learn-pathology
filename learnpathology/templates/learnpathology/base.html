@@ -36,6 +36,10 @@
     <div class="collapse navbar-collapse" id="navMenu" style="background-color: var(--background-header); padding-left: 1rem; border-radius: 0rem 0rem 1rem 1rem">
         <ul class="navbar-nav mr-auto">
         {% if request.user.is_authenticated %}
+            <!-- Options available to any type of user-->
+            <li class="nav-item"><a class="nav-link active" href="{% url 'course:index' %}">Courses</a></li>
+            <li class="nav-item"><a class="nav-link active" href="{% url 'slide:list' %}">Images</a></li>
+            <li class="nav-item"><a class="nav-link active" href="{% url 'task_list' %}">Tasks</a></li>
             {% if request.user.is_teacher or request.user.is_superuser%}
                 <!-- specific options for teachers or superuser -->
                 <li class="nav-item"><a class="nav-link active" href="{% url 'tag:index' %}">Tags</a></li>
@@ -43,15 +47,12 @@
             {% if request.user.is_student %}
                 <!-- specific options for students-->
             {% endif %}
-            <!-- Options available to any type of user-->
-            <li class="nav-item"><a class="nav-link active" href="{% url 'course:index' %}">Courses</a></li>
-            <li class="nav-item"><a class="nav-link active" href="{% url 'task_list' %}">Tasks</a></li>
-            <li class="nav-item"><a class="nav-link active" href="{% url 'slide:list' %}">Images</a></li>
-            <li class="nav-item"><a class="nav-link active" href="{% url 'logout' %}">Logout</a></li>
             {% if request.user.is_superuser %}
                 <!-- specific options for superuser-->
                 <li class="nav-item"><a class="nav-link active" href="/admin/">Admin</a></li>
             {% endif %}
+            <!-- keep logout button last -->
+            <li class="nav-item"><a class="nav-link active" href="{% url 'logout' %}">Logout</a></li>
 
             {% if request.user.is_teacher %}
                 <script>setTheme('theme_teacher')</script>
