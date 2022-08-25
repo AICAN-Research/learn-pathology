@@ -1,0 +1,156 @@
+{% extends 'learnpathology/base.html' %}
+{% load slide_filters %}
+
+
+<script>
+
+$(document).ready(function(){
+  activaTab('aaa');
+});
+
+function activaTab(tab){
+  $('.nav-tabs a[href="#' + tab + '"]').tab('show');
+};
+
+</script>
+
+{% block content %}
+
+<div class="container">
+    <h1>Image browser</h1>
+</div>
+<div class="card mx-auto text-center" style="width: 90%">
+<div class="card-body">
+<div class="card-text">
+
+    {% if user.is_superuser or user.is_teacher %}
+    <p>
+        <a href="{% url 'slide:add' %}">Add a whole slide image to the database</a>
+    </p>
+    {% endif %}
+
+    <table class="table">
+    <form class="form">
+    <tr>
+        <td>
+            <b>Select organ system: </b>
+
+            <button type="submit" name="organ_system" value="All" id="{{ organ.id }}">All</button>
+            {% for organ in organ_tags %}
+                {% if organ in selected_organ_tags %}
+                    <button type="submit" name="organ_system" style="background-color:rgba(0.2, 0.2, 0.2, 0.125)"
+                            value="{{ organ.id }}" id="{{ organ.id }}" >{{ organ.name }}</button>
+                {% else %}
+                    <button type="submit" name="organ_system" value="{{ organ.id }}" id="{{ organ.id }}">{{ organ.name }}</button>
+                {% endif %}
+            {% endfor %}
+    {% comment %}
+    </td></tr>
+    <tr><td>
+    {% endcomment %}
+    <br>
+    <br>
+        <b>Histology or pathology? </b>
+        {% if selected_histology and selected_pathology %}
+            <button type="submit" name="histology_pathology" value="both" style="background-color:rgba(0.2, 0.2, 0.2, 0.125">Both</button>
+        {% else %}
+            <button type="submit" name="histology_pathology" value="both">Both</button>
+        {% endif %}
+        {% if selected_histology and not selected_pathology %}
+            <button type="submit" name="histology_pathology" value="histology" style="background-color:rgba(0.2, 0.2, 0.2, 0.125">Histology</button>
+        {% else %}
+            <button type="submit" name="histology_pathology" value="histology">Histology</button>
+        {% endif %}
+        {% if selected_pathology and not selected_histology %}
+            <button type="submit" name="histology_pathology" value="pathology" style="background-color:rgba(0.2, 0.2, 0.2, 0.125">Pathology</button>
+        {% else %}
+            <button type="submit" name="histology_pathology" value="pathology">Pathology</button>
+        {% endif %}
+        </td>
+    </tr>
+
+    </form>
+    </table>
+
+
+
+    {% comment %}
+    {% if search_query %}
+
+        {% if search_result %}
+            <h4>Search results</h4>
+            <table class="table">
+            <thead class="thead-light">
+                <tr>
+                    <th>Thumbnail</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Tasks</th>
+                    {% if request.user.is_teacher or request.user.is_superuser %}
+                    <th>Create task</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            {% for slide in search_result %}
+                <tr>
+                    <td><a href="{% url 'slide:view_full' slide.id %}"><img src="/slide/thumbnails/{{ slide.id }}.jpg" style="width: 100px"></a></td>
+                    <td>{{ slide.name }}</td>
+                    <td>{{ slide.description }}</td>
+                    <td><a href="">Tasks</a></td>
+                    {% if request.user.is_teacher or request.user.is_superuser %}
+                    <td><a href="{% url 'multiple_choice:new' slide.id %}">Create new task</a></td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+            </table>
+        {% else %}
+            <p>
+                No slides found with search.
+            </p>
+        {% endif %}
+
+    {% else %}
+    {% endcomment %}
+
+
+    {% if slides %}
+
+        <div class="card">
+            <div class="nav nav-tabs card-header-tabs">
+                <ul class="nav nav-pills card-header-pills">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#grid-view" data-toggle="tab">Grid</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#list-view" data-toggle="tab">List</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="tabs">
+                    <div class="tab-pane" id="grid-view">
+                        {% include 'slide/grid_view.html' with slides=slides num_slides=num_slides slides_per_row=slides_per_row %}
+                    </div>
+                    <div class="tab-pane" id="list-view">
+                        {% include 'slide/list_view.html' with slides=slides num_slides=num_slides slides_per_row=slides_per_row %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if list_view_active %}
+            {% include 'slide/list_view.html' with slides=slides num_slides=num_slides slides_per_row=slides_per_row %}
+        {% else %}
+            {% include 'slide/grid_view.html' with slides=slides num_slides=num_slides slides_per_row=slides_per_row %}
+        {% endif %}
+
+    {% else %}
+        No slides available.
+    {% endif %}
+
+
+    {% comment %}
+    {% endif %}
+    {% endcomment %}
+</div>
+</div>
+</div>
+{% endblock content %}

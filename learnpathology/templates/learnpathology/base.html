@@ -37,7 +37,7 @@
         <ul class="navbar-nav mr-auto">
         {% if request.user.is_authenticated %}
             <!-- Options available to any type of user-->
-            <li class="nav-item"><a class="nav-link active" href="{% url 'slide:list' %}">Images</a></li>
+            <li class="nav-item"><a class="nav-link active" href="{% url 'slide:browser' %}">Images</a></li>
             <li class="nav-item"><a class="nav-link active" href="{% url 'course:index' %}">Courses</a></li>
             <li class="nav-item"><a class="nav-link active" href="{% url 'task_list' %}">Tasks</a></li>
             {% if request.user.is_teacher or request.user.is_superuser%}

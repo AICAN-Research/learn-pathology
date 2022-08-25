@@ -1,0 +1,51 @@
+{% load static %}
+{% load slide_filters %}
+
+<div class="container fill" style="display: table; min-height: 600px">
+
+<h4>Grid view</h4>
+
+{% if slides %}
+
+    <div class="container-fluid">
+    {% for chunk in slides|as_chunks:12 %}
+        <div class="row">
+        {% for slide in chunk %}
+            <div class="column col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                {# <div class="imageBrowserCard"> #}
+                <div class="card border-primary" style="width: 100%">
+                    <a href="{% url 'slide:view_full' slide.id %}">
+                        <img src="/slide/thumbnails/{{ slide.id }}.jpg" style="height: 100px">
+                    </a>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ slide.name }}</h5>
+                        <p class="card-subtitle">{{ slide.description }}</p>
+                        {% if request.user.is_teacher or request.user.is_superuser %}
+                            <a href="{% url 'multiple_choice:new' slide.id %}" class="btn btn-primary">Create new task</a>
+                        {% endif %}
+                    </div>
+                    <!-- TODO: If adding a 'published' flag to slides, might add text or format colour -->
+                    {% comment %}
+                    {% if not slide.published %}
+                        <div class="card-footer">Not published</div>
+                    {% endif %}
+                    {% endcomment %}
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+    {% endfor %}
+    </div>
+
+
+
+
+
+
+{% else %}
+    <p>
+        No slides found with current filter.
+    </p>
+{% endif %}
+
+</div>

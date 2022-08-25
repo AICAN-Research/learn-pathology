@@ -90,6 +90,63 @@ def index(request):
     })
 
 
+def image_browser(request):
+    slides = Slide.objects.all()
+
+    # Filters
+    try:
+        organs = request.GET['organ_system']
+
+        if len(organs) > 1:
+            slides = slides.filter(tags__in=organs)
+            selected_organ_tags = Tag.objects.filter(id=organs)
+        elif len(organs) > 0:
+            if organs == 'All':
+                organs = []
+                selected_organ_tags = []
+            slides = slides.filter(tags__in=[organs])
+            selected_organ_tags = Tag.objects.filter(id=organs)
+        else:
+            selected_organ_tags = []
+
+    except Exception as exc:
+        print(f'{exc.__class__.__name__}: {exc}')
+        organs = []
+        selected_organ_tags = []
+
+    # Handle histology/pathology buttons
+    try:
+        histology_pathology = request.GET['histology_pathology']
+
+        if histology_pathology == 'histology':
+            slides = slides.filter(pathology=False)
+            selected_histology = True
+            selected_pathology = False
+        elif histology_pathology == 'pathology':
+            slides = slides.filter(pathology=True)
+            selected_histology = False
+            selected_pathology = True
+        else:
+            # do not filter slides, use all
+            selected_histology = True
+            selected_pathology = True
+    except Exception as exc:
+        print(f'{exc.__class__.__name__}: {exc}')
+        selected_histology = True
+        selected_pathology = True
+
+    # TODO later: Add search option
+
+    return render(request, 'slide/image_browser.html', {
+        'slides': slides,
+        'num_slides': len(slides),
+        'organ_tags': Tag.objects.filter(is_organ=True),
+        'selected_organ_tags': selected_organ_tags,
+        'selected_histology': selected_histology,
+        'selected_pathology': selected_pathology,
+    })
+
+
 def whole_slide_view_full(request, slide_id):
     slide = slide_cache.load_slide_to_cache(slide_id)
     return render(request, 'slide/view_wsi_full.html', {
