@@ -5,15 +5,80 @@
 <script>
 
 $(document).ready(function(){
-  activaTab('aaa');
+  activateTab('aaa');
 });
 
-function activaTab(tab){
+function activateTab(tab){
   $('.nav-tabs a[href="#' + tab + '"]').tab('show');
-};
+}
+
+$(document).ready(function() {
+    $('.btn').onclick(function (event) {
+        this.form.submit();
+    });
+});
+
+
+
+filterSelection("all") // Execute the function and show all columns
+function filterSelection(c) {
+  var x, i;
+  x = document.getElementsByClassName("column");
+  if (c == "all") c = "";
+  // Add the "show" class (display:block) to the filtered elements, and remove the "show" class from the elements that are not selected
+  for (i = 0; i < x.length; i++) {
+    removeClass(x[i], "show");
+    if (x[i].className.indexOf(c) > -1) addClass(x[i], "show");
+  }
+}
+
+// Show filtered elements
+function addClass(element, name) {
+  var i, arr1, arr2;
+  arr1 = element.className.split(" ");
+  arr2 = name.split(" ");
+  for (i = 0; i < arr2.length; i++) {
+    if (arr1.indexOf(arr2[i]) == -1) {
+      element.className += " " + arr2[i];
+    }
+  }
+}
+
+// Hide elements that are not selected
+function removeClass(element, name) {
+  var i, arr1, arr2;
+  arr1 = element.className.split(" ");
+  arr2 = name.split(" ");
+  for (i = 0; i < arr2.length; i++) {
+    while (arr1.indexOf(arr2[i]) > -1) {
+      arr1.splice(arr1.indexOf(arr2[i]), 1);
+    }
+  }
+  element.className = arr1.join(" ");
+}
+
+// Add active class to the current button (highlight it)
+var btnContainer = document.getElementById("myBtnContainer");
+var btns = btnContainer.getElementsByClassName("btn");
+for (var i = 0; i < btns.length; i++) {
+  btns[i].addEventListener("click", function(){
+    var current = document.getElementsByClassName("active");
+    current[0].className = current[0].className.replace(" active", "");
+    this.className += " active";
+  });
+}
+
+function submitForm() {
+    $('imageCategoryForm').form.submit();
+}
+
 
 </script>
 
+
+{# ================================================ #}
+{#              BEGIN CONTENT                       #}
+{# ================================================ #}
 {% block content %}
 
 <div class="container">
@@ -29,13 +94,150 @@ function activaTab(tab){
     </p>
     {% endif %}
 
+
+    <form class="form" id="imageCategoryForm" onsubmit="{% url 'slide:browser' %}">
+
+
+    <!-- ORGAN SYSTEM selection -->
+    <div class="row no-gutters">
+        <div class="col-sm-5 col-md-3">
+            <div class="card h-100" style="margin-top: auto; margin-bottom: auto">
+                <div class="card-body">
+                    <h5 class="card-title">Organ system:</h5>
+                </div>
+            </div>
+        </div>
+
+        <!-- Show 'All' button -->
+        {% comment %}
+        <div class="card-body">
+        {% if selected_organ_tags %}
+            <button type="submit" class="btn btn-light border-primary" name="organ_system"
+                    value="All" id="all-organs">All</button>
+        {% else %}
+            <button type="submit" class="btn btn-light border-primary active"  name="organ_system"
+                    value="All" id="all-organs">All</button>
+        {% endif %}
+
+        <!-- Other organ buttons -->
+        {% for organ in organ_tags %}
+            {% if organ in selected_organ_tags %}
+                <button type="submit" class="btn btn-light border-primary active"  name="organ_system"
+                        value="{{ organ.id }}" id="{{ organ.id }}" >{{ organ.name }}</button>
+            {% else %}
+                <button type="submit" class="btn btn-light border-primary" name="organ_system"
+                   value="{{ organ.id }}" id="{{ organ.id }}">{{ organ.name }}</button>
+            {% endif %}
+        {% endfor %}
+        </div>
+        {% endcomment %}
+        <div class="col">
+            <div class="card text-align">
+                <div class="card-body container-fluid">
+                    <!-- Show 'All' button -->
+                    {% if selected_organ_tags %}
+                        <button type="submit" class="btn btn-light border-primary" name="organ_system"
+                                value="All" id="all-organs">All</button>
+                    {% else %}
+                        <button type="submit" class="btn btn-light border-primary active"  name="organ_system"
+                                value="All" id="all-organs">All</button>
+                    {% endif %}
+
+                    <!-- Other organ buttons -->
+                    {% for organ in organ_tags %}
+                        {% if organ in selected_organ_tags %}
+                            <button type="submit" class="btn btn-light border-primary active"  name="organ_system"
+                                    value="{{ organ.id }}" id="{{ organ.id }}" >{{ organ.name }}</button>
+                        {% else %}
+                            <button type="submit" class="btn btn-light border-primary" name="organ_system"
+                                value="{{ organ.id }}" id="{{ organ.id }}">{{ organ.name }}</button>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- HISTOLOGY/PATHOLOGY selection -->
+    <div class="row no-gutters">
+        <div class="col-sm-5 col-md-3">
+            <div class="card h-100" style="margin-top: auto; margin-bottom: auto">
+                <div class="card-body">
+                    <h5 class="card-title">Histology or pathology?</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card align-left">
+                <div class="card-body container-fluid">
+
+                    {% if selected_histology and selected_pathology %}
+                        <button type="submit" class="btn btn-light border-primary active" name="histology_pathology" value="both">Both</button>
+                    {% else %}
+                        <button type="submit" class="btn btn-light border-primary" name="histology_pathology" value="both">Both</button>
+                    {% endif %}
+
+                    {% if selected_histology and not selected_pathology %}
+                        <button type="submit" class="btn btn-light border-primary active"  name="histology_pathology" value="histology">Histology</button>
+                    {% else %}
+                        <button type="submit" class="btn btn-light border-primary" name="histology_pathology" value="histology">Histology</button>
+                    {% endif %}
+
+                    {% if selected_pathology and not selected_histology %}
+                        <button type="submit" class="btn btn-light border-primary active" name="histology_pathology" value="pathology">Pathology</button>
+                    {% else %}
+                        <button type="submit" class="btn btn-light border-primary" name="histology_pathology" value="pathology">Pathology</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    {% comment %}
+    <div class="card" style="width: 100%">
+        <div class="card-body">
+            <div class="card-title">Histology or pathology?</div>
+
+            {% if selected_histology and selected_pathology %}
+                <button type="submit" class="btn btn-light border-primary active" name="histology_pathology" value="both">Both</button>
+            {% else %}
+                <button type="submit" class="btn btn-light border-primary" name="histology_pathology" value="both">Both</button>
+            {% endif %}
+            {% if selected_histology and not selected_pathology %}
+                <button type="submit" class="btn btn-light border-primary active"  name="histology_pathology" value="histology">Histology</button>
+            {% else %}
+                <button type="submit" class="btn btn-light border-primary" name="histology_pathology" value="histology">Histology</button>
+            {% endif %}
+            {% if selected_pathology and not selected_histology %}
+                <button type="submit" class="btn btn-light border-primary active" name="histology_pathology" value="pathology">Pathology</button>
+            {% else %}
+                <button type="submit" class="btn btn-light border-primary" name="histology_pathology" value="pathology">Pathology</button>
+            {% endif %}
+        </div>
+    </div>
+    {% endcomment %}
+
+    </form>
+
+    {% comment %}
     <table class="table">
     <form class="form">
     <tr>
         <td>
             <b>Select organ system: </b>
 
-            <button type="submit" name="organ_system" value="All" id="{{ organ.id }}">All</button>
+            <!-- Show 'All' button -->
+            {% if selected_organ_tags %}
+                    <button type="submit" name="organ_system" value="All" id="{{ organ.id }}">All</button>
+            {% else %}
+                <button type="submit" name="organ_system" style="background-color:rgba(0.2, 0.2, 0.2, 0.125)"
+                        value="All" id="{{ organ.id }}">All</button>
+            {% endif %}
+
+            <!-- Other organ buttons -->
             {% for organ in organ_tags %}
                 {% if organ in selected_organ_tags %}
                     <button type="submit" name="organ_system" style="background-color:rgba(0.2, 0.2, 0.2, 0.125)"
@@ -44,10 +246,7 @@ function activaTab(tab){
                     <button type="submit" name="organ_system" value="{{ organ.id }}" id="{{ organ.id }}">{{ organ.name }}</button>
                 {% endif %}
             {% endfor %}
-    {% comment %}
-    </td></tr>
-    <tr><td>
-    {% endcomment %}
+
     <br>
     <br>
         <b>Histology or pathology? </b>
@@ -71,8 +270,7 @@ function activaTab(tab){
 
     </form>
     </table>
-
-
+    {% endcomment %}
 
     {% comment %}
     {% if search_query %}
@@ -118,29 +316,23 @@ function activaTab(tab){
         <div class="card">
             <div class="nav nav-tabs card-header-tabs">
                 <ul class="nav nav-pills card-header-pills">
-                    <li class="nav-item">
+                    <li class="nav-item active">
                         <a class="nav-link active" href="#grid-view" data-toggle="tab">Grid</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#list-view" data-toggle="tab">List</a>
                     </li>
                 </ul>
-                <div class="tab-content" id="tabs">
-                    <div class="tab-pane" id="grid-view">
-                        {% include 'slide/grid_view.html' with slides=slides num_slides=num_slides slides_per_row=slides_per_row %}
-                    </div>
-                    <div class="tab-pane" id="list-view">
-                        {% include 'slide/list_view.html' with slides=slides num_slides=num_slides slides_per_row=slides_per_row %}
-                    </div>
+            </div>
+            <div class="tab-content" id="tabs">
+                <div class="tab-pane active" id="grid-view">
+                    {% include 'slide/grid_view.html' with slides=slides %}
+                </div>
+                <div class="tab-pane" id="list-view">
+                    {% include 'slide/list_view.html' with slides=slides %}
                 </div>
             </div>
         </div>
-
-        {% if list_view_active %}
-            {% include 'slide/list_view.html' with slides=slides num_slides=num_slides slides_per_row=slides_per_row %}
-        {% else %}
-            {% include 'slide/grid_view.html' with slides=slides num_slides=num_slides slides_per_row=slides_per_row %}
-        {% endif %}
 
     {% else %}
         No slides available.

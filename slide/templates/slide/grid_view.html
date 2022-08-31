@@ -1,35 +1,40 @@
 {% load static %}
 {% load slide_filters %}
 
-<div class="container fill" style="display: table; min-height: 600px">
+<div class="container fill" style="min-height: 600px">
 
 <h4>Grid view</h4>
 
 {% if slides %}
 
-    <div class="container-fluid">
+    <div class="container-fluid" style="width: 100%">
     {% for chunk in slides|as_chunks:12 %}
         <div class="row">
         {% for slide in chunk %}
             <div class="column col-xs-12 col-sm-6 col-md-4 col-lg-3">
                 {# <div class="imageBrowserCard"> #}
-                <div class="card border-primary" style="width: 100%">
+                <div class="card border-primary">
+
+                    {# Image display #}
                     <a href="{% url 'slide:view_full' slide.id %}">
-                        <img src="/slide/thumbnails/{{ slide.id }}.jpg" style="height: 100px">
+                        <div class="card-header w-100 h-50" style="padding-top: 5%; margin: 0; border-style: none">
+                            <img src="/slide/thumbnails/{{ slide.id }}.jpg"
+                                 style="display: block; max-width: 80%; max-height: 100%;
+                                     margin-left: auto; margin-right: auto"
+                            >
+                        </div>
                     </a>
-                    <div class="card-body">
+
+                    {# Card content (slide name, description, buttons, ...) #}
+                    <!-- TODO: If adding a 'published' flag to slides, might add text or format colour -->
+                    <div class="card-body h-50">
                         <h5 class="card-title">{{ slide.name }}</h5>
                         <p class="card-subtitle">{{ slide.description }}</p>
                         {% if request.user.is_teacher or request.user.is_superuser %}
-                            <a href="{% url 'multiple_choice:new' slide.id %}" class="btn btn-primary">Create new task</a>
+                            <a class="btn btn-primary" href="{% url 'multiple_choice:new' slide.id %}">Create new task</a>
                         {% endif %}
                     </div>
-                    <!-- TODO: If adding a 'published' flag to slides, might add text or format colour -->
-                    {% comment %}
-                    {% if not slide.published %}
-                        <div class="card-footer">Not published</div>
-                    {% endif %}
-                    {% endcomment %}
+
                 </div>
             </div>
         {% endfor %}
