@@ -91,6 +91,14 @@ def index(request):
 
 
 def image_browser(request):
+    """
+    TODO:
+        - Handle organ system/histology_pathology selected when clicking the
+        other category. Can possibly do this with checking which tab is active
+        and passing it back to the template.
+        - Filter on both organ and hist/path simultaneously
+        -
+    """
     slides = Slide.objects.all()
 
     # Filters
@@ -104,8 +112,9 @@ def image_browser(request):
             if organs == 'All':
                 organs = []
                 selected_organ_tags = []
-            slides = slides.filter(tags__in=[organs])
-            selected_organ_tags = Tag.objects.filter(id=organs)
+            else:
+                slides = slides.filter(tags__in=[organs])
+                selected_organ_tags = Tag.objects.filter(id=organs)
         else:
             selected_organ_tags = []
 
@@ -140,7 +149,7 @@ def image_browser(request):
     return render(request, 'slide/image_browser.html', {
         'slides': slides,
         'num_slides': len(slides),
-        'organ_tags': Tag.objects.filter(is_organ=True),
+        'organ_tags': Tag.objects.filter(is_organ=True).order_by('name'),
         'selected_organ_tags': selected_organ_tags,
         'selected_histology': selected_histology,
         'selected_pathology': selected_pathology,
