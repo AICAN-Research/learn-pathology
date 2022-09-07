@@ -6,4 +6,57 @@
     <div class="container text-center">
     <img src="{% static 'learnpathology/images/logo_v0.png' %}" alt="FastPathology logo" style="max-width: 400px;align-self: center">
     </div>
+
+    <br>
+
+    <div class="card mx-auto text-center" style="width: 80%">
+    <div class="card-body">
+    <div class="card-text text-left">
+
+        {% block about_learnpathology %}
+
+        Here you can write something about the LearnPathology website, concept,
+        etc. We can add a (rich) text editor that allows system admins/teachers
+        to edit the message. You can for instance add bullet points to
+        summarize learning objectives,
+        <div class="container">
+        <ul>
+            <li>bullet point 1</li>
+            <li>bullet point 2</li>
+            <li>bullet point 3,</li>
+        </ul>
+        </div>
+        or numbered lists to keep order:
+        <div class="container">
+        <ol>
+            <li>number one</li>
+            <li>number two</li>
+            <li>number three</li>
+        </ol>
+        </div>
+
+        Go ahead and <b>highlight</b> text using <i>different</i> styles, or add
+        <a href="{% url 'frontpage' %}">a link</a> to resources or content.
+
+        {% endblock %}
+
+        <br>
+        <br>
+
+        {% block contact_information %}
+        If you have suggestions or comments, or discover a bug in the system,
+        please contact one of the developers:
+       <div class="container">
+        <ul>
+            <li>Erik Smistad (<a href="mailto:erik.smistad@sintef.no">erik.smistad@sintef.no</a>)</li>
+            <li>Ingrid Tveten (<a href="mailto:ingrid.tveten@sintef.no">ingrid.tveten@sintef.no</a>)</li>
+        </ul>
+        </div>
+
+        {% endblock contact_information %}
+
+
+    </div>
+    </div>
+    </div>
 {% endblock %}
