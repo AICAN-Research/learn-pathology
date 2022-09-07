@@ -8,7 +8,7 @@ from slide import views
 app_name = 'slide'
 urlpatterns = [
     path('list/', views.index, name='list'),
-    #path('browser/', views.setup_image_browser_context, name='browser'),
+    path('browser/', views.grid_view, name='browser'),
     path('browser/grid-view', views.grid_view, name='grid_view'),
     path('browser/list-view', views.list_view, name='list_view'),
     path('view/<int:slide_id>/', views.whole_slide_view_full, name='view_full'),
