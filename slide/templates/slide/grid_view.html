@@ -1,13 +1,13 @@
+{% extends 'slide/image_browser.html' %}
+
 {% load static %}
 {% load slide_filters %}
 
-<div class="container fill" style="min-height: 600px">
 
-<h4>Grid view</h4>
+{% block image_viewer %}
 
-{% if slides %}
+<div class="container-fluid" style="width: 100%">
 
-    <div class="container-fluid" style="width: 100%">
     {% for chunk in slides|as_chunks:12 %}
         <div class="row">
         {% for slide in chunk %}
@@ -40,17 +40,7 @@
         {% endfor %}
         </div>
     {% endfor %}
-    </div>
-
-
-
-
-
-
-{% else %}
-    <p>
-        No slides found with current filter.
-    </p>
-{% endif %}
 
 </div>
+
+{% endblock image_viewer %}

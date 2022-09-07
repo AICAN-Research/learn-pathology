@@ -90,14 +90,98 @@ def index(request):
     })
 
 
-def image_browser(request):
+def get_image_browser_context(request):
     """
     TODO:
         - Handle organ system/histology_pathology selected when clicking the
         other category. Can possibly do this with checking which tab is active
         and passing it back to the template.
         - Filter on both organ and hist/path simultaneously
-        -
+        - Clicking on organ/histopathology catagory, the view chenges to grid
+        despite list view being the last choice
+    """
+    slides = Slide.objects.all()
+
+    # Filters
+    try:
+        organs = request.GET['organ_system']
+
+        if len(organs) > 1:
+            slides = slides.filter(tags__in=organs)
+            selected_organ_tags = Tag.objects.filter(id=organs)
+        elif len(organs) > 0:
+            if organs == 'All':
+                organs = []
+                selected_organ_tags = []
+            else:
+                slides = slides.filter(tags__in=[organs])
+                selected_organ_tags = Tag.objects.filter(id=organs)
+        else:
+            selected_organ_tags = []
+
+    except Exception as exc:
+        print(f'{exc.__class__.__name__}: {exc}')
+        organs = []
+        selected_organ_tags = []
+
+    # Handle histology/pathology buttons
+    try:
+        histology_pathology = request.GET['histology_pathology']
+
+        if histology_pathology == 'histology':
+            slides = slides.filter(pathology=False)
+            selected_histology = True
+            selected_pathology = False
+        elif histology_pathology == 'pathology':
+            slides = slides.filter(pathology=True)
+            selected_histology = False
+            selected_pathology = True
+        else:
+            # do not filter slides, use all
+            selected_histology = True
+            selected_pathology = True
+    except Exception as exc:
+        print(f'{exc.__class__.__name__}: {exc}')
+        selected_histology = True
+        selected_pathology = True
+
+    # TODO later: Add search option
+
+    return {
+        'slides': slides,
+        'num_slides': len(slides),
+        'organ_tags': Tag.objects.filter(is_organ=True).order_by('name'),
+        'selected_organ_tags': selected_organ_tags,
+        'selected_histology': selected_histology,
+        'selected_pathology': selected_pathology,
+    }
+
+
+def grid_view(request):
+
+    context = get_image_browser_context(request)
+    context['view_grid'] = True
+    print('grid')
+
+    return render(request, 'slide/grid_view.html', context)
+
+def list_view(request):
+
+    context = get_image_browser_context(request)
+    context['view_grid'] = False
+    print('list')
+
+    return render(request, 'slide/list_view.html', context)
+
+def setup_image_browser_context(request):
+    """
+    TODO:
+        - Handle organ system/histology_pathology selected when clicking the
+        other category. Can possibly do this with checking which tab is active
+        and passing it back to the template.
+        - Filter on both organ and hist/path simultaneously
+        - Clicking on organ/histopathology catagory, the view chenges to grid
+        despite list view being the last choice
     """
     slides = Slide.objects.all()
 

@@ -1,5 +1,6 @@
 {% extends 'learnpathology/base.html' %}
 {% load slide_filters %}
+{% load bootstrap_icons %}
 
 
 <script>
@@ -53,7 +54,7 @@ $(document).ready(function() {
             </div>
 
             <div class="col">
-                <div class="card text-align">
+                <div class="card text-left">
                     <div class="card-body container-fluid">
                         <!-- Show 'All' button -->
                         {% if selected_organ_tags %}
@@ -90,7 +91,7 @@ $(document).ready(function() {
             </div>
 
             <div class="col">
-                <div class="card align-left">
+                <div class="card text-left">
                     <div class="card-body container-fluid">
 
                         {% if selected_histology and selected_pathology %}
@@ -157,25 +158,32 @@ $(document).ready(function() {
 
     {% if slides %}
 
-        <div class="card">
-            <div class="nav nav-tabs card-header-tabs">
-                <ul class="nav nav-pills card-header-pills">
-                    <li class="nav-item active">
-                        <a class="nav-link active" href="#grid-view" data-toggle="tab">Grid</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#list-view" data-toggle="tab">List</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="tab-content" id="tabs">
-                <div class="tab-pane active" id="grid-view">
-                    {% include 'slide/grid_view.html' with slides=slides %}
-                </div>
-                <div class="tab-pane" id="list-view">
-                    {% include 'slide/list_view.html' with slides=slides %}
+        <div class="row">
+            <div class="col">
+                <div class="card no-card-border">
+                    <div class="card-body align-content" style="margin-left: auto; padding-top: 10px; padding-bottom: 10px">
+
+                        <a href="{% url 'slide:grid_view' %}" class="btn border-primary">{% bs_icon 'grid' %}Grid</a>
+                        <a href="{% url 'slide:list_view' %}" class="btn border-primary">{% bs_icon 'list' %}List</a>
+
+                    </div>
                 </div>
             </div>
+        </div>
+
+        <div class="card" style="min-height: 600px; padding-top: 10px">
+            {% block image_viewer %}
+            {% endblock %}
+
+            {% comment %}
+            {% if view_type == 'grid' %}
+                {% include 'slide/grid_view.html' with slides=slides %}
+            {% elif view_type == 'list' %}
+                {% include 'slide/list_view.html' with slides=slides %}
+            {% else %}
+                Select a view using the 'Grid' and 'List' buttons.
+            {% endif %}
+            {% endcomment %}
         </div>
 
     {% else %}

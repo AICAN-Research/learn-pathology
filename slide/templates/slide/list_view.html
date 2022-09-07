@@ -1,31 +1,36 @@
+{% extends 'slide/image_browser.html' %}
+
 {% load static %}
 {% load slide_filters %}
 
-<div class="container fill" style="display: table; min-height: 600px">
 
-<h4>List view</h4>
+{% block image_viewer %}
 
-<table class="table">
-<thead class="thead-light">
-    <tr>
-        <th>Thumbnail</th>
-        <th>Name</th>
-        <th>Description</th>
-        <th>Tasks</th>
-        {% if request.user.is_teacher or request.user.is_superuser %}
-        <th>Create task</th>
-        {% endif %}
-    </tr>
-</thead>
-{% for slide in slides %}
-    <tr>
-        <td><a href="{% url 'slide:view_full' slide.id %}"><img src="/slide/thumbnails/{{ slide.id }}.jpg" style="width: 100px"></a></td>
-        <td>{{ slide.name }}</td>
-        <td>{{ slide.description }}</td>
-        <td><a href="">Tasks</a></td>
-        {% if request.user.is_teacher or request.user.is_superuser %}
-        <td><a href="{% url 'multiple_choice:new' slide.id %}">Create new task</a></td>
-        {% endif %}
-    </tr>
-{% endfor %}
-</table>
+<div class="container fill" style="display: table">
+    <table class="table">
+    <thead class="thead-light">
+        <tr>
+            <th>Thumbnail</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Tasks</th>
+            {% if request.user.is_teacher or request.user.is_superuser %}
+            <th>Create task</th>
+            {% endif %}
+        </tr>
+    </thead>
+    {% for slide in slides %}
+        <tr>
+            <td><a href="{% url 'slide:view_full' slide.id %}"><img src="/slide/thumbnails/{{ slide.id }}.jpg" style="width: 100px"></a></td>
+            <td>{{ slide.name }}</td>
+            <td>{{ slide.description }}</td>
+            <td><a href="">Tasks</a></td>
+            {% if request.user.is_teacher or request.user.is_superuser %}
+            <td><a href="{% url 'multiple_choice:new' slide.id %}">Create new task</a></td>
+            {% endif %}
+        </tr>
+    {% endfor %}
+    </table>
+</div>
+
+{% endblock image_viewer %}
