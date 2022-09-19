@@ -37,6 +37,7 @@
         <ul class="navbar-nav mr-auto">
         {% if request.user.is_authenticated %}
             <!-- Options available to any type of user-->
+            <li class="nav-item"><a class="nav-link active" href="{% url 'frontpage' %}">Home</a></li>
             <li class="nav-item"><a class="nav-link active" href="{% url 'slide:grid_view' %}">Images</a></li>
             <li class="nav-item"><a class="nav-link active" href="{% url 'course:index' %}">Courses</a></li>
             <li class="nav-item"><a class="nav-link active" href="{% url 'task_list' %}">Tasks</a></li>
