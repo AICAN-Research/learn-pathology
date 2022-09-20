@@ -190,17 +190,26 @@ $(document).ready(function() {
                 <div class="card no-card-border">
                     <div class="card-body align-content" style="margin-left: auto; padding-top: 10px; padding-bottom: 10px">
 
-                        {% comment %}
-                        <a href="?grid_view" class="btn border-primary">{% bs_icon 'grid' %}Grid</a>
-                        <a href="?list_view" class="btn border-primary">{% bs_icon 'list' %}List</a>
-                        {% endcomment %}
+                    <style>
+                        .nav-pills .nav-link {
+                            color: var(--text-colour-dark);
+                        }
+                        .nav-link:hover {
+                            background-color: var(--button-colour-hover);
+                            color: var(--text-colour-dark);
+                        }
+                        .nav-pills .nav-link.active {
+                            background-color: var(--button-colour-active);
+                            color: var(--text-colour-dark);
+                        }
+                    </style>
 
-                        <ul class="nav nav-tabs" id="myTab">
+                    <ul class="nav nav-pills card-header-pills" id="myTab">
                         <li class="nav-item">
-                            <a href="#tab-grid" class="nav-link active" data-toggle="tab">{% bs_icon 'grid' %}Grid</a>
+                            <a href="#grid-view" class="nav-link active" data-toggle="tab">{% bs_icon 'grid' %}Grid</a>
                         </li>
                         <li class="nav-item">
-                            <a href="#tab-list" class="nav-link" data-toggle="tab">{% bs_icon 'list' %}List</a>
+                            <a href="#list-view" class="nav-link" data-toggle="tab">{% bs_icon 'list' %}List</a>
                         </li>
                     </ul>
 
@@ -210,18 +219,14 @@ $(document).ready(function() {
         </div>
 
         <div class="card" style="min-height: 600px; padding-top: 10px">
-            {% comment %}
-            {% block image_viewer %}
-            {% endblock %}
-            {% endcomment %}
-
-            {% if view_type == 'grid-view' %}
-                {% include 'slide/grid_view.html' with slides=slides %}
-            {% elif view_type == 'list-view' %}
-                {% include 'slide/list_view.html' with slides=slides %}
-            {% else %}
-                Select a view using the 'Grid' and 'List' buttons.
-            {% endif %}
+            <div class="tab-content" id="tabs">
+                <div class="tab-pane active" id="grid-view">
+                    {% include 'slide/grid_view.html' with slides=slides %}
+                </div>
+                <div class="tab-pane" id="list-view">
+                    {% include 'slide/list_view.html' with slides=slides %}
+                </div>
+            </div>
         </div>
 
     {% else %}

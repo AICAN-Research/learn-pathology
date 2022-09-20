@@ -161,9 +161,7 @@ def get_image_browser_context(request):
 
 def image_browser(request):
     """
-    TODO:
-        - Clicking on e.g. organ/histopathology category, the view changes to
-        grid despite list view being the last choice
+    TODO:   - CLEAN UP FUNCTION
     """
 
     prev_context = request.session.get('context', {})
