@@ -1,5 +1,6 @@
 import os.path
 
+import django.urls
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
@@ -104,72 +105,202 @@ def get_image_browser_context(request):
 
     # Filters
     try:
-        organs = request.GET['organ_system']
+        organs = request.GET.get('organ-system', False)
 
-        if len(organs) > 1:
+        if not organs:
+            raise Exception("check organ selection, something went wrong")
+        if organs == 'all':
+            #  slides = slides
+            selected_organ_tags = ['all']
+        else:
             slides = slides.filter(tags__in=organs)
             selected_organ_tags = Tag.objects.filter(id=organs)
-        elif len(organs) > 0:
-            if organs == 'All':
-                organs = []
-                selected_organ_tags = []
-            else:
-                slides = slides.filter(tags__in=[organs])
-                selected_organ_tags = Tag.objects.filter(id=organs)
-        else:
-            selected_organ_tags = []
 
     except Exception as exc:
         print(f'{exc.__class__.__name__}: {exc}')
-        organs = []
-        selected_organ_tags = []
+        #organs = []
+        selected_organ_tags = ['all']
 
     # Handle histology/pathology buttons
     try:
-        histology_pathology = request.GET['histology_pathology']
+        histology_pathology = request.GET.get('histology-pathology', False)
 
         if histology_pathology == 'histology':
-            slides = slides.filter(pathology=False)
+            selected_both = False
             selected_histology = True
             selected_pathology = False
+            slides = slides.filter(pathology=False)
         elif histology_pathology == 'pathology':
-            slides = slides.filter(pathology=True)
+            selected_both = False
             selected_histology = False
             selected_pathology = True
+            slides = slides.filter(pathology=True)
         else:
-            # do not filter slides, use all
-            selected_histology = True
-            selected_pathology = True
+            selected_both = True
+            selected_histology = False
+            selected_pathology = False
+            # do not filter slides
+
     except Exception as exc:
         print(f'{exc.__class__.__name__}: {exc}')
-        selected_histology = True
-        selected_pathology = True
+        selected_both = True
+        selected_histology = False
+        selected_pathology = False
 
     # TODO later: Add search option
 
     return {
         'slides': slides,
-        'num_slides': len(slides),
         'organ_tags': Tag.objects.filter(is_organ=True).order_by('name'),
         'selected_organ_tags': selected_organ_tags,
+        'selected_both': selected_both,
         'selected_histology': selected_histology,
         'selected_pathology': selected_pathology,
     }
 
 
+def image_browser(request):
+    """
+    TODO:
+        - Clicking on e.g. organ/histopathology category, the view changes to
+        grid despite list view being the last choice
+    """
+
+    prev_context = request.session.get('context', {})
+    if 'selected_organ_tag' in prev_context.keys():
+        if 'selected_organ_tag_ids' not in prev_context.keys():
+            prev_context['selected_organ_tag_ids'] = queryset_to_id_list(prev_context['selected_organ_tag'])
+        del prev_context['selected_organ_tag']
+    prev_context['slides'] = slide_id_list_to_queryset(prev_context['slide_ids'])
+    prev_context['selected_organ_tag'] = organ_tag_id_list_to_queryset(prev_context['selected_organ_tag_ids'])
+
+    organ_changed = ('organ-system' in request.GET)
+    hist_path_changed = ('histology-pathology' in request.GET)
+
+    context = {
+        'organ_tags': Tag.objects.filter(is_organ=True).order_by('name')
+    }
+
+    if organ_changed:
+        # TODO: Handle organ changed
+        selected_organ = request.GET.get('organ-system')
+        if selected_organ == 'all':
+            slides = Slide.objects.all()
+            selected_organ_tag = ['all']
+            # Store changes in session
+            request.session['context']['selected_organ_tag_ids'] = selected_organ_tag
+        else:
+            selected_organ_tag = Tag.objects.filter(id=selected_organ)
+            slides = Slide.objects.filter(tags__in=selected_organ_tag)
+            # Store changes in session
+            request.session['context']['selected_organ_tag_ids'] = queryset_to_id_list(selected_organ_tag)
+
+        # Store changes in session
+        request.session['context']['slide_ids'] = queryset_to_id_list(slides)
+        # Add to context
+        context['slides'] = slides
+        context['selected_organ_tag'] = selected_organ_tag
+
+    elif hist_path_changed:
+        # TODO: Handle histology/pathology changed
+        # Use previously selected organ slides
+        selected_organ_tag = organ_tag_id_list_to_queryset(
+            prev_context['selected_organ_tag_ids']
+        )
+        slides = Slide.objects.filter(tags__in=selected_organ_tag)
+
+        histology_pathology = request.GET.get('histology-pathology')
+        if histology_pathology == 'histology':
+            selected_both = False
+            selected_histology = True
+            selected_pathology = False
+            slides = slides.filter(pathology=False)
+        elif histology_pathology == 'pathology':
+            selected_both = False
+            selected_histology = False
+            selected_pathology = True
+            slides = slides.filter(pathology=True)
+        else:
+            selected_both = True
+            selected_histology = False
+            selected_pathology = False
+            # do not filter slides
+
+        # Store changes in session
+        request.session['context']['slide_ids'] = queryset_to_id_list(slides)
+        # Add to context
+        context['slides'] = slides
+        context['selected_both'] = selected_both
+        context['selected_histology'] = selected_histology
+        context['selected_pathology'] = selected_pathology
+
+    else:
+        slides = Slide.objects.all()
+        selected_organ_tag = ['all']
+        # Store changes in session
+        request.session['context']['slide_ids'] = queryset_to_id_list(slides)
+        request.session['context']['selected_organ_tag_ids'] = queryset_to_id_list(selected_organ_tag)
+        # Add to context
+        context['slides'] = slides
+        context['selected_organ_tag'] = selected_organ_tag
+
+    update_session_entry = False
+    for key, val in prev_context.items():
+        if key not in context.keys():
+            if key == 'slide_ids':
+                if 'slides' in context.keys(): continue
+                context['slides'] = slide_id_list_to_queryset(val)
+            elif key == 'selected_organ_tag_ids':   # replace with 'selected_organ_tag'
+                if 'selected_organ_tag' in context.keys(): continue
+                context['selected_organ_tag'] = organ_tag_id_list_to_queryset(val)
+            elif key == 'selected_organ_tag':   # replace with 'selected_organ_tag_ids' in request.session
+                if 'selected_organ_tag' in context.keys(): continue
+                update_session_entry = True
+                new_value = ['all']
+                context['selected_organ_tag'] = new_value
+            else:
+                context[key] = val
+
+    if update_session_entry:
+        request.session['context']['selected_organ_tag_ids'] = new_value
+        del request.session['context']['selected_organ_tag']
+
+    return render(request, 'slide/image_browser.html', context)
+
+
+def queryset_to_id_list(queryset):
+    if isinstance(queryset, django.db.models.query.QuerySet):
+        id_list = [i[0] for i in queryset.values_list('id')]
+        return id_list
+    return queryset
+
+
+def slide_id_list_to_queryset(id_list):
+    queryset = Slide.objects.filter(id__in=id_list)
+    return queryset
+
+
+def organ_tag_id_list_to_queryset(id_list):
+    if 'all' in id_list:
+        return id_list
+
+    queryset = Tag.objects.filter(is_organ=True, id__in=id_list)
+    return queryset
+
+
 def grid_view(request):
+
 
     context = get_image_browser_context(request)
     context['view_grid'] = True
-    print('grid')
 
     return render(request, 'slide/grid_view.html', context)
+
 
 def list_view(request):
 
     context = get_image_browser_context(request)
     context['view_grid'] = False
-    print('list')
 
     return render(request, 'slide/list_view.html', context)
 

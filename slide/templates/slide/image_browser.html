@@ -40,81 +40,108 @@ $(document).ready(function() {
     </p>
     {% endif %}
 
+    <form class="form" id="slideDisplayForm" onsubmit="{% url 'slide:browser' %}">
 
-    <form class="form" id="imageCategoryForm" onsubmit="{% url 'slide:browser' %}">
+        {% comment %}
+        <script>
+            /*
+                On submiting the form, send the POST ajax
+                request to server and after successfull submission
+                display the object.
+            */
+            $("#slideDisplayForm").submit(function (e) {
+                // preventing from page reload and default actions
+                e.preventDefault();
+                // serialize the data for sending the form data.
+                var serializedData = $(this).serialize();
+                console.log("submitted form");
+                console.log(serializedData);
+                console.log(this);
+                // make GET ajax call
+                $.ajax({
+                    type: 'GET',
+                    url: "{% url 'slide:some_ajax_view' %}",
+                    data: {
+                        "data": serializedData,
+                        "organ": this.organ,
+                    },
+                    success: function (response) {
+                        // if not valid user, alert the user
+                        if(!response["valid"]){
+                            alert("You cannot create a friend with same nick name");
+                        }
+                        console.log('success');
+                    },
+                    error: function (response) {
+                        console.log('error');
+                        console.log(response);
+                    }
+                })
+            })
+        </script>
+        {% endcomment %}
+
+        <style>
+            label::first-letter {
+                text-transform:capitalize;
+            }
+        </style>
 
         <!-- ORGAN SYSTEM selection -->
-        <div class="row no-gutters">
+        <div class="row no-gutters w-100">
             <div class="col-sm-5 col-md-3">
                 <div class="card h-100" style="margin-top: auto; margin-bottom: auto">
-                    <div class="card-body">
-                        <h5 class="card-title">Organ system:</h5>
-                    </div>
+                <div class="card-body">
+                    <h5 class="card-title">Organ system:</h5>
                 </div>
-            </div>
-
+                </div>
+            </div> <!-- end col -->
             <div class="col">
                 <div class="card text-left">
-                    <div class="card-body container-fluid">
-                        <!-- Show 'All' button -->
-                        {% if selected_organ_tags %}
-                            <button type="submit" class="btn btn-light border-primary" name="organ_system"
-                                    value="All" id="all-organs">All</button>
-                        {% else %}
-                            <button type="submit" class="btn btn-light border-primary active"  name="organ_system"
-                                    value="All" id="all-organs">All</button>
-                        {% endif %}
+                <div class="card-body container-fluid">
+                <div class="radio-toolbar">
+                    <!-- Show 'All' button -->
+                    <input type="radio" name="organ-system" id="organ-all" value="all" onchange="this.form.submit();">
+                    <label for="organ-all" class="{% if 'all' in selected_organ_tag %}active{% endif %}">All</label>
 
-                        <!-- Other organ buttons -->
-                        {% for organ in organ_tags %}
-                            {% if organ in selected_organ_tags %}
-                                <button type="submit" class="btn btn-light border-primary active"  name="organ_system"
-                                        value="{{ organ.id }}" id="{{ organ.id }}" >{{ organ.name }}</button>
-                            {% else %}
-                                <button type="submit" class="btn btn-light border-primary" name="organ_system"
-                                    value="{{ organ.id }}" id="{{ organ.id }}">{{ organ.name }}</button>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
+                    <!-- Other organ buttons -->
+                    {% for organ in organ_tags %}
+                        <input type="radio" name="organ-system" id={{ organ.id }} value={{ organ.id }} onchange="this.form.submit();">
+                        <label for="{{ organ.id }}" class="{% if organ in selected_organ_tag %}active{% endif %}">{{ organ.name }}</label>
+                    {% endfor %}
+
                 </div>
-            </div>
-        </div>
+                </div>
+                </div>
+            </div> <!-- end col -->
+        </div> <!-- end row -->
 
         <!-- HISTOLOGY/PATHOLOGY selection -->
-        <div class="row no-gutters">
+        <div class="row no-gutters w-100">
             <div class="col-sm-5 col-md-3">
                 <div class="card h-100" style="margin-top: auto; margin-bottom: auto">
-                    <div class="card-body">
-                        <h5 class="card-title">Histology or pathology?</h5>
-                    </div>
+                <div class="card-body">
+                    <h5 class="card-title">Histology or pathology?</h5>
                 </div>
-            </div>
-
+                </div>
+            </div> <!-- end col 1 -->
             <div class="col">
                 <div class="card text-left">
-                    <div class="card-body container-fluid">
+                <div class="card-body">
+                <div class="radio-toolbar">
+                    <input type="radio" name="histology-pathology" id="hist-path-btn" value="both" onchange="this.form.submit();">
+                    <label for="hist-path-btn" class="{% if selected_both %}active{% endif %}">Both</label>
 
-                        {% if selected_histology and selected_pathology %}
-                            <button type="submit" class="btn btn-light border-primary active" name="histology_pathology" value="both">Both</button>
-                        {% else %}
-                            <button type="submit" class="btn btn-light border-primary" name="histology_pathology" value="both">Both</button>
-                        {% endif %}
+                    <input type="radio" name="histology-pathology" id="histology-btn" value="histology" onchange="this.form.submit();">
+                    <label for="histology-btn" class="{% if selected_histology %}active{% endif %}">Histology</label>
 
-                        {% if selected_histology and not selected_pathology %}
-                            <button type="submit" class="btn btn-light border-primary active"  name="histology_pathology" value="histology">Histology</button>
-                        {% else %}
-                            <button type="submit" class="btn btn-light border-primary" name="histology_pathology" value="histology">Histology</button>
-                        {% endif %}
-
-                        {% if selected_pathology and not selected_histology %}
-                            <button type="submit" class="btn btn-light border-primary active" name="histology_pathology" value="pathology">Pathology</button>
-                        {% else %}
-                            <button type="submit" class="btn btn-light border-primary" name="histology_pathology" value="pathology">Pathology</button>
-                        {% endif %}
-                    </div>
+                    <input type="radio" name="histology-pathology" id="pathology-btn" value="pathology" onchange="this.form.submit();">
+                    <label for="pathology-btn" class="{% if selected_pathology %}active{% endif %}">Pathology</label>
                 </div>
-            </div>
-        </div>
+                </div>
+                </div>
+            </div> <!-- end col 2 -->
+        </div> <!-- end row -->
 
     </form>
 
@@ -163,8 +190,19 @@ $(document).ready(function() {
                 <div class="card no-card-border">
                     <div class="card-body align-content" style="margin-left: auto; padding-top: 10px; padding-bottom: 10px">
 
-                        <a href="{% url 'slide:grid_view' %}" class="btn border-primary">{% bs_icon 'grid' %}Grid</a>
-                        <a href="{% url 'slide:list_view' %}" class="btn border-primary">{% bs_icon 'list' %}List</a>
+                        {% comment %}
+                        <a href="?grid_view" class="btn border-primary">{% bs_icon 'grid' %}Grid</a>
+                        <a href="?list_view" class="btn border-primary">{% bs_icon 'list' %}List</a>
+                        {% endcomment %}
+
+                        <ul class="nav nav-tabs" id="myTab">
+                        <li class="nav-item">
+                            <a href="#tab-grid" class="nav-link active" data-toggle="tab">{% bs_icon 'grid' %}Grid</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#tab-list" class="nav-link" data-toggle="tab">{% bs_icon 'list' %}List</a>
+                        </li>
+                    </ul>
 
                     </div>
                 </div>
@@ -172,22 +210,24 @@ $(document).ready(function() {
         </div>
 
         <div class="card" style="min-height: 600px; padding-top: 10px">
+            {% comment %}
             {% block image_viewer %}
             {% endblock %}
+            {% endcomment %}
 
-            {% comment %}
-            {% if view_type == 'grid' %}
+            {% if view_type == 'grid-view' %}
                 {% include 'slide/grid_view.html' with slides=slides %}
-            {% elif view_type == 'list' %}
+            {% elif view_type == 'list-view' %}
                 {% include 'slide/list_view.html' with slides=slides %}
             {% else %}
                 Select a view using the 'Grid' and 'List' buttons.
             {% endif %}
-            {% endcomment %}
         </div>
 
     {% else %}
-        No slides available.
+        <div class="card" style="min-height: 200px; padding-top: 10px">
+            No slides available.
+        </div>
     {% endif %}
 
 </div>
