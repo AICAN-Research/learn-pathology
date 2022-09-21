@@ -21,7 +21,10 @@ main {
     --background-collapsed-menu: #c4c4c4;
     --background: #83bafc;
     --background-dark: #5c716e;
-    --button-colour: #a3c042;
+    --button-colour: #e7f4fc;
+    --button-colour-hover: rgba(205, 245, 251, 0.89);
+    --button-colour-active: #a8d9ff;
+    --button-border-colour: #888;
     --text-colour: #37522e;
     --text-colour-dark: #3b3a30;
     --logo-hue: 240deg;
@@ -45,7 +48,10 @@ main {
     --background-collapsed-menu: #c4c4c4;
     --background:#fbefcc;
     --background-dark: #f4a688;
-    --button-colour: #40a1d0;
+    --button-colour: #fcf1e7;
+    --button-colour-hover: rgba(245, 222, 198, 0.89);
+    --button-colour-active: #ffd5a8;
+    --button-border-colour: #888;
     --text-colour:#e0876a;
     --text-colour-dark: #663626;
     --logo-hue: 180deg;
@@ -60,7 +66,10 @@ main {
     --background-collapsed-menu: #c4c4c4;
     --background: #dedede;
     --background-dark: #414141;
-    --button-colour: #d27575;
+    --button-colour: #e7f4fc;
+    --button-colour-hover: rgba(205, 245, 251, 0.89);
+    --button-colour-active: #a8d9ff;
+    --button-border-colour: #888;
     --text-colour: #6f6f6f;
     --text-colour-dark: #424242;
     --logo-hue: 130deg;
@@ -284,4 +293,31 @@ body {
 
 .fill {
     height: 100%;
+}
+
+/* Radio button toolbar used with slide filters */
+.radio-toolbar {
+  margin: 0;
+}
+
+.radio-toolbar input[type="radio"] {
+    display: none;
+}
+
+.radio-toolbar label {
+    display: inline-block;
+    background-color: var(--button-colour);
+    padding: 10px 20px;
+    font-family: sans-serif, Arial;
+    font-size: 1rem;
+    font-weight: 400;
+    border: 1px solid var(--button-border-colour);
+    border-radius: 4px;
+}
+
+.radio-toolbar label:hover {
+    background-color: var(--button-colour-hover);
+}
+.radio-toolbar label.active {
+    background-color: var(--button-colour-active);
 }
