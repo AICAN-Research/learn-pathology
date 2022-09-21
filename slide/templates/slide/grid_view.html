@@ -28,7 +28,8 @@
                             <h5 class="card-title">{{ slide.name }}</h5>
                             <p class="card-subtitle">{{ slide.description }}</p>
                             {% if request.user.is_teacher or request.user.is_superuser %}
-                                <a class="btn btn-primary" href="{% url 'multiple_choice:new' slide.id %}">Create new task</a>
+                                <div class="card-content" style="padding-top: 5px"><a class="btn btn-primary" href="{% url 'multiple_choice:new' slide.id %}">Create new task</a></div>
+                                <div class="card-content" style="padding-top: 5px"><a class="btn btn-primary" href="{% url 'slide:edit_description' slide.id %}" style="padding-top: 5px">Edit long description</a></div>
                             {% endif %}
                         </div>
 
