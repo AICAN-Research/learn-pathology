@@ -191,20 +191,20 @@ $(document).ready(function() {
                     <div class="card-body align-content" style="margin-left: auto; padding-top: 10px; padding-bottom: 10px">
 
                     <style>
-                        .nav-pills .nav-link {
+                        #nav-panes-view .nav-pills .nav-link {
                             color: var(--text-colour-dark);
                         }
-                        .nav-link:hover {
+                        #nav-panes-view .nav-link:hover {
                             background-color: var(--button-colour-hover);
                             color: var(--text-colour-dark);
                         }
-                        .nav-pills .nav-link.active {
+                        #nav-panes-view .nav-link.active {
                             background-color: var(--button-colour-active);
                             color: var(--text-colour-dark);
                         }
                     </style>
 
-                    <ul class="nav nav-pills card-header-pills" id="myTab">
+                    <ul class="nav nav-pills card-header-pills" id="nav-panes-view">
                         <li class="nav-item">
                             <a href="#grid-view" class="nav-link active" data-toggle="tab">{% bs_icon 'grid' %}Grid</a>
                         </li>
