@@ -42,62 +42,25 @@ $(document).ready(function() {
 
     <form class="form" id="slideDisplayForm" onsubmit="{% url 'slide:browser' %}">
 
-        {% comment %}
-        <script>
-            /*
-                On submiting the form, send the POST ajax
-                request to server and after successfull submission
-                display the object.
-            */
-            $("#slideDisplayForm").submit(function (e) {
-                // preventing from page reload and default actions
-                e.preventDefault();
-                // serialize the data for sending the form data.
-                var serializedData = $(this).serialize();
-                console.log("submitted form");
-                console.log(serializedData);
-                console.log(this);
-                // make GET ajax call
-                $.ajax({
-                    type: 'GET',
-                    url: "{% url 'slide:some_ajax_view' %}",
-                    data: {
-                        "data": serializedData,
-                        "organ": this.organ,
-                    },
-                    success: function (response) {
-                        // if not valid user, alert the user
-                        if(!response["valid"]){
-                            alert("You cannot create a friend with same nick name");
-                        }
-                        console.log('success');
-                    },
-                    error: function (response) {
-                        console.log('error');
-                        console.log(response);
-                    }
-                })
-            })
-        </script>
-        {% endcomment %}
-
         <style>
             label::first-letter {
                 text-transform:capitalize;
             }
         </style>
 
+        <div class="card">
+
         <!-- ORGAN SYSTEM selection -->
         <div class="row no-gutters w-100">
             <div class="col-sm-5 col-md-3">
-                <div class="card h-100" style="margin-top: auto; margin-bottom: auto">
+                <div class="card border-0 h-100" style="margin-top: auto; margin-bottom: auto">
                 <div class="card-body">
                     <h5 class="card-title">Organ system:</h5>
                 </div>
                 </div>
             </div> <!-- end col -->
             <div class="col">
-                <div class="card text-left">
+                <div class="card border-0 text-left">
                 <div class="card-body container-fluid">
                 <div class="radio-toolbar">
                     <!-- Show 'All' button -->
@@ -119,14 +82,14 @@ $(document).ready(function() {
         <!-- HISTOLOGY/PATHOLOGY selection -->
         <div class="row no-gutters w-100">
             <div class="col-sm-5 col-md-3">
-                <div class="card h-100" style="margin-top: auto; margin-bottom: auto">
+                <div class="card border-0 h-100" style="margin-top: auto; margin-bottom: auto">
                 <div class="card-body">
                     <h5 class="card-title">Histology or pathology?</h5>
                 </div>
                 </div>
             </div> <!-- end col 1 -->
             <div class="col">
-                <div class="card text-left">
+                <div class="card border-0 text-left">
                 <div class="card-body">
                 <div class="radio-toolbar">
                     <input type="radio" name="histology-pathology" id="hist-path-btn" value="both" onchange="this.form.submit();">
@@ -142,6 +105,8 @@ $(document).ready(function() {
                 </div>
             </div> <!-- end col 2 -->
         </div> <!-- end row -->
+
+        </div>
 
     </form>
 
@@ -187,7 +152,7 @@ $(document).ready(function() {
 
         <div class="row">
             <div class="col">
-                <div class="card no-card-border">
+                <div class="card border-0">
                     <div class="card-body align-content" style="margin-left: auto; padding-top: 10px; padding-bottom: 10px">
 
                     <style>
