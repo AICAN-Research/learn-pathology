@@ -164,20 +164,14 @@ def image_browser(request):
     TODO:   - CLEAN UP FUNCTION
     """
 
-    prev_context = request.session.get('context', {})
-    if 'selected_organ_tag' in prev_context.keys():
-        if 'selected_organ_tag_ids' not in prev_context.keys():
-            prev_context['selected_organ_tag_ids'] = queryset_to_id_list(prev_context['selected_organ_tag'])
-        del prev_context['selected_organ_tag']
-    prev_context['slides'] = slide_id_list_to_queryset(prev_context['slide_ids'])
-    prev_context['selected_organ_tag'] = organ_tag_id_list_to_queryset(prev_context['selected_organ_tag_ids'])
+    prev_context = request.session.get('image_browser_context', None)
+    if prev_context is None:
+        # First entry to image browser? Initialize new empty dictionary
+        request.session['image_browser_context'] = {}
 
     organ_changed = ('organ-system' in request.GET)
     hist_path_changed = ('histology-pathology' in request.GET)
-
-    context = {
-        'organ_tags': Tag.objects.filter(is_organ=True).order_by('name')
-    }
+    context = {}
 
     if organ_changed:
         selected_organ = request.GET.get('organ-system')
@@ -203,7 +197,10 @@ def image_browser(request):
         selected_organ_tag = organ_tag_id_list_to_queryset(
             prev_context['selected_organ_tag_ids']
         )
-        slides = Slide.objects.filter(tags__in=selected_organ_tag)
+        if 'all' in selected_organ_tag:
+            slides = Slide.objects.all()
+        else:
+            slides = Slide.objects.filter(tags__in=selected_organ_tag)
 
         histology_pathology = request.GET.get('histology-pathology')
         if histology_pathology == 'histology':
@@ -223,9 +220,10 @@ def image_browser(request):
             # do not filter slides
 
         # Store changes in session
-        request.session['context']['slide_ids'] = queryset_to_id_list(slides)
+        request.session['image_browser_context']['slide_ids'] = queryset_to_id_list(slides)
         # Add to context
         context['slides'] = slides
+        context['selected_organ_tag'] = selected_organ_tag
         context['selected_both'] = selected_both
         context['selected_histology'] = selected_histology
         context['selected_pathology'] = selected_pathology
@@ -234,33 +232,22 @@ def image_browser(request):
         slides = Slide.objects.all()
         selected_organ_tag = ['all']
         # Store changes in session
-        request.session['context']['slide_ids'] = queryset_to_id_list(slides)
-        request.session['context']['selected_organ_tag_ids'] = queryset_to_id_list(selected_organ_tag)
+        request.session['image_browser_context']['slide_ids'] = queryset_to_id_list(slides)
+        request.session['image_browser_context']['selected_organ_tag_ids'] = queryset_to_id_list(selected_organ_tag)
+        request.session['image_browser_context']['selected_both'] = True
+        request.session['image_browser_context']['selected_histology'] = False
+        request.session['image_browser_context']['selected_pathology'] = False
         # Add to context
         context['slides'] = slides
         context['selected_organ_tag'] = selected_organ_tag
 
-    update_session_entry = False
-    for key, val in prev_context.items():
-        if key not in context.keys():
-            if key == 'slide_ids':
-                if 'slides' in context.keys(): continue
-                context['slides'] = slide_id_list_to_queryset(val)
-            elif key == 'selected_organ_tag_ids':   # replace with 'selected_organ_tag'
-                if 'selected_organ_tag' in context.keys(): continue
-                context['selected_organ_tag'] = organ_tag_id_list_to_queryset(val)
-            elif key == 'selected_organ_tag':   # replace with 'selected_organ_tag_ids' in request.session
-                if 'selected_organ_tag' in context.keys(): continue
-                update_session_entry = True
-                new_value = ['all']
-                context['selected_organ_tag'] = new_value
-            else:
-                context[key] = val
+    # Final updates to context
+    context['organ_tags'] = Tag.objects.filter(is_organ=True).order_by('name')
+    for key, val in request.session['image_browser_context'].items():
+        if key not in context and key not in ('slide_ids', 'selected_organ_tag_ids'):
+            context[key] = request.session['image_browser_context'][key]
 
-    if update_session_entry:
-        request.session['context']['selected_organ_tag_ids'] = new_value
-        del request.session['context']['selected_organ_tag']
-
+    request.session.modified = True
     return render(request, 'slide/image_browser.html', context)
 
 
