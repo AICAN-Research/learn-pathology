@@ -1,0 +1,47 @@
+{% extends 'learnpathology/base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>Edit slide description</h1>
+</div>
+
+<div class="card mx-auto text-center" style="width: 90%">
+<div class="card-body">
+<div class="card-text">
+    <form class="form" method="post">
+        {% csrf_token %}
+
+        <table class="table">
+            {% comment %}
+            {{ form.as_table }}
+            {% endcomment %}
+
+            <thead class="thead-light">
+            <tr><th>Field</th><th>Content</th></tr>
+            </thead>
+            <tr><th>Name</th>
+                <td>{{ slide.name }}</td></tr>
+            <tr><th>{{ form.description.label }}</th>
+                <td>{{ form.description }}</td></tr>
+            <tr><th>{{ form.long_description.label }}</th>
+                <td>{{ form.long_description }}</td></tr>
+
+        </table>
+
+        <br>
+        <input type="submit" value="Update slide description">
+    </form>
+
+    <br>
+
+    <div class="card border-0">
+        TO DO: Display slide here
+    </div>
+
+    {% include 'slide/view_wsi.html' with slide=slide annotated_slide=none %}
+
+</div>
+</div>
+</div>
+
+{% endblock content %}
