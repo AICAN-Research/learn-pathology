@@ -92,12 +92,6 @@ class Command(BaseCommand):
     python manage.py insert_slide_data_into_database <path to csv file> <path to WSI folder>
     ```
 
-    If the files belonging to each WSIs are stored in separate folders, use the
-    the flag --subfolders to parse these folders when searching for .vsi files:
-    ```
-    python manage.py insert_slide_data_into_database --subfolders <path to csv file> <path to WSI folder>
-    ```
-
     TODO:
       - Implement tagging of WSIs from csv file
       - Handle WSI already existing in database

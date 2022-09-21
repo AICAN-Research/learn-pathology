@@ -21,10 +21,7 @@ main {
     --background-collapsed-menu: #c4c4c4;
     --background: #83bafc;
     --background-dark: #5c716e;
-    --button-colour: #e7f4fc;
-    --button-colour-hover: rgba(205, 245, 251, 0.89);
-    --button-colour-active: #a8d9ff;
-    --button-border-colour: #888;
+    --button-colour: #a3c042;
     --text-colour: #37522e;
     --text-colour-dark: #3b3a30;
     --logo-hue: 240deg;
@@ -48,10 +45,7 @@ main {
     --background-collapsed-menu: #c4c4c4;
     --background:#fbefcc;
     --background-dark: #f4a688;
-    --button-colour: #fcf1e7;
-    --button-colour-hover: rgba(245, 222, 198, 0.89);
-    --button-colour-active: #ffd5a8;
-    --button-border-colour: #888;
+    --button-colour: #40a1d0;
     --text-colour:#e0876a;
     --text-colour-dark: #663626;
     --logo-hue: 180deg;
@@ -66,10 +60,7 @@ main {
     --background-collapsed-menu: #c4c4c4;
     --background: #dedede;
     --background-dark: #414141;
-    --button-colour: #e7f4fc;
-    --button-colour-hover: rgba(205, 245, 251, 0.89);
-    --button-colour-active: #a8d9ff;
-    --button-border-colour: #888;
+    --button-colour: #d27575;
     --text-colour: #6f6f6f;
     --text-colour-dark: #424242;
     --logo-hue: 130deg;
