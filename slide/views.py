@@ -180,27 +180,25 @@ def image_browser(request):
     }
 
     if organ_changed:
-        # TODO: Handle organ changed
         selected_organ = request.GET.get('organ-system')
         if selected_organ == 'all':
             slides = Slide.objects.all()
             selected_organ_tag = ['all']
             # Store changes in session
-            request.session['context']['selected_organ_tag_ids'] = selected_organ_tag
+            request.session['image_browser_context']['slide_ids'] = queryset_to_id_list(slides)
+            request.session['image_browser_context']['selected_organ_tag_ids'] = selected_organ_tag
         else:
             selected_organ_tag = Tag.objects.filter(id=selected_organ)
             slides = Slide.objects.filter(tags__in=selected_organ_tag)
             # Store changes in session
-            request.session['context']['selected_organ_tag_ids'] = queryset_to_id_list(selected_organ_tag)
+            request.session['image_browser_context']['slide_ids'] = queryset_to_id_list(slides)
+            request.session['image_browser_context']['selected_organ_tag_ids'] = queryset_to_id_list(selected_organ_tag)
 
-        # Store changes in session
-        request.session['context']['slide_ids'] = queryset_to_id_list(slides)
         # Add to context
         context['slides'] = slides
         context['selected_organ_tag'] = selected_organ_tag
 
     elif hist_path_changed:
-        # TODO: Handle histology/pathology changed
         # Use previously selected organ slides
         selected_organ_tag = organ_tag_id_list_to_queryset(
             prev_context['selected_organ_tag_ids']
