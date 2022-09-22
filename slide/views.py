@@ -194,8 +194,10 @@ def organ_tag_id_list_to_queryset(id_list):
 
 def whole_slide_view_full(request, slide_id):
     slide = slide_cache.load_slide_to_cache(slide_id)
+    stain = slide.tags.get(is_stain=True)
     return render(request, 'slide/view_wsi_full.html', {
         'slide': slide,
+        'stain_name': stain.name
     })
 
 
@@ -270,6 +272,7 @@ def store_file_in_db(f: UploadedFile):
             destination.write(chunk)
 
     return destination_path
+
 
 @teacher_required
 def edit_description(request, slide_id):

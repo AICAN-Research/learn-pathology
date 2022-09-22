@@ -2,15 +2,66 @@
 {% load static %}
 
 {% block content %}
-<div class="container" style="height: 100%">
-<div>
-<h1>Image - {{ slide.name }}</h1>
-<p>
-    {{ slide.description }}
-</p>
+
+<style>
+    .transparentBackground {
+        background-color: rgba(0, 0, 0, 0%);
+    }
+
+    .slideInfoCard {
+        margin-top: auto;
+        margin-bottom: auto;
+    }
+
+    .slideViewerCard {
+        display: table!important;
+        height: 98%!important;
+        width: 98%!important;
+        min-height: 70%;
+        margin-left: auto!important;
+        margin-right: auto!important;
+    }
+
+    @media (max-width: 768px) {
+        /* Here, specify what happens on a screen narrower than 768 px (media md) */
+        .slideInfoCard {
+
+        }
+        .slideViewerCard {
+
+        }
+    }
+</style>
+
+
+<div class="card transparentBackground border-0 w-100 h-100">
+<div class="row no-gutters w-100 h-100">
+
+    <!-- INFO CARD -->
+    <div class="col col-xl-3 col-md-12">
+        <div class="card slideInfoCard border-0">
+            <div class="card-title">
+                <h5>{{ slide.name }}</h5>
+            </div>
+            <div class="card-body">
+                <p>{{ stain_name }}</p>
+                {% if slide.long_description %}
+                    <p>{{ slide.long_description }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- WSI VIEWER -->
+    <div class="col" style="min-height: 75%!important;">
+        <div class="card slideViewerCard transparentBackground border-10">
+            <div id="wsi-canvas" class="wsi_canvas" style="height: 100%;"></div>
+        </div>
+    </div>
+
 </div>
-<div id="wsi-canvas" class="wsi_canvas" style="height: calc(100% - 100px);"></div>
 </div>
+
 
 <script src="{% static 'slide/openseadragon.min.js' %}"></script>
 <script type="text/javascript">
