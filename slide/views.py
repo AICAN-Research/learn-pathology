@@ -6,13 +6,13 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.db.models import Q
 from django.http import HttpResponse, Http404
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.core.files.uploadedfile import UploadedFile
 
 from tag.models import Tag
 from user.decorators import student_required, teacher_required
-from .models import Slide
-from .forms import SlideForm
+from slide.models import Slide
+from slide.forms import SlideForm, SlideDescriptionForm
 
 
 class SlideCache:
@@ -270,3 +270,28 @@ def store_file_in_db(f: UploadedFile):
             destination.write(chunk)
 
     return destination_path
+
+@teacher_required
+def edit_description(request, slide_id):
+    """
+    Form for editing a slide's long_description field
+    """
+
+    slide = get_object_or_404(Slide, id=slide_id)
+    form = SlideDescriptionForm(request.POST or None, instance=slide)
+
+    if request.method == 'POST':  # Form was submitted
+        if form.is_valid():
+            form.save()
+            messages.add_message(request, messages.SUCCESS,
+                 f'The slide description of {slide.name} was altered!')
+            return redirect('slide:browser')
+
+    return render(request, 'slide/edit_description.html', {
+        'slide': slide,
+        'form': form
+    })
+
+
+
+
