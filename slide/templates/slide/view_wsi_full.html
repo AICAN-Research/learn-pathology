@@ -49,15 +49,42 @@
     <!-- INFO CARD -->
     <div class="col">
         <div class="card slideInfoCard border-0">
-            <div class="card-title">
-                <h5>{{ slide.name }}</h5>
+
+            <div class="card-title" style="padding: 5%;">
+                <h2>{{ slide.name }}</h2>
             </div>
-            <div class="card-body">
-                <p>{{ stain_name }}</p>
-                {% if slide.long_description %}
-                    <p>{{ slide.long_description }}</p>
-                {% endif %}
+
+            <div class="card-body" style="padding: 5%;">
+                <table class="table">
+                    <thead class="thead-light">
+                        <tr><th>Core Information</th><th></th></tr>
+                    </thead>
+                    <tr><th>Slide name</th><td>{{ slide.name }}</td></tr>
+                    <tr><th>Slide description</th><td>{{ slide.description }}</td></tr>
+
+                    <thead class="thead-light">
+                        <tr><th>Categorization</th><th></th></tr>
+                    </thead>
+                    <tr><th>Organ</th><td>{{ slide.name }}</td></tr>
+                    <tr><th>Histology/pathology</th>
+                    {% if slide.pathology %}
+                        <td>Pathology</td>
+                    {% else %}
+                        <td>Histology</td>
+                    {% endif %}
+                    </tr>
+                    <tr><th>Stain</th><td>{{ stain_name }}</td></tr>
+
+                    <thead class="thead-light">
+                        <tr><th>Supplementary information</th><th></th></tr>
+                    </thead>
+                    {% if slide.long_description %}
+                        <tr><th>Long description</th><td>{{ slide.long_description }}</td></tr>
+                    {% endif %}
+                </table>
+
             </div>
+
         </div>
     </div>
 
