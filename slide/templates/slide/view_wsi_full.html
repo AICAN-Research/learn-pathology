@@ -7,6 +7,10 @@
     .transparentBackground {
         background-color: rgba(0, 0, 0, 0%);
     }
+    .centerCardHorizontally {
+        margin-left: auto;
+        margin-right: auto;
+    }
 
     .slideInfoCard {
         margin-top: auto;
@@ -15,15 +19,19 @@
 
     .slideViewerCard {
         display: table!important;
-        height: 98%!important;
-        width: 98%!important;
+        height: 100%!important;
+        width: 100%!important;
         min-height: 70%;
         margin-left: auto!important;
         margin-right: auto!important;
     }
 
-    @media (max-width: 768px) {
-        /* Here, specify what happens on a screen narrower than 768 px (media md) */
+    @media (max-width: 992px) {
+        /*
+        Here, specify what happens on a screen narrower than 992 px (media lg),
+        where the info card and slide viewer are placed on top of each other
+        rather than side by side.
+        */
         .slideInfoCard {
 
         }
@@ -34,11 +42,12 @@
 </style>
 
 
-<div class="card transparentBackground border-0 w-100 h-100">
+<div class="card transparentBackground centerCardHorizontally border-0"
+     style="width: 98%; height: 98%;">
 <div class="row no-gutters w-100 h-100">
 
     <!-- INFO CARD -->
-    <div class="col col-xl-3 col-md-12">
+    <div class="col">
         <div class="card slideInfoCard border-0">
             <div class="card-title">
                 <h5>{{ slide.name }}</h5>
@@ -53,7 +62,7 @@
     </div>
 
     <!-- WSI VIEWER -->
-    <div class="col" style="min-height: 75%!important;">
+    <div class="col col-12 col-lg-9" style="min-height: 75%!important;">
         <div class="card slideViewerCard transparentBackground border-10">
             <div id="wsi-canvas" class="wsi_canvas" style="height: 100%;"></div>
         </div>
