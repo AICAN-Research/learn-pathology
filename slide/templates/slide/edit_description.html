@@ -21,8 +21,8 @@
             </thead>
             <tr><th>Name</th>
                 <td>{{ slide.name }}</td></tr>
-            <tr><th>{{ form.description.label }}</th>
-                <td>{{ form.description }}</td></tr>
+            <tr><th>Description</th>
+                <td>{{ slide.description }}</td></tr>
             <tr><th>{{ form.long_description.label }}</th>
                 <td>{{ form.long_description }}</td></tr>
 
@@ -38,7 +38,7 @@
         TO DO: Display slide here
     </div>
 
-    {% include 'slide/view_wsi.html' with slide=slide annotated_slide=none %}
+    {% include 'slide/view_wsi.html' with slide=slide %}
 
 </div>
 </div>
