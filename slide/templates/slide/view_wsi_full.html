@@ -21,9 +21,7 @@
         display: table!important;
         height: 100%!important;
         width: 100%!important;
-        min-height: 70%;
-        margin-left: auto!important;
-        margin-right: auto!important;
+        margin: 5px auto 5px auto!important;
     }
 
     @media (max-width: 992px) {
@@ -35,67 +33,94 @@
         .slideInfoCard {
 
         }
+        .slideViewerCol {
+            height: 90%;
+            max-height: 95%!important;
+        }
         .slideViewerCard {
 
         }
     }
+
+    .LPButton {
+        display: inline-block;
+        background-color: var(--button-colour)!important;
+        padding: 5px 10px;
+        font-family: sans-serif, Arial;
+        font-size: 1rem;
+        font-weight: 400;
+        border: 1px solid var(--button-border-colour)!important;
+        border-radius: 4px;
+    }
+
 </style>
 
 
 <div class="card transparentBackground centerCardHorizontally border-0"
      style="width: 98%; height: 98%;">
-<div class="row no-gutters w-100 h-100">
+    <div class="row no-gutters w-100 h-100">
 
-    <!-- INFO CARD -->
-    <div class="col">
-        <div class="card slideInfoCard border-0">
+        <div class="col col-fit-content">
 
-            <div class="card-title" style="padding: 5%;">
-                <h2>{{ slide.name }}</h2>
-            </div>
+            <!-- INFO CARD -->
+            <div class="card slideInfoCard border-0">
+                <div class="row align-items-center" style="height: fit-content; padding-top: 3%; padding-bottom: 3%;">
+                    <div class="col" style="width: fit-content; height: fit-content; margin-left: auto;">
+                        <div class="card-title" style="width: fit-content; height: fit-content; padding-left: 10%;">
+                        <h4>{{ slide.name }}</h4>
+                        </div>
+                    </div>
+                    <!-- HIDE/SHOW INFO BUTTON -->
+                    <div class="col" style="width: fit-content; padding-bottom: 5px;">
+                        <div class="card transparentBackground border-0" style="width: fit-content; margin-left: auto; padding-right: 10%;">
+                        <div class="LPButton btn mx-auto" onclick="toggleInfoCardVisibility();">
+                            Show/hide slide information
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- CARD CONTENT -->
+                <div class="card-body" id="slideInfoCardContent">
+                    <table class="table">
+                        <thead class="thead-light">
+                            <tr><th>Core Information</th><th></th></tr>
+                        </thead>
+                        <tr><th>Slide name</th><td>{{ slide.name }}</td></tr>
+                        <tr><th>Slide description</th><td>{{ slide.description }}</td></tr>
 
-            <div class="card-body" style="padding: 5%;">
-                <table class="table">
-                    <thead class="thead-light">
-                        <tr><th>Core Information</th><th></th></tr>
-                    </thead>
-                    <tr><th>Slide name</th><td>{{ slide.name }}</td></tr>
-                    <tr><th>Slide description</th><td>{{ slide.description }}</td></tr>
+                        <thead class="thead-light">
+                            <tr><th>Categorization</th><th></th></tr>
+                        </thead>
+                        <tr><th>Organ</th><td>{{ slide.name }}</td></tr>
+                        <tr><th>Histology/pathology</th>
+                        {% if slide.pathology %}
+                            <td>Pathology</td>
+                        {% else %}
+                            <td>Histology</td>
+                        {% endif %}
+                        </tr>
+                        <tr><th>Stain</th><td>{{ stain_name }}</td></tr>
 
-                    <thead class="thead-light">
-                        <tr><th>Categorization</th><th></th></tr>
-                    </thead>
-                    <tr><th>Organ</th><td>{{ slide.name }}</td></tr>
-                    <tr><th>Histology/pathology</th>
-                    {% if slide.pathology %}
-                        <td>Pathology</td>
-                    {% else %}
-                        <td>Histology</td>
-                    {% endif %}
-                    </tr>
-                    <tr><th>Stain</th><td>{{ stain_name }}</td></tr>
-
-                    <thead class="thead-light">
-                        <tr><th>Supplementary information</th><th></th></tr>
-                    </thead>
-                    {% if slide.long_description %}
-                        <tr><th>Long description</th><td>{{ slide.long_description }}</td></tr>
-                    {% endif %}
-                </table>
-
+                        <thead class="thead-light">
+                            <tr><th>Supplementary information</th><th></th></tr>
+                        </thead>
+                        {% if slide.long_description %}
+                            <tr><th>Long description</th><td>{{ slide.long_description }}</td></tr>
+                        {% endif %}
+                    </table>
+                </div>
             </div>
 
         </div>
-    </div>
 
-    <!-- WSI VIEWER -->
-    <div class="col col-12 col-lg-9" style="min-height: 75%!important;">
-        <div class="card slideViewerCard transparentBackground border-10">
-            <div id="wsi-canvas" class="wsi_canvas" style="height: 100%;"></div>
+        <!-- WSI VIEWER -->
+        <div class="col col-12 col-lg-9 slideViewerCol">
+            <div class="card slideViewerCard transparentBackground">
+                <div id="wsi-canvas" class="wsi_canvas" style="height: 100%;"></div>
+            </div>
         </div>
     </div>
 
-</div>
 </div>
 
 
@@ -118,5 +143,23 @@
             },
         }
     });
+</script>
+<script>
+    function toggleInfoCardVisibility() {
+        var x = document.getElementById("slideInfoCardContent");
+        console.log("clicked button to toggle card visibility");
+        console.log(x);
+        if (x.style.display === "none") {
+            x.style.display = "block";
+        } else {
+            x.style.display = "none";
+        }
+
+        /*if (x.style.height !== "100%") {
+            x.style.height = "100%";
+        } else {
+            x.style.height = "0%";
+        }*/
+    }
 </script>
 {% endblock %}
