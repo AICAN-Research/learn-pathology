@@ -1,4 +1,49 @@
 {% extends 'learnpathology/base.html' %}
+{% load bootstrap_icons %}
+{% load static %}
+
+<style>
+    .courseHeaderCard {
+
+    }
+    .courseContentCard {
+
+    }
+
+    #myNavTabs .nav-pills .nav-link {
+        color: var(--text-colour-dark);
+    }
+    #myNavTabs .nav-link:hover {
+        background-color: var(--button-colour-hover);
+        color: var(--text-colour-dark);
+    }
+    #myNavTabs .nav-link.active {
+        background-color: var(--button-colour-active);
+        color: var(--text-colour-dark);
+        font-weight: bold!important;
+    }
+
+</style>
+
+
+<script>
+
+$(document).ready(function(){
+  activateTab('aaa');
+});
+
+function activateTab(tab){
+  $('.nav-tabs a[href="#' + tab + '"]').tab('show');
+}
+
+$(document).ready(function() {
+    $('.btn').onclick(function (event) {
+        this.form.submit();
+    });
+});
+
+</script>
+
 
 {% block content %}
 <div class="container">
@@ -8,92 +53,71 @@
 <div class="card mx-auto text-center" style="width: 90%">
 <div class="card-body">
 <div class="card-text">
-    <table class="table">
-    <tr>
+
+    <div class="courseHeaderCard">
+        <div class="card-body">
         {% if request.user.is_teacher or request.user.is_superuser %}
-            <th><a href="{% url 'course:edit' course.id %}">Edit course info</a></th>
-            <th><a href="{% url 'course:delete' course.id %}">Delete course</a></th>
+            <div class="LPButton btn"><a href="{% url 'course:edit' course.id %}">{% bs_icon 'gear' %}Edit course</a></div>
+            <div class="LPButton btn"><a href="{% url 'course:delete' course.id %}">{% bs_icon 'trash' %}Delete course</a></>
         {% endif %}
-    </tr>
+        </div>
 
-    <tr>
-        <th>Course code:</th>
-        <td>{{ course.code }}</td>
-    </tr>
-    <tr>
-        <th>Course name: </th>
-        <td>{{ course.title }}</td>
-    </tr>
-    <tr>
-        <th>Description:</th>
-        <td>{{ course.description }}</td>
-    </tr>
-
-
-    <tr>
-        <th>Tasks</th>
-        <td>
-        {% if request.user.is_teacher or request.user.is_superuser %}
-            <p>
-                <a href="{% url 'course:task_selection' course.id %}">Add task</a>
-            </p>
-        {% endif %}
-
-        {% if tasks %}
         <table class="table">
-            <thead class="thead-light">
-            <tr>
-                <th>Name</th>
-                <th>Task type</th>
-                <th>Do task</th>
-            </tr>
-            </thead>
-            {% for task in tasks %}
-                <tr>
-                    <td><a href="{% url task.do_url task.id %}">{{ task.name }}</a></td>
-                    <td>{{ task.type }}</td>
-                    <td><a href="{% url task.do_url task.id %}">Do task</a></td>
-                </tr>
-            {% endfor %}
+        <tr>
+            <th>Course code:</th>
+            <td>{{ course.code }}</td>
+        </tr>
+        <tr>
+            <th>Course name: </th>
+            <td>{{ course.title }}</td>
+        </tr>
+        <tr>
+            <th>Description:</th>
+            <td>{{ course.description }}</td>
+        </tr>
         </table>
-        {% else %}
-            No tasks assigned to this course yet.
-        {% endif %}
-        </td>
-    </tr>
+    </div>
 
-    <tr>
-        <th>Slides</th>
-        <td>
-        {% if request.user.is_teacher or request.user.is_superuser %}
-            <p>
-                <a href="{% url 'course:slide_selection' course.id %}" >Add or remove slides</a>
-            </p>
-        {% endif %}
+    <div class="card courseContentCard">
 
-        {% if slides %}
-        <table class="table">
-            <thead class="thead-light">
-            <tr>
-                <th>Thumbnail</th>
-                <th>Name</th>
-                <th>Description</th>
-            </tr>
-            </thead>
-            {% for slide in slides %}
-                <tr>
-                    <td><a href="{% url 'slide:view_full' slide.id %}"><img src="/slide/thumbnails/{{ slide.id }}.jpg" style="width: 100px"></a></td>
-                    <td><a href="{% url 'slide:view_full' slide.id %}">{{ slide.name }}</a></td>
-                    <td>{{ slide.description }}</td>
-                </tr>
-            {% endfor %}
-        </table>
-        {% else %}
-            No slides assigned to this course yet.
-        {% endif %}
-    </td>
-    </tr>
-</table>
+        <div class="card align-content" style="padding-top: 10px; padding-bottom: 10px">
+            {# Place nav-tabs on top #}
+            <ul class="nav nav-tabs" id="myNavTabs">
+                <li class="nav-item">
+                    <a href="#course-description" class="nav-link active" data-toggle="tab">{% bs_icon 'body-text' %}Course description</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#learning-outcomes" class="nav-link" data-toggle="tab">{% bs_icon 'flag' %}Learning outcomes</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#slides" class="nav-link" data-toggle="tab">{% bs_icon 'image' %}Slides</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#tasks" class="nav-link" data-toggle="tab">{% bs_icon 'question-square' %}Tasks/quizzes</a>
+                </li>
+            </ul>
+
+            {# Place nav-panes below #}
+            <div class="card border-0">
+            <div class="tab-content" id="tabs">
+                <div class="tab-pane active" id="course-description">
+                    {% include 'course/course_page/course_description.html' %}
+                </div>
+                <div class="tab-pane" id="learning-outcomes">
+                    {% include 'course/course_page/learning_outcomes.html' %}
+                </div>
+                <div class="tab-pane" id="slides">
+                    {% include 'course/course_page/course_slides.html' %}
+                </div>
+                <div class="tab-pane" id="tasks">
+                    {% include 'course/course_page/course_quizzes.html' %}
+                </div>
+            </div>
+            </div>
+        </div>
+
+    </div>
+
 </div>
 </div>
 </div>
