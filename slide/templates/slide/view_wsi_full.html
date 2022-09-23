@@ -2,15 +2,126 @@
 {% load static %}
 
 {% block content %}
-<div class="container" style="height: 100%">
-<div>
-<h1>Image - {{ slide.name }}</h1>
-<p>
-    {{ slide.description }}
-</p>
+
+<style>
+    .transparentBackground {
+        background-color: rgba(0, 0, 0, 0%);
+    }
+    .centerCardHorizontally {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .slideInfoCard {
+        margin-top: auto;
+        margin-bottom: auto;
+    }
+
+    .slideViewerCard {
+        display: table!important;
+        height: 100%!important;
+        width: 100%!important;
+    }
+
+    @media (max-width: 992.02px) {
+        /*
+        Here, specify what happens on a screen narrower than 992 px (media lg),
+        where the info card and slide viewer are placed on top of each other
+        rather than side by side.
+        */
+        .slideInfoCard {
+
+        }
+        .slideViewerCol {
+            height: 90%;
+            max-height: 95%!important;
+        }
+        .slideViewerCard {
+            margin: 5px auto 5px auto!important;
+        }
+    }
+
+    .LPButton {
+        display: inline-block;
+        background-color: var(--button-colour)!important;
+        padding: 5px 10px;
+        font-family: sans-serif, Arial;
+        font-size: 1rem;
+        font-weight: 400;
+        border: 1px solid var(--button-border-colour)!important;
+        border-radius: 4px;
+    }
+
+</style>
+
+
+<div class="card transparentBackground centerCardHorizontally border-0"
+     style="width: 98%; height: 98%;">
+    <div class="row no-gutters w-100 h-100">
+
+        <div class="col" style="height: fit-content;">
+
+            <!-- INFO CARD -->
+            <div class="card slideInfoCard border-0">
+                <div class="row align-items-center" style="padding-top: 3%; padding-bottom: 3%;">
+                    <div class="col" style="margin-left: auto;">
+                        <div class="card-title" style="padding-left: 10%;">
+                        <h4>{{ slide.name }}</h4>
+                        </div>
+                    </div>
+                    <!-- HIDE/SHOW INFO BUTTON -->
+                    <div class="col" style="padding-bottom: 5px;">
+                        <div class="card transparentBackground border-0" style="margin-left: auto; padding-right: 10%;">
+                        <div class="LPButton btn" style="margin-left: auto;" onclick="toggleInfoCardVisibility();">
+                            Show/hide slide information
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- CARD CONTENT -->
+                <div class="card-body" id="slideInfoCardContent">
+                    <table class="table">
+                        <thead class="thead-light">
+                            <tr><th>Core Information</th><th></th></tr>
+                        </thead>
+                        <tr><th>Slide name</th><td>{{ slide.name }}</td></tr>
+                        <tr><th>Slide description</th><td>{{ slide.description }}</td></tr>
+
+                        <thead class="thead-light">
+                            <tr><th>Categorization</th><th></th></tr>
+                        </thead>
+                        <tr><th>Organ</th><td>{{ slide.name }}</td></tr>
+                        <tr><th>Histology/pathology</th>
+                        {% if slide.pathology %}
+                            <td>Pathology</td>
+                        {% else %}
+                            <td>Histology</td>
+                        {% endif %}
+                        </tr>
+                        <tr><th>Stain</th><td>{{ stain_name }}</td></tr>
+
+                        <thead class="thead-light">
+                            <tr><th>Supplementary information</th><th></th></tr>
+                        </thead>
+                        {% if slide.long_description %}
+                            <tr><th>Long description</th><td>{{ slide.long_description }}</td></tr>
+                        {% endif %}
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- WSI VIEWER -->
+        <div class="col col-12 col-lg-9 slideViewerCol" style="height: 100%;">
+            <div class="card slideViewerCard transparentBackground">
+                <div id="wsi-canvas" class="wsi_canvas" style="height: 100%;"></div>
+            </div>
+        </div>
+    </div>
+
 </div>
-<div id="wsi-canvas" class="wsi_canvas" style="height: calc(100% - 100px);"></div>
-</div>
+
 
 <script src="{% static 'slide/openseadragon.min.js' %}"></script>
 <script type="text/javascript">
@@ -31,5 +142,23 @@
             },
         }
     });
+</script>
+<script>
+    function toggleInfoCardVisibility() {
+        var x = document.getElementById("slideInfoCardContent");
+        console.log("clicked button to toggle card visibility");
+        console.log(x);
+        if (x.style.display === "none") {
+            x.style.display = "block";
+        } else {
+            x.style.display = "none";
+        }
+
+        /*if (x.style.height !== "100%") {
+            x.style.height = "100%";
+        } else {
+            x.style.height = "0%";
+        }*/
+    }
 </script>
 {% endblock %}
