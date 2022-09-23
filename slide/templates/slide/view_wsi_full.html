@@ -21,10 +21,9 @@
         display: table!important;
         height: 100%!important;
         width: 100%!important;
-        margin: 5px auto 5px auto!important;
     }
 
-    @media (max-width: 992px) {
+    @media (max-width: 992.02px) {
         /*
         Here, specify what happens on a screen narrower than 992 px (media lg),
         where the info card and slide viewer are placed on top of each other
@@ -38,7 +37,7 @@
             max-height: 95%!important;
         }
         .slideViewerCard {
-
+            margin: 5px auto 5px auto!important;
         }
     }
 
@@ -60,20 +59,20 @@
      style="width: 98%; height: 98%;">
     <div class="row no-gutters w-100 h-100">
 
-        <div class="col col-fit-content">
+        <div class="col" style="height: fit-content;">
 
             <!-- INFO CARD -->
             <div class="card slideInfoCard border-0">
-                <div class="row align-items-center" style="height: fit-content; padding-top: 3%; padding-bottom: 3%;">
-                    <div class="col" style="width: fit-content; height: fit-content; margin-left: auto;">
-                        <div class="card-title" style="width: fit-content; height: fit-content; padding-left: 10%;">
+                <div class="row align-items-center" style="padding-top: 3%; padding-bottom: 3%;">
+                    <div class="col" style="margin-left: auto;">
+                        <div class="card-title" style="padding-left: 10%;">
                         <h4>{{ slide.name }}</h4>
                         </div>
                     </div>
                     <!-- HIDE/SHOW INFO BUTTON -->
-                    <div class="col" style="width: fit-content; padding-bottom: 5px;">
-                        <div class="card transparentBackground border-0" style="width: fit-content; margin-left: auto; padding-right: 10%;">
-                        <div class="LPButton btn mx-auto" onclick="toggleInfoCardVisibility();">
+                    <div class="col" style="padding-bottom: 5px;">
+                        <div class="card transparentBackground border-0" style="margin-left: auto; padding-right: 10%;">
+                        <div class="LPButton btn" style="margin-left: auto;" onclick="toggleInfoCardVisibility();">
                             Show/hide slide information
                         </div>
                         </div>
@@ -114,7 +113,7 @@
         </div>
 
         <!-- WSI VIEWER -->
-        <div class="col col-12 col-lg-9 slideViewerCol">
+        <div class="col col-12 col-lg-9 slideViewerCol" style="height: 100%;">
             <div class="card slideViewerCard transparentBackground">
                 <div id="wsi-canvas" class="wsi_canvas" style="height: 100%;"></div>
             </div>
