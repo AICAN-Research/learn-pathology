@@ -13,5 +13,6 @@ urlpatterns = [
     #path('browser/list-view', views.list_view, name='list_view'),
     path('view/<int:slide_id>/', views.whole_slide_view_full, name='view_full'),
     path('add/', views.add, name='add'),
+    path('edit/<int:slide_id>', views.edit_description, name='edit_description'),
 ] + static('thumbnails/', document_root=os.path.join(settings.BASE_DIR, 'thumbnails'))
 

@@ -6,14 +6,13 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.db.models import Q
 from django.http import HttpResponse, Http404
-from django.shortcuts import render, redirect
-from django.conf import settings
+from django.shortcuts import render, redirect, get_object_or_404
 from django.core.files.uploadedfile import UploadedFile
 
 from tag.models import Tag
 from user.decorators import student_required, teacher_required
-from .models import Slide
-from .forms import SlideForm
+from slide.models import Slide
+from slide.forms import SlideForm, SlideDescriptionForm
 
 
 class SlideCache:
@@ -91,74 +90,6 @@ def index(request):
     })
 
 
-def get_image_browser_context(request):
-    """
-    TODO:
-        - Handle organ system/histology_pathology selected when clicking the
-        other category. Can possibly do this with checking which tab is active
-        and passing it back to the template.
-        - Filter on both organ and hist/path simultaneously
-        - Clicking on organ/histopathology catagory, the view chenges to grid
-        despite list view being the last choice
-    """
-    slides = Slide.objects.all()
-
-    # Filters
-    try:
-        organs = request.GET.get('organ-system', False)
-
-        if not organs:
-            raise Exception("check organ selection, something went wrong")
-        if organs == 'all':
-            #  slides = slides
-            selected_organ_tags = ['all']
-        else:
-            slides = slides.filter(tags__in=organs)
-            selected_organ_tags = Tag.objects.filter(id=organs)
-
-    except Exception as exc:
-        print(f'{exc.__class__.__name__}: {exc}')
-        #organs = []
-        selected_organ_tags = ['all']
-
-    # Handle histology/pathology buttons
-    try:
-        histology_pathology = request.GET.get('histology-pathology', False)
-
-        if histology_pathology == 'histology':
-            selected_both = False
-            selected_histology = True
-            selected_pathology = False
-            slides = slides.filter(pathology=False)
-        elif histology_pathology == 'pathology':
-            selected_both = False
-            selected_histology = False
-            selected_pathology = True
-            slides = slides.filter(pathology=True)
-        else:
-            selected_both = True
-            selected_histology = False
-            selected_pathology = False
-            # do not filter slides
-
-    except Exception as exc:
-        print(f'{exc.__class__.__name__}: {exc}')
-        selected_both = True
-        selected_histology = False
-        selected_pathology = False
-
-    # TODO later: Add search option
-
-    return {
-        'slides': slides,
-        'organ_tags': Tag.objects.filter(is_organ=True).order_by('name'),
-        'selected_organ_tags': selected_organ_tags,
-        'selected_both': selected_both,
-        'selected_histology': selected_histology,
-        'selected_pathology': selected_pathology,
-    }
-
-
 def image_browser(request):
     """
     TODO:   - CLEAN UP FUNCTION
@@ -179,13 +110,11 @@ def image_browser(request):
             slides = Slide.objects.all()
             selected_organ_tag = ['all']
             # Store changes in session
-            request.session['image_browser_context']['slide_ids'] = queryset_to_id_list(slides)
             request.session['image_browser_context']['selected_organ_tag_ids'] = selected_organ_tag
         else:
             selected_organ_tag = Tag.objects.filter(id=selected_organ)
             slides = Slide.objects.filter(tags__in=selected_organ_tag)
             # Store changes in session
-            request.session['image_browser_context']['slide_ids'] = queryset_to_id_list(slides)
             request.session['image_browser_context']['selected_organ_tag_ids'] = queryset_to_id_list(selected_organ_tag)
 
         # Add to context
@@ -219,8 +148,6 @@ def image_browser(request):
             selected_pathology = False
             # do not filter slides
 
-        # Store changes in session
-        request.session['image_browser_context']['slide_ids'] = queryset_to_id_list(slides)
         # Add to context
         context['slides'] = slides
         context['selected_organ_tag'] = selected_organ_tag
@@ -232,7 +159,6 @@ def image_browser(request):
         slides = Slide.objects.all()
         selected_organ_tag = ['all']
         # Store changes in session
-        request.session['image_browser_context']['slide_ids'] = queryset_to_id_list(slides)
         request.session['image_browser_context']['selected_organ_tag_ids'] = queryset_to_id_list(selected_organ_tag)
         request.session['image_browser_context']['selected_both'] = True
         request.session['image_browser_context']['selected_histology'] = False
@@ -258,11 +184,6 @@ def queryset_to_id_list(queryset):
     return queryset
 
 
-def slide_id_list_to_queryset(id_list):
-    queryset = Slide.objects.filter(id__in=id_list)
-    return queryset
-
-
 def organ_tag_id_list_to_queryset(id_list):
     if 'all' in id_list:
         return id_list
@@ -271,27 +192,12 @@ def organ_tag_id_list_to_queryset(id_list):
     return queryset
 
 
-def grid_view(request):
-
-
-    context = get_image_browser_context(request)
-    context['view_grid'] = True
-
-    return render(request, 'slide/grid_view.html', context)
-
-
-def list_view(request):
-
-    context = get_image_browser_context(request)
-    context['view_grid'] = False
-
-    return render(request, 'slide/list_view.html', context)
-
-
 def whole_slide_view_full(request, slide_id):
     slide = slide_cache.load_slide_to_cache(slide_id)
+    stain = slide.tags.get(is_stain=True)
     return render(request, 'slide/view_wsi_full.html', {
         'slide': slide,
+        'stain_name': stain.name
     })
 
 
@@ -366,3 +272,29 @@ def store_file_in_db(f: UploadedFile):
             destination.write(chunk)
 
     return destination_path
+
+
+@teacher_required
+def edit_description(request, slide_id):
+    """
+    Form for editing a slide's long_description field
+    """
+
+    slide = get_object_or_404(Slide, id=slide_id)
+    form = SlideDescriptionForm(request.POST or None, instance=slide)
+
+    if request.method == 'POST':  # Form was submitted
+        if form.is_valid():
+            form.save()
+            messages.add_message(request, messages.SUCCESS,
+                 f'The slide description of {slide.name} was altered!')
+            return redirect('slide:browser')
+
+    return render(request, 'slide/edit_description.html', {
+        'slide': slide,
+        'form': form
+    })
+
+
+
+

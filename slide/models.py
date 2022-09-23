@@ -16,7 +16,8 @@ class Slide(models.Model):
     """
     name = models.CharField(max_length=255)
     path = models.CharField(max_length=1024)
-    description = models.TextField()
+    description = models.TextField()  # short description
+    long_description = models.TextField(null=True, blank=True)  # (optional) longer description
     pathology = models.BooleanField(default=False, help_text='Does the slide show pathology or not')
     tags = models.ManyToManyField(Tag)
 
