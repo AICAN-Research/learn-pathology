@@ -51,8 +51,8 @@ class SlideForm(ModelForm):
 class SlideDescriptionForm(ModelForm):
     class Meta:
         model = Slide
-        fields = ['description', 'long_description']
-        exclude = ['name', 'path', 'image_file', 'pathology', 'organ_tags', 'stain_tags', 'other_tags']
+        fields = ['long_description']
+        exclude = ['name', 'description', 'path', 'image_file', 'pathology', 'organ_tags', 'stain_tags', 'other_tags']
         widgets = {
             'name': Textarea(attrs={'cols': '40', 'rows': '1', 'style': 'resize:none'}),
             'description': Textarea(attrs={'cols': '40', 'rows': '1', 'style': 'resize:none'}),
