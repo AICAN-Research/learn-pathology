@@ -9,6 +9,8 @@
     --logo-small-height: 60px;
     --shadow: rgba(0, 0, 0, 0.5); /*rgba(0, 0, 102, 0.5);*/
     --button-text-colour: #ffffff;
+    --text-colour: #3b3a30;
+    --text-colour-dark: #2d2c28;
 }
 
 main {
@@ -20,13 +22,11 @@ main {
     --background-header: #eaece5;
     --background-collapsed-menu: #c4c4c4;
     --background: #83bafc;
-    --background-dark: #5c716e;
+    --background-dark: #456a96;
     --button-colour: #e7f4fc;
     --button-colour-hover: rgba(205, 245, 251, 0.89);
     --button-colour-active: #a8d9ff;
     --button-border-colour: #888;
-    --text-colour: #37522e;
-    --text-colour-dark: #3b3a30;
     --logo-hue: 240deg;
     --logo-saturation: 20;
     --logo-brightness: 10;
@@ -52,8 +52,6 @@ main {
     --button-colour-hover: rgba(245, 222, 198, 0.89);
     --button-colour-active: #ffd5a8;
     --button-border-colour: #888;
-    --text-colour:#e0876a;
-    --text-colour-dark: #663626;
     --logo-hue: 180deg;
     --logo-saturation: 50;
     --logo-brightness: 0;
