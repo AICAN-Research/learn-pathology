@@ -295,6 +295,29 @@ body {
     height: 100%;
 }
 
+.LPButton {
+    display: inline-block;
+    background-color: var(--button-colour);
+    padding: 5px 10px;
+    font-family: sans-serif, Arial;
+    font-size: 1rem;
+    font-weight: 400;
+    border: 1px solid var(--button-border-colour);
+    border-radius: 4px;
+}
+
+.LPButton:hover {
+    background-color: var(--button-colour-hover);
+}
+
+.LPButton .a {
+    color: var(--text-colour-dark)!important;
+}
+
+.LPButton .a:hover {
+    color: var(--text-colour-dark)!important;
+}
+
 /* Radio button toolbar used with slide filters */
 .radio-toolbar {
   margin: 0;
@@ -320,4 +343,30 @@ body {
 }
 .radio-toolbar label.active {
     background-color: var(--button-colour-active);
+}
+
+/* Course navigation tabs */
+.courseNavTabs .nav-tabs {
+    /*background-color: var(--button-colour-active);*/
+    color: var(--text-colour-dark);
+}
+
+.courseNavTabs .nav-link {
+    /*background-color: var(--button-colour-active);*/
+    color: var(--text-colour-dark);
+}
+
+.courseNavTabs .nav-link:hover {
+    background-color: var(--button-colour-hover);
+    border-style: solid;
+    border-color: #dee2e6;
+    border-width: 1px 1px 0 1px;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+}
+
+.courseNavTabs .nav-link.active {
+    /*background-color: var(--button-colour-active);*/
+    color: var(--text-colour-dark);
+    font-weight: bold;
 }

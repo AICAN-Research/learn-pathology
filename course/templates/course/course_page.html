@@ -10,19 +10,6 @@
 
     }
 
-    #myNavTabs .nav-pills .nav-link {
-        color: var(--text-colour-dark);
-    }
-    #myNavTabs .nav-link:hover {
-        background-color: var(--button-colour-hover);
-        color: var(--text-colour-dark);
-    }
-    #myNavTabs .nav-link.active {
-        background-color: var(--button-colour-active);
-        color: var(--text-colour-dark);
-        font-weight: bold!important;
-    }
-
 </style>
 
 
@@ -47,7 +34,7 @@ $(document).ready(function() {
 
 {% block content %}
 <div class="container">
-<h1>Course overview</h1>
+<h1>{{ course.code }} - {{ course.title }}</h1>
 </div>
 
 <div class="card mx-auto text-center" style="width: 90%">
@@ -57,24 +44,15 @@ $(document).ready(function() {
     <div class="courseHeaderCard">
         <div class="card-body">
         {% if request.user.is_teacher or request.user.is_superuser %}
-            <div class="LPButton btn"><a href="{% url 'course:edit' course.id %}">{% bs_icon 'gear' %}Edit course</a></div>
-            <div class="LPButton btn"><a href="{% url 'course:delete' course.id %}">{% bs_icon 'trash' %}Delete course</a></>
+            <div class="LPButton btn"><a href="{% url 'course:edit' course.id %}" style="color: var(--text-colour-dark);">{% bs_icon 'gear' %}Edit course</a></div>
+            <div class="LPButton btn border-danger"><a href="{% url 'course:delete' course.id %}" style="color: var(--text-colour-dark)">{% bs_icon 'trash' %}Delete course</a></div>
         {% endif %}
         </div>
 
         <table class="table">
-        <tr>
-            <th>Course code:</th>
-            <td>{{ course.code }}</td>
-        </tr>
-        <tr>
-            <th>Course name: </th>
-            <td>{{ course.title }}</td>
-        </tr>
-        <tr>
-            <th>Description:</th>
-            <td>{{ course.description }}</td>
-        </tr>
+            <tr><th>Course code:</th><td>{{ course.code }}</td></tr>
+            <tr><th>Course name: </th><td>{{ course.title }}</td></tr>
+            <tr><th>Description:</th><td>{{ course.description }}</td></tr>
         </table>
     </div>
 
@@ -82,7 +60,7 @@ $(document).ready(function() {
 
         <div class="card align-content" style="padding-top: 10px; padding-bottom: 10px">
             {# Place nav-tabs on top #}
-            <ul class="nav nav-tabs" id="myNavTabs">
+            <ul class="nav nav-tabs courseNavTabs">
                 <li class="nav-item">
                     <a href="#course-description" class="nav-link active" data-toggle="tab">{% bs_icon 'body-text' %}Course description</a>
                 </li>
@@ -99,18 +77,18 @@ $(document).ready(function() {
 
             {# Place nav-panes below #}
             <div class="card border-0">
-            <div class="tab-content" id="tabs">
+            <div class="tab-content courseNavPanes" id="tabs">
                 <div class="tab-pane active" id="course-description">
-                    {% include 'course/course_page/course_description.html' %}
+                    {% include 'course/course_page_content/course_description.html' %}
                 </div>
                 <div class="tab-pane" id="learning-outcomes">
-                    {% include 'course/course_page/learning_outcomes.html' %}
+                    {% include 'course/course_page_content/learning_outcomes.html' %}
                 </div>
                 <div class="tab-pane" id="slides">
-                    {% include 'course/course_page/course_slides.html' %}
+                    {% include 'course/course_page_content/course_slides.html' %}
                 </div>
                 <div class="tab-pane" id="tasks">
-                    {% include 'course/course_page/course_quizzes.html' %}
+                    {% include 'course/course_page_content/course_quizzes.html' %}
                 </div>
             </div>
             </div>

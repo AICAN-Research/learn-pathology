@@ -1,0 +1,14 @@
+{% block courseTabContent %}
+    {# This content is displayed within a containing 'card' structure #}
+
+    <div class="LPButton">
+        <a href="{% url 'course:task_selection' course.id %}">Click here to add or remove tasks</a>
+    </div>
+
+    <div class="card-body">
+    <div class="card-text">
+        These are the quizzes in the course.
+    </div>
+    </div>
+
+{% endblock courseTabContent %}
