@@ -3,7 +3,27 @@
 
     <div class="card-body">
     <div class="card-text">
-        This is the course description.
+        {% if course.long_description %}
+
+            <div class="LPButton">
+                <a href="{% url 'course:edit_description' course.id  %}">Edit course description</a>
+            </div>
+            <br>
+            <div class="card border-0">
+            <div class="card-body"><div class="card-text">
+                {{ course.long_description | safe }}
+            </div></div>
+            </div>
+
+        {% else %}
+
+            This course lacks a course description. You can add one now!
+            <br>
+            <div class="LPButton">
+                <a href="{% url 'course:edit_description' course.id  %}">Add course description</a>
+            </div>
+
+        {% endif %}
     </div>
     </div>
 

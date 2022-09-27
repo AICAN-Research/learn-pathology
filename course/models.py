@@ -1,3 +1,4 @@
+from ckeditor.fields import RichTextField
 from django.db import models
 from slide.models import Slide
 from task.models import Task
@@ -8,6 +9,7 @@ class Course(models.Model):
     code = models.CharField(max_length=20)
     title = models.CharField(max_length=255)
     description = models.TextField()
+    long_description = RichTextField(null=True, blank=True)  # longer description
     teacher = models.ManyToManyField(User)
     task = models.ManyToManyField(Task)
     slide = models.ManyToManyField(Slide)

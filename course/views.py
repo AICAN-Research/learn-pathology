@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 
 from course.models import Course
-from course.forms import CourseForm, DeleteCourseForm
+from course.forms import CourseForm, DeleteCourseForm, CourseLongDescriptionForm
 from slide.models import Slide
 from tag.models import Tag
 from task.models import Task
@@ -80,6 +80,28 @@ def edit(request, course_id):
             return redirect('course:index')
 
     return render(request, 'course/edit.html', {'form': courseForm})
+
+
+@teacher_required
+def edit_long_description(request, course_id):
+    """
+    Teacher form for editing the course (long) description
+    """
+
+    course = get_object_or_404(Course, id=course_id)
+    form = CourseLongDescriptionForm(request.POST or None, instance=course)
+
+    if request.method == 'POST':  # Form was submitted
+        if form.is_valid():
+            form.save()
+            messages.add_message(request, messages.SUCCESS,
+                 f'The course {course.code} - {course.title} was altered!')
+            return redirect('course:view', course_id=course_id)
+
+    return render(request, 'course/edit_course_description.html', {
+        'course': course,
+        'form': form
+    })
 
 
 @teacher_required

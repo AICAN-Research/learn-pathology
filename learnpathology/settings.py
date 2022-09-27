@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_bootstrap_icons',
+    'ckeditor',
     'learnpathology',
     'user',
     'slide',
