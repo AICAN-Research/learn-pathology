@@ -77,7 +77,7 @@ def edit(request, course_id):
             courseForm.save()
             messages.add_message(request, messages.SUCCESS,
                  f'The course {course.code} - {course.title} was altered!')
-            return redirect('course:index')
+            return redirect('course:view', course_id=course_id)
 
     return render(request, 'course/edit.html', {'form': courseForm})
 
