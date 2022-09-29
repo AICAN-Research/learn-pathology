@@ -29,3 +29,13 @@ class CourseLongDescriptionForm(forms.ModelForm):
         labels = {
             'long_description': 'Description'
         }
+
+
+class CourseLearningOutcomesForm(forms.ModelForm):
+
+    class Meta:
+        model = Course
+        fields = ['learning_outcomes']
+        labels = {
+            'learning_outcomes': 'Learning outcomes'
+        }

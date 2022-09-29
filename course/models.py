@@ -14,6 +14,7 @@ class Course(models.Model):
     task = models.ManyToManyField(Task)
     slide = models.ManyToManyField(Slide)
     # TODO add annotations later
+    learning_outcomes = RichTextField(null=True, blank=True)
 
     def __str__(self):
         return self.code + " - " + self.title
