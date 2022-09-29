@@ -33,17 +33,29 @@ $(document).ready(function() {
 
     <div class="courseHeaderCard">
         <div class="card-body">
-        {% if request.user.is_teacher or request.user.is_superuser %}
-            <div class="LPButton btn"><a href="{% url 'course:edit' course.id %}" style="color: var(--text-colour-dark);">{% bs_icon 'gear' %}Edit course</a></div>
-            <div class="LPButton btn border-danger"><a href="{% url 'course:delete' course.id %}" style="color: var(--text-colour-dark)">{% bs_icon 'trash' %}Delete course</a></div>
-        {% endif %}
-        </div>
+            {% if request.user.is_teacher or request.user.is_superuser %}
+                <div class="LPButton btn"><a href="{% url 'course:edit' course.id %}" style="color: var(--text-colour-dark);">{% bs_icon 'gear' %}Edit course</a></div>
+                <div class="LPButton btn border-danger"><a href="{% url 'course:delete' course.id %}" style="color: var(--text-colour-dark)">{% bs_icon 'trash' %}Delete course</a></div>
+            {% endif %}
 
-        <table class="table">
-            <tr><th>Course code:</th><td>{{ course.code }}</td></tr>
-            <tr><th>Course name: </th><td>{{ course.title }}</td></tr>
-            <tr><th>Description:</th><td>{{ course.description }}</td></tr>
-        </table>
+            <table class="table">
+                <tr><th>Course code:</th><td>{{ course.code }}</td></tr>
+                <tr><th>Course name:</th><td>{{ course.title }}</td></tr>
+                <tr><th>Instructor(s):</th>
+                    <td>
+                    {% for teacher in course.teacher.all %}
+                        {% if teacher.first_name %}
+                            {{ teacher.first_name }} {{ teacher.last_name }}
+                        {% else %}
+                            {{ teacher.username }}
+                        {% endif %}
+                        <br>
+                    {% endfor %}
+                    </td>
+                </tr>
+                <tr><th>Description:</th><td>{{ course.description }}</td></tr>
+            </table>
+        </div>
     </div>
 
     <div class="card courseContentCard">
