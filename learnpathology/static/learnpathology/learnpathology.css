@@ -68,8 +68,8 @@ main {
     --button-colour-hover: rgba(205, 245, 251, 0.89);
     --button-colour-active: #a8d9ff;
     --button-border-colour: #888;
-    --text-colour: #6f6f6f;
-    --text-colour-dark: #424242;
+    --text-colour: #474747;
+    --text-colour-dark: #0e0e0e;
     --logo-hue: 130deg;
     --logo-saturation: 20;
     --logo-brightness: 10;
@@ -185,7 +185,7 @@ body {
 }
 
 .myCard>h1,h2,h3{
-    position: fixed;
+    /*position: fixed;*/
     display: block;
     /*transform: translateY(-85px);*/
     margin-top: -70px;
@@ -297,6 +297,7 @@ body {
     display: inline-block;
     background-color: var(--button-colour);
     padding: 5px 10px;
+    margin: 10px;
     font-family: sans-serif, Arial;
     font-size: 1rem;
     font-weight: 400;
@@ -346,6 +347,11 @@ body {
 /* Course page styling */
 .courseHeaderCard {
 
+}
+
+.courseHeaderCard .card-body {
+    align-self: center;
+    width: 80%;
 }
 
 .courseContentCard {

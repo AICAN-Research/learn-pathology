@@ -1,14 +1,26 @@
 {% block courseTabContent %}
 {# This content is displayed within a containing <div class="card">...</div> #}
 
-    <div class="LPButton">
-        <a href="{% url 'course:slide_selection' course.id %}">Click here to add or remove slides</a>
-    </div>
-
     <div class="card-body">
-    <div class="card-text">
-        {% include 'slide/grid_view.html' with slides=slides %}
-    </div>
+        {% if slides %}
+            <div class="LPButton">
+                <a href="{% url 'course:slide_selection' course.id %}">Click here to add or remove slides</a>
+            </div>
+            <div class="card border-0" style="padding: 20px">
+                {% include 'slide/grid_view.html' with slides=slides %}
+            </div>
+
+        {% else %}
+
+            <div class="card-text">
+                No slides have been added to this course yet. You can add some now!
+                <br>
+                <div class="LPButton">
+                    <a href="{% url 'course:slide_selection' course.id %}">Click here to add slides</a>
+                </div>
+            </div>
+
+        {% endif %}
     </div>
 
 {% endblock courseTabContent %}
