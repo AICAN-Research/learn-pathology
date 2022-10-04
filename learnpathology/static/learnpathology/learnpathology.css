@@ -351,7 +351,7 @@ body {
 
 .courseHeaderCard .card-body {
     align-self: center;
-    width: 80%;
+    width: 100%;
 }
 
 .courseContentCard {
@@ -367,19 +367,36 @@ body {
 .courseNavTabs .nav-link {
     /*background-color: var(--button-colour-active);*/
     color: var(--text-colour-dark);
+    border-style: solid;
+    border-width: 1px  1px 0 1px;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+    border-color: var(--button-border-colour);
 }
 
 .courseNavTabs .nav-link:hover {
     background-color: var(--button-colour-hover);
     border-style: solid;
-    border-color: #dee2e6;
-    border-width: 1px 1px 0 1px;
+    border-width: 1px  1px 0 1px;
     border-top-left-radius: 0.25rem;
     border-top-right-radius: 0.25rem;
+    border-color: var(--button-border-colour);
 }
 
 .courseNavTabs .nav-link.active {
     /*background-color: var(--button-colour-active);*/
     color: var(--text-colour-dark);
     font-weight: bold;
+    border-style: solid;
+    border-width: 1px  1px 0 1px;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+    border-color: var(--button-border-colour);
+}
+
+.courseNavPanes {
+    border-style: solid;
+    border-color: var(--button-border-colour);
+    border-width: 0 1px 1px 1px;
+    border-radius: 0 0.25rem 0.25rem 0.25rem;
 }

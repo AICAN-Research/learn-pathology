@@ -24,43 +24,66 @@ $(document).ready(function() {
 
 {% block content %}
 <div class="container">
-<h1>{{ course.code }} - {{ course.title }}</h1>
+<h1>Course page</h1>
 </div>
 
 <div class="card mx-auto text-center" style="width: 90%">
 <div class="card-body">
 <div class="card-text">
 
-    <div class="courseHeaderCard">
-        <div class="card-body">
+    <div class="card courseHeaderCard border-0">
             {% if request.user.is_teacher or request.user.is_superuser %}
-                <div class="LPButton btn"><a href="{% url 'course:edit' course.id %}" style="color: var(--text-colour-dark);">{% bs_icon 'gear' %}Edit course</a></div>
-                <div class="LPButton btn border-danger"><a href="{% url 'course:delete' course.id %}" style="color: var(--text-colour-dark)">{% bs_icon 'trash' %}Delete course</a></div>
+                <div class="card-body" style=" padding-bottom: 0;">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col-12 col-md-8" style="margin: 0;">
+                            <div class="card-title" style="text-align: left;"><h1>{{ course.code }} - {{ course.title }}</h1></div>
+                        </div>
+                        <div class="col">
+                            <div class="card-text" style="text-align: right;">
+                                <div class="LPButton btn" style="width: fit-content; margin: 5px;"><a href="{% url 'course:edit' course.id %}" style="color: var(--text-colour-dark);">{% bs_icon 'gear' %}Edit course</a></div>
+                                <div class="LPButton btn border-danger" style="width: fit-content; margin: 5px;"><a href="{% url 'course:delete' course.id %}" style="color: var(--text-colour-dark)">{% bs_icon 'trash' %}Delete course</a></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             {% endif %}
 
-            <table class="table">
-                <tr><th>Course code:</th><td>{{ course.code }}</td></tr>
-                <tr><th>Course name:</th><td>{{ course.title }}</td></tr>
-                <tr><th>Instructor(s):</th>
-                    <td>
-                    {% for teacher in course.teacher.all %}
-                        {% if teacher.first_name %}
-                            {{ teacher.first_name }} {{ teacher.last_name }}
-                        {% else %}
-                            {{ teacher.username }}
-                        {% endif %}
-                        <br>
-                    {% endfor %}
-                    </td>
-                </tr>
-                <tr><th>Description:</th><td>{{ course.description }}</td></tr>
-            </table>
-        </div>
+            <div class="card courseHeaderCard border-0" style="padding-top: 20px; padding-bottom: 20px;">
+                <div class="row">
+                    <div class="col-12 col-sm-6">
+                        <table class="table"
+                           style="margin-right:auto; margin-bottom: 0;
+                                  border-collapse: unset; border-radius: 0.25rem; border-style: solid;
+                                  border-width: 1px 1px 1px 1px; border-color: var(--button-border-colour);">
+                        <tr class="thead-light"><th>Course code</th><td>{{ course.code }}</td></tr>
+                        <tr class="thead-light"><th>Course name</th><td>{{ course.title }}</td></tr>
+                        <tr class="thead-light"><th>Instructor(s)</th>
+                            <td>
+                            {% for teacher in course.teacher.all %}
+                                {% if teacher.first_name %}
+                                    {{ teacher.first_name }} {{ teacher.last_name }}
+                                {% else %}
+                                    {{ teacher.username }}
+                                {% endif %}
+                                <br>
+                            {% endfor %}
+                            </td>
+                        </tr>
+                        <tr class="thead-light"><th>Description</th><td>{{ course.description }}</td></tr>
+                        </table>
+                    </div>
+                    <div class="col-8 col-sm-6">
+                        <div class="imageContainer" style="max-height: 250px;">
+                            <img src="" alt="An illustrative image for the course" width="246" height="512" style="max-height: 250px; width: auto">
+                        </div>
+                    </div>
+                </div>
+            </div>
     </div>
 
-    <div class="card courseContentCard">
+    <div class="card courseContentCard border-0" style="min-height: 400px;">
 
-        <div class="card align-content" style="padding-top: 10px; padding-bottom: 10px">
+        <div class="card align-content border-0" style="margin-top: 10px; padding-bottom: 10px">
             {# Place nav-tabs on top #}
             <ul class="nav nav-tabs courseNavTabs">
                 <li class="nav-item">
@@ -78,8 +101,8 @@ $(document).ready(function() {
             </ul>
 
             {# Place nav-panes below #}
-            <div class="card border-0">
-            <div class="tab-content courseNavPanes" id="tabs">
+            <div class="card courseNavPanes">
+            <div class="tab-content" id="tabs">
                 <div class="tab-pane active" id="course-description">
                     {% include 'course/course_page_content/course_description.html' %}
                 </div>
