@@ -301,13 +301,16 @@ def edit_tags(request, slide_id):
     """
     Form for adding/removing general pathology tags for a slide
     """
+    GENERAL_PATHOLOGY_TAGS = (
+        'inflammation', 'squamous cell carcinoma', 'adenocarcinoma', 'necrosis'
+    )
 
     slide = get_object_or_404(Slide, id=slide_id)
 
     other_tags = Tag.objects.filter(is_organ=False, is_stain=False)
     general_pathology_tags = []
     for tag in other_tags:
-        if tag.name.lower() in ('inflammation', 'squamous cell carcinoma', 'adenocarcinoma', 'necrosis'):
+        if tag.name.lower() in GENERAL_PATHOLOGY_TAGS:
             general_pathology_tags.append(tag)
 
     return render(request, 'slide/select_general_pathology_tags.html', {
