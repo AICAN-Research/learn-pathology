@@ -9,6 +9,8 @@
     --logo-small-height: 60px;
     --shadow: rgba(0, 0, 0, 0.5); /*rgba(0, 0, 102, 0.5);*/
     --button-text-colour: #ffffff;
+    --text-colour: #3b3a30;
+    --text-colour-dark: #2d2c28;
 }
 
 main {
@@ -20,13 +22,11 @@ main {
     --background-header: #eaece5;
     --background-collapsed-menu: #c4c4c4;
     --background: #83bafc;
-    --background-dark: #5c716e;
+    --background-dark: #456a96;
     --button-colour: #e7f4fc;
     --button-colour-hover: rgba(205, 245, 251, 0.89);
     --button-colour-active: #a8d9ff;
     --button-border-colour: #888;
-    --text-colour: #37522e;
-    --text-colour-dark: #3b3a30;
     --logo-hue: 240deg;
     --logo-saturation: 20;
     --logo-brightness: 10;
@@ -52,8 +52,6 @@ main {
     --button-colour-hover: rgba(245, 222, 198, 0.89);
     --button-colour-active: #ffd5a8;
     --button-border-colour: #888;
-    --text-colour:#e0876a;
-    --text-colour-dark: #663626;
     --logo-hue: 180deg;
     --logo-saturation: 50;
     --logo-brightness: 0;
@@ -70,8 +68,8 @@ main {
     --button-colour-hover: rgba(205, 245, 251, 0.89);
     --button-colour-active: #a8d9ff;
     --button-border-colour: #888;
-    --text-colour: #6f6f6f;
-    --text-colour-dark: #424242;
+    --text-colour: #474747;
+    --text-colour-dark: #0e0e0e;
     --logo-hue: 130deg;
     --logo-saturation: 20;
     --logo-brightness: 10;
@@ -187,7 +185,7 @@ body {
 }
 
 .myCard>h1,h2,h3{
-    position: fixed;
+    /*position: fixed;*/
     display: block;
     /*transform: translateY(-85px);*/
     margin-top: -70px;
@@ -295,6 +293,30 @@ body {
     height: 100%;
 }
 
+.LPButton {
+    display: inline-block;
+    background-color: var(--button-colour);
+    padding: 5px 10px;
+    margin: 10px;
+    font-family: sans-serif, Arial;
+    font-size: 1rem;
+    font-weight: 400;
+    border: 1px solid var(--button-border-colour);
+    border-radius: 4px;
+}
+
+.LPButton:hover {
+    background-color: var(--button-colour-hover);
+}
+
+.LPButton .a {
+    color: var(--text-colour-dark)!important;
+}
+
+.LPButton .a:hover {
+    color: var(--text-colour-dark)!important;
+}
+
 /* Radio button toolbar used with slide filters */
 .radio-toolbar {
   margin: 0;
@@ -320,4 +342,61 @@ body {
 }
 .radio-toolbar label.active {
     background-color: var(--button-colour-active);
+}
+
+/* Course page styling */
+.courseHeaderCard {
+
+}
+
+.courseHeaderCard .card-body {
+    align-self: center;
+    width: 100%;
+}
+
+.courseContentCard {
+
+}
+
+/* Course navigation tabs */
+.courseNavTabs .nav-tabs {
+    /*background-color: var(--button-colour-active);*/
+    color: var(--text-colour-dark);
+}
+
+.courseNavTabs .nav-link {
+    /*background-color: var(--button-colour-active);*/
+    color: var(--text-colour-dark);
+    border-style: solid;
+    border-width: 1px  1px 0 1px;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+    border-color: var(--button-border-colour);
+}
+
+.courseNavTabs .nav-link:hover {
+    background-color: var(--button-colour-hover);
+    border-style: solid;
+    border-width: 1px  1px 0 1px;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+    border-color: var(--button-border-colour);
+}
+
+.courseNavTabs .nav-link.active {
+    /*background-color: var(--button-colour-active);*/
+    color: var(--text-colour-dark);
+    font-weight: bold;
+    border-style: solid;
+    border-width: 1px  1px 0 1px;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+    border-color: var(--button-border-colour);
+}
+
+.courseNavPanes {
+    border-style: solid;
+    border-color: var(--button-border-colour);
+    border-width: 0 1px 1px 1px;
+    border-radius: 0 0.25rem 0.25rem 0.25rem;
 }

@@ -1,0 +1,37 @@
+{% extends 'learnpathology/base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>Edit course description</h1>
+</div>
+
+<div class="card mx-auto text-center" style="width: 90%">
+<div class="card-body">
+<div class="card-text">
+
+    <form class="form" method="post">
+        {% csrf_token %}
+        {{ form.media }}
+
+        <table class="table">
+
+            <thead class="thead-light">
+            <tr><th>Field</th><th>Content</th></tr>
+            </thead>
+            <tr><th>Name</th>
+                <td>{{ course.title }}</td></tr>
+            <tr><th>{{ form.long_description.label }}</th>
+                <td>{{ form.long_description }}</td></tr>
+
+        </table>
+
+        <br>
+        <input type="submit" value="Update course description">
+    </form>
+
+
+</div>
+</div>
+</div>
+
+{% endblock content %}

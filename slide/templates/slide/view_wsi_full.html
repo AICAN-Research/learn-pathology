@@ -37,17 +37,6 @@
         }
     }
 
-    .LPButton {
-        display: inline-block;
-        background-color: var(--button-colour)!important;
-        padding: 5px 10px;
-        font-family: sans-serif, Arial;
-        font-size: 1rem;
-        font-weight: 400;
-        border: 1px solid var(--button-border-colour)!important;
-        border-radius: 4px;
-    }
-
 </style>
 
 
@@ -99,9 +88,19 @@
                         <thead class="thead-light">
                             <tr><th>Supplementary information</th><th></th></tr>
                         </thead>
-                        {% if slide.long_description %}
-                            <tr><th>Long description</th><td>{{ slide.long_description }}</td></tr>
-                        {% endif %}
+                        <tr>
+                            {% if slide.long_description %}
+                                <th>Long description</th>
+                                <td>{{ slide.long_description }}</td>
+                            {% else %}
+                                <th>Long description</th>
+                                <td><div class="card-content" style="padding-top: 5px">
+                                    <a class="LPButton" href="{% url 'slide:edit_description' slide.id %}" style="padding: 0; margin: 0;">
+                                        Edit long description
+                                    </a>
+                                </div></td>
+                            {% endif %}
+                        </tr>
                     </table>
                 </div>
             </div>

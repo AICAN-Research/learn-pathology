@@ -1,0 +1,52 @@
+{% block courseTabContent %}
+{# This content is displayed within a containing <div class="card">...</div> #}
+
+    <div class="card-body">
+        {% if tasks %}
+
+            <div class="LPButton">
+                <a href="{% url 'course:task_selection' course.id %}">Click here to add or remove tasks</a>
+            </div>
+            <br>
+            <div class="card-text">
+                {% for task in tasks %}
+                    <table class="table">
+                        <thead class="thead-light"><tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Attempt task</th>
+                                {% if request.user.is_teacher or request.user.is_superuser %}
+                                    <th>Edit</th>
+                                    <th>Delete</th>
+                                {% endif %}
+                        </tr></thead>
+                        {% for task in tasks %}
+                            <tr>
+                            <td><a href="{% url task.do_url task.id %}">{{ task.name }}</a></td>
+                            <td>{{ task.type }}</td>
+                            <td><a href="{% url 'multiple_choice:do' task.id %}">Do task</a></td>
+                            {% if request.user.is_teacher or request.user.is_superuser %}
+                                <td><a href="{% url 'multiple_choice:edit' task.id %}">Edit</a></td>
+                                <td><a href="{% url 'task_delete' task.id %}">Delete</a></td>
+                            {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </table>
+                {% endfor %}
+            </div>
+
+        {% else %}
+
+            <div class="card-text">
+                No tasks have been added to this course yet. You can add some now!
+                <br>
+                <div class="LPButton">
+                    <a href="{% url 'course:task_selection' course.id %}">Click here to add tasks</a>
+                </div>
+            </div>
+
+        {% endif %}
+
+    </div>
+
+{% endblock courseTabContent %}

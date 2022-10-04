@@ -1,0 +1,32 @@
+{% block courseTabContent %}
+{# This content is displayed within a containing <div class="card">...</div> #}
+
+    <div class="card-body">
+        {% if course.learning_outcomes %}
+
+            <div class="card-text" style="text-align: left">
+                <div class="LPButton">
+                    <a href="{% url 'course:edit_learning_outcomes' course.id  %}">Edit learning outcomes</a>
+                </div>
+                <br>
+                <div class="card border-0">
+                    <div class="card-body"><div class="card-text">
+                        {{ course.learning_outcomes | safe }}
+                    </div></div>
+                </div>
+            </div>
+
+        {% else %}
+
+            <div class="card-text" style="text-align: left">
+                No learning outcomes are provided for this course yet. You can add learning outcomes now!
+                <br>
+                <div class="LPButton">
+                    <a href="{% url 'course:edit_learning_outcomes' course.id  %}">Add learning outcomes</a>
+                </div>
+            </div>
+
+        {% endif %}
+    </div>
+    
+{% endblock courseTabContent %}

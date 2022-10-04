@@ -1,0 +1,32 @@
+{% block courseTabContent %}
+{# This content is displayed within a containing <div class="card">...</div> #}
+
+    <div class="card-body">
+        {% if course.long_description %}
+
+            <div class="card-text" style="text-align: left">
+                <div class="LPButton">
+                    <a href="{% url 'course:edit_description' course.id  %}">Edit course description</a>
+                </div>
+                <br>
+                <div class="card border-0">
+                <div class="card-body"><div class="card-text">
+                    {{ course.long_description | safe }}
+                </div></div>
+                </div>
+            </div>
+
+        {% else %}
+
+            <div class="card-text" style="text-align: left">
+                This course lacks a course description. You can add one now!
+                <br>
+                <div class="LPButton">
+                    <a href="{% url 'course:edit_description' course.id  %}">Add course description</a>
+                </div>
+            </div>
+
+        {% endif %}
+    </div>
+
+{% endblock courseTabContent %}
