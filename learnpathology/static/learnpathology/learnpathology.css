@@ -427,6 +427,10 @@ Slide viewer
     margin-bottom: auto;
 }
 
+.slideViewerCol {
+    height: 100%;
+}
+
 .slideViewerCard {
     height: 100%;
     width: 100%;
