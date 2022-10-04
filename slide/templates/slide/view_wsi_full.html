@@ -3,42 +3,6 @@
 
 {% block content %}
 
-<style>
-    .transparentBackground {
-        background-color: rgba(0, 0, 0, 0%);
-    }
-    .centerCardHorizontally {
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    .slideInfoCard {
-        margin-top: auto;
-        margin-bottom: auto;
-    }
-
-    .slideViewerCard {
-        height: 100%!important;
-        width: 100%!important;
-    }
-
-    @media (max-width: 992.02px) {
-        /*
-        Here, specify what happens on a screen narrower than 992 px (media lg),
-        where the info card and slide viewer are placed on top of each other
-        rather than side by side.
-        */
-        .slideViewerCol {
-            height: 90%;
-            max-height: 95%!important;
-        }
-        .slideViewerCard {
-            margin: 5px auto 5px auto!important;
-        }
-    }
-
-</style>
-
 
 <div class="card transparentBackground centerCardHorizontally border-0"
      style="width: 98%; height: 98%;">
@@ -67,13 +31,13 @@
                 <div class="card-body" id="slideInfoCardContent">
                     <table class="table">
                         <thead class="thead-light">
-                            <tr><th>Core Information</th><th></th></tr>
+                            <tr><th colspan="2">Core Information</th></tr>
                         </thead>
                         <tr><th>Slide name</th><td>{{ slide.name }}</td></tr>
                         <tr><th>Slide description</th><td>{{ slide.description }}</td></tr>
 
                         <thead class="thead-light">
-                            <tr><th>Categorization</th><th></th></tr>
+                            <tr><th colspan="2">Categorization</th></tr>
                         </thead>
                         <tr><th>Organ</th><td>{{ slide.name }}</td></tr>
                         <tr><th>Histology/pathology</th>
@@ -86,7 +50,7 @@
                         <tr><th>Stain</th><td>{{ stain_name }}</td></tr>
 
                         <thead class="thead-light">
-                            <tr><th>Supplementary information</th><th></th></tr>
+                            <tr><th colspan="2">Supplementary information</th></tr>
                         </thead>
                         <tr>
                             {% if slide.long_description %}

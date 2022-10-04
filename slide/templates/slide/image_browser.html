@@ -150,36 +150,18 @@ $(document).ready(function() {
 
     {% if slides %}
 
-        <div class="row">
-            <div class="col">
-                <div class="card border-0">
-                    <div class="card-body align-content" style="margin-left: auto; padding-top: 10px; padding-bottom: 10px">
+        <div class="card border-0">
+            <div class="card-body align-content" style="margin-left: auto; padding-top: 10px; padding-bottom: 10px">
 
-                    <style>
-                        #nav-panes-view .nav-pills .nav-link {
-                            color: var(--text-colour-dark);
-                        }
-                        #nav-panes-view .nav-link:hover {
-                            background-color: var(--button-colour-hover);
-                            color: var(--text-colour-dark);
-                        }
-                        #nav-panes-view .nav-link.active {
-                            background-color: var(--button-colour-active);
-                            color: var(--text-colour-dark);
-                        }
-                    </style>
+            <ul class="nav nav-pills card-header-pills imageBrowserNavTabs">
+                <li class="nav-item">
+                    <a href="#grid-view" class="LPButton nav-link active" data-toggle="tab">{% bs_icon 'grid' %}Grid</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#list-view" class="LPButton nav-link" data-toggle="tab">{% bs_icon 'list' %}List</a>
+                </li>
+            </ul>
 
-                    <ul class="nav nav-pills card-header-pills" id="nav-panes-view">
-                        <li class="nav-item">
-                            <a href="#grid-view" class="nav-link active" data-toggle="tab">{% bs_icon 'grid' %}Grid</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#list-view" class="nav-link" data-toggle="tab">{% bs_icon 'list' %}List</a>
-                        </li>
-                    </ul>
-
-                    </div>
-                </div>
             </div>
         </div>
 
