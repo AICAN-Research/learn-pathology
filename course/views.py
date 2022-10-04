@@ -146,7 +146,7 @@ def delete(request, course_id):
             else:
                 messages.add_message(request, messages.SUCCESS, f'The course {txt} was not deleted')
 
-            return redirect('course:index')
+            return redirect('course:view', course_id=course_id)
 
     else:  # GET method
         # Render page with course info and "Delete? Yes/No"

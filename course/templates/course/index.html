@@ -20,9 +20,6 @@
             {% if request.user.is_teacher or request.user.is_superuser %}
                 <th>Edit</th>
             {% endif %}
-            {% if request.user.is_teacher or request.user.is_superuser %}
-                <th>Delete</th>
-            {% endif %}
         </tr>
         </thead>
         {% for course in courses %}
@@ -32,9 +29,6 @@
                 <td>{{ course.description }}</td>
                 {% if request.user.is_teacher or request.user.is_superuser %}
                     <td><a href="{% url 'course:edit' course.id %}">Edit</a></td>
-                {% endif %}
-                {% if request.user.is_teacher or request.user.is_superuser %}
-                    <td><a href="{% url 'course:delete' course.id %}">Delete</a></td>
                 {% endif %}
             </tr>
         {% endfor %}
