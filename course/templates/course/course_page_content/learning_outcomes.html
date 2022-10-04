@@ -4,15 +4,15 @@
     <div class="card-body">
         {% if course.learning_outcomes %}
 
-            <div class="LPButton">
-                <a href="{% url 'course:edit_learning_outcomes' course.id  %}">Edit learning outcomes</a>
-            </div>
-            <br>
             <div class="card-text" style="text-align: left">
+                <div class="LPButton">
+                    <a href="{% url 'course:edit_learning_outcomes' course.id  %}">Edit learning outcomes</a>
+                </div>
+                <br>
                 <div class="card border-0">
-                <div class="card-body"><div class="card-text">
-                    {{ course.learning_outcomes | safe }}
-                </div></div>
+                    <div class="card-body"><div class="card-text">
+                        {{ course.learning_outcomes | safe }}
+                    </div></div>
                 </div>
             </div>
 

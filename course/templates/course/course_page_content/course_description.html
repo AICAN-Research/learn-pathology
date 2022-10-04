@@ -4,11 +4,11 @@
     <div class="card-body">
         {% if course.long_description %}
 
-            <div class="LPButton">
-                <a href="{% url 'course:edit_description' course.id  %}">Edit course description</a>
-            </div>
-            <br>
             <div class="card-text" style="text-align: left">
+                <div class="LPButton">
+                    <a href="{% url 'course:edit_description' course.id  %}">Edit course description</a>
+                </div>
+                <br>
                 <div class="card border-0">
                 <div class="card-body"><div class="card-text">
                     {{ course.long_description | safe }}
