@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.db.models import Q
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.files.uploadedfile import UploadedFile
 
@@ -294,6 +294,65 @@ def edit_description(request, slide_id):
         'slide': slide,
         'form': form
     })
+
+
+@teacher_required
+def edit_tags(request, slide_id):
+    """
+    Form for adding/removing general pathology tags for a slide
+    """
+
+    slide = get_object_or_404(Slide, id=slide_id)
+
+    other_tags = Tag.objects.filter(is_organ=False, is_stain=False)
+    general_pathology_tags = []
+    for tag in other_tags:
+        if tag.name.lower() in ('inflammation', 'squamous cell carcinoma', 'adenocarcinoma', 'necrosis'):
+            general_pathology_tags.append(tag)
+
+    return render(request, 'slide/select_general_pathology_tags.html', {
+        'slide': slide,
+        'general_pathology_tags': general_pathology_tags,
+        'stain_name': slide.tags.get(is_stain=True),
+    })
+
+
+@teacher_required
+def add_tag(request):
+    """
+    View to handle button for adding general pathology tag to a slide
+    """
+    print('Adding tag to slide')
+
+    slide_id = int(request.GET.get('slide_id'))
+    slide = Slide.objects.get(id=slide_id)
+    tag_id = int(request.GET.get('tag_id'))
+
+    if request.method == 'GET':
+        tag_to_add = Tag.objects.get(id=tag_id)
+        slide.tags.add(tag_to_add)
+        slide.save()
+
+    return JsonResponse(data={})
+
+
+@teacher_required
+def remove_tag(request):
+    """
+    View to handle button for removing general pathology tag from a slide
+    """
+    print('Removing tag from slide')
+
+    slide_id = int(request.GET.get('slide_id'))
+    slide = Slide.objects.get(id=slide_id)
+    tag_id = int(request.GET.get('tag_id'))
+
+    if request.method == 'GET':
+        tag_to_remove = Tag.objects.get(id=tag_id)
+        slide.tags.remove(tag_to_remove)
+        slide.save()
+
+    return JsonResponse(data={})
 
 
 
