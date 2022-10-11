@@ -146,12 +146,12 @@ def delete(request, course_id):
             else:
                 messages.add_message(request, messages.SUCCESS, f'The course {txt} was not deleted')
 
-            return redirect('course:view', course_id=course_id)
+            return redirect('course:index')
 
     else:  # GET method
         # Render page with course info and "Delete? Yes/No"
         if course_id in Course.objects.all().values_list('id', flat=True):
-            course = Course.objects.all().get(id=course_id)
+            course = Course.objects.get(id=course_id)
             return render(request, 'course/delete.html',
                           {'form': DeleteCourseForm(), 'course': course})
 
