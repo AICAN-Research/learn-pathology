@@ -297,7 +297,7 @@ def edit_description(request, slide_id):
 
 
 @teacher_required
-def edit_tags(request, slide_id):
+def edit_general_pathology_tags(request, slide_id):
     """
     Form for adding/removing general pathology tags for a slide
     """
@@ -305,7 +305,7 @@ def edit_tags(request, slide_id):
         'inflammation', 'squamous cell carcinoma', 'adenocarcinoma', 'necrosis'
     )
 
-    slide = get_object_or_404(Slide, id=slide_id)
+    slide = slide_cache.load_slide_to_cache(slide_id)
 
     other_tags = Tag.objects.filter(is_organ=False, is_stain=False)
     general_pathology_tags = []

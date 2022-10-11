@@ -319,6 +319,7 @@ body {
 
 .LPButton_selected {
     box-shadow: inset 0 0 3px var(--shadow);
+    background-color: var(--button-colour-active);
 }
 
 /* =============================================
