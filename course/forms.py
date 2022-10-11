@@ -7,12 +7,16 @@ class CourseForm(forms.ModelForm):
 
     class Meta:
         model = Course
-        fields = ['code', 'title', 'description', 'teacher']
+        fields = ['code', 'title', 'description', 'long_description', 'teacher']
         labels = {
             'code': 'Course code',
             'title': 'Course name',
-            'description': 'Description',
+            'description': 'Description (short, will be displayed in course list)',
+            'long_description': 'Course description (visible on course page). You can also add this later.',
             'teacher': 'Teachers'
+        }
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 1, 'cols': 100}),
         }
 
 

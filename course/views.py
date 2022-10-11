@@ -54,7 +54,7 @@ def new(request):
             course.save()
             # Give a message back to the user
             messages.add_message(request, messages.SUCCESS, 'Course added successfully!')
-            return redirect('course:index')
+            return redirect('course:view', course_id=course.id)
         else:
             # Render form with errors
             pass
