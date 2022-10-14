@@ -7,9 +7,12 @@
 
 <div class="card mx-auto text-center" style="width: 90%">
 <div class="card-body">
-<div class="LPButton" style="margin-top: 0;">
-    <a href="{% url 'course:new' %}">Make new course</a>
-</div>
+
+{% if request.user.is_teacher or request.user.is_superuser %}
+    <div class="LPButton" style="margin-top: 0;">
+        <a href="{% url 'course:new' %}">Make new course</a>
+    </div>
+{% endif %}
 
 <div class="card-text">
     {% if courses %}
