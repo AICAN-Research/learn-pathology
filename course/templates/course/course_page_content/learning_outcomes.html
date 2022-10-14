@@ -4,11 +4,13 @@
     <div class="card-body">
         {% if course.learning_outcomes %}
 
-            <div class="card-text" style="text-align: left">
+            <div class="card-text" style="text-align: left;">
+                {% if request.user.is_teacher or request.user.is_superuser %}
                 <div class="LPButton">
                     <a href="{% url 'course:edit_learning_outcomes' course.id  %}">Edit learning outcomes</a>
                 </div>
                 <br>
+                {% endif %}
                 <div class="card border-0">
                     <div class="card-body"><div class="card-text">
                         {{ course.learning_outcomes | safe }}
@@ -19,11 +21,14 @@
         {% else %}
 
             <div class="card-text" style="text-align: left">
-                No learning outcomes are provided for this course yet. You can add learning outcomes now!
+                No learning outcomes are provided for this course yet.
+                {% if request.user.is_teacher or request.user.is_superuser %}
+                You can add learning outcomes now!
                 <br>
                 <div class="LPButton">
                     <a href="{% url 'course:edit_learning_outcomes' course.id  %}">Add learning outcomes</a>
                 </div>
+                {% endif %}
             </div>
 
         {% endif %}
