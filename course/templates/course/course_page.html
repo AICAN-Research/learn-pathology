@@ -6,17 +6,9 @@
 <script>
 
 $(document).ready(function(){
-  activateTab('aaa');
-});
-
-function activateTab(tab){
-  $('.nav-tabs a[href="#' + tab + '"]').tab('show');
-}
-
-$(document).ready(function() {
-    $('.btn').onclick(function (event) {
-        this.form.submit();
-    });
+    // TODO: Fix activate tab from URL and
+    // TODO: Keep selected tab active on page reload
+    $(document.location.hash).tab('show');
 });
 
 </script>
