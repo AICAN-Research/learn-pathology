@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_bootstrap_icons',
     'ckeditor',
+    'ckeditor_uploader',
     'learnpathology',
     'user',
     'slide',
@@ -141,3 +142,69 @@ LOGIN_URL = '/user/login/'
 AUTH_USER_MODEL = 'user.User'
 
 LOGIN_REDIRECT_URL = 'frontpage'
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR.joinpath('media')
+
+CKEDITOR_UPLOAD_PATH = "uploads/"
+
+CKEDITOR_IMAGE_BACKEND = 'pillow'
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'Default',
+        'toolbar_Default': [
+            ['Format', 'Font', 'FontSize', '-', 'TextColor', 'BGColor'],
+            ['Bold', 'Italic', 'Underline', 'Strike', 'Superscript', 'Subscript'],
+            ['Undo', 'Redo', '-', 'Cut', 'Copy', 'Paste'],
+            ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent'],
+            ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
+            ['Link', 'Unlink', 'Anchor', '-', 'Find', 'Replace'],
+            ['Image', 'Table', 'HorizontalRule', 'SpecialChar'],
+            # ['Source']
+        ],
+        'height': 'auto',
+        'width': 'auto',
+    },
+
+    'lightweight': {
+        'toolbar': 'Lightweight',
+        'toolbar_Lightweight': [
+            ['Format', 'Font', 'FontSize'],
+            ['Bold', 'Italic', 'Underline'],
+            ['Undo', 'Redo', '-', 'Cut', 'Copy', 'Paste'],
+            ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent'],
+            ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
+            ['Link', 'Unlink'],
+            ['Image', 'Table', 'SpecialChar'],
+        ],
+        'height': 'auto',
+        'width': 'auto',
+    },
+
+    'featherweight': {
+        'toolbar': 'Featherweight',
+        'toolbar_Featherweight': [
+            ['Bold', 'Italic', 'Underline'],
+            ['Undo', 'Redo', '-', 'Cut', 'Copy', 'Paste'],
+            ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent'],
+            ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
+            ['Link', 'Unlink'],
+        ],
+        'height': 'auto',
+        'width': 'auto',
+    },
+
+    'minimal': {
+        'toolbar': 'Minimal',
+        'toolbar_Minimal': [
+            ['Bold', 'Italic', 'Underline'],
+            ['Undo', 'Redo', '-', 'Cut', 'Copy', 'Paste'],
+        ],
+        'height': 'auto',
+        'width': 'auto',
+    },
+
+}
+
