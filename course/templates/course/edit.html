@@ -8,16 +8,36 @@
 <div class="card mx-auto text-center" style="width: 90%">
 <div class="card-body">
 <div class="card-text">
-<form class="form" method="post">
-    {% csrf_token %}
 
-    <table class="table">
-        {{ form.as_table }}
-    </table>
+    <form class="form" method="post">
+        {% csrf_token %}
 
-    <br>
-    <input type="submit" value="Update course">
-</form>
+        <table class="table">
+            <thead class="thead-light">
+            <tr><th>Course info</th><th></th></tr>
+            </thead>
+            <tr>
+                <th>{{ form.code.label }}</th>
+                <td>{{ form.code }}</td>
+            </tr>
+            <tr>
+                <th>{{ form.title.label }}</th>
+                <td>{{ form.title }}</td>
+            </tr>
+            <tr>
+                <th>{{ form.description.label }}</th>
+                <td>{{ form.description }}</td>
+            </tr>
+            <tr>
+                <th>{{ form.teacher.label }}</th>
+                <td>{{ form.teacher }}</td>
+            </tr>
+        </table>
+
+        <label class="LPButton" for="submit_button">Update course</label>
+        <input type="submit" id="submit_button" style="display: none;">
+    </form>
+
 </div>
 </div>
 </div>

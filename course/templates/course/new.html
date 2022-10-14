@@ -32,16 +32,13 @@
             </tr>
             <tr>
                 <th>{{ form.long_description.label }}</th>
-                <td id="richtexteditor">{{ form.long_description | safe }}</td>
+                <td>{{ form.long_description }}</td>
             </tr>
             <tr>
                 <th>{{ form.teacher.label }}</th>
                 <td>{{ form.teacher }}</td>
             </tr>
         </table>
-        <script>
-            CKEDITOR.replace( 'richtexteditor' );  // replaces default with custom ckeditor
-        </script>
 
         <label class="LPButton" for="submit_button">Add course</label>
         <input type="submit" id="submit_button" style="display: none;">
