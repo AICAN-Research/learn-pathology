@@ -11,24 +11,7 @@
 
             {% for slide in chunk %}
                 <div class="column col-xs-6 col-sm-6 col-md-4 col-lg-3 col-xl-2" style="max-height: 400px;">
-                    <div class="slideGridViewCard card border-primary">
-
-                        {# Image display #}
-                        <a class="cardImageHeader card border-0" href="{% url 'slide:view_full' slide.id %}">
-                            <div class="card transparentBackground border-0 w-100 h-100">
-                                <div class="headerImageContainer card transparentBackground">
-                                    <img class="headerImage" src="/slide/thumbnails/{{ slide.id }}.jpg">
-                                </div>
-                            </div>
-                        </a>
-
-                        {# Card content (slide name, description, buttons, ...) #}
-                        <div class="card border-0 h-50" style="padding: 5%">
-                            <h5 class="card-title">{{ slide.name }}</h5>
-                            <p class="card-subtitle">{{ slide.description }}</p>
-                        </div>
-
-                    </div>
+                    {% include 'slide/grid_cards/grid_card_minimal.html' with slide=slide %}
                 </div>
             {% endfor %}
 

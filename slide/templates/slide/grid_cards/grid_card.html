@@ -1,0 +1,21 @@
+
+<div class="slideGridViewCard card border-primary" style="max-height: 400px;">
+
+    {# Image display #}
+    <a class="cardImageHeader card border-0" href="{% url 'slide:view_full' slide.id %}">
+        <div class="card transparentBackground border-0 w-100 h-100">
+            <div class="headerImageContainer card transparentBackground">
+                <img class="headerImage" src="/slide/thumbnails/{{ slide.id }}.jpg">
+            </div>
+        </div>
+    </a>
+
+    {# Card content (slide name, description, buttons, ...) #}
+    <div class="card border-0 h-50" style="padding: 5%">
+        <h5 class="card-title">{{ slide.name }}</h5>
+        <p class="card-subtitle">{{ slide.description }}</p>
+        {% block gridCardQuestions %}
+        {% endblock gridCardQuestions %}
+    </div>
+
+</div>
