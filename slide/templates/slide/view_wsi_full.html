@@ -53,16 +53,20 @@
                             <tr><th colspan="2">Supplementary information</th></tr>
                         </thead>
                         <tr>
+                            <th>
+                                Long description
+                                {% if request.user.is_teacher or request.user.is_superuser %}
+                                    <div class="card-content" style="padding-top: 5px">
+                                        <a class="LPButton" href="{% url 'slide:edit_description' slide.id %}" style="margin: 0;">
+                                            Edit long description
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            </th>
                             {% if slide.long_description %}
-                                <th>Long description</th>
                                 <td>{{ slide.long_description }}</td>
                             {% else %}
-                                <th>Long description</th>
-                                <td><div class="card-content" style="padding-top: 5px">
-                                    <a class="LPButton" href="{% url 'slide:edit_description' slide.id %}" style="padding: 0; margin: 0;">
-                                        Edit long description
-                                    </a>
-                                </div></td>
+                                <td>-</td>
                             {% endif %}
                         </tr>
                     </table>
