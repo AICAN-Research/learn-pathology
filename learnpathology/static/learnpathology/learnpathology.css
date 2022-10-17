@@ -462,3 +462,30 @@ Image browser
     background-color: var(--button-colour-active);
     color: var(--text-colour-dark);
 }
+
+/* Styling for cards containing thumbnails, name, short description */
+.slideGridViewCard {
+    height: 95%;
+}
+.cardImageHeader {
+    height: 60%;
+    min-height: 60%;
+    background-color: var(--button-colour);
+}
+.headerImageContainer {
+    height: fit-content;
+    width: fit-content;
+    max-height: 100%;
+    max-width: 100%;
+    background-color: var(--button-colour);
+    border: 0;
+    margin: auto;
+    padding: 3%;
+}
+.headerImage {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 100%;
+    max-height: 100%;
+}
