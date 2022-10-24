@@ -188,7 +188,7 @@ body {
     /*position: fixed;*/
     display: block;
     /*transform: translateY(-85px);*/
-    margin-top: -70px;
+    /*margin-top: -70px;*/
     color: var(--text-colour);
     z-index: 1;
 }
