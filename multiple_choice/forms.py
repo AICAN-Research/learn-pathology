@@ -9,8 +9,8 @@ class TaskForm(ModelForm):
         model = Task
         fields = ['name', 'pathology', 'organ_tags', 'other_tags']
         labels = {
-            'name': 'Course code',
-            'pathology': 'Course name',
+            'name': 'Question name',
+            'pathology': 'Is the question about pathology?',
         }
         widgets = {
             'name': Textarea(attrs={'rows': 1, 'cols': 70}),
