@@ -68,9 +68,8 @@ def new(request, slide_id):
                 task.save()
 
                 organ_tags = task_form.cleaned_data['organ_tags']
-                stain_tags = task_form.cleaned_data['stain_tags']
-                other_tags = task_form.cleaned_data['other_tags']
-                task.tags.set(organ_tags | stain_tags | other_tags)
+                other_tags = [tag for tag in task_form.cleaned_data['other_tags']]
+                task.tags.set([organ_tags] + other_tags)
 
                 # Create multiple choice
                 multiple_choice = multiple_choice_form.save(commit=False)
