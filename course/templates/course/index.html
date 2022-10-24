@@ -3,12 +3,17 @@
 {% block content %}
 <div class="container">
     <h1>Course database</h1>
-    <p>
-    <a href="{% url 'course:new' %}">Add a course to the database</a>
-    </p>
 </div>
+
 <div class="card mx-auto text-center" style="width: 90%">
 <div class="card-body">
+
+{% if request.user.is_teacher or request.user.is_superuser %}
+    <div class="LPButton" style="margin-top: 0;">
+        <a href="{% url 'course:new' %}">Make new course</a>
+    </div>
+{% endif %}
+
 <div class="card-text">
     {% if courses %}
         <table class="table">

@@ -15,6 +15,11 @@ from slide.models import Slide
 from slide.forms import SlideForm, SlideDescriptionForm
 
 
+GENERAL_PATHOLOGY_TAGS = (
+    'inflammation', 'squamous cell carcinoma', 'adenocarcinoma', 'necrosis'
+)
+
+
 class SlideCache:
     """
     A class to keep a cache of slides in memory.
@@ -195,9 +200,12 @@ def organ_tag_id_list_to_queryset(id_list):
 def whole_slide_view_full(request, slide_id):
     slide = slide_cache.load_slide_to_cache(slide_id)
     stain = slide.tags.get(is_stain=True)
+    general_pathology_tags = [tag for tag in slide.tags.filter(is_organ=False, is_stain=False)
+                              if tag.name.lower() in GENERAL_PATHOLOGY_TAGS]
     return render(request, 'slide/view_wsi_full.html', {
         'slide': slide,
-        'stain_name': stain.name
+        'stain_name': stain.name,
+        'general_pathology_tags': general_pathology_tags,
     })
 
 
@@ -301,9 +309,6 @@ def edit_general_pathology_tags(request, slide_id):
     """
     Form for adding/removing general pathology tags for a slide
     """
-    GENERAL_PATHOLOGY_TAGS = (
-        'inflammation', 'squamous cell carcinoma', 'adenocarcinoma', 'necrosis'
-    )
 
     slide = slide_cache.load_slide_to_cache(slide_id)
 

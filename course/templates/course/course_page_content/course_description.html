@@ -4,11 +4,13 @@
     <div class="card-body">
         {% if course.long_description %}
 
-            <div class="card-text" style="text-align: left">
+            <div class="card-text" style="text-align: left;">
+                {% if request.user.is_teacher or request.user.is_superuser %}
                 <div class="LPButton">
                     <a href="{% url 'course:edit_description' course.id  %}">Edit course description</a>
                 </div>
                 <br>
+                {% endif %}
                 <div class="card border-0">
                 <div class="card-body"><div class="card-text">
                     {{ course.long_description | safe }}
@@ -19,11 +21,14 @@
         {% else %}
 
             <div class="card-text" style="text-align: left">
-                This course lacks a course description. You can add one now!
+                This course lacks a course description.
+                {% if request.user.is_teacher or request.user.is_superuser %}
+                You can add one now!
                 <br>
                 <div class="LPButton">
                     <a href="{% url 'course:edit_description' course.id  %}">Add course description</a>
                 </div>
+                {% endif %}
             </div>
 
         {% endif %}
