@@ -17,9 +17,10 @@
 <form class="form" method="post">
     {% csrf_token %}
     {{ taskForm.management_form }}
-    <table class="table">
+
+    <table class="table" style="margin-left: auto; margin-right:auto; width: 80%;">
         <thead class="thead-light">
-        <tr><th>Multiple choice info</th><th></th></tr>
+        <tr><th colspan="2">Multiple choice info</th></tr>
         </thead>
         <tr>
             <th>{{ taskForm.name.label }} (short, decriptive)</th>
@@ -33,33 +34,11 @@
             <th>{{ multipleChoiceForm.instructions.label }}</th>
             <td>{{ multipleChoiceForm.instructions }}</td>
         </tr>
-        <tr>
-            <th>Is the question about pathology?</th>
-            <td>{{ taskForm.pathology }}</td>
-        </tr>
 
 
         <thead class="thead-light">
-        <tr><th>Task metadata and tagging</th><th></th></tr>
-        </thead>
-        <!-- <tr>{{ taskForm }}</tr> -->
         <tr>
-            <th>{{ taskForm.organ_tags.label }}</th>
-            <td>{{ taskForm.organ_tags }}</td>
-        </tr>
-        <tr>
-            <th>{{ taskForm.stain_tags.label }}</th>
-            <td>{{ taskForm.stain_tags }}</td>
-        </tr>
-        <tr>
-            <th>{{ taskForm.other_tags.label }}</th>
-            <td>{{ taskForm.other_tags }}</td>
-        </tr>
-
-        <thead class="thead-light">
-        <tr>
-            <th>Answer alternatives</th>
-            <th>Check box if alternative is correct</th>
+            <th colspan="2">Answer alternatives (check box if alternative is correct)</th>
         </tr>
         </thead>
         {{ choiceFormset.management_form }}
@@ -70,6 +49,24 @@
                 <td>{{ choiceForm.text }} {{ choiceForm.correct }}</td>
             </tr>
         {% endfor %}
+
+
+        <thead class="thead-light">
+        <tr><th colspan="2">Task metadata and tagging</th></tr>
+        </thead>
+        <tr>
+            <th>Is the question about pathology?</th>
+            <td>{{ taskForm.pathology }}</td>
+        </tr>
+        <tr>
+            <th>{{ taskForm.organ_tags.label }}</th>
+            <td>{{ taskForm.organ_tags }}</td>
+        </tr>
+        <tr>
+            <th>{{ taskForm.other_tags.label }}</th>
+            <td>{{ taskForm.other_tags }}</td>
+        </tr>
+
     </table>
 
     <table class="table">
