@@ -46,7 +46,10 @@
                 You can add some now!
                 <br>
                 <div class="LPButton">
-                    <a href="{% url 'course:task_selection' course.id %}">Click here to add tasks</a>
+                    <a href="{% url 'course:task_selection' course.id %}">Browse existing tasks</a>
+                </div>
+                <div class="LPButton">
+                    <a href="#" onclick="activateTab('slides');">Add new task</a>
                 </div>
                 {% endif %}
             </div>
