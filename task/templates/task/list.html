@@ -13,7 +13,7 @@
     {% if user.is_superuser or user.is_teacher %}
     <p>
         To add a new task, go to the
-        <a href="{% url 'slide:list' %}">slide list</a>
+        <a href="{% url 'slide:browser' %}">slide browser</a>
         and choose <em>Create new task</em> next to the slide
     </p>
     {% endif %}
