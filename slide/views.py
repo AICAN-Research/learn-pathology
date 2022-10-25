@@ -296,7 +296,7 @@ def edit_description(request, slide_id):
             form.save()
             messages.add_message(request, messages.SUCCESS,
                  f'The slide description of {slide.name} was altered!')
-            return redirect('slide:browser')
+            return redirect('slide:view_full', slide_id=slide_id)
 
     return render(request, 'slide/edit_description.html', {
         'slide': slide,
