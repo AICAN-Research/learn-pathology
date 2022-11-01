@@ -51,7 +51,7 @@
     </form>
 
     {% if filtered_slides %}
-        {% include 'slide/grid_loop.html' with slides=filtered_slides grid_card_url='slide/grid_cards/slide_selection_add.html' %}
+        {% include 'slide/slide_grid.html' with slides=filtered_slides grid_card_url='slide/grid_cards/slide_selection_add.html' %}
     {% else %}
         <p>
             No slides found with current filter.
@@ -64,7 +64,7 @@
     <th>Slides in course</th>
     <td>
         {% if slides_in_course %}
-            {% include 'slide/grid_loop.html' with slides=slides_in_course grid_card_url='slide/grid_cards/slide_selection_remove.html' %}
+            {% include 'slide/slide_grid.html' with slides=slides_in_course grid_card_url='slide/grid_cards/slide_selection_remove.html' %}
         {% else %}
             <p>
                 No slides have been added to the course.
