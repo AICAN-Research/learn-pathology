@@ -2,6 +2,8 @@ from django.contrib import messages
 from django.db import transaction
 from django.forms import formset_factory, inlineformset_factory, modelformset_factory
 from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
+
+from course.models import Course
 from multiple_choice.models import MultipleChoice, Choice
 from multiple_choice.forms import MultipleChoiceForm, ChoiceForm, TaskForm
 from slide.models import Slide, Pointer, AnnotatedSlide
@@ -38,7 +40,7 @@ def do(request, task_id):
 
 
 @teacher_required
-def new(request, slide_id):
+def new(request, slide_id, course_id=None):
     """
     Teacher form for creating a multiple choice task
     """
@@ -96,6 +98,10 @@ def new(request, slide_id):
 
                 # Give a message back to the user
                 messages.add_message(request, messages.SUCCESS, 'Task added successfully!')
+                if course_id is not None and course_id in Course.objects.values_list('id', flat=True):
+                    course = Course.objects.get(id=course_id)
+                    course.task.add(task)
+                    return redirect('course:view', course_id=course_id)
                 return redirect('task_list')
     else:
         task_form = TaskForm()
