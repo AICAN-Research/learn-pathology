@@ -1,0 +1,17 @@
+{% extends 'slide/grid_cards/grid_card.html' %}
+
+{% load to_class_name %}
+
+{% block gridCardQuestions %}
+
+    {% if request.user.is_teacher or request.user.is_superuser %}
+
+        <div class="card-content" style="padding-top: 5px">
+            <a class="LPButton btn add_button" style="margin: 0;"
+               data-course_id={{ course.id }} data-model_name={{ slide | to_class_name }} data-instance_id={{ slide.id }}>
+                Add slide
+            </a>
+        </div>
+    {% endif %}
+
+{% endblock gridCardQuestions %}

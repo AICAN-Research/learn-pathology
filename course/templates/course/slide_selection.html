@@ -1,6 +1,7 @@
 {% extends 'learnpathology/base.html' %}
 {% load to_class_name %}
 {% load static %}
+{% load slide_filters %}
 
 {% block content %}
 
@@ -52,30 +53,20 @@
 
     {% if filtered_slides %}
         <form class="form">
-            <table class="table">
-            <thead class="thead-light">
-            <tr>
-                <th>Thumbnail</th>
-                <th>Name</th>
-                <th>Description</th>
-                <th></th>
-            </tr>
-            </thead>
-            {% for slide in filtered_slides %}
-                <tr>
-                    <td><a href="{% url 'slide:view_full' slide.id %}">
-                        <img src="/slide/thumbnails/{{ slide.id }}.jpg" style="width: 100px">
-                    </a></td>
-                    <td>{{ slide.name }}</td>
-                    <td>{{ slide.description }}</td>
-                    <td>
-                        <button class="add_button" data-course_id={{ course.id }} data-model_name={{ slide | to_class_name }} data-instance_id={{ slide.id }} >
-                            Add
-                        </button>
-                    </td>
-                </tr>
+            <div class="container-fluid" style="width: 100%">
+            {% for chunk in filtered_slides|as_chunks:12 %}
+                <div class="row">
+                {% for slide in chunk %}
+                    <div class="column col-xs-6 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+                        <!-- TODO: Check that students don't have permission to this page -->
+                        {% if request.user.is_teacher or request.user.is_superuser %}
+                            {% include 'slide/grid_cards/slide_selection_add.html' with course=course slide=slide %}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                </div>
             {% endfor %}
-            </table>
+            </div>
         </form>
     {% else %}
         <p>
@@ -91,30 +82,20 @@
     <td>
     {% if slides_in_course %}
         <form class="form">
-            <table class="table">
-            <thead class="thead-light">
-            <tr>
-                <th>Thumbnail</th>
-                <th>Name</th>
-                <th>Description</th>
-                <th></th>
-            </tr>
-            </thead>
-            {% for slide in slides_in_course %}
-                <tr>
-                    <td><a href="{% url 'slide:view_full' slide.id %}">
-                        <img src="/slide/thumbnails/{{ slide.id }}.jpg" style="width: 100px">
-                    </a></td>
-                    <td>{{ slide.name }}</td>
-                    <td>{{ slide.description }}</td>
-                    <td>
-                        <button class="remove_button" data-course_id={{ course.id }} data-model_name={{ slide | to_class_name }} data-instance_id={{ slide.id }} >
-                            Remove
-                        </button>
-                    </td>
-                </tr>
+            <div class="container-fluid" style="width: 100%">
+            {% for chunk in slides_in_course|as_chunks:12 %}
+                <div class="row">
+                {% for slide in chunk %}
+                    <div class="column col-xs-6 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+                        <!-- TODO: Check that students don't have permission to this page -->
+                        {% if request.user.is_teacher or request.user.is_superuser %}
+                            {% include 'slide/grid_cards/slide_selection_remove.html' with course=course slide=slide %}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                </div>
             {% endfor %}
-            </table>
+            </div>
         </form>
     {% else %}
         <p>
