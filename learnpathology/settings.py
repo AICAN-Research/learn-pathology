@@ -161,7 +161,7 @@ CKEDITOR_CONFIGS = {
     'default': {
         'toolbar': 'Default',
         'toolbar_Default': [
-            ['Format', 'Font', 'FontSize', '-', 'TextColor', 'BGColor'],
+            ['Format', 'FontSize', '-', 'TextColor', 'BGColor'],
             ['Bold', 'Italic', 'Underline', 'Strike', 'Superscript', 'Subscript'],
             ['Undo', 'Redo', '-', 'Cut', 'Copy', 'Paste'],
             ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent'],
@@ -177,7 +177,7 @@ CKEDITOR_CONFIGS = {
     'lightweight': {
         'toolbar': 'Lightweight',
         'toolbar_Lightweight': [
-            ['Format', 'Font', 'FontSize'],
+            ['Format', 'FontSize'],
             ['Bold', 'Italic', 'Underline'],
             ['Undo', 'Redo', '-', 'Cut', 'Copy', 'Paste'],
             ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent'],
