@@ -1,0 +1,25 @@
+{% extends 'learnpathology/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="container text-center">
+    <img src="{% static 'learnpathology/images/logo_v0.png' %}" alt="FastPathology logo" style="max-width: 400px;align-self: center">
+    </div>
+
+    <br>
+
+    <div class="card mx-auto text-center" style="width: 80%">
+    <div class="card-body">
+    <div class="card-text text-left">
+
+        {% block flatpage_title %}
+            <h2>{{ flatpage.title }}</h2>
+        {% endblock flatpage_title %}
+
+        {% block flatpage_content %}
+            {{ flatpage.content }}
+        {% endblock flatpage_content %}
+
+    </div>
+    </div>
+    </div>
+{% endblock %}

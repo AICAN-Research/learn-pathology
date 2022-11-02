@@ -27,6 +27,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# For using flatpages, set to site corresponding to this settings.py file
+SITE_ID = 1
+APPEND_SLASH = True
+
 
 # Application definition
 
@@ -37,6 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'django.contrib.flatpages',
     'django_bootstrap_icons',
     'ckeditor',
     'ckeditor_uploader',
