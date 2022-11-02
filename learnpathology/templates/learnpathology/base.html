@@ -1,4 +1,5 @@
 {% load static %}
+{% load flatpages %}
 <!DOCTYPE html>
 <html lang="en" class="theme_default">
 <head>
@@ -54,6 +55,16 @@
                 <!-- specific options for superuser-->
                 <li class="nav-item"><a class="nav-link active" href="/admin/">Admin</a></li>
             {% endif %}
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">About</a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    {% get_flatpages for request.user as flatpages %}
+                    {% for page in flatpages %}
+                        <a class="dropdown-item" href="{{ page.url }}">{{ page.title }}</a>
+                    {% endfor %}
+                </div>
+            </li>
             <!-- keep logout button last -->
             <li class="nav-item"><a class="nav-link active" href="{% url 'logout' %}">Logout</a></li>
 
