@@ -14,7 +14,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.contrib.flatpages import views
+from django.urls import path, include, re_path
 from django.conf.urls.static import static
 from django.conf import settings
 
@@ -35,6 +36,15 @@ urlpatterns = [
     path('tag/', include('tag.urls')),
     path('course/', include('course.urls')),
     path('ckeditor/', include('ckeditor_uploader.urls')),
+]
+
+urlpatterns += [
+    # Define specific paths (can be used with {% url %} tag
+    #path('about/', views.flatpage, {'url': '/about/'}, name='about'),
+    #path('privacy/', views.flatpage, {'url': '/privacy/'}, name='privacy'),
+
+    # Or, use this 'catchall' pattern for all flatpages
+    re_path(r'^(?P<url>.*/)$', views.flatpage),
 ]
 
 if settings.DEBUG:
