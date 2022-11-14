@@ -17,6 +17,9 @@ main {
     width: 100%;  /* Set to 800 px in slide/static/slide/style.css */
 }
 
+/* ===================================
+    COLOUR THEMES
+=================================== */
 .theme_teacher{
     --background-card: #ffffff;
     --background-header: #eaece5;
@@ -31,16 +34,9 @@ main {
     --logo-saturation: 20;
     --logo-brightness: 10;
     --logo-opacity: 60%;
+    --grid-card-background: rgba(222, 240, 246, 0.55);
+    --grid-card-border: rgba(105, 147, 152, 0.5);
 }
-
-/*.theme_student{
-    --background-header: #deeaee;
-    --background:#0066cc;
-    --background-dark:#003366;
-    --button-colour: #afd275;
-    --text-color:#003399;
-    --text-color-dark:#000066;
-}*/
 
 .theme_student{
     --background-card: #ffffff;
@@ -74,6 +70,26 @@ main {
     --logo-saturation: 20;
     --logo-brightness: 10;
     --logo-opacity: 60%;
+    --grid-card-background: rgba(222, 240, 246, 0.55);
+    --grid-card-border: rgba(105, 147, 152, 0.5);
+}
+
+.theme_olive{
+    --background-card: #ffffff;
+    --background-header: #eaece5;
+    --background-collapsed-menu: #c4c4c4;
+    --background: #a2ba8e;
+    --background-dark: #5c6346;
+    --button-colour: #edf5e2;
+    --button-colour-hover: rgba(218, 247, 209, 0.98);
+    --button-colour-active: #c3e4ba;
+    --button-border-colour: #888;
+    --logo-hue: 240deg;
+    --logo-saturation: 20;
+    --logo-brightness: 10;
+    --logo-opacity: 60%;
+    --grid-card-background: rgba(235, 246, 222, 0.55);
+    --grid-card-border: rgba(130, 152, 105, 0.50);
 }
 
 body {
@@ -466,18 +482,20 @@ Image browser
 /* Styling for cards containing thumbnails, name, short description */
 .slideGridViewCard {
     height: 95%;
+    border-color: var(--grid-card-border);
 }
 .cardImageHeader {
     height: 60%;
     min-height: 60%;
-    background-color: var(--button-colour);
+    background-color: var(--grid-card-background);
 }
 .headerImageContainer {
     height: fit-content;
     width: fit-content;
     max-height: 100%;
     max-width: 100%;
-    background-color: var(--button-colour);
+    background-color: var(--grid-card-background);
+    background-clip: content-box;   /* sets padding to same color */
     border: 0;
     margin: auto;
     padding: 3%;

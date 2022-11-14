@@ -1,10 +1,10 @@
 
-<div class="slideGridViewCard card border-primary" style="max-height: 400px;">
+<div class="slideGridViewCard card" style="max-height: 400px;">
 
     {# Image display #}
     <a class="cardImageHeader card border-0" href="{% url 'slide:view_full' slide.id %}">
         <div class="card transparentBackground border-0 w-100 h-100">
-            <div class="headerImageContainer card transparentBackground">
+            <div class="headerImageContainer card">
                 <img class="headerImage" src="/slide/thumbnails/{{ slide.id }}.jpg">
             </div>
         </div>
