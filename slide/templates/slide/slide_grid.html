@@ -1,0 +1,21 @@
+{% load slide_filters %}
+
+{% block grid_loop %}
+
+<div class="container-fluid" style="width: 100%">
+    {% for chunk in slides|as_chunks:12 %}
+        <div class="row">
+            {% for slide in chunk %}
+                <div class="column col-xs-6 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+                    {% if course %}
+                        {% include grid_card_url with slide=slide course=course %}
+                    {% else %}
+                        {% include grid_card_url with slide=slide %}
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock grid_loop %}

@@ -1,3 +1,6 @@
+{% load to_class_name %}
+{% load static %}
+
 {% block courseTabContent %}
 {# This content is displayed within a containing <div class="card">...</div> #}
 
@@ -21,17 +24,20 @@
                             <th>Attempt task</th>
                             {% if request.user.is_teacher or request.user.is_superuser %}
                                 <th>Edit</th>
-                                <th>Delete</th>
+                                <th>Remove from course</th>
                             {% endif %}
                     </tr></thead>
                     {% for task in tasks %}
                         <tr>
                         <td><a href="{% url task.do_url task.id %}">{{ task.name }}</a></td>
                         <td>{{ task.type }}</td>
-                        <td><a href="{% url 'multiple_choice:do' task.id %}">Do task</a></td>
+                        <td><a class="LPButton btn remove_button" style="margin: 0;" href="{% url 'multiple_choice:do' task.id %}">Do task</a></td>
                         {% if request.user.is_teacher or request.user.is_superuser %}
-                            <td><a href="{% url 'multiple_choice:edit' task.id %}">Edit</a></td>
-                            <td><a href="{% url 'task_delete' task.id %}">Delete</a></td>
+                            <td><a class="LPButton btn remove_button" style="margin: 0;" href="{% url 'multiple_choice:edit' task.id %}">Edit</a></td>
+                            <td><a class="LPButton btn remove_button" style="margin: 0;"
+                                   data-course_id="{{ course.id }}" data-model_name="{{ task | to_class_name }}" data-instance_id="{{ task.id }}">
+                                Remove
+                            </a></td>
                         {% endif %}
                         </tr>
                     {% endfor %}

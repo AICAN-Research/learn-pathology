@@ -1,6 +1,7 @@
 {% extends 'learnpathology/base.html' %}
 {% load to_class_name %}
 {% load static %}
+{% load slide_filters %}
 
 {% block content %}
 
@@ -49,34 +50,8 @@
         </p>
     </form>
 
-
     {% if filtered_slides %}
-        <form class="form">
-            <table class="table">
-            <thead class="thead-light">
-            <tr>
-                <th>Thumbnail</th>
-                <th>Name</th>
-                <th>Description</th>
-                <th></th>
-            </tr>
-            </thead>
-            {% for slide in filtered_slides %}
-                <tr>
-                    <td><a href="{% url 'slide:view_full' slide.id %}">
-                        <img src="/slide/thumbnails/{{ slide.id }}.jpg" style="width: 100px">
-                    </a></td>
-                    <td>{{ slide.name }}</td>
-                    <td>{{ slide.description }}</td>
-                    <td>
-                        <button class="add_button" data-course_id={{ course.id }} data-model_name={{ slide | to_class_name }} data-instance_id={{ slide.id }} >
-                            Add
-                        </button>
-                    </td>
-                </tr>
-            {% endfor %}
-            </table>
-        </form>
+        {% include 'slide/slide_grid.html' with slides=filtered_slides grid_card_url='slide/grid_cards/slide_selection_add.html' %}
     {% else %}
         <p>
             No slides found with current filter.
@@ -87,40 +62,14 @@
 
 <tr>
     <th>Slides in course</th>
-
     <td>
-    {% if slides_in_course %}
-        <form class="form">
-            <table class="table">
-            <thead class="thead-light">
-            <tr>
-                <th>Thumbnail</th>
-                <th>Name</th>
-                <th>Description</th>
-                <th></th>
-            </tr>
-            </thead>
-            {% for slide in slides_in_course %}
-                <tr>
-                    <td><a href="{% url 'slide:view_full' slide.id %}">
-                        <img src="/slide/thumbnails/{{ slide.id }}.jpg" style="width: 100px">
-                    </a></td>
-                    <td>{{ slide.name }}</td>
-                    <td>{{ slide.description }}</td>
-                    <td>
-                        <button class="remove_button" data-course_id={{ course.id }} data-model_name={{ slide | to_class_name }} data-instance_id={{ slide.id }} >
-                            Remove
-                        </button>
-                    </td>
-                </tr>
-            {% endfor %}
-            </table>
-        </form>
-    {% else %}
-        <p>
-            No slides have been added to the course.
-        </p>
-    {% endif %}
+        {% if slides_in_course %}
+            {% include 'slide/slide_grid.html' with slides=slides_in_course grid_card_url='slide/grid_cards/slide_selection_remove.html' %}
+        {% else %}
+            <p>
+                No slides have been added to the course.
+            </p>
+        {% endif %}
     </td>
 </tr>
 </table>
