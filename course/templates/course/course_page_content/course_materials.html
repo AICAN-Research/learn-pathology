@@ -1,0 +1,40 @@
+{% block courseTabContent %}
+{# This content is displayed within a containing <div class="card">...</div> #}
+
+    <div class="card-body">
+        <div class="card-text" style="text-align: left">
+            {% if course.course_materials %}
+                Display course materials
+
+                {% if request.user.is_teacher or request.user.is_superuser %}
+                    <div class="LPButton">
+                        <a href="#">Upload course materials</a>
+                    </div>
+                    <br>
+                {% endif %}
+                <div class="card border-0">
+                    <div class="card-body"><div class="card-text">
+                        Here are course materials
+                        <ul>
+                            <li>item 1</li>
+                            <li>item 2</li>
+                        </ul>
+                    </div></div>
+                </div>
+
+            {% else %}
+
+                No course materials are provided for this course yet.
+                {% if request.user.is_teacher or request.user.is_superuser %}
+                    You can add course materials now!
+                    <br>
+                    <div class="LPButton">
+                        <a href="#">Upload course materials</a>
+                    </div>
+                {% endif %}
+
+            {% endif %}
+        </div>
+    </div>
+    
+{% endblock courseTabContent %}
