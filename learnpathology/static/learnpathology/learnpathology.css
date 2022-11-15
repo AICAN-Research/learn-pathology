@@ -34,7 +34,7 @@ main {
     --logo-saturation: 20;
     --logo-brightness: 10;
     --logo-opacity: 60%;
-    --grid-card-background: rgba(222, 240, 246, 0.55);
+    --grid-card-background: #e5edf0;
     --grid-card-border: rgba(105, 147, 152, 0.5);
 }
 
@@ -52,6 +52,8 @@ main {
     --logo-saturation: 50;
     --logo-brightness: 0;
     --logo-opacity: 20%;
+    --grid-card-background: #e5edf0;
+    --grid-card-border: rgba(105, 147, 152, 0.5);
 }
 
 .theme_default{
@@ -70,7 +72,7 @@ main {
     --logo-saturation: 20;
     --logo-brightness: 10;
     --logo-opacity: 60%;
-    --grid-card-background: rgba(222, 240, 246, 0.55);
+    --grid-card-background: #e5edf0;
     --grid-card-border: rgba(105, 147, 152, 0.5);
 }
 
@@ -88,7 +90,7 @@ main {
     --logo-saturation: 20;
     --logo-brightness: 10;
     --logo-opacity: 60%;
-    --grid-card-background: rgba(235, 246, 222, 0.55);
+    --grid-card-background: #eaeee5;
     --grid-card-border: rgba(130, 152, 105, 0.50);
 }
 
