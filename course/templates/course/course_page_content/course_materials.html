@@ -3,12 +3,11 @@
 
     <div class="card-body">
         <div class="card-text" style="text-align: left">
-            {% if course.course_materials %}
-                Display course materials
+            {% if course_materials %}
 
                 {% if request.user.is_teacher or request.user.is_superuser %}
                     <div class="LPButton">
-                        <a href="#">Upload course materials</a>
+                        <a href="{% url 'course:upload_material' course_id=course.id %}">Upload course materials</a>
                     </div>
                     <br>
                 {% endif %}
@@ -16,8 +15,11 @@
                     <div class="card-body"><div class="card-text">
                         Here are course materials
                         <ul>
-                            <li>item 1</li>
-                            <li>item 2</li>
+                            {% for item in course_materials %}
+                                <li><a href="#">
+                                    {{ item.name }}
+                                </a></li>
+                            {% endfor %}
                         </ul>
                     </div></div>
                 </div>
@@ -29,7 +31,7 @@
                     You can add course materials now!
                     <br>
                     <div class="LPButton">
-                        <a href="#">Upload course materials</a>
+                        <a href="{% url 'course:upload_material' course_id=course.id %}">Upload course materials</a>
                     </div>
                 {% endif %}
 

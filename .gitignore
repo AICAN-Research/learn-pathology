@@ -4,3 +4,5 @@
 environment
 venv
 env
+
+media/*

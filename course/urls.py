@@ -15,4 +15,5 @@ urlpatterns = [
     path('add_item/', views.add_to_course, name='add_item'),
     path('remove_item/', views.remove_from_course, name='remove_item'),
     path('new_course_task/course=<int:course_id>/slide=<int:slide_id>', views.new_task_and_add_to_course, name='new_task_and_add'),
+    path('<int:course_id>/upload/', views.upload_material, name='upload_material'),
 ]

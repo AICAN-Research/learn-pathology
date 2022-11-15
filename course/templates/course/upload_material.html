@@ -1,0 +1,37 @@
+{% extends 'learnpathology/base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>Upload course material</h1>
+</div>
+
+<div class="card mx-auto text-center" style="width: 90%">
+<div class="card-body">
+<div class="card-text">
+
+    <form class="form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <table class="table" style="width: fit-content; margin-left: auto; margin-right: auto;">
+             {{ form.as_table }}
+
+            {% comment %}
+            <thead class="thead-light">
+                <tr><th>Field</th><th>Edit field content below</th></tr>
+            </thead>
+            <tr>
+                <th>{{ form.learning_outcomes.label }}</th>
+                <td>{{ form.learning_outcomes }}</td>
+            </tr>
+            {% endcomment %}
+
+        </table>
+
+        <input type="submit" value="Upload">
+    </form>
+
+</div>
+</div>
+</div>
+
+{% endblock %}
