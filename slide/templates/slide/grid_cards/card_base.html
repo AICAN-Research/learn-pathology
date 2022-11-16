@@ -1,5 +1,5 @@
 
-<div class="slideGridViewCard card" style="max-height: 400px;">
+<div class="slideGridViewCard card" style="max-height: 450px;">
 
     {# Image display #}
     <a class="cardImageHeader card border-0" href="{% url 'slide:view_full' slide.id %}">
@@ -11,7 +11,7 @@
     </a>
 
     {# Card content (slide name, description, buttons, ...) #}
-    <div class="card border-0 h-50" style="padding: 5%">
+    <div class="card border-0 h-50" style="padding: 5%; min-height: fit-content;">
         <h5 class="card-title">{{ slide.name }}</h5>
         <p class="card-subtitle">{{ slide.description }}</p>
         {% block gridCardQuestions %}
