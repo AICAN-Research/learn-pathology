@@ -6,6 +6,12 @@ function setTheme(themeName) {
     document.documentElement.className = themeName;
 }
 
+function setBackground(colorHex) {
+    var bodyStyles = document.body.style;
+    console.log(bodyStyles);
+    bodyStyles.setProperty('--background', colorHex);
+}
+
 // Immediately invoked function to set the theme on initial load
 (function () {
     setTheme('theme_default')
