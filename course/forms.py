@@ -1,6 +1,7 @@
 from django import forms
+from django.forms import FileField, FileInput
 
-from course.models import Course
+from course.models import Course, CourseMaterial
 
 
 class CourseForm(forms.ModelForm):
@@ -44,3 +45,21 @@ class CourseLearningOutcomesForm(forms.ModelForm):
         labels = {
             'learning_outcomes': 'Learning outcomes'
         }
+
+
+class CourseMaterialForm(forms.ModelForm):
+
+    file = FileField()
+    class Meta:
+        model = CourseMaterial
+        fields = ['name', 'description', 'file']
+        exclude = ['course', 'path']
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 4, 'cols': 40}),
+            'file': FileInput(),
+        }
+
+    def save(self, file_path='', **kwargs):
+        # Update the created CourseMaterial object with the location of the uploaded file
+        self.instance.path = file_path
+        return super().save(**kwargs)

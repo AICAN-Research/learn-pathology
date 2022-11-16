@@ -1,14 +1,17 @@
 import json
+import os
 import sys
 
 from django.contrib import messages
 from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.core.files.uploadedfile import UploadedFile
 
-from course.models import Course
+from course.models import Course, CourseMaterial
 from course.forms import CourseForm, DeleteCourseForm, \
-    CourseLongDescriptionForm, CourseLearningOutcomesForm
+    CourseLongDescriptionForm, CourseLearningOutcomesForm, CourseMaterialForm
+from learnpathology.settings import MEDIA_ROOT
 from slide.models import Slide
 from tag.models import Tag
 from task.models import Task
@@ -34,11 +37,13 @@ def course_page(request, course_id):
     course = Course.objects.get(id=course_id)
     tasks = Task.objects.filter(course=course)
     slides = Slide.objects.filter(course=course)
+    course_materials = CourseMaterial.objects.filter(course=course)
 
     return render(request, 'course/course_page.html', {
         'course': course,
         'tasks': tasks,
         'slides': slides,
+        'course_materials': course_materials,
     })
 
 
@@ -308,3 +313,43 @@ def remove_from_course(request):
         course.save()
 
     return JsonResponse(data={})
+
+
+@teacher_required
+def upload_material(request, course_id):
+    if request.method == 'POST':
+        form = CourseMaterialForm(request.POST, request.FILES)
+        with transaction.atomic():
+            if form.is_valid():
+                # Store file
+                file_path = store_file_in_db(f=form.files['file'])
+                # Save form
+                course_material = form.save(file_path=file_path, commit=False)
+                course_material.course = Course.objects.get(id=course_id)
+                course_material.save()
+
+                messages.add_message(request, messages.SUCCESS, 'Course material added to database')
+                return redirect('course:view', course_id=course_id)
+    else:
+        form = CourseMaterialForm()
+
+    return render(request, 'course/upload_material.html', {
+        'form': form
+    })
+
+
+def store_file_in_db(f: UploadedFile):
+    upload_path = MEDIA_ROOT.joinpath('course_material')
+    if not os.path.exists(upload_path):
+        os.makedirs(upload_path)
+
+    destination_path = os.path.join(upload_path, f.name)
+    # TODO: Ask the user if to substitute or keep both files
+    if os.path.exists(destination_path):
+        os.remove(destination_path)
+
+    with open(destination_path, 'wb+') as destination:
+        for chunk in f.chunks():
+            destination.write(chunk)
+
+    return destination_path

@@ -1,3 +1,5 @@
+import os.path
+
 from ckeditor.fields import RichTextField
 from ckeditor_uploader.fields import RichTextUploadingField
 from django.db import models
@@ -19,3 +21,16 @@ class Course(models.Model):
 
     def __str__(self):
         return self.code + " - " + self.title
+
+
+class CourseMaterial(models.Model):
+    """
+    Model to store and access course materials (pdf, docx, pptx, mp4 files...)
+    """
+    name = models.CharField(max_length=255)
+    path = models.CharField(max_length=1024)
+    description = models.TextField()
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.name} ({os.path.splitext(self.path)[-1]} file)'
