@@ -10,8 +10,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.core.files.uploadedfile import UploadedFile
 
 from tag.models import Tag
+from task.models import Task
 from user.decorators import student_required, teacher_required
-from slide.models import Slide
+from slide.models import Slide, AnnotatedSlide, Pointer
 from slide.forms import SlideForm, SlideDescriptionForm
 
 
@@ -363,5 +364,62 @@ def remove_tag(request):
     return JsonResponse(data={})
 
 
+@teacher_required
+def add_or_edit_descriptive_annotation(request, slide_id):
+    """
+    View to handle descriptive/basic annotations of a Slide.
+    (Annotations that are not connected to Courses or Tasks)
+    """
+    context = {}
+
+    # Get slide
+    slide = Slide.objects.get(pk=slide_id)
+    slide_cache.load_slide_to_cache(slide.id)
+    context['slide'] = slide
+
+    if request.method == 'POST':  # Form was submitted
+        with transaction.atomic():  # Make save operation atomic
+            # Create annotated slide
+            annotated_slide = AnnotatedSlide()
+            annotated_slide.slide = slide
+            annotated_slide.save()
+
+            # Store annotations (pointers)
+            for key in request.POST:
+                print(key, request.POST[key])
+                if key.startswith('pointer-') and key.endswith('-text'):
+                    save_pointer_annotation(request, key, annotated_slide)
+
+                # TODO: Create elif statement and function for each annotation type
+                #  - "elif key.startswith('boundingbox-') ..."
+                #  - "elif key.startswith('circle-') ..."
+                #  - ...
+
+            # Give a message back to the user
+            messages.add_message(request, messages.SUCCESS, 'Annotations added successfully!')
+            return redirect('slide:view_full', slide_id=slide_id)
+
+    else:
+        annotated_slides = AnnotatedSlide.objects.filter(slide_id=slide.id)
+        # TODO: Is this an efficient way to find descriptive annotation sets?
+        for annotated_slide in annotated_slides:
+            used_in_tasks = Task.objects.filter(annotated_slide=annotated_slide)
+            #used_in_courses = Course.objects.filter(annotated_slide=annotated_slide)
+            if len(used_in_tasks) == 0:  # and len(used_in_courses) == 0:
+                # Then this is a descriptive annotation set
+                context['annotated_slide'] = annotated_slide
+                context['pointers'] = Pointer.objects.filter(annotated_slide=annotated_slide)
+                # TODO: Add similar statement for other annotation types
+
+    return render(request, 'slide/add_edit_descriptive_annotations.html', context)
 
 
+@teacher_required
+def save_pointer_annotation(request, key, annotated_slide):
+    prefix = key[:-len('text')]
+    pointer = Pointer()
+    pointer.text = request.POST[key]
+    pointer.position_x = float(request.POST[prefix + 'x'])
+    pointer.position_y = float(request.POST[prefix + 'y'])
+    pointer.annotated_slide = annotated_slide
+    pointer.save()

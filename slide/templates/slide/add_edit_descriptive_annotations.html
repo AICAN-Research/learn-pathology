@@ -1,0 +1,25 @@
+{% extends 'learnpathology/base.html' %}
+
+{% block content %}
+
+<div class="container">
+    <h1>Add or edit descriptive annotations</h1>
+</div>
+
+<div class="card mx-auto text-center" style="width: 90%">
+<div class="card-body">
+<div class="card-text">
+
+<form class="form" method="post">
+    {% csrf_token %}
+
+    {% include 'slide/view_wsi_and_edit_annotations.html' with slide=slide annotated_slide=annotated_slide %}
+
+    <input class="LPButton button" type="submit" value="Submit" onclick="this.form.submit();">
+</form>
+
+</div>
+</div>
+</div>
+
+{% endblock %}
