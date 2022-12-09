@@ -182,6 +182,7 @@
         }
     });
 
+    $(".overlay").toggle(); // Start with annotations toggled off
     viewer.addControl(screenshotButton.element, {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
     {% if annotated_slide %}
         viewer.addControl(overlayButton.element, {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
