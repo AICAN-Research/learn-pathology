@@ -69,25 +69,25 @@
                                 <td>-</td>
                             {% endif %}
                         </tr>
-                            <tr>
-                                <th>
-                                    General pathology tags
-                                    {% if request.user.is_teacher or request.user.is_superuser %}
-                                        <div class="card-content" style="padding-top: 5px">
-                                            <a class="LPButton" href="{% url 'slide:edit_tags' slide.id %}" style="margin: 0;">
-                                                Edit tags
-                                            </a>
-                                        </div>
-                                    {% endif %}
-                                </th>
-                                <td>
-                                    {% if general_pathology_tags %}
-                                        {% for tag in general_pathology_tags %}
-                                            {{ tag.name }}<br>
-                                        {% endfor %}
-                                    {% endif %}
-                                </td>
-                            </tr>
+                        <tr>
+                            <th>
+                                General pathology tags
+                                {% if request.user.is_teacher or request.user.is_superuser %}
+                                    <div class="card-content" style="padding-top: 5px">
+                                        <a class="LPButton" href="{% url 'slide:edit_tags' slide.id %}" style="margin: 0;">
+                                            Edit tags
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            </th>
+                            <td>
+                                {% if general_pathology_tags %}
+                                    {% for tag in general_pathology_tags %}
+                                        {{ tag.name }}<br>
+                                    {% endfor %}
+                                {% endif %}
+                            </td>
+                        </tr>
                     </table>
                 </div>
             </div>
