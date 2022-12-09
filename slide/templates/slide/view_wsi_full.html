@@ -98,6 +98,9 @@
         <div class="col col-12 col-lg-9 slideViewerCol">
             <div class="card slideViewerCard transparentBackground">
                 <div id="wsi-canvas" class="wsi_canvas" style="height: 100%;"></div>
+                {% if annotated_slide %}
+                    {{ annotated_slide.get_html | safe }}
+                {% endif %}
             </div>
         </div>
     </div>
@@ -107,6 +110,52 @@
 
 <script src="{% static 'slide/openseadragon.min.js' %}"></script>
 <script type="text/javascript">
+    let buttonElement = document.createElement("button");
+    buttonElement.innerText = "Screenshot";
+    let screenshotButton = new OpenSeadragon.Button({
+        tooltip: 'Screenshot',
+        element: buttonElement,
+        //srcRest: `/images/Browser_Chrome.png`,
+        //srcGroup: `/images/Browser_Chrome.png`,
+        //srcHover: `/images/Browser_Chrome.png`,
+        //srcDown: `/images/Browser_Chrome.png`,
+        onClick: function () {
+            console.log('Click!');
+            // Hide toolbar:
+            let toolbar = document.getElementsByClassName("openseadragon-container")[0].childNodes[1];
+            toolbar.style.display = "none";
+            html2canvas($("#wsi-canvas")[0]).then(canvas => {
+                var now = new Date();
+                var formattedDate = now.format("yyyy-MM-dd hh-mm-ss");
+                console.log(now);
+                // Trigger download
+                var link = document.createElement('a');
+                link.href = canvas.toDataURL("image/jpeg");
+                link.download = 'LearnPathology Screenshot ' + formattedDate + '.jpg';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }).then(x => {
+                // Display toolbar again
+                let toolbar = document.getElementsByClassName("openseadragon-container")[0].childNodes[1];
+                toolbar.style.display = "block";
+            })
+        }
+    });
+    let overlayElement = document.createElement("button");
+    overlayElement.innerText = "Toggle Annotations";
+    let overlayButton = new OpenSeadragon.Button({
+        tooltip: 'Toggle Annotations',
+        element: overlayElement,
+        //srcRest: `/images/Browser_Chrome.png`,
+        //srcGroup: `/images/Browser_Chrome.png`,
+        //srcHover: `/images/Browser_Chrome.png`,
+        //srcDown: `/images/Browser_Chrome.png`,
+        onClick: function () {
+            console.log('Click!');
+            $(".overlay").toggle();
+        }
+    });
     var viewer = OpenSeadragon({
         id: "wsi-canvas",
         zoomPerScroll: 2, // Scroll speed
@@ -122,8 +171,16 @@
             getTileUrl: function (level, x, y) {
                 return "/viewer/tile/{{ slide.id }}/" + ({{ slide.osd_levels }} -1 - level) + "/" + x + "/" + y + "/";
             },
+            overlays: [
+                {{ annotated_slide.get_js | safe }}
+            ],
         }
     });
+
+    viewer.addControl(screenshotButton.element, {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
+    {% if annotated_slide %}
+        viewer.addControl(overlayButton.element, {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
+    {% endif %}
 </script>
 <script>
     function toggleInfoCardVisibility() {
