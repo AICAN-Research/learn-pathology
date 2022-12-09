@@ -1,7 +1,40 @@
 {% load static %}
+{% load slide_filters %}
 
 <div class="container fill" style="min-height: 600px">
-<p>Double click where you want to add annotations</p>
+
+<div class="card border-0">
+
+    <div class="row no-gutters w-100">
+        <div class="col-sm-5 col-md-3">
+            <div class="card border-0 h-100" style="margin-top: auto; margin-bottom: auto">
+            <div class="card-body">
+                <h5 class="card-title">Annotation type</h5>
+            </div>
+            </div>
+        </div> <!-- end col 1 -->
+        <div class="col">
+            <div class="card border-0 text-left">
+            <div class="card-body">
+            <div class="radio-toolbar">
+                {% for annotation in annotation_types %}
+                    <!-- TODO: Pass annotation type options to template and fill in buttons appropriately -->
+                    <!-- <input type="radio" name="annotation-type" id="annotation-type-btn" value="{{ annotation }}" onchange="this.form.submit();"> -->
+                    <input type="radio" name="annotation-type" id="annotation-type-btn" value="{{ annotation }}" onchange="">
+                    <label for="annotation-type-btn" class="{% if selected_type == annotation %}active{% endif %}">{{ annotation|model_name }}</label>
+                {% endfor %}
+            </div>
+            </div>
+            </div>
+        </div> <!-- end col 2 -->
+    </div> <!-- end row -->
+
+</div>
+<div>
+    <!-- TODO: Annotation-specific instructions? -->
+    <p>Double click where you want to add annotations</p>
+</div>
+
 
 <div id="wsi-canvas" class="wsi_canvas" style="height: 600px;"></div>
 
@@ -67,6 +100,7 @@
        addPointer(new OpenSeadragon.Point({{pointer.position_x}}, {{ pointer.position_y }}), '{{ pointer.text }}');
     {% endfor %}
 
+    // TODO: Define below functionality based on which annotation type is selected
     viewer.addHandler('canvas-double-click', function(event) {
         // The canvas-click event gives us a position in web coordinates.
         var webPoint = event.position;

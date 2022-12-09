@@ -12,7 +12,7 @@ from django.core.files.uploadedfile import UploadedFile
 from tag.models import Tag
 from task.models import Task
 from user.decorators import student_required, teacher_required
-from slide.models import Slide, AnnotatedSlide, Pointer
+from slide.models import Slide, AnnotatedSlide, Pointer, BoundingBox
 from slide.forms import SlideForm, SlideDescriptionForm
 
 
@@ -423,6 +423,9 @@ def add_or_edit_descriptive_annotation(request, slide_id):
                 context['pointers'] = Pointer.objects.filter(annotated_slide=annotated_slide)
                 # TODO: Add similar statement for other annotation types
 
+    context['annotation_types'] = [
+        Pointer, BoundingBox
+    ]
     return render(request, 'slide/add_edit_descriptive_annotations.html', context)
 
 
