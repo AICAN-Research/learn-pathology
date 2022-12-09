@@ -222,3 +222,16 @@ class Pointer(models.Model):
     position_x = models.FloatField()
     position_y = models.FloatField()
     text = models.CharField(max_length=256)
+
+
+class BoundingBox(models.Model):
+    """
+    A bounding box annotation on a slide consisting of a top/bottom left
+    position (x,y), width and height, and a text.
+    """
+    annotated_slide = models.ForeignKey(AnnotatedSlide, on_delete=models.CASCADE)
+    position_x = models.FloatField()
+    position_y = models.FloatField()
+    width = models.FloatField()
+    height = models.FloatField()
+    text = models.CharField(max_length=256)
