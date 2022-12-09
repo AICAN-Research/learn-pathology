@@ -203,11 +203,23 @@ def whole_slide_view_full(request, slide_id):
     stain = slide.tags.get(is_stain=True)
     general_pathology_tags = [tag for tag in slide.tags.filter(is_organ=False, is_stain=False)
                               if tag.name.lower() in GENERAL_PATHOLOGY_TAGS]
-    return render(request, 'slide/view_wsi_full.html', {
+    context = {
         'slide': slide,
         'stain_name': stain.name,
-        'general_pathology_tags': general_pathology_tags,
-    })
+        'general_pathology_tags': general_pathology_tags
+    }
+
+    annotated_slides = AnnotatedSlide.objects.filter(slide_id=slide_id)
+    # TODO: Is this an efficient way to find descriptive annotation sets?
+    for annotated_slide in annotated_slides:
+        used_in_tasks = Task.objects.filter(annotated_slide=annotated_slide)
+        if len(used_in_tasks) == 0:  # and len(used_in_courses) == 0:
+            # Then this is a descriptive annotation set
+            context['annotated_slide'] = annotated_slide
+            # Add annotations to context
+            context['pointers'] = Pointer.objects.filter(annotated_slide=annotated_slide)
+
+    return render(request, 'slide/view_wsi_full.html', context)
 
 
 def whole_slide_viewer(request, slide_id):
