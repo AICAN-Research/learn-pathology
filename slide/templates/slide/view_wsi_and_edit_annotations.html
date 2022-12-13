@@ -5,23 +5,25 @@
 
 <div class="card border-0">
 
-    <div class="row no-gutters w-100">
+    <div class="row no-gutters w-100 align-items-center">
         <div class="col-sm-5 col-md-3">
             <div class="card border-0 h-100" style="margin-top: auto; margin-bottom: auto">
-            <div class="card-body">
-                <h5 class="card-title">Annotation type</h5>
+            <div class="card-body" style="padding: 0;">
+                <h5 class="card-title" style="margin-bottom: 0;">Annotation type</h5>
             </div>
             </div>
         </div> <!-- end col 1 -->
         <div class="col">
             <div class="card border-0 text-left">
-            <div class="card-body">
+            <div class="card-body" style="padding: 0;">
             <div class="radio-toolbar">
                 {% for annotation in annotation_types %}
                     <!-- TODO: Pass annotation type options to template and fill in buttons appropriately -->
                     <!-- <input type="radio" name="annotation-type" id="annotation-type-btn" value="{{ annotation }}" onchange="this.form.submit();"> -->
                     <input type="radio" name="annotation-type" id="annotation-type-btn" value="{{ annotation }}" onchange="">
-                    <label for="annotation-type-btn" class="{% if selected_type == annotation %}active{% endif %}">{{ annotation|model_name }}</label>
+                    <label for="annotation-type-btn" class="{% if selected_type == annotation %}active{% endif %}" style="padding: 6px 10px 6px 10px; margin: 0;">
+                        {{ annotation|model_name }}
+                    </label>
                 {% endfor %}
             </div>
             </div>
@@ -30,7 +32,7 @@
     </div> <!-- end row -->
 
 </div>
-<div>
+<div style="margin-top: 5px;">
     <!-- TODO: Annotation-specific instructions? -->
     <p>Double click where you want to add annotations</p>
 </div>
