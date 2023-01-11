@@ -63,12 +63,14 @@ def do_random(request, slide_id=None):
     answers = RandomMCChoice.objects.filter(slide=slide_id)
 
     answered = 'no'
+    choice_text = None
     if request.method == 'POST':
         print('POST')
         # Process form
 
         try:
             choice = RandomMCChoice.objects.get(slide=slide, id=request.POST['choice'])
+            choice_text = choice.text
             if choice.correct:
                 answered = 'correct'
             else:
@@ -80,7 +82,8 @@ def do_random(request, slide_id=None):
     return render(request, 'multiple_choice/random_quest.html', {
         'answers': answers,
         'answered': answered,
-        'slide': slide
+        'slide': slide,
+        'choice_text': choice_text,
     })
 
 
@@ -275,36 +278,6 @@ def new_random(num_choices = 5):
         for choice in new_choices:
             choice.save()
 
-
-
-
-    """
-    # From Ingrid:
-    slide_names = [name for name in Slide.objects.values_list('name', flat=True)]
-    
-    
-    for each slide id:
-    
-        slide = Slide.get....
-
-        # Add correct answer
-        choice = RandomMCChoice()
-        choice.slide = slide
-        choice.text = slide.description
-        choice.correct = True
-        choice.save()
-    
-        # Add remaining options at random
-        for i in range(num_choices - 1):
-            choice = RandomMCChoice()
-            choice.multiple_choice = multiple_choice
-    
-            random_idx = random.choice(range(len(slide_names)))
-            choice.text = slide_names[random_idx]
-            slide_names.pop(random_idx)
-            choices.append(choice)
-
-    """
 
     pass
 
