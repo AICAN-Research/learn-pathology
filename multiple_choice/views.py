@@ -1,5 +1,4 @@
 import random
-from copy import deepcopy
 
 from django.contrib import messages
 from django.db import transaction
@@ -49,13 +48,11 @@ def do_random(request, slide_id=None):
     Student form for answering/viewing a random multiple choice task
     """
 
-
     if request.method == 'GET':  # If the request is GET
         # make a random question
         slides = Slide.objects.all()
         num_images = len(slides)
         slide_id = random.randrange(1, num_images + 1)
-
 
     slide = Slide.objects.get(id=slide_id)
     slide_cache.load_slide_to_cache(slide_id)
@@ -77,7 +74,6 @@ def do_random(request, slide_id=None):
                 answered = 'incorrect'
         except MultiValueDictKeyError:
             answered = 'no_choice'
-
 
     return render(request, 'multiple_choice/random_quest.html', {
         'answers': answers,
@@ -156,7 +152,6 @@ def new(request, slide_id, course_id=None):
         multiple_choice_form = MultipleChoiceForm()
         choice_formset = ChoiceFormset()
 
-
     return render(request, 'multiple_choice/new.html', {
         'slide': slide,
         'multipleChoiceForm': multiple_choice_form,
@@ -165,75 +160,7 @@ def new(request, slide_id, course_id=None):
     })
 
 
-
-
-    # Process forms
-    ChoiceFormset = formset_factory(ChoiceForm, extra=5)
-    if request.method == 'POST': # Form was submitted
-        print("POST")
-        task_form = TaskForm(request.POST)
-        multiple_choice_form = MultipleChoiceForm(request.POST)
-        choice_formset = ChoiceFormset(request.POST)
-
-        with transaction.atomic():  # Make save operation atomic
-            if multiple_choice_form.is_valid() and task_form.is_valid() and choice_formset.is_valid():
-                # Create annotated slide
-                annotated_slide = AnnotatedSlide()
-                annotated_slide.slide = slide
-                annotated_slide.save()
-
-                # Create task
-                task = task_form.save(commit=False)
-                task.annotated_slide = annotated_slide
-                task.save()
-
-                organ_tags = task_form.cleaned_data['organ_tags']
-                other_tags = [tag for tag in task_form.cleaned_data['other_tags']]
-                task.tags.set([organ_tags] + other_tags)
-
-                # Create multiple choice
-                multiple_choice = multiple_choice_form.save(commit=False)
-                multiple_choice.task = task
-                multiple_choice.save()
-
-                for choiceForm in choice_formset:
-                    choice = choiceForm.save(commit=False)
-                    if len(choice.text) > 0:
-                        choice.task = multiple_choice
-                        choice.save()
-
-                # Store annotations (pointers)
-                for key in request.POST:
-                    print(key, request.POST[key])
-                    if key.startswith('pointer-') and key.endswith('-text'):
-                        prefix = key[:-len('text')]
-                        pointer = Pointer()
-                        pointer.text = request.POST[key]
-                        pointer.position_x = float(request.POST[prefix+'x'])
-                        pointer.position_y = float(request.POST[prefix+'y'])
-                        pointer.annotated_slide = annotated_slide
-                        pointer.save()
-
-                # Give a message back to the user
-                messages.add_message(request, messages.SUCCESS, 'Task added successfully!')
-                if course_id is not None and course_id in Course.objects.values_list('id', flat=True):
-                    course = Course.objects.get(id=course_id)
-                    course.task.add(task)
-                    return redirect('course:view', course_id=course_id)
-                return redirect('task_list')
-    else:
-        task_form = TaskForm()
-        multiple_choice_form = MultipleChoiceForm()
-        choice_formset = ChoiceFormset()
-
-    return render(request, 'multiple_choice/new.html', {
-        'slide': slide,
-        'multipleChoiceForm': multiple_choice_form,
-        'taskForm': task_form,
-        'choiceFormset': choice_formset,
-    })
-
-def new_random(num_choices = 5):
+def new_random(num_choices=5):
     """
     Teacher form for creating a multiple choice task
 
@@ -247,8 +174,7 @@ def new_random(num_choices = 5):
     # Get slide
     slides = Slide.objects.all()
     for i in range(len(slides)):
-        new_choices= []
-
+        new_choices = []
 
         slide = Slide.objects.get(pk=i+1)
 
@@ -258,7 +184,6 @@ def new_random(num_choices = 5):
         choice.text = slide.description
         choice.correct = True
         new_choices.append(choice)
-
 
         slides_exclude = slides.exclude(id=i)
         excluded_list = []
@@ -277,9 +202,6 @@ def new_random(num_choices = 5):
         random.shuffle(new_choices)
         for choice in new_choices:
             choice.save()
-
-
-    pass
 
 
 @teacher_required
