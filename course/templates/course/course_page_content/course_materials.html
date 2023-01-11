@@ -1,8 +1,9 @@
 {% block courseTabContent %}
-{# This content is displayed within a containing <div class="card">...</div> #}
+    {# This content is displayed within a containing <div class="card">...</div> #}
 
     <div class="card-body">
         <div class="card-text" style="text-align: left">
+
             {% if course_materials %}
 
                 {% if request.user.is_teacher or request.user.is_superuser %}
@@ -12,17 +13,32 @@
                     <br>
                 {% endif %}
                 <div class="card border-0">
-                    <div class="card-body"><div class="card-text">
-                        Here are course materials
-                        <ul>
-                            {% for item in course_materials %}
-                                <li><a href="#">
-                                    {{ item.name }}
-                                </a></li>
-                            {% endfor %}
-                        </ul>
-                    </div></div>
-                </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="card-body">
+                                <div class="card-text">
+
+                                    Here are course materials
+                                    <ul>
+                                        {% for item in course_materials %}
+                                            <li><a href="#">
+                                                {{ item.name }}
+                                            </a></li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="alert alert-warning" style=" max-width:500px">
+                                <strong>Warning!</strong> The used course materials are property of NTNU.
+                                Usage and download are only allowed for the purpose of this course.
+                                Copying and Sharing for other purposes is prohibited.
+                            </div>
+
+                        </div>
+                    </div>
+                </div></div>
 
             {% else %}
 
@@ -36,7 +52,9 @@
                 {% endif %}
 
             {% endif %}
-        </div>
     </div>
-    
+
+    </div>
+
+
 {% endblock courseTabContent %}
