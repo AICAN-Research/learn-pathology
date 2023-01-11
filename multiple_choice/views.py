@@ -203,8 +203,6 @@ def new_random(num_choices=5):
             choice.correct = False
             new_choices.append(choice)
 
-        # TODO: We can shuffle before displaying in browser. Order in the DB doesn't matter.
-        #  Then we can save answers above directly after generating the choices
         random.seed()
         random.shuffle(new_choices)
         for choice in new_choices:
