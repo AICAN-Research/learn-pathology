@@ -162,6 +162,10 @@ def new(request, slide_id, course_id=None):
 
 def new_random(num_choices=5):
     """
+    TODO:
+      - Update docstring (this function description)
+      - When re-generating random questions, remove old options first
+
     Teacher form for creating a multiple choice task
 
 
@@ -171,12 +175,11 @@ def new_random(num_choices=5):
 
     """
 
-    # Get slide
-    slides = Slide.objects.all()
-    for i in range(len(slides)):
+    # Iterate through slide_id's to generate new random questions
+    for slide_id in Slide.objects.values_list('id', flat=True):
         new_choices = []
 
-        slide = Slide.objects.get(pk=i+1)
+        slide = Slide.objects.get(id=slide_id)
 
         # Add correct answer
         choice = RandomMCChoice()
@@ -185,11 +188,10 @@ def new_random(num_choices=5):
         choice.correct = True
         new_choices.append(choice)
 
-        slides_exclude = slides.exclude(id=i)
-        excluded_list = []
-        for slide_ex in slides_exclude.iterator():
-            excluded_list.append(slide_ex.description)
-        answers = random.sample(excluded_list, k=4)
+        # Use list comprehension to list all slide descriptions except the correct one
+        incorrect_slide_descriptions = [slide.description for slide in Slide.objects.exclude(id=slide_id)]
+        # TODO: Use k=num_choices-1? If not, we don't need num_choices as function argument
+        answers = random.sample(incorrect_slide_descriptions, k=4)
 
         for answer in answers:
             choice = RandomMCChoice()
@@ -198,6 +200,8 @@ def new_random(num_choices=5):
             choice.correct = False
             new_choices.append(choice)
 
+        # TODO: We can shuffle before displaying in browser. Order in the DB doesn't matter.
+        #  Then we can save answers above directly after generating the choices
         random.seed()
         random.shuffle(new_choices)
         for choice in new_choices:
