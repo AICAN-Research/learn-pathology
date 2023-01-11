@@ -2,8 +2,8 @@
 
 {% block content %}
 <div class="container">
-<h1>{{ task.question }}</h1>
-<p>{{ task.instructions }}</p>
+<h1>Which organ can be seen in the image ?</h1>
+<p>Select one correct answer.</p>
 </div>
 
 <div class="card mx-auto text-center" style="width: 90%; height: 100%">
@@ -11,10 +11,11 @@
     <div class="row">
         <div class="col"></div>
         <div class="col">
-        <form class="form-check text-left" action="{% url 'multiple_choice:do' task.task_id %}" method="post">
+        <form class="form-check text-left" action="{% url 'multiple_choice:do_random' slide_id=slide.id %}" method="post">
             {% csrf_token %}
-            {% for choice in task.choice_set.all %}
-                 {% if choice_text == choice.text %}
+
+            {% for choice in answers %}
+                {% if choice_text == choice.text %}
                     <input class="form-check-input" type="radio" checked name="choice" value="{{ choice.id }}">
                     {% else %}
                     <input class="form-check-input" type="radio"  name="choice" value="{{ choice.id }}">
@@ -22,31 +23,47 @@
                 {% endif %}
 
                 <span
-                    {% if answered != 'no' %}
+                    {% if answered != 'no' and answered != 'no_choice' %}
                         {% if choice.correct %}
                             style="color: green"
                         {% else %}
                             style="color: red"
                         {% endif %}
-                {% endif %}>
+                    {% endif %}>
                 {{ choice.text }}</span><br>
             {% endfor %}
-            <input type="submit" value="Submit">
+
+
+
+                <input type="submit" value="Submit" style="margin-top: 0;">
+
+
+                <div class="LPButton" style="margin-top: 0; ">
+                    <a href="{% url 'multiple_choice:do_random' slide_id=1 %}">Next Question</a>
+                    </div>
+
+
+
         </form>
+
+
         {% if answered != 'no' %}
             {% if answered == 'correct' %}
                 <a style="color: green; font-size: large; font-weight: bold">Correct!</a>
-            {% else %}
+            {% elif answered == 'incorrect' %}
                 <a style="color: red; font-size: large; font-weight: bold">Wrong!</a>
+            {% else %}
+            <a style="color: darkslateblue; font-size: large; font-weight: bold">Please make a choice!</a>
             {% endif %}
         {% endif %}
         </div>
         <div class="col"></div>
+
     </div>
 
 <br>
 
-{% include 'slide/view_wsi.html' with slide=task.task.annotated_slide.slide annotated_slide=task.task.annotated_slide  %}
+{% include 'slide/view_wsi.html' with slide=slide %}
 
 
 </div>

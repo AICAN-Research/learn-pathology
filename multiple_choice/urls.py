@@ -7,4 +7,5 @@ urlpatterns = [
     path('do/<int:task_id>/', views.do, name='do'),
     path('new/<int:slide_id>/', views.new, name='new'),
     path('edit/<int:task_id>/', views.edit, name='edit'),
+    path('do_random/<int:slide_id>', views.do_random, name='do_random'),
 ]
