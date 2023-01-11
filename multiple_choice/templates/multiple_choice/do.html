@@ -14,7 +14,13 @@
         <form class="form-check text-left" action="{% url 'multiple_choice:do' task.task_id %}" method="post">
             {% csrf_token %}
             {% for choice in task.choice_set.all %}
-                <input class="form-check-input" type="radio" name="choice" value="{{ choice.id }}">
+                 {% if choice_text == choice.text %}
+                    <input class="form-check-input" type="radio" checked name="choice" value="{{ choice.id }}">
+                    {% else %}
+                    <input class="form-check-input" type="radio"  name="choice" value="{{ choice.id }}">
+
+                {% endif %}
+
                 <span
                     {% if answered != 'no' %}
                         {% if choice.correct %}

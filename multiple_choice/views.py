@@ -23,12 +23,14 @@ def do(request, task_id):
     task = MultipleChoice.objects.get(task=task_id)
 
     answered = 'no'
+    choice_text = None
     if request.method == 'POST':
         print('POST')
         # Process form
         print(request.POST['choice'])
         try:
             choice = Choice.objects.get(task=task, id=request.POST['choice'])
+            choice_text = choice.text
             if choice.correct:
                 answered = 'correct'
             else:
@@ -40,6 +42,7 @@ def do(request, task_id):
     return render(request, 'multiple_choice/do.html', {
         'task': task,
         'answered': answered,
+        'choice_text': choice_text,
     })
 
 
