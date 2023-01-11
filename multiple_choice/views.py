@@ -193,8 +193,7 @@ def new_random(num_choices=5):
 
         # Use list comprehension to list all slide descriptions except the correct one
         incorrect_slide_descriptions = [slide.description for slide in Slide.objects.exclude(id=slide_id)]
-        # TODO: Use k=num_choices-1? If not, we don't need num_choices as function argument
-        answers = random.sample(incorrect_slide_descriptions, k=4)
+        answers = random.sample(incorrect_slide_descriptions, k=num_choices-1)
 
         for answer in answers:
             choice = RandomMCChoice()
