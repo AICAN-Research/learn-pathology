@@ -21,3 +21,12 @@ class Choice(models.Model):
     correct = models.BooleanField()
 
 
+class RandomMCChoice(models.Model):
+    """
+    A choice in a RandomMultipleChoice task
+    """
+    slide = models.ForeignKey(Slide, on_delete=models.CASCADE)
+    text = models.CharField(max_length=512)
+    correct = models.BooleanField()
+
+
