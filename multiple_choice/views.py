@@ -22,12 +22,23 @@ def do(request, task_id):
     """
     task = MultipleChoice.objects.get(task=task_id)
 
+    #get id of next task
+    all_tasks = list(MultipleChoice.objects.values_list('id', flat=True))
+    current_index = all_tasks.index(task_id)
+    try:
+        next_id = all_tasks[current_index+1]
+    except IndexError:
+        next_id = all_tasks[0]
+
+
+
+
     answered = 'no'
     choice_text = None
     if request.method == 'POST':
         print('POST')
         # Process form
-        print(request.POST['choice'])
+
         try:
             choice = Choice.objects.get(task=task, id=request.POST['choice'])
             choice_text = choice.text
@@ -35,14 +46,15 @@ def do(request, task_id):
                 answered = 'correct'
             else:
                 answered = 'incorrect'
-        except Choice.DoesNotExist:
-            raise ValueError
+        except MultiValueDictKeyError:
+            answered = 'no_choice'
 
     slide_cache.load_slide_to_cache(task.task.annotated_slide.slide.id)
     return render(request, 'multiple_choice/do.html', {
         'task': task,
         'answered': answered,
         'choice_text': choice_text,
+        'next_id': next_id
     })
 
 

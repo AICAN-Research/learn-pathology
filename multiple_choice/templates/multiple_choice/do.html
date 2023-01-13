@@ -22,7 +22,7 @@
                 {% endif %}
 
                 <span
-                    {% if answered != 'no' %}
+                    {% if answered != 'no' and answered != 'no_choice' %}
                         {% if choice.correct %}
                             style="color: green"
                         {% else %}
@@ -31,13 +31,22 @@
                 {% endif %}>
                 {{ choice.text }}</span><br>
             {% endfor %}
+
+        <div class="LPButton" style="margin-top: 0; ">
+                    <a href="{% url 'task_list'  %}">Task Overview</a>
+                    </div>
             <input type="submit" value="Submit">
+        <div class="LPButton" style="margin-top: 0; ">
+                    <a href="{% url 'multiple_choice:do' next_id  %}">Next Task</a>
+                    </div>
         </form>
         {% if answered != 'no' %}
             {% if answered == 'correct' %}
                 <a style="color: green; font-size: large; font-weight: bold">Correct!</a>
-            {% else %}
+            {% elif answered == 'incorrect' %}
                 <a style="color: red; font-size: large; font-weight: bold">Wrong!</a>
+            {% else %}
+            <a style="color: darkslateblue; font-size: large; font-weight: bold">Please make a choice!</a>
             {% endif %}
         {% endif %}
         </div>
