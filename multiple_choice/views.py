@@ -27,7 +27,7 @@ def do(request, task_id):
     if request.method == 'POST':
         print('POST')
         # Process form
-        print(request.POST['choice'])
+
         try:
             choice = Choice.objects.get(task=task, id=request.POST['choice'])
             choice_text = choice.text
@@ -35,8 +35,8 @@ def do(request, task_id):
                 answered = 'correct'
             else:
                 answered = 'incorrect'
-        except Choice.DoesNotExist:
-            raise ValueError
+        except MultiValueDictKeyError:
+            answered = 'no_choice'
 
     slide_cache.load_slide_to_cache(task.task.annotated_slide.slide.id)
     return render(request, 'multiple_choice/do.html', {
