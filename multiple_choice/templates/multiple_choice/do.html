@@ -1,63 +1,75 @@
 {% extends "learnpathology/base.html" %}
 
 {% block content %}
-<div class="container">
-<h1>{{ task.question }}</h1>
-<p>{{ task.instructions }}</p>
-</div>
-
-<div class="card mx-auto text-center" style="width: 90%; height: 100%">
-<div class="card-body" style="height: 100%">
-    <div class="row">
-        <div class="col"></div>
-        <div class="col">
-        <form class="form-check text-left" action="{% url 'multiple_choice:do' task.task_id %}" method="post">
-            {% csrf_token %}
-            {% for choice in task.choice_set.all %}
-                 {% if choice_text == choice.text %}
-                    <input class="form-check-input" type="radio" checked name="choice" value="{{ choice.id }}">
-                    {% else %}
-                    <input class="form-check-input" type="radio"  name="choice" value="{{ choice.id }}">
-
-                {% endif %}
-
-                <span
-                    {% if answered != 'no' and answered != 'no_choice' %}
-                        {% if choice.correct %}
-                            style="color: green"
-                        {% else %}
-                            style="color: red"
-                        {% endif %}
-                {% endif %}>
-                {{ choice.text }}</span><br>
-            {% endfor %}
-
-        <div class="LPButton" style="margin-top: 0; ">
-                    <a href="{% url 'task_list'  %}">Task Overview</a>
-                    </div>
-            <input type="submit" value="Submit">
-        <div class="LPButton" style="margin-top: 0; ">
-                    <a href="{% url 'multiple_choice:do' next_id  %}">Next Task</a>
-                    </div>
-        </form>
-        {% if answered != 'no' %}
-            {% if answered == 'correct' %}
-                <a style="color: green; font-size: large; font-weight: bold">Correct!</a>
-            {% elif answered == 'incorrect' %}
-                <a style="color: red; font-size: large; font-weight: bold">Wrong!</a>
-            {% else %}
-            <a style="color: darkslateblue; font-size: large; font-weight: bold">Please make a choice!</a>
-            {% endif %}
-        {% endif %}
-        </div>
-        <div class="col"></div>
+    <div class="container">
+        <h1>{{ task.question }}</h1>
+        <p>{{ task.instructions }}</p>
     </div>
 
-<br>
+    <div class="card mx-auto text-center" style="width: 90%; height: 100%">
+        <div class="card-body" style="height: 100%">
+            <div class="row">
+                <div class="col"></div>
+                <div class="col">
+                    <form class="form-check text-left"
+                          action="{% url 'multiple_choice:do' task_id=task.id course_id=course_id %}" method="post">
+                        {% csrf_token %}
+                        {% for choice in task.choice_set.all %}
+                            {% if choice_text == choice.text %}
+                                <input class="form-check-input" type="radio" checked name="choice"
+                                       value="{{ choice.id }}">
+                            {% else %}
+                                <input class="form-check-input" type="radio" name="choice" value="{{ choice.id }}">
 
-{% include 'slide/view_wsi.html' with slide=task.task.annotated_slide.slide annotated_slide=task.task.annotated_slide  %}
+                            {% endif %}
+
+                            <span
+                                    {% if answered != 'no' and answered != 'no_choice' %}
+                                        {% if choice.correct %}
+                                            style="color: green"
+                                        {% else %}
+                                            style="color: red"
+                                        {% endif %}
+                                    {% endif %}>
+                {{ choice.text }}</span><br>
+                        {% endfor %}
 
 
-</div>
-</div>
+                        {% if course_id == 0 %}
+                            <div class="LPButton" style="margin-top: 0; ">
+                                <a href="{% url 'task_list' %}">Task Overview</a>
+                            </div>
+                        {% else %}
+
+
+                            <div class="LPButton" style="margin-top: 0; ">
+                                <a href=" {% url 'course:view' course_id %}">Task Overview</a>
+                            </div>  {% endif %}
+
+                        <input type="submit" value="Submit">
+                        <div class="LPButton" style="margin-top: 0; ">
+                            <a href="{% url 'multiple_choice:do' task_id=next_id course_id=course_id %}">Next Task</a>
+                        </div>
+                    </form>
+                    {% if answered != 'no' %}
+                        {% if answered == 'correct' %}
+                            <a style="color: green; font-size: large; font-weight: bold">Correct!</a>
+                        {% elif answered == 'incorrect' %}
+                            <a style="color: red; font-size: large; font-weight: bold">Wrong!</a>
+                        {% else %}
+                            <a style="color: darkslateblue; font-size: large; font-weight: bold">Please make a
+                                choice!</a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <div class="col"></div>
+            </div>
+
+            <br>
+
+            {% include 'slide/view_wsi.html' with slide=task.task.annotated_slide.slide annotated_slide=task.task.annotated_slide %}
+
+
+        </div>
+    </div>
 {% endblock content %}
