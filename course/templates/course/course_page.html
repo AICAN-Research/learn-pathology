@@ -54,7 +54,46 @@ $(document).ready(function(){
 
         <div class="card align-content border-0" style="margin-top: 10px; padding-bottom: 10px">
             {# Place nav-tabs on top #}
+            {% if return_task %}
             <ul class="nav nav-tabs courseNavTabs">
+                <li class="nav-item">
+                    <a href="#course-description" class="nav-link " data-toggle="tab">{% bs_icon 'body-text' %}Course description</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#learning-outcomes" class="nav-link" data-toggle="tab">{% bs_icon 'flag' %}Learning outcomes</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#slides" class="nav-link" data-toggle="tab">{% bs_icon 'image' %}Slides</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#tasks" class="nav-link active" data-toggle="tab">{% bs_icon 'question-square' %}Tasks/quizzes</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#course-material" class="nav-link" data-toggle="tab">{% bs_icon 'stack' %}Learning materials</a>
+                </li>
+            </ul>
+
+                 <div class="card courseNavPanes">
+            <div class="tab-content" id="tabs">
+                <div class="tab-pane " id="course-description">
+                    {% include 'course/course_page_content/course_description.html' %}
+                </div>
+                <div class="tab-pane" id="learning-outcomes">
+                    {% include 'course/course_page_content/learning_outcomes.html' %}
+                </div>
+                <div class="tab-pane" id="slides">
+                    {% include 'course/course_page_content/course_slides.html' %}
+                </div>
+                <div class="tab-pane active" id="tasks">
+                    {% include 'course/course_page_content/course_quizzes.html' %}
+                </div>
+                <div class="tab-pane" id="course-material">
+                    {% include 'course/course_page_content/course_materials.html' %}
+                </div>
+            </div>
+            </div>
+            {% else %}
+                <ul class="nav nav-tabs courseNavTabs">
                 <li class="nav-item">
                     <a href="#course-description" class="nav-link active" data-toggle="tab">{% bs_icon 'body-text' %}Course description</a>
                 </li>
@@ -71,6 +110,8 @@ $(document).ready(function(){
                     <a href="#course-material" class="nav-link" data-toggle="tab">{% bs_icon 'stack' %}Learning materials</a>
                 </li>
             </ul>
+
+
 
             {# Place nav-panes below #}
             <div class="card courseNavPanes">
@@ -92,6 +133,7 @@ $(document).ready(function(){
                 </div>
             </div>
             </div>
+             {% endif %}
         </div>
 
     </div>

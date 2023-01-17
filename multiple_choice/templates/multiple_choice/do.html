@@ -43,7 +43,7 @@
 
 
                             <div class="LPButton" style="margin-top: 0; ">
-                                <a href=" {% url 'course:view' course_id %}">Task Overview</a>
+                                <a href=" {% url 'course:view' course_id=course_id return_task=1 %}">Task Overview</a>
                             </div>  {% endif %}
 
                         <input type="submit" value="Submit">
