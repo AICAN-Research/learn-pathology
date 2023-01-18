@@ -2,8 +2,21 @@
 
 {% block content %}
     <div class="container">
-        <h1>{{ task.question }}</h1>
-        <p>{{ task.instructions }}</p>
+        <div class="row align-items-center">
+            <div class="col">
+                <h1>{{ task.question }}</h1>
+                <p>{{ task.instructions }}</p>
+            </div>
+            <div class="col-4">
+                <div class="LPButton" style="margin-top: 0; ">
+                    {% if course_id == 0 %}
+                        <a href="{% url 'task_list' %}">Task Overview</a>
+                    {% else %}
+                        <a href=" {% url 'course:view' course_id=course_id return_task=1 %}">Back to course</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="card mx-auto text-center" style="width: 90%; height: 100%">
@@ -20,31 +33,18 @@
                                        value="{{ choice.id }}">
                             {% else %}
                                 <input class="form-check-input" type="radio" name="choice" value="{{ choice.id }}">
-
                             {% endif %}
 
                             <span
-                                    {% if answered != 'no' and answered != 'no_choice' %}
-                                        {% if choice.correct %}
-                                            style="color: green"
-                                        {% else %}
-                                            style="color: red"
-                                        {% endif %}
-                                    {% endif %}>
-                {{ choice.text }}</span><br>
+                                {% if answered != 'no' and answered != 'no_choice' %}
+                                    {% if choice.correct %}
+                                        style="color: green"
+                                    {% else %}
+                                        style="color: red"
+                                    {% endif %}
+                                {% endif %}>
+                            {{ choice.text }}</span><br>
                         {% endfor %}
-
-
-                        {% if course_id == 0 %}
-                            <div class="LPButton" style="margin-top: 0; ">
-                                <a href="{% url 'task_list' %}">Task Overview</a>
-                            </div>
-                        {% else %}
-
-
-                            <div class="LPButton" style="margin-top: 0; ">
-                                <a href=" {% url 'course:view' course_id=course_id return_task=1 %}">Task Overview</a>
-                            </div>  {% endif %}
 
                         <input type="submit" value="Submit">
                         <div class="LPButton" style="margin-top: 0; ">
