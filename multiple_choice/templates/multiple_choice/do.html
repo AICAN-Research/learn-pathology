@@ -22,7 +22,7 @@
                 {% endif %}
 
                 <span
-                    {% if answered != 'no' %}
+                    {% if answered != 'no' and answered != 'no_choice' %}
                         {% if choice.correct %}
                             style="color: green"
                         {% else %}
@@ -36,8 +36,10 @@
         {% if answered != 'no' %}
             {% if answered == 'correct' %}
                 <a style="color: green; font-size: large; font-weight: bold">Correct!</a>
-            {% else %}
+            {% elif answered == 'incorrect' %}
                 <a style="color: red; font-size: large; font-weight: bold">Wrong!</a>
+            {% else %}
+            <a style="color: darkslateblue; font-size: large; font-weight: bold">Please make a choice!</a>
             {% endif %}
         {% endif %}
         </div>
