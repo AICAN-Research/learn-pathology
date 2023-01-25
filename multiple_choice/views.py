@@ -27,16 +27,16 @@ def do(request, task_id):
     if request.method == 'POST':
         print('POST')
         # Process form
-        print(request.POST['choice'])
-        try:
-            choice = Choice.objects.get(task=task, id=request.POST['choice'])
+        choice_id = request.POST.get('choice', None)  # returns None if no choice was made
+        if choice_id is not None:
+            choice = Choice.objects.get(task=task, id=choice_id)
             choice_text = choice.text
             if choice.correct:
                 answered = 'correct'
             else:
                 answered = 'incorrect'
-        except Choice.DoesNotExist:
-            raise ValueError
+        else:
+            answered = 'no_choice'
 
     slide_cache.load_slide_to_cache(task.task.annotated_slide.slide.id)
     return render(request, 'multiple_choice/do.html', {
@@ -67,15 +67,15 @@ def do_random(request, slide_id=None):
     if request.method == 'POST':
         print('POST')
         # Process form
-
-        try:
-            choice = RandomMCChoice.objects.get(slide=slide, id=request.POST['choice'])
+        choice_id = request.POST.get('choice', None)  # returns None if no choice was made
+        if choice_id is not None:
+            choice = RandomMCChoice.objects.get(slide=slide, id=choice_id)
             choice_text = choice.text
             if choice.correct:
                 answered = 'correct'
             else:
                 answered = 'incorrect'
-        except MultiValueDictKeyError:
+        else:
             answered = 'no_choice'
 
     return render(request, 'multiple_choice/random_quest.html', {
