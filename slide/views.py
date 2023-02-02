@@ -263,6 +263,7 @@ def create_thumbnail(slide_id):
         .connect(resize)\
         .run()
 
+
 @teacher_required
 def add(request):
     if request.method == 'POST':
