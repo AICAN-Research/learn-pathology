@@ -3,7 +3,8 @@ import os.path
 import django.urls
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db import transaction
+from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
+from django.db import transaction, IntegrityError
 from django.db.models import Q
 from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -209,15 +210,19 @@ def whole_slide_view_full(request, slide_id):
         'general_pathology_tags': general_pathology_tags
     }
 
-    annotated_slides = AnnotatedSlide.objects.filter(slide_id=slide_id)
-    # TODO: Is this an efficient way to find descriptive annotation sets?
-    for annotated_slide in annotated_slides:
-        used_in_tasks = Task.objects.filter(annotated_slide=annotated_slide)
-        if len(used_in_tasks) == 0:  # and len(used_in_courses) == 0:
-            # Then this is a descriptive annotation set
-            context['annotated_slide'] = annotated_slide
-            # Add annotations to context
-            context['pointers'] = Pointer.objects.filter(annotated_slide=annotated_slide)
+    try:
+        annotated_slide = AnnotatedSlide.objects.get(slide_id=slide.id, task__isnull=True)
+    except MultipleObjectsReturned as err:
+        print("Multiple descriptive AnnotatedSlide objects found. Clean up DB!")  # Using last slide for now")
+        raise MultipleObjectsReturned(err)
+    except ObjectDoesNotExist as err:
+        print(f"Did not find descriptive AnnotatedSlide for slide with id {slide.id}.")
+        annotated_slide = None
+
+    context['annotated_slide'] = annotated_slide
+    # Add annotations to context
+    context['pointers'] = Pointer.objects.filter(annotated_slide=annotated_slide)
+    context['boxes'] = BoundingBox.objects.filter(annotated_slide=annotated_slide)
 
     return render(request, 'slide/view_wsi_full.html', context)
 
@@ -389,11 +394,21 @@ def add_or_edit_descriptive_annotation(request, slide_id):
     slide_cache.load_slide_to_cache(slide.id)
     context['slide'] = slide
 
+    # Get annotated slide
+    try:
+        annotated_slide = AnnotatedSlide.objects.get(slide_id=slide.id, task__isnull=True)
+    except MultipleObjectsReturned as err:
+        print("Multiple descriptive AnnotatedSlide objects found. Clean up DB!")  # Using last slide for now")
+        raise MultipleObjectsReturned(err)
+    except ObjectDoesNotExist as err:
+        print("Did not find descriptive AnnotatedSlide. Making a new object")
+        annotated_slide = AnnotatedSlide()
+        annotated_slide.slide = slide
+
     if request.method == 'POST':  # Form was submitted
         with transaction.atomic():  # Make save operation atomic
-            # Create annotated slide
-            annotated_slide = AnnotatedSlide()
-            annotated_slide.slide = slide
+            # Delete all existing annotations
+            delete_existing_annotations(annotated_slide)
             annotated_slide.save()
 
             # Store annotations (pointers)
@@ -401,27 +416,19 @@ def add_or_edit_descriptive_annotation(request, slide_id):
                 print(key, request.POST[key])
                 if key.startswith('pointer-') and key.endswith('-text'):
                     save_pointer_annotation(request, key, annotated_slide)
-
-                # TODO: Create elif statement and function for each annotation type
-                #  - "elif key.startswith('boundingbox-') ..."
-                #  - "elif key.startswith('circle-') ..."
-                #  - ...
+                elif key.startswith('boundingbox-') and key.endswith('-text'):
+                    save_boundingbox_annotation(request, key, annotated_slide)
 
             # Give a message back to the user
             messages.add_message(request, messages.SUCCESS, 'Annotations added successfully!')
             return redirect('slide:view_full', slide_id=slide_id)
 
     else:
-        annotated_slides = AnnotatedSlide.objects.filter(slide_id=slide.id)
-        # TODO: Is this an efficient way to find descriptive annotation sets?
-        for annotated_slide in annotated_slides:
-            used_in_tasks = Task.objects.filter(annotated_slide=annotated_slide)
-            #used_in_courses = Course.objects.filter(annotated_slide=annotated_slide)
-            if len(used_in_tasks) == 0:  # and len(used_in_courses) == 0:
-                # Then this is a descriptive annotation set
-                context['annotated_slide'] = annotated_slide
-                context['pointers'] = Pointer.objects.filter(annotated_slide=annotated_slide)
-                # TODO: Add similar statement for other annotation types
+        context['annotated_slide'] = annotated_slide
+        context['pointers'] = Pointer.objects.filter(annotated_slide=annotated_slide)
+        context['boxes'] = BoundingBox.objects.filter(annotated_slide=annotated_slide)
+
+        print('Annotated slide id:', annotated_slide.id)
 
     context['annotation_types'] = [
         Pointer, BoundingBox
@@ -429,12 +436,56 @@ def add_or_edit_descriptive_annotation(request, slide_id):
     return render(request, 'slide/add_edit_descriptive_annotations.html', context)
 
 
+def delete_existing_annotations(annotated_slide):
+    """
+    Before saving new annotations, delete all existing to prevent duplicates
+    and simplify handling (don't need to check if objects are unique, etc.)
+    """
+    Pointer.objects.filter(annotated_slide=annotated_slide).delete()
+    BoundingBox.objects.filter(annotated_slide=annotated_slide).delete()
+
+
 @teacher_required
 def save_pointer_annotation(request, key, annotated_slide):
     prefix = key[:-len('text')]
-    pointer = Pointer()
-    pointer.text = request.POST[key]
-    pointer.position_x = float(request.POST[prefix + 'x'])
-    pointer.position_y = float(request.POST[prefix + 'y'])
-    pointer.annotated_slide = annotated_slide
-    pointer.save()
+    text = request.POST[key]
+    position_x = float(request.POST[prefix + 'x'])
+    position_y = float(request.POST[prefix + 'y'])
+
+    # Using get_or_create matches pointers and retrieves identical one if it exists
+    pointer, pointer_was_created = Pointer.objects.get_or_create(
+        annotated_slide=annotated_slide,
+        text=text,
+        position_x=position_x,
+        position_y=position_y
+    )
+    if pointer_was_created:
+        try:
+            pointer.save()
+        except IntegrityError as err:
+            print(f"{err.__class__.__name__}: Could not save pointer. {err}")
+
+
+@teacher_required
+def save_boundingbox_annotation(request, key, annotated_slide):
+    prefix = key[:-len('text')]
+    text = request.POST[key]
+    position_x = float(request.POST[prefix + 'x'])
+    position_y = float(request.POST[prefix + 'y'])
+    width = float(request.POST[prefix + 'width'])
+    height = float(request.POST[prefix + 'height'])
+
+    # Using get_or_create matches pointers and retrieves identical one if it exists
+    box, box_was_created = BoundingBox.objects.get_or_create(
+        annotated_slide=annotated_slide,
+        text=text,
+        position_x=position_x,
+        position_y=position_y,
+        width=width,
+        height=height
+    )
+    if box_was_created:
+        try:
+            box.save()
+        except IntegrityError as err:
+            print(f"{err.__class__.__name__}: Could not save box. {err}")
