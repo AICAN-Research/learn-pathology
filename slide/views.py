@@ -473,8 +473,8 @@ def save_boundingbox_annotation(request, key, annotated_slide):
     text = request.POST[key]
     position_x = float(request.POST[prefix + 'x'])
     position_y = float(request.POST[prefix + 'y'])
-    width = float(request.POST[prefix + 'width'])
-    height = float(request.POST[prefix + 'height'])
+    width = round(float(request.POST[prefix + 'width']), ndigits=5)
+    height = round(float(request.POST[prefix + 'height']), ndigits=5)
 
     # Using get_or_create matches pointers and retrieves identical one if it exists
     box, box_was_created = BoundingBox.objects.get_or_create(

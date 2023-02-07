@@ -246,6 +246,7 @@ class Pointer(models.Model):
              f"}},"
         return js
 
+
 class BoundingBox(models.Model):
     """
     A bounding box annotation on a slide consisting of a top/bottom left
@@ -273,10 +274,10 @@ class BoundingBox(models.Model):
              f"id: 'boundingbox-{self.id}', " \
              f"x: {self.position_x}, " \
              f"y: {self.position_y}, " \
-             f"width: 0.2, " \
-             f"height: 0.2, " \
+             f"width: {self.width}, " \
+             f"height: {self.height}, " \
              f"placement: 'TOPLEFT', " \
              f"checkResize: true, " \
-             f"className: 'card transparentBackground border-danger' }},"
+             f"className: 'card LPBoundingBox' }},"
         print('Got BoundingBox js')
         return js
