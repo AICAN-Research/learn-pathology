@@ -265,6 +265,7 @@ class BoundingBox(models.Model):
         ]
 
     def get_html(self):
+        # TODO: How do we separate the annotation and the text?
         html = f'<div id="boundingbox-{self.id}" class="overlay"> {self.text} </div>'
         print('Got BoundingBox html')
         return html

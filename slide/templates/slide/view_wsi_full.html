@@ -50,6 +50,17 @@
                         <tr><th>Stain</th><td>{{ stain_name }}</td></tr>
 
                         <thead class="thead-light">
+                            <tr><th colspan="2">Test annotation list</th></tr>
+                        </thead>
+                        {% for box in boxes %}
+                        <tr><td colspan="2">
+                            <a id="boundingbox-listitem-{{ box.id }}" onclick="activateAnnotation('boundingbox-listitem-{{ box.id }}');">
+                                {{ box.text }}
+                            </a>
+                        </td></tr>
+                        {% endfor %}
+
+                        <thead class="thead-light">
                             <tr><th colspan="2">Supplementary information</th></tr>
                         </thead>
                         <tr>
@@ -206,5 +217,21 @@
             x.style.height = "0%";
         }*/
     }
+
+    function activateAnnotation(annotationId) {
+        // TODO: Name function appropriately
+        console.log("In function activateAnnotation()");
+
+        // Get corresponding annotation
+        // TODO: Must handle for all annotation types, or for each type separately
+        var boundingBoxId = 'boundingbox-' + annotationId.split('-').at(-1);
+        console.log('Bounding box id', boundingBoxId);
+
+        /* TODO: Do something with the annotation or the text
+            Highlight it? Display description somewhere outside canvas?
+        */
+
+    }
+
 </script>
 {% endblock %}
