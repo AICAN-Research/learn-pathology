@@ -10,16 +10,13 @@ let g_lastElementId = null;
 function activatePointerAnnotation() {
     console.log('Activating Pointer annotation');
 
-    viewer.addHandler('canvas-double-click', function(event) {
-        let webPoint = event.position;
-        let viewportPoint = viewer.viewport.pointFromPixel(webPoint);
+    deactivateAnnotationMode();
 
-        let textDiv = addPointer(viewportPoint, '');
-        $("#" + textDiv.id + " input[type=text]").focus();
-    });
-
-    // After creating Pointer, enable pan and zoom again until new annotation selected
-    //enablePanAndZoom();
+    $('#pointer-annotation-btn').addClass('active');
+    $('#annotation-instructions').text(
+        'Double click the canvas where you want to make a pointer'
+    );
+    addPointerHandlers();
 }
 
 function addPointer(viewportPoint, text) {
@@ -49,20 +46,44 @@ function addPointer(viewportPoint, text) {
             }
         }
     });
+
+    deactivateAnnotationMode();
     return textDiv;
 }
 
+/*
+    POINTER EVENT HANDLERS
+ */
+function onDoubleClickPointer(event) {
+    let webPoint = event.position;
+    let viewportPoint = viewer.viewport.pointFromPixel(webPoint);
+
+    let textDiv = addPointer(viewportPoint, '');
+    $("#" + textDiv.id + " input[type=text]").focus();
+}
+
+function addPointerHandlers() {
+    viewer.addHandler('canvas-double-click', onDoubleClickPointer);
+}
+
+function removePointerHandlers() {
+    viewer.removeHandler('canvas-double-click', onDoubleClickPointer);
+}
 
 /*
     BOUNDING BOX ANNOTATIONS
  */
 function activateBoxAnnotation() {
     console.log('Activating BoundingBox annotation. counter = ', counter);
+
+    deactivateAnnotationMode();
     disablePanAndZoom();
 
-    viewer.addHandler('canvas-press', onPressBoundingBox);
-    viewer.addHandler('canvas-drag', onDragBoundingBox);
-    viewer.addHandler('canvas-release', onReleaseBoundingBox);
+    $('#box-annotation-btn').addClass('active');
+    $('#annotation-instructions').text(
+        'Click and drag to make a bounding box'
+    );
+    addBoundingBoxHandlers();
 }
 
 function addBoundingBox(x1, y1, x2, y2, text='') {
@@ -218,7 +239,16 @@ function onReleaseBoundingBox(event) {
     g_lastBoundingBoxStartY = -1;
 
     // Re-enable pan/zoom and remove canvas actions for bounding box
-    enablePanAndZoom();
+    deactivateAnnotationMode();
+}
+
+function addBoundingBoxHandlers() {
+    viewer.addHandler('canvas-press', onPressBoundingBox);
+    viewer.addHandler('canvas-drag', onDragBoundingBox);
+    viewer.addHandler('canvas-release', onReleaseBoundingBox);
+}
+
+function removeBoundingBoxHandlers() {
     viewer.removeHandler('canvas-press', onPressBoundingBox);
     viewer.removeHandler('canvas-drag', onDragBoundingBox);
     viewer.removeHandler('canvas-release', onReleaseBoundingBox);
@@ -240,4 +270,16 @@ function enablePanAndZoom() {
     viewer.panVertical = true;
     viewer.zooming = true;
     console.log('Enabled pan and zoom');
+}
+
+function deactivateAnnotationMode() {
+    // Deactivate (remove highlighting) of annotation type selector buttons
+    $('#pointer-annotation-btn').removeClass('active');
+    $('#box-annotation-btn').removeClass('active');
+
+    // Remove annotation handlers from canvas
+    removePointerHandlers();
+    removeBoundingBoxHandlers();
+
+    enablePanAndZoom();
 }

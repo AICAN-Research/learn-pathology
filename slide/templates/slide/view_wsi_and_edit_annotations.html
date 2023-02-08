@@ -18,14 +18,12 @@
             <div class="card-body" style="padding: 0;">
             <div class="radio-toolbar">
                 <!-- Pointer annotation -->
-                <input type="radio" name="annotation-type" id="annotation-type-btn" value="Pointer">
-                <label for="annotation-type-btn" class="{% if selected_type == 'Pointer' %}active{% endif %}"
-                        onclick="activatePointerAnnotation();" style="padding: 6px 10px 6px 10px; margin: 0;">
+                <label class="LPButton" id="pointer-annotation-btn"
+                       onclick="activatePointerAnnotation();" style="padding: 6px 10px 6px 10px; margin: 0;">
                     Pointer
                 </label>
                 <!-- Bounding box annotation -->
-                <input type="radio" name="annotation-type" id="annotation-type-btn" value="Box">
-                <label for="annotation-type-btn" class="{% if selected_type == 'BoundingBox' %}active{% endif %}"
+                <label class="LPButton" id="box-annotation-btn"
                        onclick="activateBoxAnnotation();" style="padding: 6px 10px 6px 10px; margin: 0;">
                     Box
                 </label>
@@ -38,7 +36,7 @@
 </div>
 <div style="margin-top: 5px;">
     <!-- TODO: Annotation-specific instructions? -->
-    <p>Double click where you want to add annotations</p>
+    <div id="annotation-instructions">Annotation instructions will be given here for each annotation type</div>
 </div>
 
 
