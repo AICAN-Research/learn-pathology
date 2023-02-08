@@ -92,25 +92,10 @@ function addBoundingBox(x1, y1, x2, y2, text='') {
     let divElement = document.createElement('div');
     viewer.addOverlay(divElement);
     divElement.id = 'boundingbox-' + counter.toString();
-    //console.log(divElement.id);
     drawBoundingBox(divElement.id, x1, y1, x2, y2, text);
 
     // MouseTracker is required for links to function in overlays
-    let tracker = new OpenSeadragon.MouseTracker({
-        element: divElement.id,
-        clickHandler: function(event) {
-            let target = event.originalEvent.target;
-            if(target.matches('input')) {
-                target.focus();
-            } else if(target.matches('.removeBoundingBox')) {
-                // Event handler for deleting:
-                viewer.removeOverlay(divElement.id);
-            } else if(target.matches('a')) {
-                // Event handler for deleting:
-                viewer.removeOverlay(divElement.id);
-            }
-        }
-    });
+    let tracker = mouseTrackerRemoveBoundingBox(divElement);
 
     counter += 1;
     return divElement.id;
@@ -120,33 +105,18 @@ function newBoundingBox(x1, y1, x2, y2, text='') {
     console.log("In function newBoundingBox()");
 
     let lastBoundingBox = document.getElementById(g_lastElementId);
-    viewer.removeOverlay(lastBoundingBox);
+    //viewer.removeOverlay(lastBoundingBox);
 
     let divElement = document.createElement('div');
     viewer.addOverlay(divElement);
     divElement.id = 'boundingbox-' + counter.toString();
-
     console.log(divElement.id);
+
     // TODO: Must we draw the box again??
     drawBoundingBox(divElement.id, x1, y1, x2, y2, text);
-    //divElement.innerHTML = boundingBoxInnerHTML(x1, y1, x2, y2, text);
 
     // MouseTracker is required for links to function in overlays
-    let tracker = new OpenSeadragon.MouseTracker({
-        element: divElement.id,
-        clickHandler: function(event) {
-            let target = event.originalEvent.target;
-            if(target.matches('input')) {
-                target.focus();
-            } else if(target.matches('.removeBoundingBox')) {
-                // Event handler for deleting:
-                viewer.removeOverlay(divElement.id);
-            } else if(target.matches('a')) {
-                // Event handler for deleting:
-                viewer.removeOverlay(divElement.id);
-            }
-        }
-    });
+    let tracker = mouseTrackerRemoveBoundingBox(divElement);
 
     counter += 1;
     return divElement.id;
@@ -163,7 +133,6 @@ function drawBoundingBox(elementId, x1, y1, x2, y2, text='') {
     let height = Math.abs(y1-y2);
 
     tempElement.className = 'overlay card LPBoundingBox';
-    //tempElement.style = "border-width: 3px; border-color: " + "#edc131" + ";";
 
     viewer.removeOverlay(tempElement);
     viewer.addOverlay({     //box, startPoint, OpenSeadragon.Placement.BOTTOM_RIGHT);
@@ -173,7 +142,6 @@ function drawBoundingBox(elementId, x1, y1, x2, y2, text='') {
     tempElement.innerHTML = boundingBoxInnerHTML(x1, y1, x2, y2, text);
 
     console.log('Drew bounding box nr ' + counter);
-
     return tempElement;
 }
 
@@ -198,6 +166,24 @@ function boundingBoxInnerHTML(x1, y1, x2, y2, text='') {
         '<input type="hidden" name="boundingbox-' + counter + '-height" value="' + height.toString() + '">'
 }
 
+function mouseTrackerRemoveBoundingBox(divElement) {
+    return new OpenSeadragon.MouseTracker({
+        element: divElement.id,
+        clickHandler: function (event) {
+            let target = event.originalEvent.target;
+            if (target.matches('input')) {
+                target.focus();
+            } else if (target.matches('.removeBoundingBox')) {
+                // Event handler for deleting:
+                viewer.removeOverlay(divElement.id);
+            } else if (target.matches('a')) {
+                // Event handler for deleting:
+                viewer.removeOverlay(divElement.id);
+            }
+        }
+    });
+}
+
 /*
     BOUNDING BOX EVENT HANDLERS
  */
@@ -215,13 +201,22 @@ function onDragBoundingBox(event) {
     let viewportPoint = viewer.viewport.pointFromPixel(webPoint);
 
     // Create bounding box start point
-    // TODO: When drawing bounding box do not yet have a valid elementID for the object
     drawBoundingBox(
         g_lastElementId,
         g_lastBoundingBoxStartX, g_lastBoundingBoxStartY,
         viewportPoint.x, viewportPoint.y,
         'bounding box'
     );
+    // TODO: Fix Uncaught TypeError: Cannot set properties of null --> some MouseTracker error
+    /*let ms_tracker = new OpenSeadragon.MouseTracker({
+        element: document.getElementById(g_lastElementId),
+        dragHandler: drawBoundingBox(
+            g_lastElementId,
+            g_lastBoundingBoxStartX, g_lastBoundingBoxStartY,
+            viewportPoint.x, viewportPoint.y,
+            'bounding box'
+        )
+    });*/
 }
 
 function onReleaseBoundingBox(event) {
