@@ -16,11 +16,26 @@ from task.models import Task
 from multiple_choice.forms import TaskForm, MultipleChoiceForm, ChoiceForm
 
 
-def do(request, task_id):
+def do(request, task_id, course_id = None):
     """
     Student form for answering/viewing a multiple choice task
     """
     task = MultipleChoice.objects.get(task=task_id)
+
+    #get id of next task
+    if course_id:
+        course = Course.objects.get(id=course_id)
+        all_tasks = list(Task.objects.filter(course=course).values_list('id', flat=True))
+
+    else:
+        all_tasks = list(MultipleChoice.objects.values_list('id', flat=True))
+        course_id = 0
+
+    current_index = all_tasks.index(task_id)
+    try:
+        next_id = all_tasks[current_index+1]
+    except IndexError:
+        next_id = all_tasks[0]
 
     answered = 'no'
     choice_text = None
@@ -43,6 +58,8 @@ def do(request, task_id):
         'task': task,
         'answered': answered,
         'choice_text': choice_text,
+        'next_id': next_id,
+        'course_id': course_id
     })
 
 
