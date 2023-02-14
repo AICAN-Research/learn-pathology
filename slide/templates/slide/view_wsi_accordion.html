@@ -162,7 +162,7 @@
 
                                     {% for box in boxes %}
                                         <tr colspan="2" style="text-align: center">
-                                            <a id="boundingbox-listitem-{{ box.id }}" onclick="activateAnnotation
+                                            <a id="boundingbox-listitem-{{ box.id }}" onclick="highlightAnnotation
                                                     ('boundingbox-listitem-{{ box.id }}')">
                                                 {{ box.text }} <br>
                                             </a>
@@ -170,8 +170,8 @@
                                     {% endfor %}
                                     {% for pointer in pointers %}
                                         <tr colspan="2" style="text-align: center">
-                                            <a id="boundingbox-listitem-{{ pointer.id }}" onclick="activateAnnotation
-                                                    ('boundingbox-listitem-{{ pointer.id }}')">
+                                            <a id="arrow-listitem-{{ pointer.id }}" onclick="highlightAnnotation
+                                                    ('arrow-listitem-{{ pointer.id }}')">
                                                 {{ pointer.text }} <br>
                                             </a>
                                         </tr>
@@ -296,14 +296,45 @@
             }*/
         }
 
-        function activateAnnotation(annotationId) {
-            // TODO: Name function appropriately
-            console.log("In function activateAnnotation()");
+        function highlightAnnotation(annotationId) {
+            console.log("In function highlightAnnotation()");
 
             // Get corresponding annotation
             // TODO: Must handle for all annotation types, or for each type separately
-            var boundingBoxId = 'boundingbox-' + annotationId.split('-').at(-1);
-            console.log('Bounding box id', boundingBoxId);
+            var list_item = document.getElementById(annotationId);
+            var list_id = annotationId.split('-').at(-1);
+
+            console.log('List ID', list_id);
+
+            if (list_item.id.includes('boundingbox')) {
+                console.log('Box item')
+                var box = document.getElementById('boundingbox-' + list_id);
+                box.style.borderColor = "red";
+
+                timer = setTimeout(function () {
+                    box.style.borderColor = "";
+                }, 1000);
+
+
+                console.log(box);
+
+            }
+            if (list_item.id.includes('arrow')) {
+
+                console.log('Arrow item')
+                var arrow = document.getElementById('arrow-text-overlay-' + list_id);
+                arrow.style.background = "black";
+                arrow.style.color = "white";
+
+                 timer = setTimeout(function () {
+                    arrow.style.backgroundColor = "";
+                    arrow.style.color = "";
+                }, 1000);
+
+                console.log(arrow);
+
+            }
+
 
             /* TODO: Do something with the annotation or the text
                 Highlight it? Display description somewhere outside canvas?
@@ -383,8 +414,8 @@
 
                     if ($('#toggle-annotation').is(':checked')) {
 
-                    }else {
-                         $('#toggle-annotation').bootstrapToggle('on');
+                    } else {
+                        $('#toggle-annotation').bootstrapToggle('on');
                     }
 
 
