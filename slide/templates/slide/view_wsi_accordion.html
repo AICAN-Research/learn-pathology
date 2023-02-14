@@ -310,9 +310,11 @@
                 console.log('Box item')
                 var box = document.getElementById('boundingbox-' + list_id);
                 box.style.borderColor = "red";
+                box.style.borderWidth = "5px"
 
                 timer = setTimeout(function () {
                     box.style.borderColor = "";
+                    box.style.borderWidth = ""
                 }, 1000);
 
 
@@ -322,13 +324,15 @@
             if (list_item.id.includes('arrow')) {
 
                 console.log('Arrow item')
-                var arrow = document.getElementById('arrow-text-overlay-' + list_id);
-                arrow.style.background = "black";
-                arrow.style.color = "white";
+                var arrow = document.getElementById('right-arrow-overlay-' + list_id);
+
+                arrow.style.color = "red";
+                arrow.style.fontWeight = "bold";
 
                  timer = setTimeout(function () {
-                    arrow.style.backgroundColor = "";
+
                     arrow.style.color = "";
+                    arrow.style.fontWeight = "";
                 }, 1000);
 
                 console.log(arrow);

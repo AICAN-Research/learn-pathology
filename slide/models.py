@@ -237,9 +237,7 @@ class Pointer(models.Model):
         html = ''
         # Add pointer container
         html += f'<div id="right-arrow-overlay-{self.id}" class="overlay transparentBackground border-0">' \
-                f'<img id="right-arrow-overlay" ' \
-                f'src="http://upload.wikimedia.org/wikipedia/commons/7/7a/Red_Arrow_Right.svg" ' \
-                f'alt="Right arrow" width="20">' \
+                f'&#x2192; ' \
                 f'</div>'
         html += f'<div id="arrow-text-overlay-{self.id}" class=" textOverlay border-primary"> ' \
                 f'{self.text}</div>'
