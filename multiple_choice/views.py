@@ -151,7 +151,7 @@ def new(request, slide_id, course_id=None):
                 # Store annotations (pointers)
                 for key in request.POST:
                     print(key, request.POST[key])
-                    if key.startswith('pointer-') and key.endswith('-text'):
+                    if key.startswith('right-arrow-overlay-') and key.endswith('-text'):
                         prefix = key[:-len('text')]
                         pointer = Pointer()
                         pointer.text = request.POST[key]
@@ -277,7 +277,7 @@ def edit(request, task_id):
                 # Add all current pointers
                 for key in request.POST:
                     print(key, request.POST[key])
-                    if key.startswith('pointer-') and key.endswith('-text'):
+                    if key.startswith('right-arrow-overlay-') and key.endswith('-text'):
                         prefix = key[:-len('text')]
                         pointer = Pointer()
                         pointer.text = request.POST[key]

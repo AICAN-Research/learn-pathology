@@ -233,17 +233,36 @@ class Pointer(models.Model):
         ]
 
     def get_html(self):
-        html = f'<div id="pointer-{self.id}" class="overlay"> {self.text} &#8594; </div>'
+        #TODO: change arrow image
+        html = ''
+        # Add pointer container
+        html += f'<div id="right-arrow-overlay-{self.id}" class="overlay transparentBackground border-0">' \
+                f'<img id="right-arrow-overlay" ' \
+                f'src="http://upload.wikimedia.org/wikipedia/commons/7/7a/Red_Arrow_Right.svg" ' \
+                f'alt="Right arrow" width="20">' \
+                f'</div>'
+        html += f'<div id="arrow-text-overlay-{self.id}" class="overlay textOverlay border-primary ' \
+                f'transparentBackground">{self.text}</div>'
         return html
 
     def get_js(self):
-        js = f"{{" \
-             f"id: 'pointer-{self.id}'," \
+        js = ''
+        # Add arrow
+        js += f"{{" \
+             f"id: 'right-arrow-overlay-{self.id}'," \
              f"x: {self.position_x}," \
              f"y: {self.position_y}," \
              f"placement: 'RIGHT'," \
              f"checkResize: false" \
              f"}},"
+        # Add text
+        js += f"{{" \
+             f"id: 'arrow-text-overlay-{self.id}'," \
+             f"x: {self.position_x}," \
+             f"y: {self.position_y}," \
+             f"placement: 'RIGHT'," \
+             f"checkResize: false," \
+              f"}},"
         return js
 
 
@@ -252,6 +271,8 @@ class BoundingBox(models.Model):
     A bounding box annotation on a slide consisting of a top/bottom left
     position (x,y), width and height, and a text.
     """
+
+
     annotated_slide = models.ForeignKey(AnnotatedSlide, on_delete=models.CASCADE)
     position_x = models.FloatField()
     position_y = models.FloatField()
@@ -265,8 +286,7 @@ class BoundingBox(models.Model):
         ]
 
     def get_html(self):
-        # TODO: How do we separate the annotation and the text?
-        html = f'<div id="boundingbox-{self.id}" class="overlay"> {self.text} </div>'
+        html = f'<div id="boundingbox-{self.id}" class="overlay"><div class="textOverlay">{self.text}</div></div>'
         print('Got BoundingBox html')
         return html
 

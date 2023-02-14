@@ -27,11 +27,11 @@ function addPointer(viewportPoint, text) {
    let textDiv = document.createElement("div");
    textDiv.className = "overlay";
    let strCounter = counter.toString();
-   textDiv.id = "pointer-" + strCounter;
+   textDiv.id = "right-arrow-overlay-" + strCounter;
    textDiv.innerHTML = '<a>X</a> ' +
-       '<input type="hidden" name="pointer-' + strCounter + '-x" value="' + viewportPoint.x.toString() + '"> ' +
-       '<input type="hidden" name="pointer-' + strCounter + '-y" value="' + viewportPoint.y.toString() + '"> ' +
-       '<input type="text" name="pointer-' + strCounter + '-text" value="' + text + '"> &#8594;';
+       '<input type="hidden" name="right-arrow-overlay-' + strCounter + '-x" value="' + viewportPoint.x.toString() + '"> ' +
+       '<input type="hidden" name="right-arrow-overlay-' + strCounter + '-y" value="' + viewportPoint.y.toString() + '"> ' +
+       '<input type="text" name="right-arrow-overlay-' + strCounter + '-text" value="' + text + '">';
    counter += 1;
 
    viewer.addOverlay(textDiv, viewportPoint, OpenSeadragon.Placement.RIGHT);

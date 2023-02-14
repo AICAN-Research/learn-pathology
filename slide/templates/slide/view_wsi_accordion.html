@@ -154,7 +154,32 @@
                             <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour"
                                  data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
-                                    Show here available annotations
+
+
+                                    <input type="checkbox" id="toggle-annotation"
+                                           data-width="150">   <input type="checkbox" id="toggle-text" data-width="100">
+                                    <br>
+
+                                    {% for box in boxes %}
+                                        <tr colspan="2" style="text-align: center">
+                                            <a id="boundingbox-listitem-{{ box.id }}" onclick="activateAnnotation
+                                                    ('boundingbox-listitem-{{ box.id }}')">
+                                                {{ box.text }} <br>
+                                            </a>
+                                        </tr>
+                                    {% endfor %}
+                                    {% for pointer in pointers %}
+                                        <tr colspan="2" style="text-align: center">
+                                            <a id="boundingbox-listitem-{{ pointer.id }}" onclick="activateAnnotation
+                                                    ('boundingbox-listitem-{{ pointer.id }}')">
+                                                {{ pointer.text }} <br>
+                                            </a>
+                                        </tr>
+                                    {% endfor %}
+                                    <div class="LPButton"><a
+                                            href="{% url 'slide:base_annotations' slide_id=slide.id %}">
+                                        Add descriptive annotations
+                                    </a></div>
                                 </div>
                             </div>
                         </div>
@@ -170,6 +195,10 @@
             <div class="col col-12 col-lg-9 slideViewerCol">
                 <div class="card slideViewerCard transparentBackground">
                     <div id="wsi-canvas" class="wsi_canvas" style="height: 100%;"></div>
+                    {% if annotated_slide %}
+
+                        {{ annotated_slide.get_html | safe }}
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -179,6 +208,52 @@
 
     <script src="{% static 'slide/openseadragon.min.js' %}"></script>
     <script type="text/javascript">
+        let buttonElement = document.createElement("button");
+        buttonElement.innerText = "Screenshot";
+        let screenshotButton = new OpenSeadragon.Button({
+            tooltip: 'Screenshot',
+            element: buttonElement,
+            //srcRest: `/images/Browser_Chrome.png`,
+            //srcGroup: `/images/Browser_Chrome.png`,
+            //srcHover: `/images/Browser_Chrome.png`,
+            //srcDown: `/images/Browser_Chrome.png`,
+            onClick: function () {
+                console.log('Click!');
+                // Hide toolbar:
+                let toolbar = document.getElementsByClassName("openseadragon-container")[0].childNodes[1];
+                toolbar.style.display = "none";
+                html2canvas($("#wsi-canvas")[0]).then(canvas => {
+                    var now = new Date();
+                    var formattedDate = now.format("yyyy-MM-dd hh-mm-ss");
+                    console.log(now);
+                    // Trigger download
+                    var link = document.createElement('a');
+                    link.href = canvas.toDataURL("image/jpeg");
+                    link.download = 'LearnPathology Screenshot ' + formattedDate + '.jpg';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }).then(x => {
+                    // Display toolbar again
+                    let toolbar = document.getElementsByClassName("openseadragon-container")[0].childNodes[1];
+                    toolbar.style.display = "block";
+                })
+            }
+        });
+        let overlayElement = document.createElement("button");
+        overlayElement.innerText = "Toggle Annotations";
+        let overlayButton = new OpenSeadragon.Button({
+            tooltip: 'Toggle Annotations',
+            element: overlayElement,
+            //srcRest: `/images/Browser_Chrome.png`,
+            //srcGroup: `/images/Browser_Chrome.png`,
+            //srcHover: `/images/Browser_Chrome.png`,
+            //srcDown: `/images/Browser_Chrome.png`,
+            onClick: function () {
+                console.log('Click!');
+                $(".overlay").toggle();
+            }
+        });
         var viewer = OpenSeadragon({
             id: "wsi-canvas",
             zoomPerScroll: 2, // Scroll speed
@@ -194,8 +269,14 @@
                 getTileUrl: function (level, x, y) {
                     return "/viewer/tile/{{ slide.id }}/" + ({{ slide.osd_levels }} -1 - level) + "/" + x + "/" + y + "/";
                 },
+                overlays: [
+                    {{ annotated_slide.get_js | safe }}
+                ],
             }
         });
+
+        viewer.addControl(screenshotButton.element, {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
+
     </script>
     <script>
         function toggleInfoCardVisibility() {
@@ -207,6 +288,101 @@
             } else {
                 x.style.display = "none";
             }
+
+            /*if (x.style.height !== "100%") {
+                x.style.height = "100%";
+            } else {
+                x.style.height = "0%";
+            }*/
         }
+
+        function activateAnnotation(annotationId) {
+            // TODO: Name function appropriately
+            console.log("In function activateAnnotation()");
+
+            // Get corresponding annotation
+            // TODO: Must handle for all annotation types, or for each type separately
+            var boundingBoxId = 'boundingbox-' + annotationId.split('-').at(-1);
+            console.log('Bounding box id', boundingBoxId);
+
+            /* TODO: Do something with the annotation or the text
+                Highlight it? Display description somewhere outside canvas?
+            */
+
+        }
+        viewer.addHandler('viewport-change', updateTextLocation);
+
+        // to get initial text position right
+        viewer.addHandler('tile-drawing', updateTextLocation);// TODO: Fix! Slide not showing
+
+        function updateTextLocation(event) {
+
+            let slide_overlays = viewer.currentOverlays;
+
+            console.log(slide_overlays);
+
+            let arrow_overlays =   $("[id^=right-arrow-overlay-]")
+            let text_overlays =   $("[id^=arrow-text-overlay-]")
+
+            console.log(arrow_overlays)
+            for (let i=0; i<arrow_overlays.length; i++){
+                console.log(arrow_overlays[i]);
+                 let arrowElement =arrow_overlays[i];
+                let textElement = text_overlays[i];
+
+
+
+                let arrowX = parseFloat(arrowElement.style.left);
+                let arrowY = parseFloat(arrowElement.style.top);
+
+
+                let viewportPoint = viewer.viewport.pointFromPixel(new OpenSeadragon.Point(arrowX-10, arrowY+10));
+                viewer.updateOverlay(textElement, viewportPoint);
+            }
+
+
+        }
+
+
+
+        $(function () {
+            $('#toggle-annotation').bootstrapToggle({
+                on: ' Annotation',
+                off: ' Annotation'
+            })
+            $('#toggle-annotation').bootstrapToggle('on');
+        })
+        $(function () {
+            $('#toggle-text').bootstrapToggle({
+                on: ' Text',
+                off: ' Text'
+            })
+            $('#toggle-text').bootstrapToggle('on');
+        })
+
+        $(function () {
+            $('#toggle-annotation').change(function () {
+                $(".overlay").toggle();
+
+
+            })
+        })
+
+        $(function () {
+            $('#toggle-text').on('change', function () {
+                $(".textOverlay").toggle();
+
+
+                if ($(this).is(':checked')) {
+
+
+                }
+
+            })
+        })
+
+
+
+
     </script>
 {% endblock %}

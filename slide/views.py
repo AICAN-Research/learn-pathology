@@ -224,7 +224,7 @@ def whole_slide_view_full(request, slide_id):
     context['pointers'] = Pointer.objects.filter(annotated_slide=annotated_slide)
     context['boxes'] = BoundingBox.objects.filter(annotated_slide=annotated_slide)
 
-    return render(request, 'slide/view_wsi_full.html', context)
+    return render(request, 'slide/view_wsi_accordion.html', context)
 
 
 def whole_slide_viewer(request, slide_id):

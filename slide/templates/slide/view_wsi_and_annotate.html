@@ -29,6 +29,13 @@
                return "/viewer/tile/{{ slide.id }}/" + ({{ slide.osd_levels }} - 1 - level) + "/" + x + "/" + y + "/";
                },
            overlays: [
+                   {
+                    id: 'right-arrow-overlay-no-rotate', // Arrow pointing to the tip of the hair
+                    x: 0.492,
+                    y: 0.496,
+                    placement: OpenSeadragon.Placement.RIGHT,
+                    rotationMode: OpenSeadragon.OverlayRotationMode.NO_ROTATION
+                },
                {{ annotated_slide.get_js | safe }}
            ],
         }
@@ -47,11 +54,11 @@
         let textDiv = document.createElement("div");
         textDiv.className = "overlay";
         let strCounter = counter.toString();
-        textDiv.id = "pointer-" + strCounter;
+        textDiv.id = "right-arrow-overlay-" + strCounter;
         textDiv.innerHTML = '<a>X</a> ' +
-            '<input type="hidden" name="pointer-' + strCounter + '-x" value="' + viewportPoint.x.toString() + '"> ' +
-            '<input type="hidden" name="pointer-' + strCounter + '-y" value="' + viewportPoint.y.toString() + '"> ' +
-            '<input type="text" name="pointer-' + strCounter + '-text"> &#8594;';
+            '<input type="hidden" name="right-arrow-overlay-' + strCounter + '-x" value="' + viewportPoint.x.toString() + '"> ' +
+            '<input type="hidden" name="right-arrow-overlay-' + strCounter + '-y" value="' + viewportPoint.y.toString() + '"> ' +
+            '<input type="text" name="right-arrow-overlay-' + strCounter + '-text"> ';
         counter += 1;
 
         viewer.addOverlay(textDiv, viewportPoint, OpenSeadragon.Placement.RIGHT);
