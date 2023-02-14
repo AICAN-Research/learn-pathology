@@ -241,8 +241,8 @@ class Pointer(models.Model):
                 f'src="http://upload.wikimedia.org/wikipedia/commons/7/7a/Red_Arrow_Right.svg" ' \
                 f'alt="Right arrow" width="20">' \
                 f'</div>'
-        html += f'<div id="arrow-text-overlay-{self.id}" class="overlay textOverlay border-primary ' \
-                f'transparentBackground">{self.text}</div>'
+        html += f'<div id="arrow-text-overlay-{self.id}" class=" textOverlay border-primary"> ' \
+                f'{self.text}</div>'
         return html
 
     def get_js(self):
