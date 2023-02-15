@@ -233,7 +233,6 @@ class Pointer(models.Model):
         ]
 
     def get_html(self):
-        #TODO: change arrow image
         html = ''
         # Add pointer container
         html += f'<div id="right-arrow-overlay-{self.id}" class="overlay transparentBackground border-0">' \

@@ -275,10 +275,66 @@
             }
         });
 
+
         viewer.addControl(screenshotButton.element, {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
 
     </script>
     <script>
+
+        function createClickReaction() {
+            let current_overlays = viewer.currentOverlays
+
+            for (let i = 0; i < current_overlays.length; i++) {
+
+                new OpenSeadragon.MouseTracker({
+                    element: current_overlays[i].element,
+                    clickHandler: function (event) {
+                        console.log('Ein Klick auf ' + current_overlays[i].element.id)
+
+
+
+                            var list_id = current_overlays[i].element.id.split('-').at(-1);
+
+                            if (current_overlays[i].element.id.includes('boundingbox')) {
+
+                                var list_box = document.getElementById('boundingbox-listitem-' + list_id);
+                                console.log(list_box)
+                                list_box.style.color = "red";
+                                list_box.style.fontWeight = "900"
+
+                                timer = setTimeout(function () {
+                                       list_box.style.color = "";
+                                list_box.style.fontWeight = ""
+                                }, 1000);
+                            }
+                            if (current_overlays[i].element.id.includes('arrow')) {
+
+                                var list_arrow = document.getElementById('arrow-listitem-' + list_id);
+                                console.log(list_arrow)
+
+
+                                list_arrow.style.color = "red";
+                                list_arrow.style.fontWeight = "900";
+
+                                timer = setTimeout(function () {
+
+                                    list_arrow.style.color = "";
+                                    list_arrow.style.fontWeight = "";
+
+                                }, 1000);
+
+                        }
+                    }
+                });
+
+
+            }
+        }
+
+
+        window.onLoad = createClickReaction()
+
+
         function toggleInfoCardVisibility() {
             var x = document.getElementById("slideInfoCardContent");
             console.log("clicked button to toggle card visibility");
@@ -297,17 +353,12 @@
         }
 
         function highlightAnnotation(annotationId) {
-            console.log("In function highlightAnnotation()");
 
-            // Get corresponding annotation
-            // TODO: Must handle for all annotation types, or for each type separately
             var list_item = document.getElementById(annotationId);
             var list_id = annotationId.split('-').at(-1);
 
-            console.log('List ID', list_id);
-
             if (list_item.id.includes('boundingbox')) {
-                console.log('Box item')
+
                 var box = document.getElementById('boundingbox-' + list_id);
                 box.style.borderColor = "red";
                 box.style.borderWidth = "5px"
@@ -316,40 +367,31 @@
                     box.style.borderColor = "";
                     box.style.borderWidth = ""
                 }, 1000);
-
-
-                console.log(box);
-
             }
             if (list_item.id.includes('arrow')) {
 
-                console.log('Arrow item')
                 var arrow = document.getElementById('right-arrow-overlay-' + list_id);
-
+                var arrow_text = document.getElementById('arrow-text-overlay-' + list_id);
                 arrow.style.color = "red";
-                arrow.style.fontWeight = "bold";
+                arrow.style.fontWeight = "900";
 
-                 timer = setTimeout(function () {
+                arrow_text.style.color = "red";
+                arrow_text.style.fontWeight = "900";
+
+                timer = setTimeout(function () {
 
                     arrow.style.color = "";
                     arrow.style.fontWeight = "";
+                    arrow_text.style.color = "";
+                    arrow_text.style.fontWeight = "";
+
                 }, 1000);
-
-                console.log(arrow);
-
             }
-
-
-            /* TODO: Do something with the annotation or the text
-                Highlight it? Display description somewhere outside canvas?
-            */
-
         }
 
         viewer.addHandler('viewport-change', updateTextLocation);
-
-        // to get initial text position right
-        viewer.addHandler('tile-drawing', updateTextLocation);// TODO: Fix! Slide not showing
+        //TODO  handler for 'maximize window size' button
+        viewer.addHandler('tile-drawing', updateTextLocation);
 
         function updateTextLocation(event) {
 
