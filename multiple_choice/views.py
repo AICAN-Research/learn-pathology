@@ -161,6 +161,9 @@ def new(request, slide_id, course_id=None):
                         pointer.annotated_slide = annotated_slide
                         pointer.save()
 
+                    if key.startswith('boundingbox-') and key.endswith('-text'):
+                        save_boundingbox_annotation(request, key, annotated_slide)
+
                 # Give a message back to the user
                 messages.add_message(request, messages.SUCCESS, 'Task added successfully!')
                 if course_id is not None and course_id in Course.objects.values_list('id', flat=True):

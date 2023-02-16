@@ -47,8 +47,8 @@
 
 <nav class="navbar navbar-expand-lg  container-flex" style="background-color: var(--background-header);height: var(--header-height);
  padding: 0rem 1rem;">
-    <div class="container-fluid" style="">
-        <a class="navbar-brand" style="" href="{% url 'frontpage' %}">
+    <div class="container-fluid" >
+        <a class="navbar-brand"  href="{% url 'frontpage' %}">
             <img class="logoSmallImage" src="{% static 'learnpathology/images/logo_small.png' %}" alt="LearnPathology
            logo small">    Menu</a>
 
@@ -101,15 +101,15 @@
                     <li class="nav-item"><a class="nav-link active" href="{% url 'logout' %}">Logout</a></li>
 
                     {% if request.user.is_teacher %}
-                        <script>setTheme('theme_teacher')</script>
+{#                        <script>setTheme('theme_teacher')</script>#}
                         <li class="nav-item"><span
                                 class="navbar-text">Logged in as teacher {{ request.user.username }}</span></li>
                     {% elif request.user.is_superuser %}
-                        <script>setTheme('theme_default')</script>
+{#                        <script>setTheme('theme_default')</script>#}
                         <li class="nav-item"><span
                                 class="navbar-text">Logged in as admin {{ request.user.username }}</span></li>
                     {% elif request.user.is_student %}
-                        <script>setTheme('theme_student')</script>
+{#                        <script>setTheme('theme_student')</script>#}
                         <li class="nav-item"><span
                                 class="navbar-text">Logged in as student {{ request.user.username }}</span></li>
                     {% endif %}
