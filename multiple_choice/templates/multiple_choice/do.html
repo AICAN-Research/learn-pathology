@@ -22,7 +22,49 @@
     <div class="card mx-auto text-center" style="width: 90%; height: 100%">
         <div class="card-body" style="height: 100%">
             <div class="row">
-                <div class="col"></div>
+                <div class="col">
+
+{#                    <div class="card slideInfoCard border-0">#}
+{##}
+{##}
+{#                        <div class="card slideInfoCard border-5">#}
+{#                            <div class="row align-items-center" style="padding-top: 3%; padding-bottom: 3%;">#}
+{##}
+{##}
+{#                                <div class="col" style="margin-left: auto;">#}
+{##}
+{#                                    <div class="card-title" style="padding-left: 10%;">#}
+{#                                        <h4>Annotations</h4>#}
+{##}
+{#                                        {% for box in boxes %}#}
+{#                                            <tr colspan="2" style="text-align: center">#}
+{#                                                <a id="boundingbox-listitem-{{ box.id }}" onclick="highlightAnnotation#}
+{#                                                        ('boundingbox-listitem-{{ box.id }}')">#}
+{#                                                    {{ box.text }} <br>#}
+{#                                                </a>#}
+{#                                            </tr>#}
+{#                                        {% endfor %}#}
+{#                                        {% for pointer in pointers %}#}
+{#                                            <tr colspan="2" style="text-align: center">#}
+{#                                                <a id="arrow-listitem-{{ pointer.id }}" onclick="highlightAnnotation#}
+{#                                                        ('arrow-listitem-{{ pointer.id }}')">#}
+{#                                                    {{ pointer.text }} <br>#}
+{#                                                </a>#}
+{#                                            </tr>#}
+{#                                        {% endfor %}#}
+{##}
+{##}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            </div>#}
+{##}
+{#                        </div>#}
+{##}
+{##}
+{#                    </div>#}
+
+
+                </div>
                 <div class="col">
                     <form class="form-check text-left"
                           action="{% url 'multiple_choice:do' task_id=task.id course_id=course_id %}" method="post">
@@ -72,4 +114,39 @@
 
         </div>
     </div>
+
+
+
+    <script>
+     viewer.addHandler('viewport-change', updateTextLocation);
+        //TODO  handler for 'maximize window size' button
+        viewer.addHandler('tile-drawing', updateTextLocation);
+
+        function updateTextLocation(event) {
+
+            let slide_overlays = viewer.currentOverlays;
+
+
+            let arrow_overlays = $("[id^=right-arrow-overlay-]")
+            let text_overlays = $("[id^=arrow-text-overlay-]")
+
+
+            for (let i = 0; i < arrow_overlays.length; i++) {
+
+                let arrowElement = arrow_overlays[i];
+                let textElement = text_overlays[i];
+
+
+                let arrowX = parseFloat(arrowElement.style.left);
+                let arrowY = parseFloat(arrowElement.style.top);
+
+
+                let viewportPoint = viewer.viewport.pointFromPixel(new OpenSeadragon.Point(arrowX - 5, arrowY + 15));
+                viewer.updateOverlay(textElement, viewportPoint);
+            }
+
+
+        }
+
+    </script>
 {% endblock content %}
