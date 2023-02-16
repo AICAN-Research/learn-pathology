@@ -1,5 +1,7 @@
 {% extends 'slide/grid_cards/card_base.html' %}
 
+{% load to_class_name %}
+
 {% block gridCardQuestions %}
 
     {% if request.user.is_teacher or request.user.is_superuser %}
@@ -7,6 +9,12 @@
         <div class="card-content" style="padding-top: 5px">
             <a class="LPButton btn" href="{% url 'course:new_task_and_add' course_id=course.id slide_id=slide.id %}" style="margin: 0;">
                 Create new task
+            </a>
+        </div>
+             <div class="card-content" style="padding-top: 5px">
+            <a class="LPButton btn remove_button" style="margin: 0;"
+               data-course_id={{ course.id }} data-model_name={{ slide | to_class_name }} data-instance_id={{ slide.id }}>
+                Remove slide
             </a>
         </div>
     {% endif %}

@@ -56,19 +56,27 @@ $(document).ready(function(){
             {# Place nav-tabs on top #}
             <ul class="nav nav-tabs courseNavTabs">
                 <li class="nav-item">
-                    <a href="#course-description" class="nav-link active" data-toggle="tab">{% bs_icon 'body-text' %}Course description</a>
+                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#course-description"
+                            type="button" role="tab" aria-controls="course-description" aria-controls="course-description" aria-selected="true"
+                    >{% bs_icon 'body-text' %} Course description</button>
                 </li>
                 <li class="nav-item">
-                    <a href="#learning-outcomes" class="nav-link" data-toggle="tab">{% bs_icon 'flag' %}Learning outcomes</a>
+                     <button class="nav-link " data-bs-toggle="tab" data-bs-target="#learning-outcomes" type="button"
+                             role="tab" aria-controls="learning-outcomes" aria-controls="learning-outcomes" aria-selected="true">{% bs_icon 'flag' %}
+                         Learning outcomes</button>
                 </li>
                 <li class="nav-item">
-                    <a href="#slides" class="nav-link" data-toggle="tab">{% bs_icon 'image' %}Slides</a>
+                    <button class="nav-link " data-bs-toggle="tab" data-bs-target="#slides" type="button"
+                             role="tab" aria-controls="slides" aria-controls="slides" aria-selected="true">{% bs_icon 'image' %}
+                        Slides</button>
                 </li>
                 <li class="nav-item">
-                    <a href="#tasks" class="nav-link" data-toggle="tab">{% bs_icon 'question-square' %}Tasks/quizzes</a>
+                           <button class="nav-link " data-bs-toggle="tab" data-bs-target="#tasks" type="button"
+                             role="tab" aria-controls="tasks" aria-controls="tasks" aria-selected="true">{% bs_icon 'question-square' %} Tasks/quizzes</button>
                 </li>
                 <li class="nav-item">
-                    <a href="#course-material" class="nav-link" data-toggle="tab">{% bs_icon 'stack' %}Learning materials</a>
+                     <button class="nav-link " data-bs-toggle="tab" data-bs-target="#course-material" type="button"
+                             role="tab" aria-controls="course-material" aria-controls="course-material" aria-selected="true">{% bs_icon 'stack' %}Learning materials</button>
                 </li>
             </ul>
 
