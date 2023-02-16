@@ -9,11 +9,12 @@ from django.utils.datastructures import MultiValueDictKeyError
 from course.models import Course
 from multiple_choice.models import MultipleChoice, Choice, RandomMCChoice
 from multiple_choice.forms import MultipleChoiceForm, ChoiceForm, TaskForm
-from slide.models import Slide, Pointer, AnnotatedSlide
+from slide.models import Slide, Pointer, AnnotatedSlide, BoundingBox
 from slide.views import slide_cache
 from user.decorators import teacher_required
 from task.models import Task
 from multiple_choice.forms import TaskForm, MultipleChoiceForm, ChoiceForm
+from slide.views import save_boundingbox_annotation
 
 
 def do(request, task_id, course_id = None):
@@ -274,6 +275,7 @@ def edit(request, task_id):
                 # Store annotations (pointers)
                 # Delete old pointers first
                 Pointer.objects.filter(annotated_slide=annotated_slide).delete()
+                BoundingBox.objects.filter(annotated_slide=annotated_slide).delete()
                 # Add all current pointers
                 for key in request.POST:
                     print(key, request.POST[key])
@@ -285,6 +287,9 @@ def edit(request, task_id):
                         pointer.position_y = float(request.POST[prefix + 'y'])
                         pointer.annotated_slide = annotated_slide
                         pointer.save()
+
+                    if key.startswith('boundingbox-') and key.endswith('-text'):
+                        save_boundingbox_annotation(request, key, annotated_slide)
 
                 messages.add_message(request, messages.SUCCESS,
                      f'The task {task.name} was altered!')
