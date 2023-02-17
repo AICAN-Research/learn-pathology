@@ -380,7 +380,11 @@
         });
 
         onresize = () => {
-            updateTextLocation()
+             timer = setTimeout(function () {
+
+                               updateTextLocation();
+
+                            }, 20);
         };
 
         function updateTextLocation(event) {
