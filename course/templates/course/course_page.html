@@ -124,6 +124,8 @@
     </div>
 
     <script>
+
+
         $('#myTab button').click(function (e) {
             e.preventDefault();
             $(this).tab('show');
@@ -140,7 +142,6 @@
 
         // on load of the page: switch to the currently selected tab
         var hash = window.location.hash;
-        console.log('Hash: ' + hash);
         const triggerTabList = document.querySelectorAll('#myTab button')
         triggerTabList.forEach(triggerEl => {
             const tabTrigger = new bootstrap.Tab(triggerEl)
@@ -152,9 +153,8 @@
         })
 
         const triggerEl = document.querySelector('#myTab button[data-bs-target="' + hash + '"]')
-        console.log('Trigger Element: '+triggerEl)
         var tab = bootstrap.Tab.getInstance(triggerEl)
-        console.log( 'Instance: '+tab)
+
         tab.show()
 
 

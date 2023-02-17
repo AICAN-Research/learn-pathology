@@ -44,7 +44,7 @@
     <div class="container-fluid" >
         <a class="navbar-brand"  href="{% url 'frontpage' %}">
             <img class="logoSmallImage" src="{% static 'learnpathology/images/logo_small.png' %}" alt="LearnPathology
-           logo small">    Menu</a>
+           logo small">    Home</a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu"
                 aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,7 +58,7 @@
 
                 {% if request.user.is_authenticated %}
                     <!-- Options available to any type of user-->
-                    <li class="nav-item"><a class="nav-link active" href="{% url 'frontpage' %}">Home</a></li>
+{#                    <li class="nav-item"><a class="nav-link active" href="{% url 'frontpage' %}">Home</a></li>#}
                     <li class="nav-item"><a class="nav-link active " href="{% url 'slide:browser' %}">Images</a></li>
                     <li class="nav-item"><a class="nav-link active " href="{% url 'course:index' %}">Courses</a></li>
                     <li class="nav-item"><a class="nav-link active " href="{% url 'task_list' %}">Tasks</a></li>
@@ -128,10 +128,10 @@
         {% endblock %}
 
         <!-- background logo watermark -->
-        <div id="logoContainer" class="logoBGContainer">
-            <img class="logoBGImage setLogoTranslucent" src="{% static 'learnpathology/images/logo_gs_dark.png' %}"
-                 alt="LearnPathology logo">
-        </div>
+{#        <div id="logoContainer" class="logoBGContainer">#}
+{#            <img class="logoBGImage setLogoTranslucent" src="{% static 'learnpathology/images/logo_gs_dark.png' %}"#}
+{#                 alt="LearnPathology logo">#}
+{#        </div>#}
 
         <!-- background SINTEF watermark. Uncomment the next three lines to show it  -->
         {#        <div id="sintefWatermark" class="sintefWatermark">#}

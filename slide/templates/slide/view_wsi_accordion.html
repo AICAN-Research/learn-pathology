@@ -197,7 +197,7 @@
             </div>
 
             <!-- WSI VIEWER -->
-            <div class="col col-12 col-lg-9 slideViewerCol" id="imageViewer">
+            <div class="col col-12 col-lg-9 " id="imageViewer" style="height:95%">
                 <div class="card slideViewerCard transparentBackground">
                     <div id="wsi-canvas" class="wsi_canvas" style="height: 100%;"></div>
                     {% if annotated_slide %}
@@ -388,9 +388,6 @@
         };
 
         function updateTextLocation(event) {
-
-            let slide_overlays = viewer.currentOverlays;
-
 
             let arrow_overlays = $("[id^=right-arrow-overlay-]")
             let text_overlays = $("[id^=arrow-text-overlay-]")
