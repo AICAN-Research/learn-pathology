@@ -10,14 +10,19 @@
     <div class="card transparentBackground centerCardHorizontally border-0"
          style="width: 98%; height: 98%;">
         <div class="row no-gutters w-100 h-100">
+            <div class="LPButton btn" style="margin-left: auto;" onclick="toggleInfoCardVisibility()">
+                Show/hide slide information
+            </div>
 
-            <div class="col" style="height: fit-content;">
+            <div class="col" style="height: fit-content;" id="slideColumn">
+
 
                 <!-- INFO CARD -->
-                <div class="card slideInfoCard border-0">
+                <div class="card slideInfoCard border-0" id="slideInfoCardContent">
                     <div class="row align-items-center" style="padding-top: 3%; padding-bottom: 3%;">
                         <div class="col" style="margin-left: auto;">
                             <div class="card-title" style="padding-left: 10%;">
+
                                 <h4>{{ slide.name }}</h4>
                             </div>
                         </div>
@@ -192,7 +197,7 @@
             </div>
 
             <!-- WSI VIEWER -->
-            <div class="col col-12 col-lg-9 slideViewerCol">
+            <div class="col col-12 col-lg-9 slideViewerCol" id="imageViewer">
                 <div class="card slideViewerCard transparentBackground">
                     <div id="wsi-canvas" class="wsi_canvas" style="height: 100%;"></div>
                     {% if annotated_slide %}
@@ -289,39 +294,37 @@
                 new OpenSeadragon.MouseTracker({
                     element: current_overlays[i].element,
                     clickHandler: function (event) {
-                        console.log('Ein Klick auf ' + current_overlays[i].element.id)
 
 
+                        var list_id = current_overlays[i].element.id.split('-').at(-1);
 
-                            var list_id = current_overlays[i].element.id.split('-').at(-1);
+                        if (current_overlays[i].element.id.includes('boundingbox')) {
 
-                            if (current_overlays[i].element.id.includes('boundingbox')) {
+                            var list_box = document.getElementById('boundingbox-listitem-' + list_id);
+                            console.log(list_box)
+                            list_box.style.color = "red";
+                            list_box.style.fontWeight = "900"
 
-                                var list_box = document.getElementById('boundingbox-listitem-' + list_id);
-                                console.log(list_box)
-                                list_box.style.color = "red";
-                                list_box.style.fontWeight = "900"
-
-                                timer = setTimeout(function () {
-                                       list_box.style.color = "";
+                            timer = setTimeout(function () {
+                                list_box.style.color = "";
                                 list_box.style.fontWeight = ""
-                                }, 1000);
-                            }
-                            if (current_overlays[i].element.id.includes('arrow')) {
+                            }, 1000);
+                        }
+                        if (current_overlays[i].element.id.includes('arrow')) {
 
-                                var list_arrow = document.getElementById('arrow-listitem-' + list_id);
-                                console.log(list_arrow)
+                            var list_arrow = document.getElementById('arrow-listitem-' + list_id);
+                            console.log(list_arrow)
 
 
-                                list_arrow.style.color = "red";
-                                list_arrow.style.fontWeight = "900";
+                            list_arrow.style.color = "red";
+                            list_arrow.style.fontWeight = "900";
 
-                                timer = setTimeout(function () {
+                            timer = setTimeout(function () {
 
-                                    list_arrow.style.color = "";
-                                    list_arrow.style.fontWeight = "";
+                                list_arrow.style.color = "";
+                                list_arrow.style.fontWeight = "";
 
-                                }, 1000);
+                            }, 1000);
 
                         }
                     }
@@ -333,24 +336,6 @@
 
 
         window.onLoad = createClickReaction()
-
-
-        function toggleInfoCardVisibility() {
-            var x = document.getElementById("slideInfoCardContent");
-            console.log("clicked button to toggle card visibility");
-            console.log(x);
-            if (x.style.display === "none") {
-                x.style.display = "block";
-            } else {
-                x.style.display = "none";
-            }
-
-            /*if (x.style.height !== "100%") {
-                x.style.height = "100%";
-            } else {
-                x.style.height = "0%";
-            }*/
-        }
 
         function highlightAnnotation(annotationId) {
 
@@ -390,8 +375,13 @@
         }
 
         viewer.addHandler('viewport-change', updateTextLocation);
-        //TODO  handler for 'maximize window size' button
         viewer.addHandler('tile-drawing', updateTextLocation);
+        addEventListener("resize", () => {
+        });
+
+        onresize = () => {
+            updateTextLocation()
+        };
 
         function updateTextLocation(event) {
 
@@ -416,6 +406,25 @@
                 viewer.updateOverlay(textElement, viewportPoint);
             }
 
+        }
+
+        function toggleInfoCardVisibility() {
+            var x = document.getElementById("slideInfoCardContent");
+            var canvas_viewer = document.getElementById('imageViewer')
+            console.log("clicked button to toggle card visibility");
+            console.log(x);
+            if (x.style.display === "none") {
+                x.style.display = "block";
+                canvas_viewer.style.width = '';
+            } else {
+                x.style.display = "none";
+                canvas_viewer.style.width = '100%';
+            }
+            timer = setTimeout(function () {
+
+                updateTextLocation();
+
+            }, 20);
 
         }
 
