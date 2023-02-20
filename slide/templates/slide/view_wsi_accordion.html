@@ -345,12 +345,19 @@
             if (list_item.id.includes('boundingbox')) {
 
                 var box = document.getElementById('boundingbox-' + list_id);
+                var text = document.getElementById('boundingbox-text-overlay-' + list_id);
+                console.log(text)
                 box.style.borderColor = "red";
-                box.style.borderWidth = "5px"
+                box.style.borderWidth = "5px";
+
+                text.style.color = "red" ;
+                text.style.fontWeight = "900";
 
                 timer = setTimeout(function () {
                     box.style.borderColor = "";
                     box.style.borderWidth = ""
+                    text.style.color = "";
+                text.style.fontWeight = "";
                 }, 1000);
             }
             if (list_item.id.includes('arrow')) {

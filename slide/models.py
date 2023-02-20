@@ -283,12 +283,18 @@ class BoundingBox(models.Model):
         ]
 
     def get_html(self):
-        html = f'<div id="boundingbox-{self.id}" class="overlay"><div class="textOverlay">{self.text}</div></div>'
+        html=''
+        html += f'<div id="boundingbox-{self.id}" class="overlay"><div </div>'
         print('Got BoundingBox html')
+
+        html += f'<div id="boundingbox-text-overlay-{self.id}" ><div class="textOverlay"' \
+                f'>{self.text}</div></div>'
+        print('Got BoundingBox Text html')
         return html
 
     def get_js(self):
-        js = f"{{" \
+        js = ''
+        js += f"{{" \
              f"id: 'boundingbox-{self.id}', " \
              f"x: {self.position_x}, " \
              f"y: {self.position_y}, " \
@@ -297,5 +303,13 @@ class BoundingBox(models.Model):
              f"placement: 'TOPLEFT', " \
              f"checkResize: true, " \
              f"className: 'card LPBoundingBox' }},"
+
+        js += f"{{" \
+              f"id: 'boundingbox-text-overlay-{self.id}', " \
+              f"x: {self.position_x}, " \
+              f"y: {self.position_y}, " \
+              f"placement: 'TOPLEFT', " \
+              f"checkResize: true, " \
+              f"}},"
         print('Got BoundingBox js')
         return js
