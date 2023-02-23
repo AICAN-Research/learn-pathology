@@ -24,44 +24,44 @@
             <div class="row">
                 <div class="col">
 
-{#                    <div class="card slideInfoCard border-0">#}
-{##}
-{##}
-{#                        <div class="card slideInfoCard border-5">#}
-{#                            <div class="row align-items-center" style="padding-top: 3%; padding-bottom: 3%;">#}
-{##}
-{##}
-{#                                <div class="col" style="margin-left: auto;">#}
-{##}
-{#                                    <div class="card-title" style="padding-left: 10%;">#}
-{#                                        <h4>Annotations</h4>#}
-{##}
-{#                                        {% for box in boxes %}#}
-{#                                            <tr colspan="2" style="text-align: center">#}
-{#                                                <a id="boundingbox-listitem-{{ box.id }}" onclick="highlightAnnotation#}
-{#                                                        ('boundingbox-listitem-{{ box.id }}')">#}
-{#                                                    {{ box.text }} <br>#}
-{#                                                </a>#}
-{#                                            </tr>#}
-{#                                        {% endfor %}#}
-{#                                        {% for pointer in pointers %}#}
-{#                                            <tr colspan="2" style="text-align: center">#}
-{#                                                <a id="arrow-listitem-{{ pointer.id }}" onclick="highlightAnnotation#}
-{#                                                        ('arrow-listitem-{{ pointer.id }}')">#}
-{#                                                    {{ pointer.text }} <br>#}
-{#                                                </a>#}
-{#                                            </tr>#}
-{#                                        {% endfor %}#}
-{##}
-{##}
-{#                                    </div>#}
-{#                                </div>#}
-{#                            </div>#}
-{##}
-{#                        </div>#}
-{##}
-{##}
-{#                    </div>#}
+                    {#                    <div class="card slideInfoCard border-0">#}
+                    {##}
+                    {##}
+                    {#                        <div class="card slideInfoCard border-5">#}
+                    {#                            <div class="row align-items-center" style="padding-top: 3%; padding-bottom: 3%;">#}
+                    {##}
+                    {##}
+                    {#                                <div class="col" style="margin-left: auto;">#}
+                    {##}
+                    {#                                    <div class="card-title" style="padding-left: 10%;">#}
+                    {#                                        <h4>Annotations</h4>#}
+                    {##}
+                    {#                                        {% for box in boxes %}#}
+                    {#                                            <tr colspan="2" style="text-align: center">#}
+                    {#                                                <a id="boundingbox-listitem-{{ box.id }}" onclick="highlightAnnotation#}
+                    {#                                                        ('boundingbox-listitem-{{ box.id }}')">#}
+                    {#                                                    {{ box.text }} <br>#}
+                    {#                                                </a>#}
+                    {#                                            </tr>#}
+                    {#                                        {% endfor %}#}
+                    {#                                        {% for pointer in pointers %}#}
+                    {#                                            <tr colspan="2" style="text-align: center">#}
+                    {#                                                <a id="arrow-listitem-{{ pointer.id }}" onclick="highlightAnnotation#}
+                    {#                                                        ('arrow-listitem-{{ pointer.id }}')">#}
+                    {#                                                    {{ pointer.text }} <br>#}
+                    {#                                                </a>#}
+                    {#                                            </tr>#}
+                    {#                                        {% endfor %}#}
+                    {##}
+                    {##}
+                    {#                                    </div>#}
+                    {#                                </div>#}
+                    {#                            </div>#}
+                    {##}
+                    {#                        </div>#}
+                    {##}
+                    {##}
+                    {#                    </div>#}
 
 
                 </div>
@@ -70,21 +70,37 @@
                           action="{% url 'multiple_choice:do' task_id=task.id course_id=course_id %}" method="post">
                         {% csrf_token %}
                         {% for choice in task.choice_set.all %}
-                            {% if choice_text == choice.text %}
-                                <input class="form-check-input" type="radio" checked name="choice"
-                                       value="{{ choice.id }}">
+                            {% if counter_corr_answ <= 1 %}
+
+                                {% if choice_text == choice.text %}
+
+                                    <input class="form-check-input" type="radio" checked name="choice"
+                                           value="{{ choice.id }}">
+                                {% else %}
+                                    <input class="form-check-input" type="radio" name="choice" value="{{ choice.id }}">
+                                {% endif %}
                             {% else %}
-                                <input class="form-check-input" type="radio" name="choice" value="{{ choice.id }}">
+
+                                {% if choice_text == choice.text %}
+
+                                    <input class="form-check-input" type="checkbox" checked name="choice"
+                                           value="{{ choice.id }}">
+                                {% else %}
+                                    <input class="form-check-input" type="checkbox" name="choice"
+                                           value="{{ choice.id }}">
+                                {% endif %}
                             {% endif %}
 
                             <span
-                                {% if answered != 'no' and answered != 'no_choice' %}
-                                    {% if choice.correct %}
-                                        style="color: green"
-                                    {% else %}
-                                        style="color: red"
+                                    {% if answered  %}
+                                        {% if not 'no' in answered %}
+                                        {% if choice.correct %}
+                                            style="color: green"
+                                        {% else %}
+                                            style="color: red"
+                                        {% endif %}
                                     {% endif %}
-                                {% endif %}>
+                              {% endif %}>
                             {{ choice.text }}</span><br>
                         {% endfor %}
 
@@ -93,16 +109,23 @@
                             <a href="{% url 'multiple_choice:do' task_id=next_id course_id=course_id %}">Next Task</a>
                         </div>
                     </form>
-                    {% if answered != 'no' %}
-                        {% if answered == 'correct' %}
-                            <a style="color: green; font-size: large; font-weight: bold">Correct!</a>
-                        {% elif answered == 'incorrect' %}
+                {%  if answered %}
+                    {% if 'no' in answered %}
+                        <a style="color: darkslateblue; font-size: large; font-weight: bold">Please make a
+                            choice!</a>
+                    {% else %}
+                        {% if 'incorrect' in answered %}
                             <a style="color: red; font-size: large; font-weight: bold">Wrong!</a>
                         {% else %}
-                            <a style="color: darkslateblue; font-size: large; font-weight: bold">Please make a
-                                choice!</a>
+                            {% if len_answered == counter_corr_answ %}
+                                <a style="color: green; font-size: large; font-weight: bold">Correct!</a>
+                            {% else %}
+                                <a style="color: darkorange; font-size: large; font-weight: bold">You are missing some
+                                    answeres !</a>
+
+                            {% endif %}
                         {% endif %}
-                    {% endif %}
+                    {% endif %}     {% endif %}
                 </div>
                 <div class="col"></div>
             </div>
@@ -118,7 +141,7 @@
 
 
     <script>
-     viewer.addHandler('viewport-change', updateTextLocation);
+        viewer.addHandler('viewport-change', updateTextLocation);
         //TODO  handler for 'maximize window size' button
         viewer.addHandler('tile-drawing', updateTextLocation);
 
