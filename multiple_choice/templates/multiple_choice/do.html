@@ -72,7 +72,7 @@
                         {% for choice in task.choice_set.all %}
                             {% if counter_corr_answ <= 1 %}
 
-                                {% if choice_text == choice.text %}
+                                {% if  choice.text in choice_text %}
 
                                     <input class="form-check-input" type="radio" checked name="choice"
                                            value="{{ choice.id }}">
@@ -81,7 +81,7 @@
                                 {% endif %}
                             {% else %}
 
-                                {% if choice_text == choice.text %}
+                                {% if  choice.text in choice_text  %}
 
                                     <input class="form-check-input" type="checkbox" checked name="choice"
                                            value="{{ choice.id }}">
