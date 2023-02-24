@@ -10,7 +10,7 @@
             <div class="col-4">
                 <div class="LPButton" style="margin-top: 0; ">
                     {% if course_id == 0 %}
-                        <a href="{% url 'task_list' %}">Task Overview</a>
+                        <a href="{% url 'task:list' %}">Task Overview</a>
                     {% else %}
                         <a href=" {% url 'course:view' course_id=course_id return_task=1 %}">Back to course</a>
                     {% endif %}

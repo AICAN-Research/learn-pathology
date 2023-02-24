@@ -31,11 +31,12 @@ urlpatterns = [
     path('user/', include('user.urls')),
     path('multiple_choice/', include('multiple_choice.urls')),
     path('slide/', include('slide.urls')),
-    path('tasks/', task.views.list, name='task_list'),
-    path('task/delete/<int:task_id>/', task.views.delete, name='task_delete'),
     path('tag/', include('tag.urls')),
     path('course/', include('course.urls')),
+    path('task/', include('task.urls')),
     path('ckeditor/', include('ckeditor_uploader.urls')),
+path('free_text/', include('free_text.urls')),
+
 ]
 
 urlpatterns += [

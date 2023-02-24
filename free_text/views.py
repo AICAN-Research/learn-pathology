@@ -8,12 +8,13 @@ from django.utils.datastructures import MultiValueDictKeyError
 
 from course.models import Course
 from multiple_choice.models import MultipleChoice, Choice, RandomMCChoice
-from multiple_choice.forms import MultipleChoiceForm, ChoiceForm
-from task.forms import TaskForm
 from slide.models import Slide, Pointer, AnnotatedSlide, BoundingBox
 from slide.views import slide_cache
 from user.decorators import teacher_required
 from task.models import Task
+from multiple_choice.forms import MultipleChoiceForm, ChoiceForm
+from task.forms import TaskForm
+from free_text.forms import FreeTextForm
 from slide.views import save_boundingbox_annotation, save_pointer_annotation
 
 
@@ -73,44 +74,8 @@ def do(request, task_id, course_id=None):
     })
 
 
-def do_random(request, slide_id=None):
-    """
-    Student form for answering/viewing a random multiple choice task
-    """
 
-    if request.method == 'GET':  # If the request is GET
-        # make a random question
-        slides = Slide.objects.all()
-        num_images = len(slides)
-        slide_id = random.randrange(1, num_images + 1)
 
-    slide = Slide.objects.get(id=slide_id)
-    slide_cache.load_slide_to_cache(slide_id)
-    # Load all choices for this slide
-    answers = RandomMCChoice.objects.filter(slide=slide_id)
-
-    answered = 'no'
-    choice_text = None
-    if request.method == 'POST':
-        print('POST')
-        # Process form
-        choice_id = request.POST.get('choice', None)  # returns None if no choice was made
-        if choice_id is not None:
-            choice = RandomMCChoice.objects.get(slide=slide, id=choice_id)
-            choice_text = choice.text
-            if choice.correct:
-                answered = 'correct'
-            else:
-                answered = 'incorrect'
-        else:
-            answered = 'no_choice'
-
-    return render(request, 'multiple_choice/random_quest.html', {
-        'answers': answers,
-        'answered': answered,
-        'slide': slide,
-        'choice_text': choice_text,
-    })
 
 
 @teacher_required
@@ -124,15 +89,15 @@ def new(request, slide_id, course_id=None):
     slide_cache.load_slide_to_cache(slide.id)
 
     # Process forms
-    ChoiceFormset = formset_factory(ChoiceForm, extra=5)
+
     if request.method == 'POST':  # Form was submitted
         print("POST")
         task_form = TaskForm(request.POST)
-        multiple_choice_form = MultipleChoiceForm(request.POST)
-        choice_formset = ChoiceFormset(request.POST)
+        free_text_form = FreeTextForm(request.POST)
+
 
         with transaction.atomic():  # Make save operation atomic
-            if multiple_choice_form.is_valid() and task_form.is_valid() and choice_formset.is_valid():
+            if free_text_form.is_valid() and task_form.is_valid():
                 # Create annotated slide
                 annotated_slide = AnnotatedSlide()
                 annotated_slide.slide = slide
@@ -148,27 +113,17 @@ def new(request, slide_id, course_id=None):
                 task.tags.set([organ_tags] + other_tags)
 
                 # Create multiple choice
-                multiple_choice = multiple_choice_form.save(commit=False)
-                multiple_choice.task = task
-                multiple_choice.save()
+                free_text = free_text_form.save(commit=False)
+                free_text.task = task
+                free_text.save()
 
-                for choiceForm in choice_formset:
-                    choice = choiceForm.save(commit=False)
-                    if len(choice.text) > 0:
-                        choice.task = multiple_choice
-                        choice.save()
+
 
                 # Store annotations (pointers)
                 for key in request.POST:
                     print(key, request.POST[key])
                     if key.startswith('right-arrow-overlay-') and key.endswith('-text'):
-                        prefix = key[:-len('text')]
-                        pointer = Pointer()
-                        pointer.text = request.POST[key]
-                        pointer.position_x = float(request.POST[prefix + 'x'])
-                        pointer.position_y = float(request.POST[prefix + 'y'])
-                        pointer.annotated_slide = annotated_slide
-                        pointer.save()
+                        save_pointer_annotation(request, key, annotated_slide)
 
                     if key.startswith('boundingbox-') and key.endswith('-text'):
                         save_boundingbox_annotation(request, key, annotated_slide)
@@ -182,62 +137,33 @@ def new(request, slide_id, course_id=None):
                 return redirect('task:list')
     else:
         task_form = TaskForm()
-        multiple_choice_form = MultipleChoiceForm()
-        choice_formset = ChoiceFormset()
+        free_text_form = FreeTextForm()
 
-    return render(request, 'multiple_choice/tasktypes/new_mc.html', {
+
+    return render(request, 'free_text/new_free_text.html', {
         'slide': slide,
-        'multipleChoiceForm': multiple_choice_form,
+        'freeTextForm': free_text_form,
         'taskForm': task_form,
-        'choiceFormset': choice_formset,
+    })
+
+@teacher_required
+def new_task(request, slide_id, course_id=None):
+    """
+    Teacher form for creating a  task
+    """
+
+    # Get slide
+    slide_id = slide_id
+    slide = Slide.objects.get(pk=slide_id)
+    slide_cache.load_slide_to_cache(slide.id)
+
+
+    return render(request, 'multiple_choice/../task/templates/task/new.html', {
+        'slide_id': slide_id,
+
     })
 
 
-
-
-def new_random(num_choices=5):
-    """
-    TODO:
-      - Update docstring (this function description)
-      - When re-generating random questions, remove old options first
-
-    Teacher form for creating a multiple choice task
-
-
-    Should return:
-    - task
-    - slide_id
-
-    """
-
-    # Iterate through slide_id's to generate new random questions
-    for slide_id in Slide.objects.values_list('id', flat=True):
-        new_choices = []
-
-        slide = Slide.objects.get(id=slide_id)
-
-        # Add correct answer
-        choice = RandomMCChoice()
-        choice.slide = slide
-        choice.text = slide.description
-        choice.correct = True
-        new_choices.append(choice)
-
-        # Use list comprehension to list all slide descriptions except the correct one
-        incorrect_slide_descriptions = [slide.description for slide in Slide.objects.exclude(id=slide_id)]
-        answers = random.sample(incorrect_slide_descriptions, k=num_choices - 1)
-
-        for answer in answers:
-            choice = RandomMCChoice()
-            choice.slide = slide
-            choice.text = answer
-            choice.correct = False
-            new_choices.append(choice)
-
-        random.seed()
-        random.shuffle(new_choices)
-        for choice in new_choices:
-            choice.save()
 
 
 @teacher_required
@@ -308,7 +234,7 @@ def edit(request, task_id):
                 messages.add_message(request, messages.SUCCESS,
                                      f'The task {task.name} was altered!')
 
-        return redirect('task:list')
+        return redirect('list')
 
     else:  # GET
         task_form = TaskForm(instance=task)  # , initial=task.tags.all())

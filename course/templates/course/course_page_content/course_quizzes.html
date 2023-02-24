@@ -12,7 +12,7 @@
                     <a href="{% url 'course:task_selection' course.id %}">Browse existing tasks</a>
                 </div>
                 <div class="LPButton">
-                    <a href="#" onclick="activateTab('slides');">Add new task</a>
+                    <a href="#" onclick="activateSlides();">Add new task</a>
                 </div>
             {% endif %}
             <br>
@@ -60,7 +60,7 @@
                         <a href="{% url 'course:task_selection' course.id %}">Browse existing tasks</a>
                     </div>
                     <div class="LPButton">
-                        <a href="#" onclick="activateTab('slides');">Add new task</a>
+                        <a href="#" id="myTab button" onclick="activateSlides();">Add new task</a>
                     </div>
                 {% endif %}
             </div>
@@ -68,5 +68,19 @@
         {% endif %}
 
     </div>
+
+    <script>
+    function activateSlides(){
+           const triggerEl = document.querySelector('#myTab button[data-bs-target="#slides"]')
+            var tab = bootstrap.Tab.getInstance(triggerEl)
+
+        tab.show()
+
+    }
+    </script>
+
+
+
+
 
 {% endblock courseTabContent %}

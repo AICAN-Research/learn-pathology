@@ -172,7 +172,7 @@ def delete(request, course_id):
 @teacher_required
 def new_task_and_add_to_course(request, course_id, slide_id):
     # Call/render new task template from here for user to fill in
-    http_response = new_mc(request, slide_id=slide_id, course_id=course_id)
+    http_response = new(request, slide_id=slide_id, course_id=course_id)
     return http_response
 
 
