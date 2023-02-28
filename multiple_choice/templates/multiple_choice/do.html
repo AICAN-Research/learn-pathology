@@ -19,7 +19,7 @@
         </div>
     </div>
 
-    <div class="card mx-auto text-center" style="width: 90%; height: 100%">
+    <div class="card mx-auto text-center" style="width: 90%; height: 100%; background-color: #dcdcdc">
         <div class="card-body" style="height: 100%">
             <div class="row">
                 <div class="col">
@@ -142,8 +142,17 @@
 
     <script>
         viewer.addHandler('viewport-change', updateTextLocation);
-        //TODO  handler for 'maximize window size' button
         viewer.addHandler('tile-drawing', updateTextLocation);
+        addEventListener("resize", () => {
+        });
+
+        onresize = () => {
+            timer = setTimeout(function () {
+
+                updateTextLocation();
+
+            }, 20);
+        };
 
         function updateTextLocation(event) {
 

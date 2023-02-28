@@ -7,7 +7,7 @@
                 <h1>{{ task.question }}</h1>
                 <p>{{ task.instructions }}</p>
             </div>
-            <div class="col-4">
+            <div class="col-4" >
                 <div class="LPButton" style="margin-top: 0; ">
                     {% if course_id == 0 %}
                         <a href="{% url 'task:list' %}">Task Overview</a>
@@ -19,7 +19,7 @@
         </div>
     </div>
 
-    <div class="card mx-auto text-center" style="width: 90%; height: 100%">
+    <div class="card mx-auto text-center" style="width: 90%; height: 100%; background-color: #dcdcdc">
         <div class="card-body" style="height: 100%">
             <div class="row">
                 <div class="col">

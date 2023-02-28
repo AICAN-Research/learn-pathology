@@ -404,6 +404,9 @@
 
         function updateTextLocation(event) {
 
+            let slide_overlays = viewer.currentOverlays;
+
+
             let arrow_overlays = $("[id^=right-arrow-overlay-]")
             let text_overlays = $("[id^=arrow-text-overlay-]")
 
@@ -421,6 +424,7 @@
                 let viewportPoint = viewer.viewport.pointFromPixel(new OpenSeadragon.Point(arrowX - 5, arrowY + 15));
                 viewer.updateOverlay(textElement, viewportPoint);
             }
+
 
         }
 
