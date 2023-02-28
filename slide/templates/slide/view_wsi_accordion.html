@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-    <script>setBackground('#adadad')</script>
+    <script>setBackground('#dcdcdc')</script>
 
 
 
@@ -336,6 +336,14 @@
 
 
         window.onLoad = createClickReaction()
+        window.onLoad = toggleAnnotationOff()
+        window.onLoad = toggleInfoCardVisibility()
+
+        function toggleAnnotationOff() {
+            $(".overlay").toggle();
+            $(".textOverlay").toggle();
+
+        }
 
         function highlightAnnotation(annotationId) {
 
@@ -350,14 +358,14 @@
                 box.style.borderColor = "red";
                 box.style.borderWidth = "5px";
 
-                text.style.color = "red" ;
+                text.style.color = "red";
                 text.style.fontWeight = "900";
 
                 timer = setTimeout(function () {
                     box.style.borderColor = "";
                     box.style.borderWidth = ""
                     text.style.color = "";
-                text.style.fontWeight = "";
+                    text.style.fontWeight = "";
                 }, 1000);
             }
             if (list_item.id.includes('arrow')) {
@@ -387,11 +395,11 @@
         });
 
         onresize = () => {
-             timer = setTimeout(function () {
+            timer = setTimeout(function () {
 
-                               updateTextLocation();
+                updateTextLocation();
 
-                            }, 20);
+            }, 20);
         };
 
         function updateTextLocation(event) {
@@ -442,14 +450,14 @@
                 on: ' Annotation',
                 off: ' Annotation'
             })
-            $('#toggle-annotation').bootstrapToggle('on');
+            $('#toggle-annotation').bootstrapToggle('off');
         })
         $(function () {
             $('#toggle-text').bootstrapToggle({
                 on: ' Text',
                 off: ' Text'
             })
-            $('#toggle-text').bootstrapToggle('on');
+            $('#toggle-text').bootstrapToggle('off');
         })
 
         $(function () {

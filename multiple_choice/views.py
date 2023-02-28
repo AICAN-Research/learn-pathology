@@ -326,4 +326,4 @@ def edit(request, task_id):
         'choiceFormset': choice_formset,
         'pointers': Pointer.objects.filter(annotated_slide=annotated_slide),
     }
-    return render(request, 'multiple_choice/edit_mc.html', context)
+    return render(request, 'multiple_choice/edit.html', context)
