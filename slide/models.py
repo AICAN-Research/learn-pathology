@@ -201,7 +201,9 @@ class AnnotatedSlide(models.Model):
         """
         html = ''
         for pointer in Pointer.objects.filter(annotated_slide=self):
-            html += f'<div id="pointer-{pointer.id}" class="overlay"> {pointer.text} &#8594;</div>'
+            html += pointer.get_html()
+        for bb in BoundingBox.objects.filter(annotated_slide=self):
+            html += bb.get_html()
         return html
 
     def get_js(self):
@@ -210,7 +212,9 @@ class AnnotatedSlide(models.Model):
         """
         js = ''
         for pointer in Pointer.objects.filter(annotated_slide=self):
-            js += f"{{id: 'pointer-{pointer.id}', x: {pointer.position_x}, y: {pointer.position_y}, placement: 'RIGHT', checkResize: false }},"
+            js += pointer.get_js()
+        for bb in BoundingBox.objects.filter(annotated_slide=self):
+            js += bb.get_js()
         return js
 
 
@@ -222,3 +226,59 @@ class Pointer(models.Model):
     position_x = models.FloatField()
     position_y = models.FloatField()
     text = models.CharField(max_length=256)
+
+    class Meta:
+        unique_together = [
+            ['annotated_slide', 'position_x', 'position_y', 'text']
+        ]
+
+    def get_html(self):
+        html = f'<div id="pointer-{self.id}" class="overlay"> {self.text} &#8594; </div>'
+        return html
+
+    def get_js(self):
+        js = f"{{" \
+             f"id: 'pointer-{self.id}'," \
+             f"x: {self.position_x}," \
+             f"y: {self.position_y}," \
+             f"placement: 'RIGHT'," \
+             f"checkResize: false" \
+             f"}},"
+        return js
+
+
+class BoundingBox(models.Model):
+    """
+    A bounding box annotation on a slide consisting of a top/bottom left
+    position (x,y), width and height, and a text.
+    """
+    annotated_slide = models.ForeignKey(AnnotatedSlide, on_delete=models.CASCADE)
+    position_x = models.FloatField()
+    position_y = models.FloatField()
+    width = models.FloatField()
+    height = models.FloatField()
+    text = models.CharField(max_length=256)
+
+    class Meta:
+        unique_together = [
+            ['annotated_slide', 'position_x', 'position_y', 'width', 'height', 'text']
+        ]
+
+    def get_html(self):
+        # TODO: How do we separate the annotation and the text?
+        html = f'<div id="boundingbox-{self.id}" class="overlay"> {self.text} </div>'
+        print('Got BoundingBox html')
+        return html
+
+    def get_js(self):
+        js = f"{{" \
+             f"id: 'boundingbox-{self.id}', " \
+             f"x: {self.position_x}, " \
+             f"y: {self.position_y}, " \
+             f"width: {self.width}, " \
+             f"height: {self.height}, " \
+             f"placement: 'TOPLEFT', " \
+             f"checkResize: true, " \
+             f"className: 'card LPBoundingBox' }},"
+        print('Got BoundingBox js')
+        return js

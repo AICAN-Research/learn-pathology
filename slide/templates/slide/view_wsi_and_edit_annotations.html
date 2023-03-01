@@ -1,7 +1,44 @@
 {% load static %}
+{% load slide_filters %}
 
 <div class="container fill" style="min-height: 600px">
-<p>Double click where you want to add annotations</p>
+
+<div class="card border-0">
+
+    <div class="row no-gutters w-100 align-items-center">
+        <div class="col-sm-5 col-md-3">
+            <div class="card border-0 h-100" style="margin-top: auto; margin-bottom: auto">
+            <div class="card-body" style="padding: 0;">
+                <h5 class="card-title" style="margin-bottom: 0;">Annotation type</h5>
+            </div>
+            </div>
+        </div> <!-- end col 1 -->
+        <div class="col">
+            <div class="card border-0 text-left">
+            <div class="card-body" style="padding: 0;">
+            <div class="radio-toolbar">
+                <!-- Pointer annotation -->
+                <label class="LPButton" id="pointer-annotation-btn"
+                       onclick="activatePointerAnnotation();" style="padding: 6px 10px 6px 10px; margin: 0;">
+                    Pointer
+                </label>
+                <!-- Bounding box annotation -->
+                <label class="LPButton" id="box-annotation-btn"
+                       onclick="activateBoxAnnotation();" style="padding: 6px 10px 6px 10px; margin: 0;">
+                    Box
+                </label>
+            </div>
+            </div>
+            </div>
+        </div> <!-- end col 2 -->
+    </div> <!-- end row -->
+
+</div>
+<div style="margin-top: 5px;">
+    <!-- TODO: Annotation-specific instructions? -->
+    <div id="annotation-instructions">Annotation instructions will be given here for each annotation type</div>
+</div>
+
 
 <div id="wsi-canvas" class="wsi_canvas" style="height: 600px;"></div>
 
@@ -32,49 +69,15 @@
     viewer.innerTracker.keyHandler = null;
 
 
-    var counter = 1;
-    function addPointer(viewportPoint, text) {
-       // Create overlay
-       let textDiv = document.createElement("div");
-       textDiv.className = "overlay";
-       let strCounter = counter.toString();
-       textDiv.id = "pointer-" + strCounter;
-       textDiv.innerHTML = '<a>X</a> ' +
-           '<input type="hidden" name="pointer-' + strCounter + '-x" value="' + viewportPoint.x.toString() + '"> ' +
-           '<input type="hidden" name="pointer-' + strCounter + '-y" value="' + viewportPoint.y.toString() + '"> ' +
-           '<input type="text" name="pointer-' + strCounter + '-text" value="' + text + '"> &#8594;';
-       counter += 1;
-
-       viewer.addOverlay(textDiv, viewportPoint, OpenSeadragon.Placement.RIGHT);
-
-        // MouseTracker is required for links to function in overlays
-        var asd = new OpenSeadragon.MouseTracker({
-            element: textDiv.id,
-            clickHandler: function(event) {
-                var target = event.originalEvent.target;
-                if(target.matches('input')) {
-                    target.focus();
-                } else if(target.matches('a')) {
-                    // Event handler for deleting:
-                    viewer.removeOverlay(textDiv.id);
-                }
-            }
-        });
-        return textDiv;
-    }
-
     {% for pointer in pointers %}
        addPointer(new OpenSeadragon.Point({{pointer.position_x}}, {{ pointer.position_y }}), '{{ pointer.text }}');
     {% endfor %}
+    {% for box in boxes %}
+        addBoundingBox(
+            {{box.position_x}}, {{ box.position_y }},
+            {{box.position_x}} + {{box.width}}, {{box.position_y}} + {{ box.height }},
+            '{{ box.text }}');
+    {% endfor %}
 
-    viewer.addHandler('canvas-double-click', function(event) {
-        // The canvas-click event gives us a position in web coordinates.
-        var webPoint = event.position;
-
-        // Convert that to viewport coordinates, the lingua franca of OpenSeadragon coordinates.
-        var viewportPoint = viewer.viewport.pointFromPixel(webPoint);
-        var textDiv = addPointer(viewportPoint, '');
-        $("#" + textDiv.id + " input[type=text]").focus();
-    });
 
 </script>
