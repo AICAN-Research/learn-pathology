@@ -2,19 +2,17 @@ import random
 
 from django.contrib import messages
 from django.db import transaction
-from django.forms import formset_factory, inlineformset_factory, modelformset_factory
+from django.forms import formset_factory, modelformset_factory
 from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
-from django.utils.datastructures import MultiValueDictKeyError
 
-from course.models import Course
+from slide.models import Slide, Pointer, AnnotatedSlide, BoundingBox
+from slide.views import slide_cache, save_boundingbox_annotation, save_pointer_annotation
+from task.models import Task
+from task.forms import TaskForm
 from multiple_choice.models import MultipleChoice, Choice, RandomMCChoice
 from multiple_choice.forms import MultipleChoiceForm, ChoiceForm
-from task.forms import TaskForm
-from slide.models import Slide, Pointer, AnnotatedSlide, BoundingBox
-from slide.views import slide_cache
+from course.models import Course
 from user.decorators import teacher_required
-from task.models import Task
-from slide.views import save_boundingbox_annotation, save_pointer_annotation
 
 
 def do(request, task_id, course_id=None):

@@ -2,17 +2,13 @@ import random
 
 from django.contrib import messages
 from django.db import transaction
-from django.forms import formset_factory, inlineformset_factory, modelformset_factory
 from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
-from django.utils.datastructures import MultiValueDictKeyError
 
-from course.models import Course
 from slide.models import Slide, Pointer, AnnotatedSlide, BoundingBox
 from slide.views import slide_cache
 from user.decorators import teacher_required
 from task.models import Task
 from tag.models import Tag
-
 
 
 def list(request):
