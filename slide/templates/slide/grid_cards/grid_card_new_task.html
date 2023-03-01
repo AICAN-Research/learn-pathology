@@ -3,7 +3,7 @@
 {% block gridCardQuestions %}
 
     {% if request.user.is_teacher or request.user.is_superuser %}
-        <div class="card-content" style="padding-top: 5px"><a class="LPButton btn" href="{% url 'task:new' slide.id %}" style="margin: 0;">Create new task</a></div>
+        <div class="card-content" style="padding-top: 5px"><a class="LPButton btn" href="{% url 'task:new' slide_id=slide.id %}" style="margin: 0;">Create new task</a></div>
     {% endif %}
 
 {% endblock gridCardQuestions %}

@@ -67,10 +67,11 @@ def new(request, slide_id, course_id=None):
     slide = Slide.objects.get(pk=slide_id)
     slide_cache.load_slide_to_cache(slide.id)
 
-    return render(request, "task/new.html", {
-        'slide_id': slide_id,
-        'course_id': course_id
-    })
+    context = {'slide_id': slide_id}
+    if course_id is not None:
+        context['course_id'] = course_id
+
+    return render(request, "task/new.html", context)
 
 
 @teacher_required

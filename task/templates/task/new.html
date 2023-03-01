@@ -17,11 +17,19 @@
                     <div class="column">
                         <div class="column">
                             <div class="LPButton" style="margin-top: 0; ">
-                                <a href="{% url 'multiple_choice:new' slide_id=slide_id course_id=course_id %}">Single/Multiple Choice</a>
+                                {% if course_id %}
+                                    <a href="{% url 'multiple_choice:new' slide_id=slide_id course_id=course_id %}">Single/Multiple Choice</a>
+                                {% else %}
+                                    <a href="{% url 'multiple_choice:new' slide_id=slide_id %}">Single/Multiple Choice</a>
+                                {% endif %}
                             </div>
                             <br>
                             <div class="LPButton" style="margin-top: 0; ">
-                                <a href="{% url 'free_text:new' slide_id=slide_id course_id=course_id %}">Free Text Question</a>
+                                {% if course_id %}
+                                    <a href="{% url 'free_text:new' slide_id=slide_id course_id=course_id %}">Free Text Question</a>
+                                {% else %}
+                                    <a href="{% url 'free_text:new' slide_id=slide_id %}">Free Text Question</a>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
