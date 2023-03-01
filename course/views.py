@@ -15,7 +15,7 @@ from learnpathology.settings import MEDIA_ROOT
 from slide.models import Slide
 from tag.models import Tag
 from task.models import Task
-from multiple_choice.views import new as new_mc
+from task.views import new as new_task
 from user.decorators import teacher_required
 
 
@@ -172,7 +172,7 @@ def delete(request, course_id):
 @teacher_required
 def new_task_and_add_to_course(request, course_id, slide_id):
     # Call/render new task template from here for user to fill in
-    http_response = new(request, slide_id=slide_id, course_id=course_id)
+    http_response = new_task(request, slide_id=slide_id, course_id=course_id)
     return http_response
 
 

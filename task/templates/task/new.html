@@ -17,10 +17,10 @@
                     <div class="column">
                         <div class="column">
                              <div class="LPButton" style="margin-top: 0; ">
-                            <a href="{% url 'multiple_choice:new' slide_id=slide_id %}">Single/Multiple Choice</a>
+                            <a href="{% url 'multiple_choice:new' slide_id=slide_id course_id=course_id %}">Single/Multiple Choice</a>
                         </div> <br>
                              <div class="LPButton" style="margin-top: 0; ">
-                            <a href="{% url 'free_text:new' slide_id=slide_id %}">Free Text Question</a>
+                            <a href="{% url 'free_text:new' slide_id=slide_id course_id=course_id %}">Free Text Question</a>
                         </div>
                         </div>
                     </div>

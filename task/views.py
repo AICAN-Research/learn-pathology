@@ -54,6 +54,8 @@ def list(request):
         'selected_pathology': selected_pathology,
         'selected_histology': selected_histology,
     })
+
+
 @teacher_required
 def new(request, slide_id, course_id=None):
     """
@@ -65,10 +67,9 @@ def new(request, slide_id, course_id=None):
     slide = Slide.objects.get(pk=slide_id)
     slide_cache.load_slide_to_cache(slide.id)
 
-
     return render(request, "task/new.html", {
         'slide_id': slide_id,
-
+        'course_id': course_id
     })
 
 
