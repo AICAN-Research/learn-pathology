@@ -1,7 +1,8 @@
 let counter = 0;
 let g_lastBoundingBoxStartX = -1;
 let g_lastBoundingBoxStartY = -1;
-let g_lastElementId = null;
+let g_lastBoundingBoxId = null;
+let g_lastDrawnBoundingBoxId = null;
 
 
 /*
@@ -13,6 +14,7 @@ function activatePointerAnnotation() {
     deactivateAnnotationMode();
 
     $('#pointer-annotation-btn').addClass('active');
+        //.disable();
     $('#annotation-instructions').text(
         'Double click the canvas where you want to make a pointer'
     );
@@ -80,6 +82,7 @@ function activateBoxAnnotation() {
     disablePanAndZoom();
 
     $('#box-annotation-btn').addClass('active');
+        //.disable();
     $('#annotation-instructions').text(
         'Click and drag to make a bounding box'
     );
@@ -92,7 +95,8 @@ function addBoundingBox(x1, y1, x2, y2, text='') {
     let divElement = document.createElement('div');
     viewer.addOverlay(divElement);
     divElement.id = 'boundingbox-' + counter.toString();
-    drawBoundingBox(divElement.id, x1, y1, x2, y2, text);
+    divElement = drawBoundingBox(divElement.id, x1, y1, x2, y2, text);
+    divElement.innerHTML = boundingBoxInnerHTML(x1, y1, x2, y2, text);
 
     // MouseTracker is required for links to function in overlays
     let tracker = mouseTrackerRemoveBoundingBox(divElement);
@@ -104,8 +108,7 @@ function addBoundingBox(x1, y1, x2, y2, text='') {
 function newBoundingBox(x1, y1, x2, y2, text='') {
     console.log("In function newBoundingBox()");
 
-    let lastBoundingBox = document.getElementById(g_lastElementId);
-    //viewer.removeOverlay(lastBoundingBox);
+    viewer.removeOverlay(g_lastDrawnBoundingBoxId);
 
     let divElement = document.createElement('div');
     viewer.addOverlay(divElement);
@@ -113,7 +116,8 @@ function newBoundingBox(x1, y1, x2, y2, text='') {
     console.log(divElement.id);
 
     // TODO: Must we draw the box again??
-    drawBoundingBox(divElement.id, x1, y1, x2, y2, text);
+    divElement = drawBoundingBox(divElement.id, x1, y1, x2, y2, text);
+    divElement.innerHTML = boundingBoxInnerHTML(x1, y1, x2, y2, text);
 
     // MouseTracker is required for links to function in overlays
     let tracker = mouseTrackerRemoveBoundingBox(divElement);
@@ -125,22 +129,20 @@ function newBoundingBox(x1, y1, x2, y2, text='') {
 function drawBoundingBox(elementId, x1, y1, x2, y2, text='') {
 
     let tempElement = document.getElementById(elementId);
-    //let tempElement = document.createElement('div');
 
     let x0 = Math.min(x1, x2);
     let y0 = Math.min(y1, y2);
     let width = Math.abs(x1-x2);
     let height = Math.abs(y1-y2);
-
-    tempElement.className = 'overlay card LPBoundingBox';
+    console.log(x0, y0, width, height);
 
     viewer.removeOverlay(tempElement);
     viewer.addOverlay({     //box, startPoint, OpenSeadragon.Placement.BOTTOM_RIGHT);
         element: tempElement,
         location: new OpenSeadragon.Rect(x0, y0, width, height)
     });
+    tempElement.className = 'overlay card LPBoundingBox';
     tempElement.innerHTML = boundingBoxInnerHTML(x1, y1, x2, y2, text);
-
     console.log('Drew bounding box nr ' + counter);
     return tempElement;
 }
@@ -201,11 +203,11 @@ function onDragBoundingBox(event) {
     let viewportPoint = viewer.viewport.pointFromPixel(webPoint);
 
     // Create bounding box start point
-    drawBoundingBox(
-        g_lastElementId,
+    let divElement = document.getElementById(g_lastDrawnBoundingBoxId);
+    g_lastDrawnBoundingBoxId = drawBoundingBox(
+        divElement.id,
         g_lastBoundingBoxStartX, g_lastBoundingBoxStartY,
         viewportPoint.x, viewportPoint.y,
-        'bounding box'
     );
     // TODO: Fix Uncaught TypeError: Cannot set properties of null --> some MouseTracker error
     /*let ms_tracker = new OpenSeadragon.MouseTracker({
@@ -224,11 +226,15 @@ function onReleaseBoundingBox(event) {
     let endViewportPoint = viewer.viewport.pointFromPixel(webPoint);
     console.log('Canvas release at (' + endViewportPoint.x.toString() + ', ' + endViewportPoint.x.toString() + ')');
 
+    // Remove the last drawn bounding box
+    viewer.removeOverlay(document.getElementById(g_lastDrawnBoundingBoxId));
+    g_lastDrawnBoundingBoxId = null;
+
     // Create bounding box
-    g_lastElementId = newBoundingBox(
+    g_lastBoundingBoxId = newBoundingBox(
         g_lastBoundingBoxStartX, g_lastBoundingBoxStartY,
         endViewportPoint.x, endViewportPoint.y,
-        'bounding box'
+        ''
     );
     g_lastBoundingBoxStartX = -1;
     g_lastBoundingBoxStartY = -1;
@@ -271,6 +277,12 @@ function deactivateAnnotationMode() {
     // Deactivate (remove highlighting) of annotation type selector buttons
     $('#pointer-annotation-btn').removeClass('active');
     $('#box-annotation-btn').removeClass('active');
+    /*$('#pointer-annotation-btn').removeClass('active')
+        .enable();
+    $('#box-annotation-btn').removeClass('active')
+        .enable();*/
+
+    $('#annotation-instructions').text('Select annotation type above');
 
     // Remove annotation handlers from canvas
     removePointerHandlers();
