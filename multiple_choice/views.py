@@ -193,8 +193,6 @@ def new(request, slide_id, course_id=None):
     })
 
 
-
-
 def new_random(num_choices=5):
     """
     TODO:
