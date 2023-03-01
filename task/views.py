@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.db import transaction
 from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 
+from course.models import Course
 from slide.models import Slide, Pointer, AnnotatedSlide, BoundingBox
 from slide.views import slide_cache
 from user.decorators import teacher_required
@@ -73,7 +74,15 @@ def new(request, slide_id, course_id=None):
 @teacher_required
 def delete(request, task_id):
     task = Task.objects.get(pk=task_id)
+
+    # Remove task from all courses it is added to
+    courses_with_task = Course.objects.filter(task=task)
+    for course in courses_with_task:
+        course.task.remove(task)
+
+    # Delete task type (e.g. multiple choice, free text) and task
     task.type_model.delete()
     task.delete()
+
     messages.add_message(request, messages.SUCCESS, 'Task deleted.')
     return redirect('task:list')
