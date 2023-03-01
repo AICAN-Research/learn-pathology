@@ -41,23 +41,16 @@ def do(request, task_id, course_id=None):
     # except IndexError:
     #     next_id = all_tasks[0]
 
-
-
-
     student_text = None
     answered = None
     if request.method == 'POST':
         print('POST')
         # Process form
-
-
         student_text = request.POST.get('studentText',None)
         if student_text:
-            answered ='yes'
+            answered = 'yes'
         else:
             answered = 'no'
-
-
 
     slide_cache.load_slide_to_cache(task.task.annotated_slide.slide.id)
     return render(request, 'free_text/do.html', {
@@ -66,10 +59,6 @@ def do(request, task_id, course_id=None):
         'course_id': course_id,
         'student_text': student_text,
     })
-
-
-
-
 
 
 @teacher_required
@@ -88,7 +77,6 @@ def new(request, slide_id, course_id=None):
         print("POST")
         task_form = TaskForm(request.POST)
         free_text_form = FreeTextForm(request.POST)
-
 
         with transaction.atomic():  # Make save operation atomic
             if free_text_form.is_valid() and task_form.is_valid():
@@ -111,8 +99,6 @@ def new(request, slide_id, course_id=None):
                 free_text.task = task
                 free_text.save()
 
-
-
                 # Store annotations (pointers)
                 for key in request.POST:
                     print(key, request.POST[key])
@@ -133,14 +119,11 @@ def new(request, slide_id, course_id=None):
         task_form = TaskForm()
         free_text_form = FreeTextForm()
 
-
     return render(request, 'free_text/new.html', {
         'slide': slide,
         'freeTextForm': free_text_form,
         'taskForm': task_form,
     })
-
-
 
 
 @teacher_required
@@ -149,11 +132,9 @@ def edit(request, task_id):
     Teacher form for editing a multiple choice task
     """
 
-
     # Get model instances from database
     task = get_object_or_404(Task, id=task_id)
     free_text = get_object_or_404(FreeText, task_id=task_id)
-
 
     # Get slide and pointers
     annotated_slide = task.annotated_slide
@@ -166,7 +147,6 @@ def edit(request, task_id):
         # Get submitted forms
         task_form = TaskForm(request.POST or None, instance=task)
         free_text_form = FreeTextForm(request.POST or None, instance=free_text)
-
 
         # pointers = Pointer.objects.filter(annotated_slide=task.annotated_slide)
 
@@ -206,7 +186,6 @@ def edit(request, task_id):
         task_form.fields['other_tags'].initial = task.tags.filter(is_stain=False, is_organ=False)
 
         free_text_form = FreeTextForm(instance=task.freetext)
-
 
     context = {
         'slide': slide,
