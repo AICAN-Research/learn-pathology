@@ -29,18 +29,14 @@
                     </tr></thead>
                     {% for task in tasks %}
                         <tr>
-                            <td><a href="{% url task.do_url task_id=task.id course_id=course.id %}">{{ task.name }}</a>
-                            </td>
+                            <td><a href="{% url task.do_url task_id=task.id course_id=course.id %}">{{ task.name }}</a></td>
                             <td>{{ task.type }}</td>
-                            <td><a class="LPButton btn remove_button" style="margin: 0;"
-                                   href="{% url 'multiple_choice:do' task_id=task.id course_id=course.id %}">Do task</a>
+                            <td><a class="LPButton btn" style="margin: 0;" href="{% url 'multiple_choice:do' task_id=task.id course_id=course.id %}">Do task</a>
                             </td>
                             {% if request.user.is_teacher or request.user.is_superuser %}
+                                <td><a class="LPButton btn" style="margin: 0;" href="{% url 'multiple_choice:edit' task.id %}">Edit</a></td>
                                 <td><a class="LPButton btn remove_button" style="margin: 0;"
-                                       href="{% url 'multiple_choice:edit' task.id %}">Edit</a></td>
-                                <td><a class="LPButton btn remove_button" style="margin: 0;"
-                                       data-course_id="{{ course.id }}" data-model_name="{{ task | to_class_name }}"
-                                       data-instance_id="{{ task.id }}">
+                                       data-course_id="{{ course.id }}" data-model_name="{{ task | to_class_name }}" data-instance_id="{{ task.id }}">
                                     Remove
                                 </a></td>
                             {% endif %}
