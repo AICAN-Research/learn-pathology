@@ -13,15 +13,10 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap5-toggle@5.0.4/js/bootstrap5-toggle.jquery.min.js"></script>
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css"
-          integrity="sha512-nMNlpuaDPrqlEls3IX/Q56H36qvBASwb3ipuo3MxeWbsQB1881ox0cRv7UPTgBlriqoynt35KjEwgGUeUXIPnw=="
-          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" integrity="sha512-nMNlpuaDPrqlEls3IX/Q56H36qvBASwb3ipuo3MxeWbsQB1881ox0cRv7UPTgBlriqoynt35KjEwgGUeUXIPnw==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap5-toggle@5.0.4/css/bootstrap5-toggle.min.css" rel="stylesheet"/>
 
-    <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap5-toggle@5.0.4/css/bootstrap5-toggle.min.css"
-            rel="stylesheet"/>
     <link rel="stylesheet" href="{% static 'learnpathology/learnpathology.css' %}">
     <script src="{% static 'learnpathology/learnpathology.js' %}"></script>
     <script src="{% static 'slide/annotate.js' %}"></script>
@@ -32,11 +27,8 @@
     <script src="{% static 'course/utils.js' %}"></script>
 </head>
 <body>
-<!-- Bootstrap JS -->
 
 <script>setTheme('theme_olive')</script>
-
-
 
 
 <nav class="navbar navbar-expand-lg  container-flex" style="background-color: var(--background-header);height: var(--header-height);
@@ -54,11 +46,9 @@
         <div class="collapse navbar-collapse" id="navMenu"
              style="background-color: var(--background-header); padding-left: 1rem; border-radius: 0rem 0rem 1rem 1rem">
             <ul class="navbar-nav mr-auto">
-
-
                 {% if request.user.is_authenticated %}
                     <!-- Options available to any type of user-->
-{#                    <li class="nav-item"><a class="nav-link active" href="{% url 'frontpage' %}">Home</a></li>#}
+                    {# <li class="nav-item"><a class="nav-link active" href="{% url 'frontpage' %}">Home</a></li> #}
                     <li class="nav-item"><a class="nav-link active " href="{% url 'slide:browser' %}">Images</a></li>
                     <li class="nav-item"><a class="nav-link active " href="{% url 'course:index' %}">Courses</a></li>
                     <li class="nav-item"><a class="nav-link active " href="{% url 'task:list' %}">Tasks</a></li>
@@ -88,27 +78,20 @@
                         </ul>
                     </li>
 
-
-
-
                     <!-- keep logout button last -->
                     <li class="nav-item"><a class="nav-link active" href="{% url 'logout' %}">Logout</a></li>
 
                     {% if request.user.is_teacher %}
-{#                        <script>setTheme('theme_teacher')</script>#}
-                        <li class="nav-item"><span
-                                class="navbar-text">Logged in as teacher {{ request.user.username }}</span></li>
+                        {#<script>setTheme('theme_teacher')</script>#}
+                        <li class="nav-item"><span class="navbar-text">Logged in as teacher {{ request.user.username }}</span></li>
                     {% elif request.user.is_superuser %}
-{#                        <script>setTheme('theme_default')</script>#}
-                        <li class="nav-item"><span
-                                class="navbar-text">Logged in as admin {{ request.user.username }}</span></li>
+                        {#<script>setTheme('theme_default')</script>#}
+                        <li class="nav-item"><span class="navbar-text">Logged in as admin {{ request.user.username }}</span></li>
                     {% elif request.user.is_student %}
-{#                        <script>setTheme('theme_student')</script>#}
-                        <li class="nav-item"><span
-                                class="navbar-text">Logged in as student {{ request.user.username }}</span></li>
+                        {#<script>setTheme('theme_student')</script>#}
+                        <li class="nav-item"><span class="navbar-text">Logged in as student {{ request.user.username }}</span></li>
                     {% endif %}
                 {% endif %}
-
             </ul>
 
         </div>
@@ -128,17 +111,15 @@
         {% endblock %}
 
         <!-- background logo watermark -->
-{#        <div id="logoContainer" class="logoBGContainer">#}
-{#            <img class="logoBGImage setLogoTranslucent" src="{% static 'learnpathology/images/logo_gs_dark.png' %}"#}
-{#                 alt="LearnPathology logo">#}
-{#        </div>#}
+        {#<div id="logoContainer" class="logoBGContainer">#}
+        {#    <img class="logoBGImage setLogoTranslucent" src="{% static 'learnpathology/images/logo_gs_dark.png' %}" alt="LearnPathology logo">#}
+        {#</div>#}
 
         <!-- background SINTEF watermark. Uncomment the next three lines to show it  -->
         {#        <div id="sintefWatermark" class="sintefWatermark">#}
         {#            <img class="sintefWMImage setLogoTranslucent" src="{% static 'learnpathology/images/sintef_wm.png' %}" alt="sintef logo">#}
         {#        </div>#}
     </div>
-
 
 </div>
 
