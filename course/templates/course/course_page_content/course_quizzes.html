@@ -12,7 +12,7 @@
                     <a href="{% url 'course:task_selection' course.id %}">Browse existing tasks</a>
                 </div>
                 <div class="LPButton">
-                    <a href="#" onclick="activateTab('slides');">Add new task</a>
+                    <a href="#" onclick="activateSlides();">Add new task</a>
                 </div>
             {% endif %}
             <br>
@@ -29,16 +29,21 @@
                     </tr></thead>
                     {% for task in tasks %}
                         <tr>
-                        <td><a href="{% url task.do_url task.id %}">{{ task.name }}</a></td>
-                        <td>{{ task.type }}</td>
-                        <td><a class="LPButton btn" style="margin: 0;" href="{% url 'multiple_choice:do' task.id %}">Do task</a></td>
-                        {% if request.user.is_teacher or request.user.is_superuser %}
-                            <td><a class="LPButton btn" style="margin: 0;" href="{% url 'multiple_choice:edit' task.id %}">Edit</a></td>
+                            <td><a href="{% url task.do_url task_id=task.id course_id=course.id %}">{{ task.name }}</a>
+                            </td>
+                            <td>{{ task.type }}</td>
                             <td><a class="LPButton btn remove_button" style="margin: 0;"
-                                   data-course_id="{{ course.id }}" data-model_name="{{ task | to_class_name }}" data-instance_id="{{ task.id }}">
-                                Remove
-                            </a></td>
-                        {% endif %}
+                                   href="{% url 'multiple_choice:do' task_id=task.id course_id=course.id %}">Do task</a>
+                            </td>
+                            {% if request.user.is_teacher or request.user.is_superuser %}
+                                <td><a class="LPButton btn remove_button" style="margin: 0;"
+                                       href="{% url 'multiple_choice:edit' task.id %}">Edit</a></td>
+                                <td><a class="LPButton btn remove_button" style="margin: 0;"
+                                       data-course_id="{{ course.id }}" data-model_name="{{ task | to_class_name }}"
+                                       data-instance_id="{{ task.id }}">
+                                    Remove
+                                </a></td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                 </table>
@@ -49,19 +54,33 @@
             <div class="card-text" style="text-align: left;">
                 No tasks have been added to this course yet.
                 {% if request.user.is_teacher or request.user.is_superuser %}
-                You can add some now!
-                <br>
-                <div class="LPButton">
-                    <a href="{% url 'course:task_selection' course.id %}">Browse existing tasks</a>
-                </div>
-                <div class="LPButton">
-                    <a href="#" onclick="activateTab('slides');">Add new task</a>
-                </div>
+                    You can add some now!
+                    <br>
+                    <div class="LPButton">
+                        <a href="{% url 'course:task_selection' course.id %}">Browse existing tasks</a>
+                    </div>
+                    <div class="LPButton">
+                        <a href="#" id="myTab button" onclick="activateSlides();">Add new task</a>
+                    </div>
                 {% endif %}
             </div>
 
         {% endif %}
 
     </div>
+
+    <script>
+    function activateSlides(){
+           const triggerEl = document.querySelector('#myTab button[data-bs-target="#slides"]')
+            var tab = bootstrap.Tab.getInstance(triggerEl)
+
+        tab.show()
+
+    }
+    </script>
+
+
+
+
 
 {% endblock courseTabContent %}

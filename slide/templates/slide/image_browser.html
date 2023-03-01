@@ -148,41 +148,44 @@ $(document).ready(function() {
     {% else %}
     {% endcomment %}
 
-    {% if slides %}
+                {% if slides %}
 
-        <div class="card border-0">
-            <div class="card-body align-content" style="margin-left: auto; padding-top: 10px; padding-bottom: 10px">
+                    <div class="card border-0">
+                        <div class="card-body align-content"
+                             style="margin-left: auto; padding-top: 10px; padding-bottom: 10px">
 
-            <ul class="nav nav-pills card-header-pills imageBrowserNavTabs">
-                <li class="nav-item">
-                    <a href="#grid-view" class="LPButton nav-link active" data-toggle="tab">{% bs_icon 'grid' %}Grid</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#list-view" class="LPButton nav-link" data-toggle="tab">{% bs_icon 'list' %}List</a>
-                </li>
-            </ul>
+                            <ul class="nav nav-pills card-header-pills imageBrowserNavTabs">
+                                <li class="nav-item">
+                                    <a href="#grid-view" class="LPButton nav-link active"
+                                       data-toggle="tab">{% bs_icon 'grid' %}Grid</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#list-view" class="LPButton nav-link"
+                                       data-toggle="tab">{% bs_icon 'list' %}List</a>
+                                </li>
+                            </ul>
+
+                        </div>
+                    </div>
+
+                    <div class="card" style="min-height: 600px; padding-top: 10px">
+                        <div class="tab-content" id="tabs">
+                            <div class="tab-pane active" id="grid-view">
+                                {% include 'slide/grid_view_task.html' with slides=slides %}
+                            </div>
+                            <div class="tab-pane" id="list-view">
+                                {% include 'slide/list_view.html' with slides=slides %}
+                            </div>
+                        </div>
+                    </div>
+
+                {% else %}
+                    <div class="card" style="min-height: 200px; padding-top: 10px">
+                        No slides available.
+                    </div>
+                {% endif %}
 
             </div>
         </div>
-
-        <div class="card" style="min-height: 600px; padding-top: 10px">
-            <div class="tab-content" id="tabs">
-                <div class="tab-pane active" id="grid-view">
-                    {% include 'slide/grid_view_task.html' with slides=slides %}
-                </div>
-                <div class="tab-pane" id="list-view">
-                    {% include 'slide/list_view.html' with slides=slides %}
-                </div>
-            </div>
-        </div>
-
-    {% else %}
-        <div class="card" style="min-height: 200px; padding-top: 10px">
-            No slides available.
-        </div>
-    {% endif %}
-
-</div>
-</div>
-</div>
+    </div>
 {% endblock content %}

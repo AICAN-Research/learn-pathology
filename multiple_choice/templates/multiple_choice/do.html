@@ -1,56 +1,184 @@
 {% extends "learnpathology/base.html" %}
 
 {% block content %}
-<div class="container">
-<h1>{{ task.question }}</h1>
-<p>{{ task.instructions }}</p>
-</div>
-
-<div class="card mx-auto text-center" style="width: 90%; height: 100%">
-<div class="card-body" style="height: 100%">
-    <div class="row">
-        <div class="col"></div>
-        <div class="col">
-        <form class="form-check text-left" action="{% url 'multiple_choice:do' task.task_id %}" method="post">
-            {% csrf_token %}
-            {% for choice in task.choice_set.all %}
-                 {% if choice_text == choice.text %}
-                    <input class="form-check-input" type="radio" checked name="choice" value="{{ choice.id }}">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col">
+                <h1>{{ task.question }}</h1>
+                <p>{{ task.instructions }}</p>
+            </div>
+            <div class="col-4">
+                <div class="LPButton" style="margin-top: 0; ">
+                    {% if course_id == 0 %}
+                        <a href="{% url 'task:list' %}">Task Overview</a>
                     {% else %}
-                    <input class="form-check-input" type="radio"  name="choice" value="{{ choice.id }}">
-
-                {% endif %}
-
-                <span
-                    {% if answered != 'no' and answered != 'no_choice' %}
-                        {% if choice.correct %}
-                            style="color: green"
-                        {% else %}
-                            style="color: red"
-                        {% endif %}
-                {% endif %}>
-                {{ choice.text }}</span><br>
-            {% endfor %}
-            <input type="submit" value="Submit">
-        </form>
-        {% if answered != 'no' %}
-            {% if answered == 'correct' %}
-                <a style="color: green; font-size: large; font-weight: bold">Correct!</a>
-            {% elif answered == 'incorrect' %}
-                <a style="color: red; font-size: large; font-weight: bold">Wrong!</a>
-            {% else %}
-            <a style="color: darkslateblue; font-size: large; font-weight: bold">Please make a choice!</a>
-            {% endif %}
-        {% endif %}
+                        <a href=" {% url 'course:view' course_id=course_id return_task=1 %}">Back to course</a>
+                    {% endif %}
+                </div>
+            </div>
         </div>
-        <div class="col"></div>
     </div>
 
-<br>
+    <div class="card mx-auto text-center" style="width: 90%; height: 100%; background-color: #dcdcdc">
+        <div class="card-body" style="height: 100%">
+            <div class="row">
+                <div class="col">
 
-{% include 'slide/view_wsi.html' with slide=task.task.annotated_slide.slide annotated_slide=task.task.annotated_slide  %}
+                    {#                    <div class="card slideInfoCard border-0">#}
+                    {##}
+                    {##}
+                    {#                        <div class="card slideInfoCard border-5">#}
+                    {#                            <div class="row align-items-center" style="padding-top: 3%; padding-bottom: 3%;">#}
+                    {##}
+                    {##}
+                    {#                                <div class="col" style="margin-left: auto;">#}
+                    {##}
+                    {#                                    <div class="card-title" style="padding-left: 10%;">#}
+                    {#                                        <h4>Annotations</h4>#}
+                    {##}
+                    {#                                        {% for box in boxes %}#}
+                    {#                                            <tr colspan="2" style="text-align: center">#}
+                    {#                                                <a id="boundingbox-listitem-{{ box.id }}" onclick="highlightAnnotation#}
+                    {#                                                        ('boundingbox-listitem-{{ box.id }}')">#}
+                    {#                                                    {{ box.text }} <br>#}
+                    {#                                                </a>#}
+                    {#                                            </tr>#}
+                    {#                                        {% endfor %}#}
+                    {#                                        {% for pointer in pointers %}#}
+                    {#                                            <tr colspan="2" style="text-align: center">#}
+                    {#                                                <a id="arrow-listitem-{{ pointer.id }}" onclick="highlightAnnotation#}
+                    {#                                                        ('arrow-listitem-{{ pointer.id }}')">#}
+                    {#                                                    {{ pointer.text }} <br>#}
+                    {#                                                </a>#}
+                    {#                                            </tr>#}
+                    {#                                        {% endfor %}#}
+                    {##}
+                    {##}
+                    {#                                    </div>#}
+                    {#                                </div>#}
+                    {#                            </div>#}
+                    {##}
+                    {#                        </div>#}
+                    {##}
+                    {##}
+                    {#                    </div>#}
 
 
-</div>
-</div>
+                </div>
+                <div class="col">
+                    <form class="form-check text-left"
+                          action="{% url 'multiple_choice:do' task_id=task.id course_id=course_id %}" method="post">
+                        {% csrf_token %}
+                        {% for choice in task.choice_set.all %}
+                            {% if counter_corr_answ <= 1 %}
+
+                                {% if  choice.text in choice_text %}
+
+                                    <input class="form-check-input" type="radio" checked name="choice"
+                                           value="{{ choice.id }}">
+                                {% else %}
+                                    <input class="form-check-input" type="radio" name="choice" value="{{ choice.id }}">
+                                {% endif %}
+                            {% else %}
+
+                                {% if  choice.text in choice_text  %}
+
+                                    <input class="form-check-input" type="checkbox" checked name="choice"
+                                           value="{{ choice.id }}">
+                                {% else %}
+                                    <input class="form-check-input" type="checkbox" name="choice"
+                                           value="{{ choice.id }}">
+                                {% endif %}
+                            {% endif %}
+
+                            <span
+                                    {% if answered  %}
+                                        {% if not 'no' in answered %}
+                                        {% if choice.correct %}
+                                            style="color: green"
+                                        {% else %}
+                                            style="color: red"
+                                        {% endif %}
+                                    {% endif %}
+                              {% endif %}>
+                            {{ choice.text }}</span><br>
+                        {% endfor %}
+
+                        <input type="submit" value="Submit">
+                        <div class="LPButton" style="margin-top: 0; ">
+                            <a href="{% url 'multiple_choice:do' task_id=next_id course_id=course_id %}">Next Task</a>
+                        </div>
+                    </form>
+                {%  if answered %}
+                    {% if 'no' in answered %}
+                        <a style="color: darkslateblue; font-size: large; font-weight: bold">Please make a
+                            choice!</a>
+                    {% else %}
+                        {% if 'incorrect' in answered %}
+                            <a style="color: red; font-size: large; font-weight: bold">Wrong!</a>
+                        {% else %}
+                            {% if len_answered == counter_corr_answ %}
+                                <a style="color: green; font-size: large; font-weight: bold">Correct!</a>
+                            {% else %}
+                                <a style="color: darkorange; font-size: large; font-weight: bold">You are missing some
+                                    answeres !</a>
+
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}     {% endif %}
+                </div>
+                <div class="col"></div>
+            </div>
+
+            <br>
+
+            {% include 'slide/view_wsi.html' with slide=task.task.annotated_slide.slide annotated_slide=task.task.annotated_slide %}
+
+
+        </div>
+    </div>
+
+
+
+    <script>
+        viewer.addHandler('viewport-change', updateTextLocation);
+        viewer.addHandler('tile-drawing', updateTextLocation);
+        addEventListener("resize", () => {
+        });
+
+        onresize = () => {
+            timer = setTimeout(function () {
+
+                updateTextLocation();
+
+            }, 20);
+        };
+
+        function updateTextLocation(event) {
+
+            let slide_overlays = viewer.currentOverlays;
+
+
+            let arrow_overlays = $("[id^=right-arrow-overlay-]")
+            let text_overlays = $("[id^=arrow-text-overlay-]")
+
+
+            for (let i = 0; i < arrow_overlays.length; i++) {
+
+                let arrowElement = arrow_overlays[i];
+                let textElement = text_overlays[i];
+
+
+                let arrowX = parseFloat(arrowElement.style.left);
+                let arrowY = parseFloat(arrowElement.style.top);
+
+
+                let viewportPoint = viewer.viewport.pointFromPixel(new OpenSeadragon.Point(arrowX - 5, arrowY + 15));
+                viewer.updateOverlay(textElement, viewportPoint);
+            }
+
+
+        }
+
+    </script>
 {% endblock content %}

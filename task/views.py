@@ -1,8 +1,18 @@
+import random
+
 from django.contrib import messages
-from django.shortcuts import render, redirect
+from django.db import transaction
+from django.forms import formset_factory, inlineformset_factory, modelformset_factory
+from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
+from django.utils.datastructures import MultiValueDictKeyError
+
+from course.models import Course
+from slide.models import Slide, Pointer, AnnotatedSlide, BoundingBox
+from slide.views import slide_cache
+from user.decorators import teacher_required
 from task.models import Task
 from tag.models import Tag
-from user.decorators import teacher_required
+
 
 
 def list(request):
@@ -44,6 +54,22 @@ def list(request):
         'selected_pathology': selected_pathology,
         'selected_histology': selected_histology,
     })
+@teacher_required
+def new(request, slide_id, course_id=None):
+    """
+    Teacher form for creating a  task
+    """
+
+    # Get slide
+    slide_id = slide_id
+    slide = Slide.objects.get(pk=slide_id)
+    slide_cache.load_slide_to_cache(slide.id)
+
+
+    return render(request, "task/new.html", {
+        'slide_id': slide_id,
+
+    })
 
 
 @teacher_required
@@ -52,4 +78,4 @@ def delete(request, task_id):
     task.type_model.delete()
     task.delete()
     messages.add_message(request, messages.SUCCESS, 'Task deleted.')
-    return redirect(list)
+    return redirect('task:list')

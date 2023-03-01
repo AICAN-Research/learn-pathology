@@ -224,7 +224,7 @@ def whole_slide_view_full(request, slide_id):
     context['pointers'] = Pointer.objects.filter(annotated_slide=annotated_slide)
     context['boxes'] = BoundingBox.objects.filter(annotated_slide=annotated_slide)
 
-    return render(request, 'slide/view_wsi_full.html', context)
+    return render(request, 'slide/view_wsi_accordion.html', context)
 
 
 def whole_slide_viewer(request, slide_id):
@@ -415,7 +415,7 @@ def add_or_edit_descriptive_annotation(request, slide_id):
             # Store annotations (pointers)
             for key in request.POST:
                 print(key, request.POST[key])
-                if key.startswith('pointer-') and key.endswith('-text'):
+                if key.startswith('right-arrow-overlay-') and key.endswith('-text'):
                     save_pointer_annotation(request, key, annotated_slide)
                 elif key.startswith('boundingbox-') and key.endswith('-text'):
                     save_boundingbox_annotation(request, key, annotated_slide)

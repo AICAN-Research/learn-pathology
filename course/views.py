@@ -29,7 +29,7 @@ def index(request):
                   {'courses': Course.objects.all().order_by('code')})
 
 
-def course_page(request, course_id):
+def course_page(request, course_id, return_task=None ):
     """
     Display a course page with course information and related slides and tasks
     """
@@ -44,6 +44,7 @@ def course_page(request, course_id):
         'tasks': tasks,
         'slides': slides,
         'course_materials': course_materials,
+        'return_task': return_task,
     })
 
 
@@ -171,7 +172,7 @@ def delete(request, course_id):
 @teacher_required
 def new_task_and_add_to_course(request, course_id, slide_id):
     # Call/render new task template from here for user to fill in
-    http_response = new_mc(request, slide_id=slide_id, course_id=course_id)
+    http_response = new(request, slide_id=slide_id, course_id=course_id)
     return http_response
 
 
