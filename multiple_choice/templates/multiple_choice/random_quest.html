@@ -11,7 +11,7 @@
     <div class="row">
         <div class="col"></div>
         <div class="col">
-        <form class="form-check text-left" action="{% url 'multiple_choice:do_random' slide_id=slide.id %}" method="post">
+        <form class="form-check text-start" action="{% url 'multiple_choice:do_random' slide_id=slide.id %}" method="post">
             {% csrf_token %}
 
             {% for choice in answers %}
