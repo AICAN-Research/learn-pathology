@@ -311,6 +311,14 @@ body {
     height: 100%;
 }
 
+/* Table formatting */
+.table .thead-light th {
+    /* From boostrap v4 definition */
+    color: #495057;
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+}
+
 .LPButton {
     display: inline-block;
     background-color: var(--button-colour);
