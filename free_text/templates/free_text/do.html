@@ -26,7 +26,7 @@
 
                 </div>
                 <div class="col">
-                    <form class="form-check text-left"
+                    <form class="form-check text-start"
                           action="{% url 'free_text:do' task_id=task.task_id course_id=course_id %}" method="post">
                         {% csrf_token %}
                         {% if answered == 'yes' %}
