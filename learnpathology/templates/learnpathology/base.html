@@ -31,23 +31,21 @@
 <script>setTheme('theme_olive')</script>
 
 
-<nav class="navbar navbar-expand-lg  container-flex" style="background-color: var(--background-header);height: var(--header-height);
- padding: 0rem 1rem;">
+<nav class="navbar navbar-expand-lg container-flex" style="background-color: var(--background-header);height: var(--header-height); padding: 0rem 1rem;">
     <div class="container-fluid" >
         <a class="navbar-brand"  href="{% url 'frontpage' %}">
             <img class="logoSmallImage" src="{% static 'learnpathology/images/logo_small.png' %}" alt="LearnPathology logo small">
-            Home
         </a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="collapse navbar-collapse" id="navMenu" style="background-color: var(--background-header); padding-left: 1rem; border-radius: 0rem 0rem 1rem 1rem">
-            <ul class="navbar-nav mr-auto">
+        <div class="collapse navbar-collapse" id="navMenu" style="background-color: var(--background-header); border-radius: 0rem 0rem 1rem 1rem">
+            <ul class="navbar-nav mr-auto align-items-center">
                 {% if request.user.is_authenticated %}
                     <!-- Options available to any type of user-->
-                    {# <li class="nav-item"><a class="nav-link active" href="{% url 'frontpage' %}">Home</a></li> #}
+                     <li class="nav-item"><a class="nav-link active" href="{% url 'frontpage' %}">Home</a></li>
                     <li class="nav-item"><a class="nav-link active " href="{% url 'slide:browser' %}">Images</a></li>
                     <li class="nav-item"><a class="nav-link active " href="{% url 'course:index' %}">Courses</a></li>
                     <li class="nav-item"><a class="nav-link active " href="{% url 'task:list' %}">Tasks</a></li>
