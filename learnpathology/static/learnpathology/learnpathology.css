@@ -398,8 +398,8 @@ Course navigation tabs
     color: var(--text-colour-dark);
     border-style: solid;
     border-width: 1px  1px 0 1px;
-    border-top-start-radius: 0.25rem;
-    border-top-end-radius: 0.25rem;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
     border-color: var(--button-border-colour);
 }
 
@@ -407,8 +407,8 @@ Course navigation tabs
     background-color: var(--button-colour-hover);
     border-style: solid;
     border-width: 1px  1px 0 1px;
-    border-top-start-radius: 0.25rem;
-    border-top-end-radius: 0.25rem;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
     border-color: var(--button-border-colour);
 }
 
@@ -418,8 +418,8 @@ Course navigation tabs
     font-weight: bold;
     border-style: solid;
     border-width: 1px  1px 0 1px;
-    border-top-start-radius: 0.25rem;
-    border-top-end-radius: 0.25rem;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
     border-color: var(--button-border-colour);
 }
 
