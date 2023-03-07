@@ -370,6 +370,20 @@ Radio button toolbar used with slide filters
     border-radius: 4px;
 }
 
+.radio-toolbar label.wideLabel {
+    display: inline-block;
+    background-color: var(--button-colour);
+    font-family: sans-serif, Arial;
+    font-size: 1rem;
+    font-weight: 400;
+    border: 0 solid var(--button-border-colour);
+    border-radius: 4px;
+    padding: 5px 5px;
+    margin-top: 1px;
+    margin-bottom: 1px;
+    width: 100%;
+}
+
 .radio-toolbar label:hover {
     background-color: var(--button-colour-hover);
 }
@@ -479,6 +493,7 @@ Image browser
 ============================================= */
 .imageBrowserNavTabs .nav-pills .nav-link {
     color: var(--text-colour-dark);
+    margin: 0 10px 0 10px;
 }
 .imageBrowserNavTabs .nav-link:hover {
     background-color: var(--button-colour-hover);
