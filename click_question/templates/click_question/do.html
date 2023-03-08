@@ -61,6 +61,7 @@
     <script>
         viewer.addHandler('viewport-change', updateTextLocation);
         viewer.addHandler('tile-drawing', updateTextLocation);
+        viewer.addHandler('open', toggleAnnotationOff);
         addEventListener("resize", () => {
         });
 
@@ -72,7 +73,10 @@
             }, 20);
         };
 
-        window.onLoad = toggleAnnotationOff()
+
+
+        {#window.onLoad = toggleAnnotationOff();#}
+
 
         let containingElement = document.querySelector('#boundingbox-25');
 
@@ -115,8 +119,7 @@
 
 
                 var current_element = current_overlays[i].element
-                console.log(current_element)
-                current_element.style.border = 'transparent';
+                current_element.style.opacity = '0.0';
             }
 
         }
@@ -124,11 +127,10 @@
         function toggleAnnotationOn() {
 
 
-
             let current_overlays = viewer.currentOverlays
             for (let i = 0; i < current_overlays.length; i++) {
                 var current_element = current_overlays[i].element
-                current_element.style.border = '';
+                current_element.style.opacity = '';
             }
 
         }
