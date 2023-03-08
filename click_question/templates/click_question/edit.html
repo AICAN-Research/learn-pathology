@@ -3,7 +3,7 @@
 {% block content %}
 
 <div class="container">
-<h1>Edit Free Text Question </h1>
+<h1>Edit Click Question</h1>
 </div>
 
 <div class="card mx-auto text-center" style="width: 90%">
@@ -28,17 +28,14 @@
             <td>{{ taskForm.name }}</td>
         </tr>
         <tr>
-            <th>{{ freeTextForm.question.label }}</th>
-            <td>{{ freeTextForm.question }}</td>
+            <th>{{ clickQuestionForm.question.label }}</th>
+            <td>{{ clickQuestionForm.question }}</td>
         </tr>
         <tr>
-            <th>{{ freeTextForm.instructions.label }}</th>
-            <td>{{ freeTextForm.instructions }}</td>
+            <th>{{ clickQuestionForm.instructions.label }}</th>
+            <td>{{ clickQuestionForm.instructions }}</td>
         </tr>
-               <tr>
-            <th>{{ freeTextForm.answer.label }}</th>
-            <td>{{ freeTextForm.answer }}</td>
-        </tr>
+
 
 
         <thead class="thead-light">

@@ -21,7 +21,6 @@ from django.conf import settings
 
 import learnpathology.views
 import slide.views
-import task.views
 
 urlpatterns = [
     path('', learnpathology.views.index, name='frontpage'),
@@ -35,14 +34,15 @@ urlpatterns = [
     path('course/', include('course.urls')),
     path('task/', include('task.urls')),
     path('ckeditor/', include('ckeditor_uploader.urls')),
-path('free_text/', include('free_text.urls')),
+    path('free_text/', include('free_text.urls')),
+    path('click_question/', include('click_question.urls')),
 
 ]
 
 urlpatterns += [
     # Define specific paths (can be used with {% url %} tag
-    #path('about/', views.flatpage, {'url': '/about/'}, name='about'),
-    #path('privacy/', views.flatpage, {'url': '/privacy/'}, name='privacy'),
+    # path('about/', views.flatpage, {'url': '/about/'}, name='about'),
+    # path('privacy/', views.flatpage, {'url': '/privacy/'}, name='privacy'),
 
     # Or, use this 'catchall' pattern for all flatpages
     re_path(r'^(?P<url>.*/)$', views.flatpage),

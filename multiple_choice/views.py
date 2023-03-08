@@ -183,7 +183,7 @@ def new(request, slide_id, course_id=None):
         multiple_choice_form = MultipleChoiceForm()
         choice_formset = ChoiceFormset()
 
-    return render(request, 'multiple_choice/tasktypes/new_mc.html', {
+    return render(request, 'multiple_choice/new.html', {
         'slide': slide,
         'multipleChoiceForm': multiple_choice_form,
         'taskForm': task_form,
@@ -290,13 +290,8 @@ def edit(request, task_id):
                 for key in request.POST:
                     print(key, request.POST[key])
                     if key.startswith('right-arrow-overlay-') and key.endswith('-text'):
-                        prefix = key[:-len('text')]
-                        pointer = Pointer()
-                        pointer.text = request.POST[key]
-                        pointer.position_x = float(request.POST[prefix + 'x'])
-                        pointer.position_y = float(request.POST[prefix + 'y'])
-                        pointer.annotated_slide = annotated_slide
-                        pointer.save()
+                        save_pointer_annotation(request,key,annotated_slide)
+
 
                     if key.startswith('boundingbox-') and key.endswith('-text'):
                         save_boundingbox_annotation(request, key, annotated_slide)

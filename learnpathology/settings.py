@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'free_text',
     'course',
     'tag',
+    'click_question',
 ]
 
 MIDDLEWARE = [

@@ -31,6 +31,14 @@
                                     <a href="{% url 'free_text:new' slide_id=slide_id %}">Free Text Question</a>
                                 {% endif %}
                             </div>
+                             <br>
+                            <div class="LPButton" style="margin-top: 0; ">
+                                {% if course_id %}
+                                    <a href="{% url 'click_question:new' slide_id=slide_id course_id=course_id %}">Click Question</a>
+                                {% else %}
+                                    <a href="{% url 'click_question:new' slide_id=slide_id %}">Click Question</a>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>

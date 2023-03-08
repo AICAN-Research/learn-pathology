@@ -6,17 +6,17 @@ from slide.models import Slide, Pointer, AnnotatedSlide, BoundingBox
 from slide.views import slide_cache, save_boundingbox_annotation, save_pointer_annotation
 from task.models import Task
 from task.forms import TaskForm
-from free_text.forms import FreeTextForm
-from free_text.models import FreeText
+from click_question.forms import ClickQuestionForm
+from click_question.models import ClickQuestion
 from course.models import Course
 from user.decorators import teacher_required
 
 
 def do(request, task_id, course_id=None):
     """
-    Student form for answering/viewing a free text task
+    Student form for answering/viewing a click question
     """
-    task = FreeText.objects.get(task_id=task_id)
+    task = ClickQuestion.objects.get(task_id=task_id)
 
     # get id of next task
     #TODO include all task types for next task
@@ -34,30 +34,30 @@ def do(request, task_id, course_id=None):
     # except IndexError:
     #     next_id = all_tasks[0]
 
-    student_text = None
+    student_selection = None
     answered = None
     if request.method == 'POST':
         print('POST')
         # Process form
-        student_text = request.POST.get('studentText',None)
-        if student_text:
+        student_selection = request.POST.get('studentText',None)
+        if student_selection:
             answered = 'yes'
         else:
             answered = 'no'
 
     slide_cache.load_slide_to_cache(task.task.annotated_slide.slide.id)
-    return render(request, 'free_text/do.html', {
+    return render(request, 'click_question/do.html', {
         'task': task,
         'answered': answered,
         'course_id': course_id,
-        'student_text': student_text,
+        'student_selection': student_selection,
     })
 
 
 @teacher_required
 def new(request, slide_id, course_id=None):
     """
-    Teacher form for creating a free text task
+    Teacher form for creating a click question
     """
 
     # Get slide
@@ -69,10 +69,10 @@ def new(request, slide_id, course_id=None):
     if request.method == 'POST':  # Form was submitted
         print("POST")
         task_form = TaskForm(request.POST)
-        free_text_form = FreeTextForm(request.POST)
+        click_question_form = ClickQuestionForm(request.POST)
 
         with transaction.atomic():  # Make save operation atomic
-            if free_text_form.is_valid() and task_form.is_valid():
+            if click_question_form.is_valid() and task_form.is_valid():
                 # Create annotated slide
                 annotated_slide = AnnotatedSlide()
                 annotated_slide.slide = slide
@@ -88,9 +88,9 @@ def new(request, slide_id, course_id=None):
                 task.tags.set([organ_tags] + other_tags)
 
                 # Create multiple choice
-                free_text = free_text_form.save(commit=False)
-                free_text.task = task
-                free_text.save()
+                click_question = click_question_form.save(commit=False)
+                click_question.task = task
+                click_question.save()
 
                 # Store annotations (pointers)
                 for key in request.POST:
@@ -110,11 +110,11 @@ def new(request, slide_id, course_id=None):
                 return redirect('task:list')
     else:
         task_form = TaskForm()
-        free_text_form = FreeTextForm()
+        click_question_form = ClickQuestionForm()
 
-    return render(request, 'free_text/new.html', {
+    return render(request, 'click_question/new.html', {
         'slide': slide,
-        'freeTextForm': free_text_form,
+        'clickQuestionForm': click_question_form,
         'taskForm': task_form,
     })
 
@@ -122,12 +122,12 @@ def new(request, slide_id, course_id=None):
 @teacher_required
 def edit(request, task_id):
     """
-    Teacher form for editing a free text task
+    Teacher form for editing a click question
     """
 
     # Get model instances from database
     task = get_object_or_404(Task, id=task_id)
-    free_text = get_object_or_404(FreeText, task_id=task_id)
+    click_question = get_object_or_404(ClickQuestion, task_id=task_id)
 
     # Get slide and pointers
     annotated_slide = task.annotated_slide
@@ -139,12 +139,12 @@ def edit(request, task_id):
 
         # Get submitted forms
         task_form = TaskForm(request.POST or None, instance=task)
-        free_text_form = FreeTextForm(request.POST or None, instance=free_text)
+        click_question_form = ClickQuestionForm(request.POST or None, instance=click_question)
 
         # pointers = Pointer.objects.filter(annotated_slide=task.annotated_slide)
 
         with transaction.atomic():  # Make save operation atomic
-            if free_text_form.is_valid() and task_form.is_valid():
+            if click_question_form.is_valid() and task_form.is_valid():
 
                 # Save instance data to database
                 task = task_form.save()
@@ -153,7 +153,7 @@ def edit(request, task_id):
                 other_tags = [tag for tag in task_form.cleaned_data['other_tags']]
                 task.tags.set([organ_tags] + other_tags)
 
-                free_text = free_text_form.save()
+                free_text = click_question_form.save()
 
                 # Store annotations (pointers)
                 # Delete old pointers first
@@ -178,14 +178,14 @@ def edit(request, task_id):
         task_form.fields['organ_tags'].initial = task.tags.filter(is_organ=True)
         task_form.fields['other_tags'].initial = task.tags.filter(is_stain=False, is_organ=False)
 
-        free_text_form = FreeTextForm(instance=task.freetext)
+        click_question_form = ClickQuestionForm(instance=task.clickquestion)
 
     context = {
         'slide': slide,
         'annotated_slide': annotated_slide,
         'taskForm': task_form,
-        'freeTextForm': free_text_form,
+        'clickQuestionForm': click_question_form,
         'pointers': Pointer.objects.filter(annotated_slide=annotated_slide),
 
     }
-    return render(request, 'free_text/edit.html', context)
+    return render(request, 'click_question/edit.html', context)
