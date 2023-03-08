@@ -316,5 +316,6 @@ def edit(request, task_id):
         'multipleChoiceForm': multiple_choice_form,
         'choiceFormset': choice_formset,
         'pointers': Pointer.objects.filter(annotated_slide=annotated_slide),
+        'boxes': BoundingBox.objects.filter(annotated_slide=annotated_slide),
     }
     return render(request, 'multiple_choice/edit.html', context)

@@ -186,6 +186,7 @@ def edit(request, task_id):
         'taskForm': task_form,
         'freeTextForm': free_text_form,
         'pointers': Pointer.objects.filter(annotated_slide=annotated_slide),
+        'boxes': BoundingBox.objects.filter(annotated_slide=annotated_slide),
 
     }
     return render(request, 'free_text/edit.html', context)

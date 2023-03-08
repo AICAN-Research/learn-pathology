@@ -186,6 +186,7 @@ def edit(request, task_id):
         'taskForm': task_form,
         'clickQuestionForm': click_question_form,
         'pointers': Pointer.objects.filter(annotated_slide=annotated_slide),
+        'boxes':  BoundingBox.objects.filter(annotated_slide=annotated_slide),
 
     }
     return render(request, 'click_question/edit.html', context)

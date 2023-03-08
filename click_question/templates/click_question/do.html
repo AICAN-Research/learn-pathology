@@ -113,42 +113,40 @@
             let current_overlays = viewer.currentOverlays
             for (let i = 0; i < current_overlays.length; i++) {
 
-                var current_element = current_overlays[i].element;
-                console.log(current_element);
+
+                var current_element = current_overlays[i].element
+                console.log(current_element)
                 current_element.style.border = 'transparent';
             }
+
         }
 
         function toggleAnnotationOn() {
-            $(".textOverlay").toggle();
+
 
 
             let current_overlays = viewer.currentOverlays
             for (let i = 0; i < current_overlays.length; i++) {
-                var current_element = current_overlays[i].element;
+                var current_element = current_overlays[i].element
                 current_element.style.border = '';
             }
+
         }
 
 
         function updateTextLocation(event) {
 
-            let slide_overlays = viewer.currentOverlays;
-
 
             let arrow_overlays = $("[id^=right-arrow-overlay-]")
             let text_overlays = $("[id^=arrow-text-overlay-]")
-
 
             for (let i = 0; i < arrow_overlays.length; i++) {
 
                 let arrowElement = arrow_overlays[i];
                 let textElement = text_overlays[i];
 
-
                 let arrowX = parseFloat(arrowElement.style.left);
                 let arrowY = parseFloat(arrowElement.style.top);
-
 
                 let viewportPoint = viewer.viewport.pointFromPixel(new OpenSeadragon.Point(arrowX - 5, arrowY + 15));
                 viewer.updateOverlay(textElement, viewportPoint);
