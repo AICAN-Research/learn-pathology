@@ -285,6 +285,9 @@
 
     </script>
     <script>
+        window.onLoad = toggleAnnotationOff();
+        window.onLoad = toggleInfoCardVisibility();
+        window.onLoad = createClickReaction();
 
         function createClickReaction() {
             let current_overlays = viewer.currentOverlays
@@ -334,11 +337,6 @@
             }
         }
 
-
-
-        window.onLoad = toggleAnnotationOff()
-        window.onLoad = toggleInfoCardVisibility()
-         window.onLoad = createClickReaction()
 
         function toggleAnnotationOff() {
             $(".overlay").toggle();
