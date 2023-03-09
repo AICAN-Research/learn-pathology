@@ -66,8 +66,7 @@
 
                 </div>
                 <div class="col">
-                    <form class="form-check text-start"
-                          action="{% url 'multiple_choice:do' task_id=task.id course_id=course_id %}" method="post">
+                    <form action="{% url 'multiple_choice:do' task_id=task.id course_id=course_id %}" method="post">
                         {% csrf_token %}
                         {% for choice in task.choice_set.all %}
                             {% if counter_corr_answ <= 1 %}

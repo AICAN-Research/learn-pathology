@@ -96,6 +96,16 @@
                                         <td><a href="{% url 'click_question:edit' task.id %}">Edit</a></td>
                                     {% endif %}
 
+                                    {% elif task.type == 'one_to_one' %}
+                                    <td>
+                                        <a href="{% url 'one_to_one:do' task_id=task.id course_id=0 %}">{{ task.name }}</a>
+                                    </td>
+                                    <td>{{ task.type }}</td>
+                                    <td><a href="{% url 'one_to_one:do' task_id=task.id course_id=0 %}">Do task</a></td>
+                                    {% if request.user.is_teacher or request.user.is_superuser %}
+                                        <td><a href="{% url 'one_to_one:edit' task.id %}">Edit</a></td>
+                                    {% endif %}
+
                                 {% endif %}
                                 <td><a href="{% url 'task:task_delete' task.id %}">Delete</a></td>
 
