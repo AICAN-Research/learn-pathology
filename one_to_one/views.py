@@ -73,8 +73,7 @@ def new(request, slide_id, course_id=None):
         sorting_pair_formset = SortingPairFormSet(request.POST)
 
         with transaction.atomic():
-            print('SortingFOrmset errors:')
-            print(sorting_pair_formset.errors)  # Make save operation atomic
+         # Make save operation atomic
             if one_to_one_form.is_valid() and task_form.is_valid() and sorting_pair_formset.is_valid():
                 # Create annotated slide
                 annotated_slide = AnnotatedSlide()
@@ -136,12 +135,12 @@ def edit(request, task_id):
     Teacher form for editing a one-to-one sorting task
     """
 
-    ChoiceFormset = modelformset_factory(Choice, form=ChoiceForm, extra=5)
+    SortingPairFormSet = modelformset_factory(SortingPair, form=SortingPairForm, extra=5)
 
     # Get model instances from database
     task = get_object_or_404(Task, id=task_id)
-    multiple_choice = get_object_or_404(MultipleChoice, task=task)
-    choices = Choice.objects.filter(task=multiple_choice)
+    one_to_one = get_object_or_404(OneToOne, task=task)
+    sorting_pair = SortingPair.objects.filter(task=one_to_one)
 
     # Get slide and pointers
     annotated_slide = task.annotated_slide
@@ -153,13 +152,13 @@ def edit(request, task_id):
 
         # Get submitted forms
         task_form = TaskForm(request.POST or None, instance=task)
-        multiple_choice_form = MultipleChoiceForm(request.POST or None, instance=multiple_choice)
-        choice_formset = ChoiceFormset(request.POST)
+        one_to_one_form = OneToOneForm(request.POST or None, instance=one_to_one)
+        sorting_pair_formset = SortingPairFormSet(request.POST)
 
         # pointers = Pointer.objects.filter(annotated_slide=task.annotated_slide)
 
         with transaction.atomic():  # Make save operation atomic
-            if task_form.is_valid() and multiple_choice_form.is_valid() and choice_formset.is_valid():
+            if task_form.is_valid() and one_to_one_form.is_valid() and sorting_pair_formset.is_valid():
 
                 # Save instance data to database
                 task = task_form.save()
@@ -168,13 +167,13 @@ def edit(request, task_id):
                 other_tags = [tag for tag in task_form.cleaned_data['other_tags']]
                 task.tags.set([organ_tags] + other_tags)
 
-                multiple_choice = multiple_choice_form.save()
+                one_to_one = one_to_one_form.save()
 
-                for choiceForm in choice_formset:
-                    choice = choiceForm.save(commit=False)
-                    if len(choice.text) > 0:
-                        choice.task = multiple_choice
-                        choice.save()
+                for pairForm in sorting_pair_formset:
+                    pair = pairForm.save(commit=False)
+                    if len(pair.fixed) > 0 and len(pair.dragable) > 0:
+                        pair.task = one_to_one
+                        pair.save()
 
                 # Store annotations (pointers)
                 # Delete old pointers first
@@ -199,15 +198,15 @@ def edit(request, task_id):
         task_form.fields['organ_tags'].initial = task.tags.filter(is_organ=True)
         task_form.fields['other_tags'].initial = task.tags.filter(is_stain=False, is_organ=False)
 
-        multiple_choice_form = MultipleChoiceForm(instance=task.multiplechoice)
-        choice_formset = ChoiceFormset(queryset=choices)
+        one_to_one_form = OneToOneForm(instance=task.onetoone)
+        sorting_pair_formset = SortingPairFormSet(queryset=sorting_pair)
 
     context = {
         'slide': slide,
         'annotated_slide': annotated_slide,
+        'oneToOneForm': one_to_one_form,
         'taskForm': task_form,
-        'multipleChoiceForm': multiple_choice_form,
-        'choiceFormset': choice_formset,
+        'sortingPairFormSet': sorting_pair_formset,
         'pointers': Pointer.objects.filter(annotated_slide=annotated_slide),
         'boxes': BoundingBox.objects.filter(annotated_slide=annotated_slide),
     }

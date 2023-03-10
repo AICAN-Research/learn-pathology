@@ -1,9 +1,8 @@
 {% extends 'learnpathology/base.html' %}
 
 {% block content %}
-
 <div class="container">
-<h1>Edit Multiple Choice</h1>
+<h1>New One-to-One Sorting Task</h1>
 </div>
 
 <div class="card mx-auto text-center" style="width: 90%">
@@ -11,43 +10,51 @@
 <div class="card-text">
 
 <p>
-    Update the information you wish to update, then click the
-    <i>Update Task</i> button
+    Enter the name, question and answer pairs for the one-to-one sorting task. <br>
+    Add tags and annotate the slide (optional)
 </p>
 
-<form method="post">
+<form class="form" method="post">
     {% csrf_token %}
     {{ taskForm.management_form }}
-    <table class="table">
+
+    <table class="table" style="margin-left: auto; margin-right:auto; width: 80%;">
 
         <thead class="thead-light">
-            <tr><th colspan="2">Multiple choice info</th></tr>
+            <tr><th colspan="2">Task info</th></tr>
         </thead>
         <tr>
             <th>{{ taskForm.name.label }} (short, decriptive)</th>
             <td>{{ taskForm.name }}</td>
         </tr>
         <tr>
-            <th>{{ multipleChoiceForm.question.label }}</th>
-            <td>{{ multipleChoiceForm.question }}</td>
+            <th>{{ oneToOneForm.question.label }}</th>
+            <td>{{ oneToOneForm.question }}</td>
         </tr>
         <tr>
-            <th>{{ multipleChoiceForm.instructions.label }}</th>
-            <td>{{ multipleChoiceForm.instructions }}</td>
+            <th>{{ oneToOneForm.instructions.label }}</th>
+            <td>{{ oneToOneForm.instructions }}</td>
         </tr>
 
 
         <thead class="thead-light">
-            <tr><th colspan="2">Answer alternatives (check box if alternative is correct)</th></tr>
+            <tr><th colspan="2">Answer pairs</th></tr>
         </thead>
-        {{ choiceFormset.management_form }}
-        {% for choiceForm in choiceFormset %}
-            {{ choiceForm.id }} <!-- Need to explicitly render form id when not iterating through all fields -->
+        {{ sortingPairFormSet.management_form }}
+
+     <tr>
+                <td>{{ 'Input for fixed column' }}</td>
+                <td>{{ 'Input for dragable column' }}</td>
+            </tr>
+           {% for pairForm in sortingPairFormSet %}
+            {{ pairForm.id }} <!-- Need to explicitly render form id when not iterating through all fields -->
             <tr>
-                <td>{{ "Option" }}</td>
-                <td>{{ choiceForm.text }} {{ choiceForm.correct }}</td>
+                <td>{{ pairForm.fixed }}</td>
+                <td>{{ pairForm.dragable }}</td>
             </tr>
         {% endfor %}
+
+
 
 
         <thead class="thead-light">
@@ -70,11 +77,12 @@
             <tr><th colspan="2">Annotate WSI</th></tr>
         </thead>
         <tr><td colspan="2">
-            {% include 'slide/view_wsi_and_edit_annotations.html' with slide=slide pointers=pointers %}
+            {% include 'slide/view_wsi_and_edit_annotations.html' with slide=slide %}
 
             <br>
-            <input type="submit" value="Update Task">
+            <input type="submit" value="Submit">
         </td></tr>
+
     </table>
 
 </form>

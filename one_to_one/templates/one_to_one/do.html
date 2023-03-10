@@ -76,6 +76,7 @@
         var mode = document.querySelector('#mode').dataset.mode;
         var idOrder = JSON.parse("{{id_order}}");
         var answerOrder = JSON.parse("{{answer_order}}");
+
         window.addEventListener('DOMContentLoaded', function () {
             if (mode === 'get') {
                 console.log('Shuffel List.')
@@ -86,7 +87,6 @@
                 console.log('Dont shuffel List.')
                 rearrangeList(idOrder)
                 colorAnswers(idOrder, answerOrder)
-
             }
 
         })
@@ -109,7 +109,6 @@
         }
 
         function rearrangeList(order) {
-
             var list = document.getElementById("sortable-list");
             var items = list.getElementsByTagName("li");
             var itemsArr = [];
@@ -128,7 +127,6 @@
             for (var i = 0; i < itemsArr.length; i++) {
                 list.appendChild(itemsArr[i]);
             }
-
         }
 
         function colorAnswers(idOrder, answerOrder) {
@@ -149,28 +147,20 @@
 
         function updateTextLocation(event) {
 
-            let slide_overlays = viewer.currentOverlays;
-
-
             let arrow_overlays = $("[id^=right-arrow-overlay-]")
             let text_overlays = $("[id^=arrow-text-overlay-]")
-
 
             for (let i = 0; i < arrow_overlays.length; i++) {
 
                 let arrowElement = arrow_overlays[i];
                 let textElement = text_overlays[i];
 
-
                 let arrowX = parseFloat(arrowElement.style.left);
                 let arrowY = parseFloat(arrowElement.style.top);
-
 
                 let viewportPoint = viewer.viewport.pointFromPixel(new OpenSeadragon.Point(arrowX - 5, arrowY + 15));
                 viewer.updateOverlay(textElement, viewportPoint);
             }
-
-
         }
 
 
