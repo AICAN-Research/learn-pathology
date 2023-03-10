@@ -42,13 +42,6 @@
                         <div class="card-body">
                             <input type="text" name="search" placeholder="Search names, descriptions..." id="search_input"
                                    {% if search_query %}value="{{ search_query }}"{% endif %} style="width: 100%;">
-
-{#                            <div class="radio-toolbar row justify-content-between" style="margin-top: 2px;">#}
-{#                                <input type="submit" id="submit_button" style="display: none;">#}
-{#                                <label for="submit_button" class="LPButton searchButtons">Submit</label>#}
-{#                                <input type="submit" id="clear_button" style="display: none;">#}
-{#                                <label for="clear_button" class="LPButton searchButtons">Clear search</label>#}
-{#                            </div>#}
                             <div style="margin-top: 2px;">
                                 <button class="imageBrowserSearchButtons" type="submit" name="submit_button">Search</button>
                                 <button class="imageBrowserSearchButtons" type="submit" name="clear_button">Clear search</button>
@@ -68,6 +61,15 @@
 
                                 <input type="radio" name="histology-pathology" id="pathology-btn" value="pathology" onchange="this.form.submit();">
                                 <label for="pathology-btn" class="wideLabel {% if selected_pathology %}active{% endif %}">Pathology</label>
+                                {% if selected_pathology %}
+                                    <ul class="" style="list-style: none;">
+                                        {% for tag in general_pathology_tags %}
+                                            <li><button class="wideLabel" type="submit" id="general_pathology-id-{{ tag.id }}" name="general_pathology_button" value="general_pathology_tag-id-{{ tag.id }}">
+                                                {{ tag.name }}
+                                            </button></li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
                             </div>
                         </div>
                     </div>

@@ -384,6 +384,21 @@ Radio button toolbar used with slide filters
     width: 100%;
 }
 
+.radio-toolbar button.wideLabel {
+    display: inline-block;
+    background-color: var(--button-colour);
+    font-family: sans-serif, Arial;
+    font-size: 1rem;
+    font-weight: 400;
+    border: 0 solid var(--button-border-colour);
+    border-radius: 4px;
+    padding: 4px 4px;
+    margin-top: 1px;
+    margin-bottom: 1px;
+    width: 100%;
+    text-align: left;
+}
+
 .imageBrowserSearchButtons {
     display: inline-block;
     background-color: var(--button-colour);
