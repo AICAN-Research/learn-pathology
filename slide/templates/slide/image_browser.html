@@ -3,25 +3,6 @@
 {% load bootstrap_icons %}
 
 
-<script>
-
-$(document).ready(function(){
-  activateTab('aaa');
-});
-
-function activateTab(tab){
-  $('.nav-tabs a[href="#' + tab + '"]').tab('show');
-}
-
-$(document).ready(function() {
-    $('.btn').onclick(function (event) {
-        this.form.submit();
-    });
-});
-
-</script>
-
-
 {% block content %}
 
 <div class="container">
@@ -153,3 +134,22 @@ $(document).ready(function() {
 </div>
 </div>
 {% endblock content %}
+
+
+<script>
+
+$(document).ready(function(){
+  activateTab('aaa');
+});
+
+function activateTab(tab){
+  $('.nav-tabs a[href="#' + tab + '"]').tab('show');
+}
+
+$(document).ready(function() {
+    $('.btn').onclick(function (event) {
+        this.form.submit();
+    });
+});
+
+</script>
