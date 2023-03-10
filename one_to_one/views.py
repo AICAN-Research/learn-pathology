@@ -1,4 +1,5 @@
 import random
+import json
 
 from django.contrib import messages
 from django.db import transaction
@@ -21,29 +22,34 @@ def do(request, task_id, course_id=None):
     """
     print(task_id)
     task = OneToOne.objects.get(task_id=task_id)
+    mode = 'get'
+    id_order = [1,2,3]
 
-    answered = None
     answer_order = []
     if request.method == 'POST':
         print('POST')
         # Process form
 
-        id_order = request.POST.get('item_ids', None);
-        if id_order:
-            for id in id_order:
-                pair = SortingPair.objects.get(task=task, id=id)
-                answer_order.append(pair.dragable)
-            answered = 'yes'
-        else:
-            answered = 'no'
+        id_order = request.POST.get('item_ids', None).split(',')
+        id_order =[int(x) for x in id_order]
+        for i, item in enumerate(id_order):
+            if item == i + 1:
+                answer_order.append(True)
+            else:
+                answer_order.append(False)
 
+        print(answer_order)
+        mode = 'post'
+
+    print(answer_order)
     slide_cache.load_slide_to_cache(task.task.annotated_slide.slide.id)
     return render(request, 'one_to_one/do.html', {
         'task': task,
-        'answered': answered,
-        'answer_order': answer_order,
+        'answer_order': json.dumps(answer_order),
         'course_id': course_id,
-        'counter': 1,
+        'mode': mode,
+        'id_order': json.dumps(id_order),
+
 
     })
 

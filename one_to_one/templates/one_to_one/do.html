@@ -49,6 +49,8 @@
                             <br>
 
                             <input type="submit" value="Submit">
+                            <div id="mode" data-mode="{{ mode }}"></div>
+
 
                         </form>
                     </div>
@@ -70,8 +72,23 @@
     <script>
         viewer.addHandler('viewport-change', updateTextLocation);
         viewer.addHandler('tile-drawing', updateTextLocation);
+
+        var mode = document.querySelector('#mode').dataset.mode;
+        var idOrder = JSON.parse("{{id_order}}");
+        var answerOrder = JSON.parse("{{answer_order}}");
         window.addEventListener('DOMContentLoaded', function () {
-            shuffleList()
+            if (mode === 'get') {
+                console.log('Shuffel List.')
+                shuffleList()
+            }
+            if (mode === 'post') {
+                console.log(idOrder)
+                console.log('Dont shuffel List.')
+                rearrangeList(idOrder)
+                colorAnswers(idOrder, answerOrder)
+
+            }
+
         })
         addEventListener("resize", () => {
         });
@@ -88,6 +105,45 @@
             var ul = document.querySelector('#sortable-list');
             for (var i = ul.children.length; i >= 0; i--) {
                 ul.appendChild(ul.children[Math.random() * i | 0]);
+            }
+        }
+
+        function rearrangeList(order) {
+
+            var list = document.getElementById("sortable-list");
+            var items = list.getElementsByTagName("li");
+            var itemsArr = [];
+
+            // Create a new array with the items in the desired order
+            for (var i = 0; i < order.length; i++) {
+                for (var j = 0; j < items.length; j++) {
+                    if (items[j].getAttribute("id") == order[i]) {
+                        itemsArr.push(items[j]);
+                        break;
+                    }
+                }
+            }
+
+            // Append the sorted items to the list
+            for (var i = 0; i < itemsArr.length; i++) {
+                list.appendChild(itemsArr[i]);
+            }
+
+        }
+
+        function colorAnswers(idOrder, answerOrder) {
+            var list = document.getElementById("sortable-list");
+            var items = list.getElementsByTagName("li");
+
+            for (var i = 0; i < items.length; i++) {
+                var itemId = parseInt(items[i].getAttribute("id"));
+                if (idOrder.includes(itemId)) {
+                    if (answerOrder[idOrder.indexOf(itemId)]) {
+                        items[i].style.color = "green";
+                    } else {
+                        items[i].style.color = "red";
+                    }
+                }
             }
         }
 
@@ -132,7 +188,7 @@
             var input = document.createElement('input');
             input.type = 'hidden';
             input.name = 'item_ids';
-            input.value = JSON.stringify(itemIds);
+            input.value = itemIds;
             myForm.appendChild(input);
         });
 
