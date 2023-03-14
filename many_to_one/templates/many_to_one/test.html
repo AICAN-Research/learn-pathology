@@ -1,0 +1,30 @@
+{% extends 'learnpathology/base.html' %}
+
+
+{% block content %}
+      <form method="post">
+    {% csrf_token %}
+
+
+    <table>
+      <thead>
+        <tr>
+          {% for column_form in column_forms %}
+            <th>{{ column_form.caption }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row_form in row_forms %}
+          <tr>
+            {% for column_form in column_forms %}
+              <td>{{ row_form.answer }}</td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <button type="submit">Submit</button>
+  </form>
+
+{% endblock content %}
