@@ -36,6 +36,7 @@ urlpatterns = [
     path('ckeditor/', include('ckeditor_uploader.urls')),
     path('free_text/', include('free_text.urls')),
     path('click_question/', include('click_question.urls')),
+    path('one_to_one/', include('one_to_one.urls')),
 
 ]
 

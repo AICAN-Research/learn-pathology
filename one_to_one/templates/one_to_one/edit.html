@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="container">
-<h1>New click question</h1>
+<h1>New One-to-One Sorting Task</h1>
 </div>
 
 <div class="card mx-auto text-center" style="width: 90%">
@@ -10,8 +10,8 @@
 <div class="card-text">
 
 <p>
-    Enter the name and question for the task. Add tags (optional).<br>
-    Then mark where you want the active (correct region) of the slide to be.
+    Update the information you wish to update, then click the
+    <i>Update Task</i> button
 </p>
 
 <form class="form" method="post">
@@ -24,18 +24,38 @@
             <tr><th colspan="2">Task info</th></tr>
         </thead>
         <tr>
-            <th>{{ taskForm.name.label }} (short, descriptive)</th>
+            <th>{{ taskForm.name.label }} (short, decriptive)</th>
             <td>{{ taskForm.name }}</td>
         </tr>
         <tr>
-            <th>{{ clickQuestionForm.question.label }}</th>
-            <td>{{ clickQuestionForm.question }}</td>
+            <th>{{ oneToOneForm.question.label }}</th>
+            <td>{{ oneToOneForm.question }}</td>
         </tr>
         <tr>
-            <th>{{ clickQuestionForm.instructions.label }}</th>
-            <td>{{ clickQuestionForm.instructions }}</td>
-
+            <th>{{ oneToOneForm.instructions.label }}</th>
+            <td>{{ oneToOneForm.instructions }}</td>
         </tr>
+
+
+        <thead class="thead-light">
+            <tr><th colspan="2">Answer pairs</th></tr>
+        </thead>
+        {{ sortingPairFormSet.management_form }}
+
+     <tr>
+                <td>{{ 'Input for fixed column' }}</td>
+                <td>{{ 'Input for dragable column' }}</td>
+            </tr>
+           {% for pairForm in sortingPairFormSet %}
+            {{ pairForm.id }} <!-- Need to explicitly render form id when not iterating through all fields -->
+            <tr>
+                <td>{{ pairForm.fixed }}</td>
+                <td>{{ pairForm.dragable }}</td>
+            </tr>
+        {% endfor %}
+
+
+
 
         <thead class="thead-light">
             <tr><th colspan="2">Task metadata and tagging</th></tr>

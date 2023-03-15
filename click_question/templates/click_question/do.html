@@ -61,7 +61,8 @@
     <script>
         viewer.addHandler('viewport-change', updateTextLocation);
         viewer.addHandler('tile-drawing', updateTextLocation);
-        viewer.addHandler('open', toggleAnnotationOff);
+        viewer.addHandler('open', toggleAnnotationOff); // in normal view
+        window.onLoad = toggleAnnotationOff(); // when having the console open
         addEventListener("resize", () => {
         });
 

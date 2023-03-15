@@ -52,9 +52,10 @@ INSTALLED_APPS = [
     'task',
     'multiple_choice',
     'free_text',
+    'click_question',
+    'one_to_one',
     'course',
     'tag',
-    'click_question',
 ]
 
 MIDDLEWARE = [
