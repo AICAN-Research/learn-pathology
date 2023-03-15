@@ -42,6 +42,9 @@ class Task(models.Model):
     def do_url(self):
         return self.type + ':do'
 
+    def edit_url(self):
+        return self.type + ':edit'
+
     @property
     def type_model(self):
         for app in apps.get_app_configs():
