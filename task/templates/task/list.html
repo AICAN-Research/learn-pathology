@@ -86,7 +86,7 @@
                                         <td><a href="{% url 'free_text:edit' task.id %}">Edit</a></td>
                                     {% endif %}
 
-                                  {% elif task.type == 'click_question' %}
+                                {% elif task.type == 'click_question' %}
                                     <td>
                                         <a href="{% url 'click_question:do' task_id=task.id course_id=0 %}">{{ task.name }}</a>
                                     </td>
