@@ -40,7 +40,7 @@ class TableColumnForm(ModelForm):
         self.nested = TableRowFormSet(instance=self.instance, prefix=self.prefix)
         print(self.prefix)
 
-TableRowFormSet = inlineformset_factory(TableColumn, TableRow, fields=('answer',), extra=5)
+TableRowFormSet = inlineformset_factory(TableColumn, TableRow, fields=('answer',), extra=5, max_num=5)
 class TableRowForm(ModelForm):
     class Meta:
         model = TableRow
