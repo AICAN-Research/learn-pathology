@@ -107,8 +107,16 @@ def image_browser(request):
         # First entry to image browser? Initialize new empty dictionary
         request.session['image_browser_context'] = {}
 
-    organ_changed = ('organ-system' in request.GET)
-    hist_path_changed = ('histology-pathology' in request.GET)
+    # ==================================================================
+    # Set up variables for which filtering options have been applied
+    # ==================================================================
+    organ_changed = ('organ-system' in request.GET)             # Organ selection changed
+    hist_path_changed = ('histology-pathology' in request.GET)  # Hist/path or general pathology changed
+    general_pathology_selected = ('general_pathology_button' in request.GET)
+    search_applied = ('submit_button' in request.GET)           # Search query entered
+    clear_search_clicked = ('clear_button' in request.GET)      # Search cleared
+
+    # Initialize empty context dictionary
     context = {}
 
     if organ_changed:
@@ -162,7 +170,7 @@ def image_browser(request):
         context['selected_histology'] = selected_histology
         context['selected_pathology'] = selected_pathology
 
-    else:
+    else:   # TODO: Handle so this is not default if neither organ or hist/path is changed
         slides = Slide.objects.all()
         selected_organ_tag = ['all']
         # Store changes in session
@@ -174,11 +182,44 @@ def image_browser(request):
         context['slides'] = slides
         context['selected_organ_tag'] = selected_organ_tag
 
+
+    # TODO: Move search stuff to own if/else before/after filtering?
+    if clear_search_clicked:
+        context['search_query'] = None
+        context['search_result'] = None
+        slides = Slide.objects.all()
+        selected_organ_tag = ['all']
+        # Store changes in session
+        request.session['image_browser_context']['selected_organ_tag_ids'] = queryset_to_id_list(selected_organ_tag)
+        request.session['image_browser_context']['selected_both'] = True
+        request.session['image_browser_context']['selected_histology'] = False
+        request.session['image_browser_context']['selected_pathology'] = False
+        # Add to context
+        context['slides'] = slides
+        context['selected_organ_tag'] = selected_organ_tag
+
+    elif search_applied:
+        search_query = request.GET.get('search')
+        if search_query is not None and len(search_query) > 0:
+            filter_result = Slide.objects.filter(
+                Q(name__contains=search_query) | Q(description__contains=search_query)
+            )
+            context['search_query'] = search_query
+            context['search_result'] = filter_result
+            context['slides'] = filter_result
+        else:
+            context['search_query'] = None
+            context['search_result'] = None
+
     # Final updates to context
     context['organ_tags'] = Tag.objects.filter(is_organ=True).order_by('name')
     for key, val in request.session['image_browser_context'].items():
         if key not in context and key not in ('slide_ids', 'selected_organ_tag_ids'):
             context[key] = request.session['image_browser_context'][key]
+
+    general_pathology_tags = [tag for tag in Tag.objects.filter(is_organ=False, is_stain=False)
+                              if tag.name.lower() in GENERAL_PATHOLOGY_TAGS]
+    context['general_pathology_tags'] = sorted(general_pathology_tags, key=lambda tag: tag.name)
 
     request.session.modified = True
     return render(request, 'slide/image_browser.html', context)
