@@ -16,7 +16,7 @@
 <div class="card-body">
 <div class="card-text">
 <p>
-    <a href="{% url 'course:view' course.id %}">
+    <a href="{% url 'course:view' course_id=course.id active_tab='slides' %}">
         <input type="button" value="Return to course page">
     </a>
 </p>
