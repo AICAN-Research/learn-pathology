@@ -42,19 +42,17 @@
         </thead>
         {{ sortingPairFormSet.management_form }}
 
-     <tr>
-                <td>{{ 'Input for fixed column' }}</td>
-                <td>{{ 'Input for draggable column' }}</td>
-            </tr>
-           {% for pairForm in sortingPairFormSet %}
+        <tr>
+            <td>{{ 'Input for fixed column' }}</td>
+            <td>{{ 'Input for draggable column' }}</td>
+        </tr>
+        {% for pairForm in sortingPairFormSet %}
             {{ pairForm.id }} <!-- Need to explicitly render form id when not iterating through all fields -->
             <tr>
                 <td>{{ pairForm.fixed }}</td>
                 <td>{{ pairForm.draggable }}</td>
             </tr>
         {% endfor %}
-
-
 
 
         <thead class="thead-light">

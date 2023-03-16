@@ -19,6 +19,3 @@ class SortingPair(models.Model):
     task = models.ForeignKey(OneToOne, on_delete=models.CASCADE)
     fixed = models.CharField(max_length=512)
     draggable = models.CharField(max_length=512)
-
-
-

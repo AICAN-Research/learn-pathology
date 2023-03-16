@@ -3,8 +3,6 @@ from one_to_one.models import OneToOne, SortingPair
 from task.models import Task
 
 
-
-
 class OneToOneForm(ModelForm):
     class Meta:
         model = OneToOne
@@ -17,7 +15,6 @@ class OneToOneForm(ModelForm):
             'question': Textarea(attrs={'rows': 1, 'cols': 70, 'resize': 'none'}),
             'instructions': Textarea(attrs={'rows': 1, 'cols': 70}),
         }
-
 
 
 class SortingPairForm(ModelForm):
