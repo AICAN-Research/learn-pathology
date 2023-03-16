@@ -64,7 +64,7 @@
                                 {% if selected_pathology %}
                                     <ul class="" style="list-style: none;">
                                         {% for tag in general_pathology_tags %}
-                                            <li><button class="wideLabel" type="submit" id="general_pathology-id-{{ tag.id }}" name="general_pathology_button" value="general_pathology_tag-id-{{ tag.id }}">
+                                            <li><button class="wideLabel{% if tag == selected_general_pathology %} active{% endif %}" type="submit" id="general_pathology-id-{{ tag.id }}" name="general_pathology_button" value="general_pathology_tag-id-{{ tag.id }}">
                                                 {{ tag.name }}
                                             </button></li>
                                         {% endfor %}

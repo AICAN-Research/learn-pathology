@@ -82,7 +82,7 @@ main {
     --background-collapsed-menu: #c4c4c4;
     --background: #a2ba8e;
     --background-dark: #5c6346;
-    --button-colour: #edf5e2;
+    --button-colour: #dce7cd;
     --button-colour-hover: rgba(218, 247, 209, 0.98);
     --button-colour-active: #c3e4ba;
     --button-border-colour: #888;
@@ -397,6 +397,9 @@ Radio button toolbar used with slide filters
     margin-bottom: 1px;
     width: 100%;
     text-align: left;
+}
+.radio-toolbar button.wideLabel.active {
+    background-color: var(--button-colour-active);
 }
 
 .imageBrowserSearchButtons {

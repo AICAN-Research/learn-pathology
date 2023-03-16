@@ -113,12 +113,17 @@ def image_browser(request):
     organ_changed = ('organ-system' in request.GET)             # Organ selection changed
     hist_path_changed = ('histology-pathology' in request.GET)  # Hist/path or general pathology changed
     general_pathology_selected = ('general_pathology_button' in request.GET)
+    if general_pathology_selected:
+        hist_path_changed = True
     search_applied = ('submit_button' in request.GET)           # Search query entered
     clear_search_clicked = ('clear_button' in request.GET)      # Search cleared
 
     # Initialize empty context dictionary
     context = {}
 
+    # ==================================================================
+    # Implement logic for search and filtering
+    # ==================================================================
     if organ_changed:
         selected_organ = request.GET.get('organ-system')
         if selected_organ == 'all':
@@ -138,15 +143,17 @@ def image_browser(request):
 
     elif hist_path_changed:
         # Use previously selected organ slides
-        selected_organ_tag = organ_tag_id_list_to_queryset(
-            prev_context['selected_organ_tag_ids']
-        )
+        selected_organ_tag = organ_tag_id_list_to_queryset(prev_context['selected_organ_tag_ids'])
         if 'all' in selected_organ_tag:
             slides = Slide.objects.all()
         else:
             slides = Slide.objects.filter(tags__in=selected_organ_tag)
 
-        histology_pathology = request.GET.get('histology-pathology')
+        if general_pathology_selected:
+            histology_pathology = 'pathology'
+        else:
+            histology_pathology = request.GET.get('histology-pathology')
+
         if histology_pathology == 'histology':
             selected_both = False
             selected_histology = True
@@ -156,7 +163,13 @@ def image_browser(request):
             selected_both = False
             selected_histology = False
             selected_pathology = True
-            slides = slides.filter(pathology=True)
+            if general_pathology_selected:
+                gen_path_btn = request.GET.get('general_pathology_button')
+                gen_path_tag = Tag.objects.get(id=int(gen_path_btn.split('-')[-1]))
+                slides = slides.filter(pathology=True, tags__in=[gen_path_tag])
+                context['selected_general_pathology'] = gen_path_tag
+            else:
+                slides = slides.filter(pathology=True)
         else:
             selected_both = True
             selected_histology = False
