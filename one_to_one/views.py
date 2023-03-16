@@ -96,7 +96,7 @@ def new(request, slide_id, course_id=None):
 
                 for pairForm in sorting_pair_formset:
                     pair = pairForm.save(commit=False)
-                    if len(pair.fixed) > 0 and len(pair.dragable) > 0:
+                    if len(pair.fixed) > 0 and len(pair.draggable) > 0:
                         pair.task = one_to_one_task
                         pair.save()
 
@@ -171,7 +171,7 @@ def edit(request, task_id):
 
                 for pairForm in sorting_pair_formset:
                     pair = pairForm.save(commit=False)
-                    if len(pair.fixed) > 0 and len(pair.dragable) > 0:
+                    if len(pair.fixed) > 0 and len(pair.draggable) > 0:
                         pair.task = one_to_one
                         pair.save()
 

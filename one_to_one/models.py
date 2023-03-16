@@ -9,7 +9,7 @@ class OneToOne(models.Model):
     """
     task = models.OneToOneField(Task, on_delete=models.CASCADE)
     question = models.CharField(max_length=2048)
-    instructions = models.CharField(max_length=2048, default='Sort the elements on the right to their conterparts on the left.')
+    instructions = models.CharField(max_length=2048, default='Sort the elements on the right to their counterparts on the left.')
 
 
 class SortingPair(models.Model):
@@ -18,7 +18,7 @@ class SortingPair(models.Model):
     """
     task = models.ForeignKey(OneToOne, on_delete=models.CASCADE)
     fixed = models.CharField(max_length=512)
-    dragable = models.CharField(max_length=512)
+    draggable = models.CharField(max_length=512)
 
 
 
