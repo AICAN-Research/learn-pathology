@@ -17,14 +17,8 @@
             <div class="card border-0 text-start">
             <div class="card-body" style="padding: 0;">
             <div class="radio-toolbar">
-                <!-- Pointer annotation -->
-                <label class="LPButton" id="pointer-annotation-btn"
-                       onclick="activatePointerAnnotation();" style="padding: 6px 10px 6px 10px; margin: 0;">
-                    Pointer
-                </label>
                 <!-- Bounding box annotation -->
-                <label class="LPButton" id="box-annotation-btn"
-                       onclick="activateBoxAnnotation();" style="padding: 6px 10px 6px 10px; margin: 0;">
+                <label class="LPButton" id="box-annotation-btn" onclick="activateBoxAnnotationNoTextInput();" style="padding: 6px 10px 6px 10px; margin: 0;">
                     Box
                 </label>
             </div>
@@ -68,14 +62,11 @@
     viewer.innerTracker.keyHandler = null;
 
 
-    {% for pointer in pointers %}
-       addPointer(new OpenSeadragon.Point({{pointer.position_x}}, {{ pointer.position_y }}), '{{ pointer.text }}');
-    {% endfor %}
     {% for box in boxes %}
-        addBoundingBox(
+        addBoundingBoxNoTextInput(
             {{box.position_x}}, {{ box.position_y }},
-            {{box.position_x}} + {{box.width}}, {{box.position_y}} + {{ box.height }},
-            '{{ box.text }}');
+            {{box.position_x}} + {{box.width}}, {{box.position_y}} + {{ box.height }}
+        );
     {% endfor %}
 
 
