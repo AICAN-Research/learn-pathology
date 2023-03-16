@@ -421,7 +421,7 @@ Course navigation tabs
 }
 
 .courseNavTabs .nav-link.active {
-    /*background-color: var(--button-colour-active);*/
+    background-color: var(--button-colour-active);
     color: var(--text-colour-dark);
     font-weight: bold;
     border-style: solid;
