@@ -34,7 +34,7 @@
                             <td><a class="LPButton btn" style="margin: 0;" href="{% url task.do_url task_id=task.id course_id=course.id %}">Do task</a>
                             </td>
                             {% if request.user.is_teacher or request.user.is_superuser %}
-                                <td><a class="LPButton btn" style="margin: 0;" href="{% url task.edit_url task.id %}">Edit</a></td>
+                                <td><a class="LPButton btn" style="margin: 0;" href="{% url task.edit_url task_id=task.id course_id=course.id %}">Edit</a></td>
                                 <td><a class="LPButton btn remove_button" style="margin: 0;"
                                        data-course_id="{{ course.id }}" data-model_name="{{ task | to_class_name }}" data-instance_id="{{ task.id }}">
                                     Remove

@@ -130,7 +130,7 @@ def new(request, slide_id, course_id=None):
 
 
 @teacher_required
-def edit(request, task_id):
+def edit(request, task_id,course_id=None):
     """
     Teacher form for editing a one-to-one sorting task
     """
@@ -190,6 +190,9 @@ def edit(request, task_id):
 
                 messages.add_message(request, messages.SUCCESS,
                                      f'The task {task.name} was altered!')
+                if course_id is not None and course_id in Course.objects.values_list('id', flat=True):
+
+                    return redirect('course:view', course_id=course_id)
 
         return redirect('task:list')
 
