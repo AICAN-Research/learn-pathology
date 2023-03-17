@@ -158,7 +158,7 @@ def edit(request, task_id,course_id=None):
         # pointers = Pointer.objects.filter(annotated_slide=task.annotated_slide)
 
         with transaction.atomic():  # Make save operation atomic
-            if task_form.is_valid() and one_to_one_form.is_valid() and sorting_pair_formset.is_valid():
+            if task_form.is_valid() and one_to_one_form.is_valid():
 
                 # Save instance data to database
                 task = task_form.save()
@@ -168,12 +168,15 @@ def edit(request, task_id,course_id=None):
                 task.tags.set([organ_tags] + other_tags)
 
                 one_to_one = one_to_one_form.save()
+                one_to_one.sortingpair_set.all().delete()
+
 
                 for pairForm in sorting_pair_formset:
-                    pair = pairForm.save(commit=False)
-                    if len(pair.fixed) > 0 and len(pair.draggable) > 0:
-                        pair.task = one_to_one
-                        pair.save()
+                    if pairForm.is_valid():
+                        pair = pairForm.save(commit=False)
+                        if len(pair.fixed) > 0 and len(pair.draggable) > 0:
+                            pair.task = one_to_one
+                            pair.save()
 
                 # Store annotations (pointers)
                 # Delete old pointers first

@@ -173,7 +173,7 @@ def edit(request, task_id):
         task_form = TaskForm(request.POST or None, instance=task)
         many_to_one_form = ManyToOneForm(request.POST or None, instance=many_to_one)
         column_formset = TableColumnFormSet(request.POST or None)
-        column_formset_empty = TableColumnFormSet(instance=ManyToOne(), prefix='column')
+
 
         # pointers = Pointer.objects.filter(annotated_slide=task.annotated_slide)
 
