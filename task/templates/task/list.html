@@ -26,8 +26,7 @@
                     Organ:
                     <select name="organ[]" multiple class="filter" style="width:20%">
                         {% for tag in organ_tags %}
-                            <option value="{{ tag.id }}"{% if tag.id|slugify in selected_organ_tags %}
-                                    selected="selected"{% endif %}>{{ tag.name }}</option>
+                            <option value="{{ tag.id }}"{% if tag.id|slugify in selected_organ_tags %}selected="selected"{% endif %}>{{ tag.name }}</option>
                         {% endfor %}
                     </select>
                     Stain:
@@ -37,15 +36,12 @@
                                     selected="selected"{% endif %}>{{ tag.name }}</option>
                         {% endfor %}
                     </select>
-                    Pathology: <input type="checkbox" {% if selected_pathology %}checked="checked"{% endif %}
-                                      name="pathology" onchange="this.form.submit();">
-                    Histology: <input type="checkbox" {% if selected_histology %}checked="checked"{% endif %}
-                                      name="histology" onchange="this.form.submit();">
+                    Pathology: <input type="checkbox" {% if selected_pathology %}checked="checked"{% endif %} name="pathology" onchange="this.form.submit();">
+                    Histology: <input type="checkbox" {% if selected_histology %}checked="checked"{% endif %} name="histology" onchange="this.form.submit();">
                     Tag:
                     <select name="tag[]" multiple class="filter">
                         {% for tag in other_tags %}
-                            <option value="{{ tag.id }}"{% if tag.id|slugify in selected_other_tags %}
-                                    selected="selected"{% endif %}>{{ tag.name }}</option>
+                            <option value="{{ tag.id }}"{% if tag.id|slugify in selected_other_tags %} selected="selected"{% endif %}>{{ tag.name }}</option>
                         {% endfor %}
                     </select>
                 </form>
@@ -65,60 +61,13 @@
                         </thead>
                         {% for task in tasks %}
                             <tr>
-                                {% if task.type == 'multiple_choice' %}
-                                    <td>
-                                        <a href="{% url 'multiple_choice:do' task_id=task.id course_id=0 %}">{{ task.name }}</a>
-                                    </td>
-                                    <td>{{ task.type }}</td>
-                                    <td><a href="{% url 'multiple_choice:do' task_id=task.id course_id=0 %}">Do task</a>
-                                    </td>
-                                    {% if request.user.is_teacher or request.user.is_superuser %}
-                                        <td><a href="{% url 'multiple_choice:edit' task.id %}">Edit</a></td>
-                                    {% endif %}
-
-                                {% elif task.type == 'free_text' %}
-                                    <td>
-                                        <a href="{% url 'free_text:do' task_id=task.id course_id=0 %}">{{ task.name }}</a>
-                                    </td>
-                                    <td>{{ task.type }}</td>
-                                    <td><a href="{% url 'free_text:do' task_id=task.id course_id=0 %}">Do task</a></td>
-                                    {% if request.user.is_teacher or request.user.is_superuser %}
-                                        <td><a href="{% url 'free_text:edit' task.id %}">Edit</a></td>
-                                    {% endif %}
-
-                                  {% elif task.type == 'click_question' %}
-                                    <td>
-                                        <a href="{% url 'click_question:do' task_id=task.id course_id=0 %}">{{ task.name }}</a>
-                                    </td>
-                                    <td>{{ task.type }}</td>
-                                    <td><a href="{% url 'click_question:do' task_id=task.id course_id=0 %}">Do task</a></td>
-                                    {% if request.user.is_teacher or request.user.is_superuser %}
-                                        <td><a href="{% url 'click_question:edit' task.id %}">Edit</a></td>
-                                    {% endif %}
-
-                                    {% elif task.type == 'one_to_one' %}
-                                    <td>
-                                        <a href="{% url 'one_to_one:do' task_id=task.id course_id=0 %}">{{ task.name }}</a>
-                                    </td>
-                                    <td>{{ task.type }}</td>
-                                    <td><a href="{% url 'one_to_one:do' task_id=task.id course_id=0 %}">Do task</a></td>
-                                    {% if request.user.is_teacher or request.user.is_superuser %}
-                                        <td><a href="{% url 'one_to_one:edit' task.id %}">Edit</a></td>
-                                    {% endif %}
-
-                                    {% elif task.type == 'many_to_one' %}
-                                    <td>
-                                        <a href="{% url 'many_to_one:do' task_id=task.id course_id=0 %}">{{ task.name }}</a>
-                                    </td>
-                                    <td>{{ task.type }}</td>
-                                    <td><a href="{% url 'many_to_one:do' task_id=task.id course_id=0 %}">Do task</a></td>
-                                    {% if request.user.is_teacher or request.user.is_superuser %}
-                                        <td><a href="{% url 'many_to_one:edit' task.id %}">Edit</a></td>
-                                    {% endif %}
-
+                                <td><a href="{% url task.do_url task_id=task.id course_id=0 %}">{{ task.name }}</a></td>
+                                <td>{{ task.type }}</td>
+                                <td><a href="{% url task.do_url task_id=task.id course_id=0 %}">Do task</a></td>
+                                {% if request.user.is_teacher or request.user.is_superuser %}
+                                    <td><a href="{% url task.edit_url task.id %}">Edit</a></td>
                                 {% endif %}
                                 <td><a href="{% url 'task:task_delete' task.id %}">Delete</a></td>
-
                             </tr>
                         {% endfor %}
                     </table>

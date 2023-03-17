@@ -52,12 +52,10 @@ INSTALLED_APPS = [
     'task',
     'multiple_choice',
     'free_text',
-    'course',
-    'tag',
     'click_question',
     'one_to_one',
-    'many_to_one',
-    'crispy_forms',
+    'course',
+    'tag',
 ]
 
 MIDDLEWARE = [
@@ -85,9 +83,6 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
-            'libraries': {
-                'custom_filters': 'many_to_one.templatetags.custom_filters',
-            },
         },
     },
 ]

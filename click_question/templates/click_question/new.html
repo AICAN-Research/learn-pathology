@@ -10,8 +10,8 @@
 <div class="card-text">
 
 <p>
-    Enter the name, question and answers for the click task.
-    Add tags and annotate the slide (optional)
+    Enter the name and question for the task. Add tags (optional).<br>
+    Then mark where you want the active (correct region) of the slide to be.
 </p>
 
 <form class="form" method="post">
@@ -24,7 +24,7 @@
             <tr><th colspan="2">Task info</th></tr>
         </thead>
         <tr>
-            <th>{{ taskForm.name.label }} (short, decriptive)</th>
+            <th>{{ taskForm.name.label }} (short, descriptive)</th>
             <td>{{ taskForm.name }}</td>
         </tr>
         <tr>
@@ -36,9 +36,6 @@
             <td>{{ clickQuestionForm.instructions }}</td>
 
         </tr>
-
-
-
 
         <thead class="thead-light">
             <tr><th colspan="2">Task metadata and tagging</th></tr>
@@ -60,7 +57,7 @@
             <tr><th colspan="2">Annotate WSI</th></tr>
         </thead>
         <tr><td colspan="2">
-            {% include 'slide/view_wsi_and_edit_annotations.html' with slide=slide %}
+            {% include 'slide/click_question_annotate_wsi.html' with slide=slide %}
 
             <br>
             <input type="submit" value="Submit">

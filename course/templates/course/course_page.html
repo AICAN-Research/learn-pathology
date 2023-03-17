@@ -57,7 +57,7 @@
                         {# Place nav-tabs on top #}
                         <ul class="nav nav-tabs courseNavTabs" id="myTab" role="tablist">
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link active " data-bs-toggle="tab"
+                                <button class="nav-link{% if active_tab == 'course-description' or active_tab == None %} active{% endif %} " data-bs-toggle="pill"
                                         data-bs-target="#course-description"
                                         type="button" role="tab" aria-controls="course-description"
                                         aria-controls="course-description" aria-selected="true"
@@ -65,7 +65,7 @@
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link " data-bs-toggle="tab" data-bs-target="#learning-outcomes"
+                                <button class="nav-link {% if active_tab == 'learning-outcomes' %} active{% endif %}" data-bs-toggle="pill" data-bs-target="#learning-outcomes"
                                         type="button"
                                         role="tab" aria-controls="learning-outcomes"
                                         aria-selected="true">{% bs_icon 'flag' %}
@@ -73,20 +73,20 @@
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link " data-bs-toggle="tab" data-bs-target="#slides" type="button"
+                                <button class="nav-link {% if active_tab == 'slides' %} active{% endif %}" data-bs-toggle="pill" data-bs-target="#slides" type="button"
                                         role="tab" aria-controls="slides"
                                         aria-selected="false">{% bs_icon 'image' %}
                                     Slides
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link " data-bs-toggle="tab" data-bs-target="#tasks" type="button"
+                                <button class="nav-link {% if active_tab == 'tasks' %} active{% endif %}" data-bs-toggle="pill" data-bs-target="#tasks" type="button"
                                         role="tab" aria-controls="tasks"
                                         aria-selected="false">{% bs_icon 'question-square' %} Tasks/quizzes
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link " data-bs-toggle="tab" data-bs-target="#course-material"
+                                <button class="nav-link {% if active_tab == 'course-material' %} active{% endif %}" data-bs-toggle="pill" data-bs-target="#course-material"
                                         type="button"
                                         role="tab" aria-controls="course-material"
                                         aria-selected="false">{% bs_icon 'stack' %}Learning materials
@@ -97,19 +97,19 @@
                         {# Place nav-panes below #}
                         <div class="card courseNavPanes">
                             <div class="tab-content" id="tabs">
-                                <div class="tab-pane show active" role="tabpanel" id="course-description">
+                                <div class="tab-pane {% if active_tab == 'course-description' or active_tab == None %}show active{% endif %}" role="tabpanel" id="course-description">
                                     {% include 'course/course_page_content/course_description.html' %}
                                 </div>
-                                <div class="tab-pane" role="tabpanel" id="learning-outcomes">
+                                <div class="tab-pane {% if active_tab == 'learning-outcomes' %}show active{% endif %}" role="tabpanel" id="learning-outcomes">
                                     {% include 'course/course_page_content/learning_outcomes.html' %}
                                 </div>
-                                <div class="tab-pane" role="tabpanel" id="slides">
+                                <div class="tab-pane  {% if active_tab == 'slides' %}show active{% endif %}" role="tabpanel" id="slides">
                                     {% include 'course/course_page_content/course_slides.html' %}
                                 </div>
-                                <div class="tab-pane" role="tabpanel" id="tasks">
+                                <div class="tab-pane {% if active_tab == 'tasks' %}show active{% endif %}" role="tabpanel" id="tasks">
                                     {% include 'course/course_page_content/course_quizzes.html' %}
                                 </div>
-                                <div class="tab-pane" role="tabpanel" id="course-material">
+                                <div class="tab-pane {% if active_tab == 'course-material' %}show active{% endif %}" role="tabpanel" id="course-material">
                                     {% include 'course/course_page_content/course_materials.html' %}
                                 </div>
                             </div>

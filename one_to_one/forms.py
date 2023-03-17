@@ -3,8 +3,6 @@ from one_to_one.models import OneToOne, SortingPair
 from task.models import Task
 
 
-
-
 class OneToOneForm(ModelForm):
     class Meta:
         model = OneToOne
@@ -19,17 +17,16 @@ class OneToOneForm(ModelForm):
         }
 
 
-
 class SortingPairForm(ModelForm):
     class Meta:
         model = SortingPair
 
-        fields = ['fixed', 'dragable']
+        fields = ['fixed', 'draggable']
         labels = {
             'fixed': ('Entry for fixed table'),
-            'dragable': ('Entry for dragable table'),
+            'draggable': ('Entry for draggable table'),
         }
         widgets = {
             'fixed': Textarea(attrs={'rows': 1, 'cols': 67, 'resize': 'none'}),
-            'dragable': Textarea(attrs={'rows': 1, 'cols': 67, 'resize': 'none'}),
+            'draggable': Textarea(attrs={'rows': 1, 'cols': 67, 'resize': 'none'}),
         }

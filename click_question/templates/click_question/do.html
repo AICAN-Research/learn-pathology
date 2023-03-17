@@ -12,7 +12,7 @@
                     {% if course_id == 0 %}
                         <a href="{% url 'task:list' %}">Task Overview</a>
                     {% else %}
-                        <a href=" {% url 'course:view' course_id=course_id return_task=1 %}">Back to course</a>
+                        <a href=" {% url 'course:view' course_id=course_id active_tab='tasks' %}">Back to course</a>
                     {% endif %}
                 </div>
             </div>
@@ -22,36 +22,26 @@
     <div class="card mx-auto text-center" style="width: 90%; height: 100%; background-color: #dcdcdc">
         <div class="card-body" style="height: 100%">
             <div class="row">
+                <div class="col"></div>
                 <div class="col">
-
-                </div>
-                <div class="col">
-                    <div class="LPButton" style="margin-top: 0; " , onclick="toggleAnnotationOn()">
+                    <div class="LPButton" style="margin-top: 0;" onclick="toggleAnnotationOn();">
                         Show solution
                     </div>
-
                 </div>
                 <div class="col">
-                    <div class="card" , style="border-color: green; border-width: thick; display: none" ,
-                         id="answered_correct" ,>
-
+                    <div class="card" style="border-color: green; border-width: thick; display: none" id="answered_correct">
                         This is right !
                     </div>
 
-                    <div class="card" , style="border-color: red; border-width: thick;  display: none" ,
-                         id="answered_false">
-
+                    <div class="card" style="border-color: red; border-width: thick; display: none" id="answered_false">
                         This is wrong ! Try again
                     </div>
-
 
                 </div>
             </div>
 
             <br>
-
-            {% include 'slide/view_wsi.html' with slide=task.task.annotated_slide.slide annotated_slide=task.task.annotated_slide %}
-
+            {% include 'slide/click_question_view_wsi.html' with slide=task.task.annotated_slide.slide annotated_slide=task.task.annotated_slide %}
 
         </div>
     </div>
@@ -59,45 +49,24 @@
 
 
     <script>
-        viewer.addHandler('viewport-change', updateTextLocation);
-        viewer.addHandler('tile-drawing', updateTextLocation);
         viewer.addHandler('open', toggleAnnotationOff); // in normal view
         window.onLoad = toggleAnnotationOff(); // when having the console open
-        addEventListener("resize", () => {
-        });
-
-        onresize = () => {
-            timer = setTimeout(function () {
-
-                updateTextLocation();
-
-            }, 20);
-        };
-
-
-
-        {#window.onLoad = toggleAnnotationOff();#}
-
-
-        let containingElement = document.querySelector('#boundingbox-25');
 
         document.body.addEventListener('dblclick', function (event) {
 
-            var container_correct = document.getElementById('answered_correct');
-            var container_false = document.getElementById('answered_false');
+            let container_correct = document.getElementById('answered_correct');
+            let container_false = document.getElementById('answered_false');
 
-            var correct_selection = false;
+            let correct_selection = false;
 
-            let current_overlays = viewer.currentOverlays
+            let current_overlays = viewer.currentOverlays;
             for (let i = 0; i < current_overlays.length; i++) {
 
                 if (current_overlays[i].element.contains(event.target)) {
                     console.log('Clicked inside');
                     correct_selection = true;
-
                 } else {
                     console.log('Clicked outside');
-
                 }
             }
             if (correct_selection) {
@@ -107,55 +76,24 @@
                 container_false.style.display = 'block';
                 container_correct.style.display = 'none';
             }
-
         });
-
 
         function toggleAnnotationOff() {
             $(".textOverlay").toggle();
 
-
             let current_overlays = viewer.currentOverlays
             for (let i = 0; i < current_overlays.length; i++) {
-
-
-                var current_element = current_overlays[i].element
+                let current_element = current_overlays[i].element
                 current_element.style.opacity = '0.0';
             }
-
         }
 
         function toggleAnnotationOn() {
-
-
-            let current_overlays = viewer.currentOverlays
+            let current_overlays = viewer.currentOverlays;
             for (let i = 0; i < current_overlays.length; i++) {
                 var current_element = current_overlays[i].element
                 current_element.style.opacity = '';
             }
-
-        }
-
-
-        function updateTextLocation(event) {
-
-
-            let arrow_overlays = $("[id^=right-arrow-overlay-]")
-            let text_overlays = $("[id^=arrow-text-overlay-]")
-
-            for (let i = 0; i < arrow_overlays.length; i++) {
-
-                let arrowElement = arrow_overlays[i];
-                let textElement = text_overlays[i];
-
-                let arrowX = parseFloat(arrowElement.style.left);
-                let arrowY = parseFloat(arrowElement.style.top);
-
-                let viewportPoint = viewer.viewport.pointFromPixel(new OpenSeadragon.Point(arrowX - 5, arrowY + 15));
-                viewer.updateOverlay(textElement, viewportPoint);
-            }
-
-
         }
 
     </script>

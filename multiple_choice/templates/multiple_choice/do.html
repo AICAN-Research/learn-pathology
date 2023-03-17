@@ -12,7 +12,7 @@
                     {% if course_id == 0 %}
                         <a href="{% url 'task:list' %}">Task Overview</a>
                     {% else %}
-                        <a href=" {% url 'course:view' course_id=course_id return_task=1 %}">Back to course</a>
+                        <a href=" {% url 'course:view' course_id=course_id active_tab='tasks' %}">Back to course</a>
                     {% endif %}
                 </div>
             </div>
@@ -104,9 +104,9 @@
                         {% endfor %}
 
                         <input type="submit" value="Submit">
-                        <div class="LPButton" style="margin-top: 0; ">
-                            <a href="{% url 'multiple_choice:do' task_id=next_id course_id=course_id %}">Next Task</a>
-                        </div>
+{#                        <div class="LPButton" style="margin-top: 0; ">#}
+{#                            <a href="{% url 'multiple_choice:do' task_id=next_id course_id=course_id %}">Next Task</a>#}
+{#                        </div>#}
                     </form>
                 {%  if answered %}
                     {% if 'no' in answered %}
