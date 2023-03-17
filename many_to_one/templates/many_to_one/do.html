@@ -12,7 +12,7 @@
                     {% if course_id == 0 %}
                         <a href="{% url 'task:list' %}">Task Overview</a>
                     {% else %}
-                        <a href=" {% url 'course:view' course_id=course_id return_task=1 %}">Back to course</a>
+                        <a href=" {% url 'course:view' course_id=course_id active_tab='tasks' %}">Back to course</a>
                     {% endif %}
                 </div>
             </div>

@@ -62,7 +62,7 @@ class Slide(models.Model):
             osd_to_fast_level_map = {0: 0}
             print('Smallest width', smallest_width)
             while abs(current_width - smallest_width/2) > 1:
-                print(osd_level, current_width, current_height)
+
                 current_width = int(current_width/2)
                 current_height = int(current_height/2)
                 #if self.path.endswith('.vsi'): # TODO Hack for now
@@ -74,15 +74,15 @@ class Slide(models.Model):
                     osd_tile_width[osd_level] = tile_width
                     osd_tile_height[osd_level] = tile_height
                     osd_to_fast_level_map[osd_level] = osd_to_fast_level_map[osd_level - 1] + 1
-                    print('Map to next: ', osd_to_fast_level_map[osd_level])
+
                 else:
                     osd_tile_width[osd_level] = osd_tile_width[osd_level-1]*2
                     osd_tile_height[osd_level] = osd_tile_height[osd_level-1]*2
                     osd_to_fast_level_map[osd_level] = osd_to_fast_level_map[osd_level - 1]
-                    print('Map to previous', osd_to_fast_level_map[osd_level])
+
                 if current_width < 1024:
                     break
-            print('Total OSD levels', osd_level+1)
+
             self._fast_levels = image.getNrOfLevels()
             self._osd_levels = osd_level+1
             self._width = image.getFullWidth()

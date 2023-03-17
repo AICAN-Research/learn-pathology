@@ -20,7 +20,7 @@ def do(request, task_id, course_id=None):
     """
     Student form for answering/viewing a one-to-one sorting task
     """
-    print(task_id)
+
     task = OneToOne.objects.get(task_id=task_id)
     mode = 'get'
     id_order = [1,2,3]
@@ -38,10 +38,10 @@ def do(request, task_id, course_id=None):
             else:
                 answer_order.append(False)
 
-        print(answer_order)
+
         mode = 'post'
 
-    print(answer_order)
+
     slide_cache.load_slide_to_cache(task.task.annotated_slide.slide.id)
     return render(request, 'one_to_one/do.html', {
         'task': task,
@@ -102,7 +102,7 @@ def new(request, slide_id, course_id=None):
 
                 # Store annotations (pointers)
                 for key in request.POST:
-                    print(key, request.POST[key])
+
                     if key.startswith('right-arrow-overlay-') and key.endswith('-text'):
                         save_pointer_annotation(request, key, annotated_slide)
 
@@ -184,7 +184,7 @@ def edit(request, task_id,course_id=None):
                 BoundingBox.objects.filter(annotated_slide=annotated_slide).delete()
                 # Add all current pointers
                 for key in request.POST:
-                    print(key, request.POST[key])
+
                     if key.startswith('right-arrow-overlay-') and key.endswith('-text'):
                         save_pointer_annotation(request, key, annotated_slide)
 

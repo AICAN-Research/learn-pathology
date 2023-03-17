@@ -21,7 +21,7 @@ def do(request, task_id, course_id=None):
     """
     Student form for answering/viewing a many-to-one sorting task
     """
-    print(task_id)
+
     task = ManyToOne.objects.get(task_id=task_id)
     mode = 'get'
     id_order = [1, 2, 3]
@@ -39,10 +39,10 @@ def do(request, task_id, course_id=None):
             else:
                 answer_order.append(False)
 
-        print(answer_order)
+
         mode = 'post'
 
-    print(answer_order)
+
     slide_cache.load_slide_to_cache(task.task.annotated_slide.slide.id)
     return render(request, 'many_to_one/do.html', {
         'task': task,
@@ -115,7 +115,7 @@ def new(request, slide_id, course_id=None):
                                 row.save()
 
                 for key in request.POST:
-                    print(key, request.POST[key])
+
                     if key.startswith('right-arrow-overlay-') and key.endswith('-text'):
                         save_pointer_annotation(request, key, annotated_slide)
 
@@ -127,7 +127,7 @@ def new(request, slide_id, course_id=None):
                 if course_id is not None and course_id in Course.objects.values_list('id', flat=True):
                     course = Course.objects.get(id=course_id)
                     course.task.add(task)
-                    return redirect('course:view', course_id=course_id)
+                    return redirect('course:view', course_id=course_id, active_tab='tasks')
                 return redirect('task:list')
 
     else:
@@ -149,7 +149,7 @@ def new(request, slide_id, course_id=None):
 
 
 @teacher_required
-def edit(request, task_id):
+def edit(request, task_id, course_id=None):
     """
     Teacher form for editing a many-to-one sorting task
     """
@@ -175,6 +175,7 @@ def edit(request, task_id):
         column_formset = TableColumnFormSet(request.POST or None)
 
 
+
         # pointers = Pointer.objects.filter(annotated_slide=task.annotated_slide)
 
         with transaction.atomic():  # Make save operation atomic
@@ -194,23 +195,25 @@ def edit(request, task_id):
                     table_column.tablerow_set.all().delete()
                 table_columns.delete()
 
-                #save new rows and columns belonging to the task
 
                 for column_form in column_formset:
-                    if column_form.is_valid():
-                        column = column_form.save(commit=False)
-                        if len(column.caption) > 0:
-                            column.task = many_to_one_task
-                            column.save()
+                    column = TableColumn()
+                    caption = request.POST.get(f"{column_form.prefix}-caption")
 
-                            for row_form in column_form.nested.forms:
+                    if len(caption) > 0:
+                        column.task = many_to_one_task
+                        column.caption = caption
+                        column.save()
 
-                                row = row_form.save(commit=False)
-                                answer = request.POST.get(f"{row_form.prefix}-answer")
+                        for row_form in column_form.nested.forms:
 
-                                if len(answer) > 0:
-                                    row.answer = answer
-                                    row.save()
+                            row = TableRow()
+                            answer = request.POST.get(f"{row_form.prefix}-answer")
+
+                            if len(answer) > 0:
+                                row.column = column
+                                row.answer = answer
+                                row.save()
 
                 # Store annotations (pointers)
                 # Delete old pointers first
@@ -218,7 +221,7 @@ def edit(request, task_id):
                 BoundingBox.objects.filter(annotated_slide=annotated_slide).delete()
                 # Add all current pointers
                 for key in request.POST:
-                    print(key, request.POST[key])
+
                     if key.startswith('right-arrow-overlay-') and key.endswith('-text'):
                         save_pointer_annotation(request, key, annotated_slide)
 
@@ -227,6 +230,8 @@ def edit(request, task_id):
 
                 messages.add_message(request, messages.SUCCESS,
                                      f'The task {task.name} was altered!')
+                if course_id is not None and course_id in Course.objects.values_list('id', flat=True):
+                    return redirect('course:view', course_id=course_id, active_tab='tasks')
 
         return redirect('task:list')
 
