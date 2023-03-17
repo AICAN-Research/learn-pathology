@@ -265,7 +265,7 @@ def edit(request, task_id,course_id=None):
         # pointers = Pointer.objects.filter(annotated_slide=task.annotated_slide)
 
         with transaction.atomic():  # Make save operation atomic
-            if task_form.is_valid() and multiple_choice_form.is_valid() and choice_formset.is_valid():
+            if task_form.is_valid() and multiple_choice_form.is_valid():
 
                 # Save instance data to database
                 task = task_form.save()
@@ -275,11 +275,21 @@ def edit(request, task_id,course_id=None):
                 task.tags.set([organ_tags] + other_tags)
 
                 multiple_choice = multiple_choice_form.save()
+                Choice.objects.filter(task=multiple_choice).delete()
 
                 for choiceForm in choice_formset:
-                    choice = choiceForm.save(commit=False)
-                    if len(choice.text) > 0:
+                    choice = Choice()
+                    text = request.POST.get(f"{choiceForm.prefix}-text")
+                    correct = request.POST.get(f"{choiceForm.prefix}-correct")
+                    print(correct)
+
+                    if len(text) > 0:
                         choice.task = multiple_choice
+                        choice.text = text
+                        if correct:
+                            choice.correct = True
+                        else:
+                            choice.correct = False
                         choice.save()
 
                 # Store annotations (pointers)
