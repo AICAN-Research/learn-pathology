@@ -2,29 +2,59 @@
 
 
 {% block content %}
-      <form method="post">
-    {% csrf_token %}
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.1/themes/smoothness/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
+    <div class="row">
+        <div class="col-2">
+            <ul id="sortable1" class="list-group">
+                <li class="list-group-item">Item 1</li>
+                <li class="list-group-item">Item 2</li>
+                <li class="list-group-item">Item 3</li>
+            </ul>
+        </div>
+
+        <div class="col-2">
+            <ul id="sortable2" class="list-group">
+                <li class="list-group-item">Item 4</li>
+                <li class="list-group-item">Item 5</li>
+                <li class="list-group-item">Item 6</li>
+            </ul>
+        </div>
+        <div class="col-2">
+            <ul id="sortable3" class="list-group">
+                <li class="list-group-item">Item 7</li>
+                <li class="list-group-item">Item 8</li>
+                <li class="list-group-item">Item 9</li>
+            </ul>
+        </div>
+        <div class="col-2">
+            <ul id="sortable4" class="list-group">
+                <li class="list-group-item">Item 10</li>
+                <li class="list-group-item">Item 11</li>
+                <li class="list-group-item">Item 12</li>
+            </ul>
+        </div>
+        <div class="col-2">
+            <ul id="sortable5" class="list-group">
+                <li class="list-group-item">Item 13</li>
+                <li class="list-group-item">Item 14</li>
+                <li class="list-group-item">Item 15</li>
+            </ul>
+        </div>
+    </div>
 
 
-    <table>
-      <thead>
-        <tr>
-          {% for column_form in column_forms %}
-            <th>{{ column_form.caption }}</th>
-          {% endfor %}
-        </tr>
-      </thead>
-      <tbody>
-        {% for row_form in row_forms %}
-          <tr>
-            {% for column_form in column_forms %}
-              <td>{{ row_form.answer }}</td>
-            {% endfor %}
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    <button type="submit">Submit</button>
-  </form>
+    <script>
+  $('ul.list-group').each(function() {
+  // Get the id of the current list
+  var id = $(this).attr('id');
+
+  // Make the current list sortable and connect it to all other lists with class 'list-group'
+  $('#' + id).sortable({
+    connectWith: ".list-group"
+  }).disableSelection();
+});
+    </script>
 
 {% endblock content %}

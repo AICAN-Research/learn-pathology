@@ -22,29 +22,39 @@
     <div class="card mx-auto text-center" style="width: 90%; height: 100%; ">
         <div class="card-body" style="height: 100%">
 
-  <div class="row">
-    <div class="col-md-8">
-      <h2>{{ task.question }}</h2>
-      <p>{{ task.instructions }}</p>
-      <div class="row">
-        {% for column in task.tablecolumn_set.all %}
-        <div class="col-md-4">
-          <h3>{{ column.caption }}</h3>
-          <ul class="sortable-list" id="sortable-list-{{ column.id }}"></ul>
-        </div>
-        {% endfor %}
-      </div>
-    </div>
-    <div class="col-md-4">
-      <h3>All Answers</h3>
-      <ul class="sortable-list" id="sortable-list-all">
-        {% for row in task.tablerow_set.all %}
-        <li>{{ row.answer }}</li>
-        {% endfor %}
-      </ul>
+            <div class="row">
+                <div class="col-md-10">
+                    <div class="row">
+                        {% for column in task.tablecolumn_set.all %}
+                            <div class="col-md-2">
+                                <div class="list group">
+                                    <div class="list-group-item fixed">{{ column.caption }}</div>
 
-  </div>
-</div>
+                                    <ul class="list-group " id="sortable-list-{{ column.id }}">
+
+
+                                        <li class="list-group-item ">   </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <ul class="list-group " id="sortable-list-all">
+                        <li class="list-group-item ui-state-default ui-state-disabled disabled"> Answers</li>
+                        {% for column_form in task.tablecolumn_set.all %}
+
+                            {% for row_form in column_form.tablerow_set.all %}
+
+                                <li class="list-group-item">{{ row_form.answer }}</li>
+
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+
+                </div>
+            </div>
 
 
             <br>
@@ -55,60 +65,72 @@
         </div>
     </div>
 
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.1/themes/smoothness/jquery-ui.css">
 
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
     <script>
-        $(function() {
-  $(".sortable-list").sortable({
-    connectWith: ".sortable-list",
-    placeholder: "ui-state-highlight",
-    dropOnEmpty: true,
-    receive: function(event, ui) {
-      // Update the answer_order list with the new order of answers
-      var answer_order = [];
-      $("#sortable-list-all li").each(function() {
-        answer_order.push($(this).text());
-      });
-      // Send the updated answer_order to the server
+        $('ul.list-group').each(function () {
+            // Get the id of the current list
+            var id = $(this).attr('id');
+            console.log(id)
 
-    }
-  });
-});
-
-        viewer.addHandler('viewport-change', updateTextLocation);
-        viewer.addHandler('tile-drawing', updateTextLocation);
-
-        addEventListener("resize", () => {
+            // Make the current list sortable and connect it to all other lists with class 'list-group'
+            $('#' + id).sortable({
+                connectWith: ".list-group",
+                dropOnEmpty: false
+            }).disableSelection();
         });
 
-        onresize = () => {
-            timer = setTimeout(function () {
+        $(function () {
+            $("#sortable").sortable({
+                connectWith: ".list-group",
+                appendTo: ".list-group",
+                items: "> li:not(.fixed)" // only allow sorting of items that are not fixed
+            }).disableSelection();
+        });
 
-                updateTextLocation();
 
-            }, 20);
-        };
+        {#var sortableLists = document.querySelectorAll('.sortable');#}
+        {#for (var i = 0; i < sortableLists.length; i++) {#}
+        {#  var sortableList = sortableLists[i];#}
+        {#  var group = sortableList.getAttribute('data-group');#}
+        {#  var sortable = new Sortable(sortableList, { group: group, connectWith:'.connectedSortable' });#}
+        {#}#}
 
 
-        function updateTextLocation(event) {
+            viewer.addHandler('viewport-change', updateTextLocation);
+            viewer.addHandler('tile-drawing', updateTextLocation);
 
-            let arrow_overlays = $("[id^=right-arrow-overlay-]")
-            let text_overlays = $("[id^=arrow-text-overlay-]")
+            addEventListener("resize", () => {
+            });
 
-            for (let i = 0; i < arrow_overlays.length; i++) {
+            onresize = () => {
+                timer = setTimeout(function () {
 
-                let arrowElement = arrow_overlays[i];
-                let textElement = text_overlays[i];
+                    updateTextLocation();
 
-                let arrowX = parseFloat(arrowElement.style.left);
-                let arrowY = parseFloat(arrowElement.style.top);
+                }, 20);
+            };
 
-                let viewportPoint = viewer.viewport.pointFromPixel(new OpenSeadragon.Point(arrowX - 5, arrowY + 15));
-                viewer.updateOverlay(textElement, viewportPoint);
+
+            function updateTextLocation(event) {
+
+                let arrow_overlays = $("[id^=right-arrow-overlay-]")
+                let text_overlays = $("[id^=arrow-text-overlay-]")
+
+                for (let i = 0; i < arrow_overlays.length; i++) {
+
+                    let arrowElement = arrow_overlays[i];
+                    let textElement = text_overlays[i];
+
+                    let arrowX = parseFloat(arrowElement.style.left);
+                    let arrowY = parseFloat(arrowElement.style.top);
+
+                    let viewportPoint = viewer.viewport.pointFromPixel(new OpenSeadragon.Point(arrowX - 5, arrowY + 15));
+                    viewer.updateOverlay(textElement, viewportPoint);
+                }
             }
-        }
-
-
 
 
     </script>
