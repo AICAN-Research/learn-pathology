@@ -172,12 +172,13 @@ def edit(request, task_id):
         # Get submitted forms
         task_form = TaskForm(request.POST or None, instance=task)
         many_to_one_form = ManyToOneForm(request.POST or None, instance=many_to_one)
-        column_formset = TableColumnFormSet(request.POST or None, instance=column)
+        column_formset = TableColumnFormSet(request.POST or None)
+        column_formset_empty = TableColumnFormSet(instance=ManyToOne(), prefix='column')
 
         # pointers = Pointer.objects.filter(annotated_slide=task.annotated_slide)
 
         with transaction.atomic():  # Make save operation atomic
-            if task_form.is_valid() and many_to_one_form.is_valid() and column_formset.is_valid():
+            if task_form.is_valid() and many_to_one_form.is_valid() :
 
                 # Save instance data to database
                 task = task_form.save()
@@ -188,19 +189,28 @@ def edit(request, task_id):
 
                 many_to_one_task = many_to_one_form.save()
 
+                table_columns = TableColumn.objects.filter(task=many_to_one)
+                for table_column in table_columns:
+                    table_column.tablerow_set.all().delete()
+                table_columns.delete()
+
+                #save new rows and columns belonging to the task
+
                 for column_form in column_formset:
-                    column = column_form.save(commit=False)
-                    if len(column.caption) > 0:
-                        column.task = many_to_one_task
-                        column.save()
+                    if column_form.is_valid():
+                        column = column_form.save(commit=False)
+                        if len(column.caption) > 0:
+                            column.task = many_to_one_task
+                            column.save()
 
-                        for row_form in column_form.nested.forms:
-                            row = row_form.save(commit=False)
-                            answer = request.POST.get(f"{row_form.prefix}-answer")
+                            for row_form in column_form.nested.forms:
 
-                            if len(answer) > 0:
-                                row.answer = answer
-                                row.save()
+                                row = row_form.save(commit=False)
+                                answer = request.POST.get(f"{row_form.prefix}-answer")
+
+                                if len(answer) > 0:
+                                    row.answer = answer
+                                    row.save()
 
                 # Store annotations (pointers)
                 # Delete old pointers first
