@@ -1,5 +1,5 @@
 {% load static %}
-<div class="container" style="height:85%">
+<div class="container" style="height:85%; background-color: #dcdcdc">
 <div id="wsi-canvas" class="wsi_canvas" style="height: calc(100% - 100px);"></div>
 {% if annotated_slide %}
     {{ annotated_slide.get_html | safe }}
@@ -51,6 +51,7 @@
         onClick: function () {
             console.log('Click!');
             $(".overlay").toggle();
+            $(".textOverlay").toggle();
         }
     });
     var viewer = OpenSeadragon({

@@ -1,0 +1,77 @@
+{% extends 'learnpathology/base.html' %}
+
+{% block content %}
+
+<div class="container">
+<h1>Edit Free Text Question </h1>
+</div>
+
+<div class="card mx-auto text-center" style="width: 90%">
+<div class="card-body">
+<div class="card-text">
+
+<p>
+    Update the information you wish to update, then click the
+    <i>Update Task</i> button
+</p>
+
+<form method="post">
+    {% csrf_token %}
+    {{ taskForm.management_form }}
+    <table class="table">
+
+        <thead class="thead-light">
+            <tr><th colspan="2">Task info</th></tr>
+        </thead>
+         <tr>
+            <th>{{ taskForm.name.label }} (short, decriptive)</th>
+            <td>{{ taskForm.name }}</td>
+        </tr>
+        <tr>
+            <th>{{ freeTextForm.question.label }}</th>
+            <td>{{ freeTextForm.question }}</td>
+        </tr>
+        <tr>
+            <th>{{ freeTextForm.instructions.label }}</th>
+            <td>{{ freeTextForm.instructions }}</td>
+        </tr>
+               <tr>
+            <th>{{ freeTextForm.answer.label }}</th>
+            <td>{{ freeTextForm.answer }}</td>
+        </tr>
+
+
+        <thead class="thead-light">
+            <tr><th colspan="2">Task metadata and tagging</th></tr>
+        </thead>
+        <tr>
+            <th>{{ taskForm.pathology.label }}</th>
+            <td>{{ taskForm.pathology }}</td>
+        </tr>
+        <tr>
+            <th>{{ taskForm.organ_tags.label }}</th>
+            <td>{{ taskForm.organ_tags }}</td>
+        </tr>
+        <tr>
+            <th>{{ taskForm.other_tags.label }}</th>
+            <td>{{ taskForm.other_tags }}</td>
+        </tr>
+
+        <thead class="thead-light">
+            <tr><th colspan="2">Annotate WSI</th></tr>
+        </thead>
+        <tr><td colspan="2">
+            {% include 'slide/view_wsi_and_edit_annotations.html' with slide=slide pointers=pointers %}
+
+            <br>
+            <input type="submit" value="Update Task">
+        </td></tr>
+    </table>
+
+</form>
+
+
+</div>
+</div>
+</div>
+{% endblock content %}

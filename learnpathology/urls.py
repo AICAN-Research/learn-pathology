@@ -21,7 +21,6 @@ from django.conf import settings
 
 import learnpathology.views
 import slide.views
-import task.views
 
 urlpatterns = [
     path('', learnpathology.views.index, name='frontpage'),
@@ -31,17 +30,20 @@ urlpatterns = [
     path('user/', include('user.urls')),
     path('multiple_choice/', include('multiple_choice.urls')),
     path('slide/', include('slide.urls')),
-    path('tasks/', task.views.list, name='task_list'),
-    path('task/delete/<int:task_id>/', task.views.delete, name='task_delete'),
     path('tag/', include('tag.urls')),
     path('course/', include('course.urls')),
+    path('task/', include('task.urls')),
     path('ckeditor/', include('ckeditor_uploader.urls')),
+    path('free_text/', include('free_text.urls')),
+    path('click_question/', include('click_question.urls')),
+    path('one_to_one/', include('one_to_one.urls')),
+
 ]
 
 urlpatterns += [
     # Define specific paths (can be used with {% url %} tag
-    #path('about/', views.flatpage, {'url': '/about/'}, name='about'),
-    #path('privacy/', views.flatpage, {'url': '/privacy/'}, name='privacy'),
+    # path('about/', views.flatpage, {'url': '/about/'}, name='about'),
+    # path('privacy/', views.flatpage, {'url': '/privacy/'}, name='privacy'),
 
     # Or, use this 'catchall' pattern for all flatpages
     re_path(r'^(?P<url>.*/)$', views.flatpage),

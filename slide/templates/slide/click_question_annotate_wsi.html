@@ -1,0 +1,73 @@
+{% load static %}
+{% load slide_filters %}
+
+<div class="container fill" style="min-height: 600px">
+
+<div class="card border-0">
+
+    <div class="row no-gutters w-100 align-items-center">
+        <div class="col-sm-5 col-md-3">
+            <div class="card border-0 h-100" style="margin-top: auto; margin-bottom: auto">
+            <div class="card-body" style="padding: 0;">
+                <h5 class="card-title" style="margin-bottom: 0;">Annotation type</h5>
+            </div>
+            </div>
+        </div> <!-- end col 1 -->
+        <div class="col">
+            <div class="card border-0 text-start">
+            <div class="card-body" style="padding: 0;">
+            <div class="radio-toolbar">
+                <!-- Bounding box annotation -->
+                <label class="LPButton" id="box-annotation-btn" onclick="activateBoxAnnotationNoTextInput();" style="padding: 6px 10px 6px 10px; margin: 0;">
+                    Box
+                </label>
+            </div>
+            </div>
+            </div>
+        </div> <!-- end col 2 -->
+    </div> <!-- end row -->
+
+</div>
+<div style="margin-top: 5px;">
+    <div id="annotation-instructions">Annotation instructions will be given here for each annotation type</div>
+</div>
+
+
+<div id="wsi-canvas" class="wsi_canvas" style="height: 600px;"></div>
+
+</div>
+
+<script src="{% static 'slide/openseadragon.min.js' %}"></script>
+<script type="text/javascript">
+    var viewer = OpenSeadragon({
+    id: "wsi-canvas",
+    zoomPerScroll: 2, // Scroll speed
+    zoomPerClick: 1, // disable click to zoom
+    showNavigator: true, // The navigation window top-right
+    prefixUrl: "{% static 'slide/images/' %}", // Where to find OpenSedragon button images
+    tileSources:   {
+        width: {{ slide.width }},
+        height:  {{ slide.height }},
+        tileWidth: {{ slide.tile_width }},
+        tileHeight: {{ slide.tile_height }},
+        minLevel: 0,
+        maxLevel: {{ slide.osd_levels }}-1,
+        getTileUrl: function( level, x, y ) {
+            return "/viewer/tile/{{ slide.id }}/" + ({{ slide.osd_levels }} - 1 - level) + "/" + x + "/" + y + "/";
+        },
+        overlays: [
+            ],
+    }
+    });
+    viewer.innerTracker.keyHandler = null;
+
+
+    {% for box in boxes %}
+        addBoundingBoxNoTextInput(
+            {{box.position_x}}, {{ box.position_y }},
+            {{box.position_x}} + {{box.width}}, {{box.position_y}} + {{ box.height }}
+        );
+    {% endfor %}
+
+
+</script>

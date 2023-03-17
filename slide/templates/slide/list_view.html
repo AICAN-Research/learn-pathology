@@ -25,7 +25,7 @@
             <td>{{ slide.description }}</td>
             <td><a href="">Tasks</a></td>
             {% if request.user.is_teacher or request.user.is_superuser %}
-            <td><a href="{% url 'multiple_choice:new' slide.id %}">Create new task</a></td>
+            <td><a href="{% url 'task:new' slide.id %}">Create new task</a></td>
             {% endif %}
         </tr>
     {% endfor %}

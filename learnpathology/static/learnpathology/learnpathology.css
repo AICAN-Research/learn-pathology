@@ -311,6 +311,14 @@ body {
     height: 100%;
 }
 
+/* Table formatting */
+.table .thead-light th {
+    /* From boostrap v4 definition */
+    color: #495057;
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+}
+
 .LPButton {
     display: inline-block;
     background-color: var(--button-colour);
@@ -413,7 +421,7 @@ Course navigation tabs
 }
 
 .courseNavTabs .nav-link.active {
-    /*background-color: var(--button-colour-active);*/
+    background-color: var(--button-colour-active);
     color: var(--text-colour-dark);
     font-weight: bold;
     border-style: solid;
@@ -508,4 +516,25 @@ Image browser
     margin-right: auto;
     max-width: 100%;
     max-height: 100%;
+}
+
+/* =============================================
+Annotations
+============================================= */
+.LPBoundingBox {
+    background-color: rgba(0, 0, 0, 0%);    /* transparent background */
+    border-color: rgba(237, 193, 49, 0.91);
+    border-width: 3px;  /* 2px? */
+    color: black
+
+}
+
+.textOverlay{
+    background-color: rgba(0, 0, 0, 0%);
+    color: blue;
+
+}
+
+.LPAnnotationArrow {
+
 }

@@ -30,3 +30,8 @@ def as_chunks(indexable, chunk_size):
     limit = ceil(len(indexable) / chunk_size)
     for idx in range(limit):
         yield indexable[chunk_size*idx:chunk_size*(idx+1)]
+
+
+@register.filter
+def model_name(model):
+    return model.__class__.__name__

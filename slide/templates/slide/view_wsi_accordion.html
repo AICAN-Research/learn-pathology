@@ -1,0 +1,503 @@
+{% extends 'learnpathology/base.html' %}
+{% load static %}
+
+{% block content %}
+    <script>setBackground('#dcdcdc')</script>
+
+
+
+
+    <div class="card transparentBackground centerCardHorizontally border-0"
+         style="width: 98%; height: 98%;">
+        <div class="row no-gutters w-100 h-100">
+            <div class="LPButton btn" style="margin-left: auto;" onclick="toggleInfoCardVisibility()">
+                Show/hide slide information
+            </div>
+
+            <div class="col" style="height: fit-content;" id="slideColumn">
+
+
+                <!-- INFO CARD -->
+                <div class="card slideInfoCard border-0" id="slideInfoCardContent">
+                    <div class="row align-items-center" style="padding-top: 3%; padding-bottom: 3%;">
+                        <div class="col" style="margin-left: auto;">
+                            <div class="card-title" style="padding-left: 10%;">
+
+                                <h4>{{ slide.name }}</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- CARD CONTENT -->
+
+                    <!-- Accordion CONTENT -->
+
+                    <div class="accordion" id="accordionExample">
+                        <div class="accordion-item">
+                            <h3 class="accordion-header" id="headingOne">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapseOne" aria-expanded="true"
+                                        aria-controls="collapseOne">
+                                    Core Information
+                                </button>
+                            </h3>
+                            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+                                 data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <table class="table">
+
+                                        <tr>
+                                            <th>Slide name</th>
+                                            <td>{{ slide.name }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Slide description</th>
+                                            <td>{{ slide.description }}</td>
+                                        </tr>
+
+
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingTwo">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    Categorization
+                                </button>
+                            </h2>
+                            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+                                 data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <table class="table">
+                                        <tr>
+                                            <th>Organ</th>
+                                            <td>{{ slide.name }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Histology/pathology</th>
+                                            {% if slide.pathology %}
+                                                <td>Pathology</td>
+                                            {% else %}
+                                                <td>Histology</td>
+                                            {% endif %}
+                                        </tr>
+                                        <tr>
+                                            <th>Stain</th>
+                                            <td>{{ stain_name }}</td>
+                                        </tr>
+
+
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingThree">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapseThree" aria-expanded="false"
+                                        aria-controls="collapseThree">
+                                    Supplementary information
+                                </button>
+                            </h2>
+                            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
+                                 data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <table class="table">
+
+                                        <tr>
+                                            <th>
+                                                Long description
+                                                {% if request.user.is_teacher or request.user.is_superuser %}
+                                                    <div class="card-content" style="padding-top: 5px">
+                                                        <a class="LPButton"
+                                                           href="{% url 'slide:edit_description' slide.id %}"
+                                                           style="margin: 0;">
+                                                            Edit long description
+                                                        </a>
+                                                    </div>
+                                                {% endif %}
+                                            </th>
+                                            {% if slide.long_description %}
+                                                <td>{{ slide.long_description }}</td>
+                                            {% else %}
+                                                <td>-</td>
+                                            {% endif %}
+                                        </tr>
+                                        <tr>
+                                            <th>
+                                                General pathology tags
+                                                {% if request.user.is_teacher or request.user.is_superuser %}
+                                                    <div class="card-content" style="padding-top: 5px">
+                                                        <a class="LPButton" href="{% url 'slide:edit_tags' slide.id %}"
+                                                           style="margin: 0;">
+                                                            Edit tags
+                                                        </a>
+                                                    </div>
+                                                {% endif %}
+                                            </th>
+                                            <td>
+                                                {% if general_pathology_tags %}
+                                                    {% for tag in general_pathology_tags %}
+                                                        {{ tag.name }}<br>
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingFour">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapseFour" aria-expanded="false"
+                                        aria-controls="collapseFour">
+                                    Annotations
+                                </button>
+                            </h2>
+                            <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour"
+                                 data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+
+
+                                    <input type="checkbox" id="toggle-annotation"
+                                           data-width="150"> <input type="checkbox" id="toggle-text" data-width="100">
+                                    <br>
+
+                                    {% for box in boxes %}
+                                        <tr colspan="2" style="text-align: center">
+                                            <a id="boundingbox-listitem-{{ box.id }}" onclick="highlightAnnotation
+                                                    ('boundingbox-listitem-{{ box.id }}')">
+                                                {{ box.text }} <br>
+                                            </a>
+                                        </tr>
+                                    {% endfor %}
+                                    {% for pointer in pointers %}
+                                        <tr colspan="2" style="text-align: center">
+                                            <a id="arrow-listitem-{{ pointer.id }}" onclick="highlightAnnotation
+                                                    ('arrow-listitem-{{ pointer.id }}')">
+                                                {{ pointer.text }} <br>
+                                            </a>
+                                        </tr>
+                                    {% endfor %}
+                                    <div class="LPButton"><a
+                                            href="{% url 'slide:base_annotations' slide_id=slide.id %}">
+                                        Add descriptive annotations
+                                    </a></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Accordion CONTENT END -->
+
+
+                </div>
+
+            </div>
+
+            <!-- WSI VIEWER -->
+            <div class="col col-12 col-lg-9 " id="imageViewer" style="height:95%">
+                <div class="card slideViewerCard transparentBackground">
+                    <div id="wsi-canvas" class="wsi_canvas" style="height: 100%;"></div>
+                    {% if annotated_slide %}
+
+                        {{ annotated_slide.get_html | safe }}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <script src="{% static 'slide/openseadragon.min.js' %}"></script>
+    <script type="text/javascript">
+        let buttonElement = document.createElement("button");
+        buttonElement.innerText = "Screenshot";
+        let screenshotButton = new OpenSeadragon.Button({
+            tooltip: 'Screenshot',
+            element: buttonElement,
+            //srcRest: `/images/Browser_Chrome.png`,
+            //srcGroup: `/images/Browser_Chrome.png`,
+            //srcHover: `/images/Browser_Chrome.png`,
+            //srcDown: `/images/Browser_Chrome.png`,
+            onClick: function () {
+                console.log('Click!');
+                // Hide toolbar:
+                let toolbar = document.getElementsByClassName("openseadragon-container")[0].childNodes[1];
+                toolbar.style.display = "none";
+                html2canvas($("#wsi-canvas")[0]).then(canvas => {
+                    var now = new Date();
+                    var formattedDate = now.format("yyyy-MM-dd hh-mm-ss");
+                    console.log(now);
+                    // Trigger download
+                    var link = document.createElement('a');
+                    link.href = canvas.toDataURL("image/jpeg");
+                    link.download = 'LearnPathology Screenshot ' + formattedDate + '.jpg';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }).then(x => {
+                    // Display toolbar again
+                    let toolbar = document.getElementsByClassName("openseadragon-container")[0].childNodes[1];
+                    toolbar.style.display = "block";
+                })
+            }
+        });
+        let overlayElement = document.createElement("button");
+        overlayElement.innerText = "Toggle Annotations";
+        let overlayButton = new OpenSeadragon.Button({
+            tooltip: 'Toggle Annotations',
+            element: overlayElement,
+            //srcRest: `/images/Browser_Chrome.png`,
+            //srcGroup: `/images/Browser_Chrome.png`,
+            //srcHover: `/images/Browser_Chrome.png`,
+            //srcDown: `/images/Browser_Chrome.png`,
+            onClick: function () {
+                console.log('Click!');
+                $(".overlay").toggle();
+            }
+        });
+        var viewer = OpenSeadragon({
+            id: "wsi-canvas",
+            zoomPerScroll: 2, // Scroll speed
+            showNavigator: true, // The navigation window top-right
+            prefixUrl: "{% static 'slide/images/' %}", // Where to find OpenSedragon button images
+            tileSources: {
+                width: {{ slide.width }},
+                height:  {{ slide.height }},
+                tileWidth: {{ slide.tile_width }},
+                tileHeight: {{ slide.tile_height }},
+                minLevel: 0,
+                maxLevel: {{ slide.osd_levels }}-1,
+                getTileUrl: function (level, x, y) {
+                    return "/viewer/tile/{{ slide.id }}/" + ({{ slide.osd_levels }} -1 - level) + "/" + x + "/" + y + "/";
+                },
+                overlays: [
+                    {{ annotated_slide.get_js | safe }}
+                ],
+            }
+        });
+
+
+        viewer.addControl(screenshotButton.element, {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
+
+    </script>
+    <script>
+        window.onLoad = toggleAnnotationOff();
+        window.onLoad = toggleInfoCardVisibility();
+        window.onLoad = createClickReaction();
+
+        function createClickReaction() {
+            let current_overlays = viewer.currentOverlays
+
+            for (let i = 0; i < current_overlays.length; i++) {
+
+                new OpenSeadragon.MouseTracker({
+                    element: current_overlays[i].element,
+                    clickHandler: function (event) {
+
+
+                        var list_id = current_overlays[i].element.id.split('-').at(-1);
+
+                        if (current_overlays[i].element.id.includes('boundingbox')) {
+
+                            var list_box = document.getElementById('boundingbox-listitem-' + list_id);
+                            console.log(list_box)
+                            list_box.style.color = "red";
+                            list_box.style.fontWeight = "900"
+
+                            timer = setTimeout(function () {
+                                list_box.style.color = "";
+                                list_box.style.fontWeight = ""
+                            }, 1000);
+                        }
+                        if (current_overlays[i].element.id.includes('arrow')) {
+
+                            var list_arrow = document.getElementById('arrow-listitem-' + list_id);
+                            console.log(list_arrow)
+
+
+                            list_arrow.style.color = "red";
+                            list_arrow.style.fontWeight = "900";
+
+                            timer = setTimeout(function () {
+
+                                list_arrow.style.color = "";
+                                list_arrow.style.fontWeight = "";
+
+                            }, 1000);
+
+                        }
+                    }
+                });
+
+
+            }
+        }
+
+
+        function toggleAnnotationOff() {
+            $(".overlay").toggle();
+            $(".textOverlay").toggle();
+
+        }
+
+        function highlightAnnotation(annotationId) {
+
+            var list_item = document.getElementById(annotationId);
+            var list_id = annotationId.split('-').at(-1);
+
+            if (list_item.id.includes('boundingbox')) {
+
+                var box = document.getElementById('boundingbox-' + list_id);
+                var text = document.getElementById('boundingbox-text-overlay-' + list_id);
+                console.log(text)
+                box.style.borderColor = "red";
+                box.style.borderWidth = "5px";
+
+                text.style.color = "red";
+                text.style.fontWeight = "900";
+
+                timer = setTimeout(function () {
+                    box.style.borderColor = "";
+                    box.style.borderWidth = ""
+                    text.style.color = "";
+                    text.style.fontWeight = "";
+                }, 1000);
+            }
+            if (list_item.id.includes('arrow')) {
+
+                var arrow = document.getElementById('right-arrow-overlay-' + list_id);
+                var arrow_text = document.getElementById('arrow-text-overlay-' + list_id);
+                arrow.style.color = "red";
+                arrow.style.fontWeight = "900";
+
+                arrow_text.style.color = "red";
+                arrow_text.style.fontWeight = "900";
+
+                timer = setTimeout(function () {
+
+                    arrow.style.color = "";
+                    arrow.style.fontWeight = "";
+                    arrow_text.style.color = "";
+                    arrow_text.style.fontWeight = "";
+
+                }, 1000);
+            }
+        }
+
+        viewer.addHandler('viewport-change', updateTextLocation);
+        viewer.addHandler('tile-drawing', updateTextLocation);
+        addEventListener("resize", () => {
+        });
+
+        onresize = () => {
+            timer = setTimeout(function () {
+
+                updateTextLocation();
+
+            }, 20);
+        };
+
+        function updateTextLocation(event) {
+
+            let slide_overlays = viewer.currentOverlays;
+
+
+            let arrow_overlays = $("[id^=right-arrow-overlay-]")
+            let text_overlays = $("[id^=arrow-text-overlay-]")
+
+
+            for (let i = 0; i < arrow_overlays.length; i++) {
+
+                let arrowElement = arrow_overlays[i];
+                let textElement = text_overlays[i];
+
+
+                let arrowX = parseFloat(arrowElement.style.left);
+                let arrowY = parseFloat(arrowElement.style.top);
+
+
+                let viewportPoint = viewer.viewport.pointFromPixel(new OpenSeadragon.Point(arrowX - 5, arrowY + 15));
+                viewer.updateOverlay(textElement, viewportPoint);
+            }
+
+
+        }
+
+        function toggleInfoCardVisibility() {
+            var x = document.getElementById("slideInfoCardContent");
+            var canvas_viewer = document.getElementById('imageViewer')
+            console.log("clicked button to toggle card visibility");
+            console.log(x);
+            if (x.style.display === "none") {
+                x.style.display = "block";
+                canvas_viewer.style.width = '';
+            } else {
+                x.style.display = "none";
+                canvas_viewer.style.width = '100%';
+            }
+            timer = setTimeout(function () {
+
+                updateTextLocation();
+
+            }, 20);
+
+        }
+
+
+        $(function () {
+            $('#toggle-annotation').bootstrapToggle({
+                on: ' Annotation',
+                off: ' Annotation'
+            })
+            $('#toggle-annotation').bootstrapToggle('off');
+        })
+        $(function () {
+            $('#toggle-text').bootstrapToggle({
+                on: ' Text',
+                off: ' Text'
+            })
+            $('#toggle-text').bootstrapToggle('off');
+        })
+
+        $(function () {
+            $('#toggle-annotation').change(function () {
+                $(".overlay").toggle();
+
+                if ($(this).is(':checked')) {
+
+                } else {
+                    if ($('#toggle-text').is(':checked')) {
+
+                        $('#toggle-text').bootstrapToggle('off');
+
+                    }
+                }
+            })
+        })
+
+        $(function () {
+            $('#toggle-text').on('change', function () {
+                $(".textOverlay").toggle();
+
+
+                if ($(this).is(':checked')) {
+
+                    if ($('#toggle-annotation').is(':checked')) {
+
+                    } else {
+                        $('#toggle-annotation').bootstrapToggle('on');
+                    }
+
+
+                }
+
+            })
+        })
+
+
+    </script>
+{% endblock %}

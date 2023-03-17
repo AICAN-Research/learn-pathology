@@ -18,21 +18,21 @@ class Task(models.Model):
     @property
     def type(self):
         for app in apps.get_app_configs():
-            print(app.name)
+            # print(app.name)
             models = app.get_models()
             for model in models:
                 if str(model).find('AnnotatedSlide') >= 0: continue
-                print(model)
+                # print(model)
                 try:
                     task_field = model._meta.get_field('task')
                     if task_field.remote_field.model.__name__ == 'Task':
-                        print('has task')
+                        # print('has task')
                         try:
                             if model.objects.filter(task=self).exists():
-                                print('exists')
+                                # print('exists')
                                 return app.name
                         except:
-                            print('err')
+                            # print('err')
                             pass
                 except FieldDoesNotExist:
                     pass
@@ -42,23 +42,26 @@ class Task(models.Model):
     def do_url(self):
         return self.type + ':do'
 
+    def edit_url(self):
+        return self.type + ':edit'
+
     @property
     def type_model(self):
         for app in apps.get_app_configs():
-            print(app.name)
+            # print(app.name)
             models = app.get_models()
             for model in models:
-                print(model)
+                # print(model)
                 try:
                     task_field = model._meta.get_field('task')
                     if task_field.remote_field.model.__name__ == 'Task':
-                        print('has task')
+                        # print('has task')
                         try:
                             if model.objects.filter(task=self).exists():
-                                print('exists')
+                                # print('exists')
                                 return model.objects.get(task=self)
                         except:
-                            print('err')
+                            # print('err')
                             pass
                 except FieldDoesNotExist:
                     pass

@@ -51,6 +51,9 @@ INSTALLED_APPS = [
     'slide',
     'task',
     'multiple_choice',
+    'free_text',
+    'click_question',
+    'one_to_one',
     'course',
     'tag',
 ]

@@ -3,7 +3,11 @@
 {% block gridCardQuestions %}
 
     {% if request.user.is_teacher or request.user.is_superuser %}
-        <div class="card-content" style="padding-top: 5px"><a class="LPButton btn" href="{% url 'multiple_choice:new' slide.id %}" style="margin: 0;">Create new task</a></div>
+        {% if course_id %}
+            <div class="card-content" style="padding-top: 5px"><a class="LPButton btn" href="{% url 'task:new' slide_id=slide.id course_id=course_id %}" style="margin: 0;">Create new task</a></div>
+        {% else %}
+            <div class="card-content" style="padding-top: 5px"><a class="LPButton btn" href="{% url 'task:new' slide_id=slide.id %}" style="margin: 0;">Create new task</a></div>
+        {% endif %}
     {% endif %}
 
 {% endblock gridCardQuestions %}

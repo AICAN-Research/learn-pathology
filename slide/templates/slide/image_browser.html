@@ -22,9 +22,6 @@ $(document).ready(function() {
 </script>
 
 
-{# ================================================ #}
-{#              BEGIN CONTENT                       #}
-{# ================================================ #}
 {% block content %}
 
 <div class="container">
@@ -60,7 +57,7 @@ $(document).ready(function() {
                 </div>
             </div> <!-- end col -->
             <div class="col">
-                <div class="card border-0 text-left">
+                <div class="card border-0 text-start">
                 <div class="card-body container-fluid">
                 <div class="radio-toolbar">
                     <!-- Show 'All' button -->
@@ -89,7 +86,7 @@ $(document).ready(function() {
                 </div>
             </div> <!-- end col 1 -->
             <div class="col">
-                <div class="card border-0 text-left">
+                <div class="card border-0 text-start">
                 <div class="card-body">
                 <div class="radio-toolbar">
                     <input type="radio" name="histology-pathology" id="hist-path-btn" value="both" onchange="this.form.submit();">
@@ -151,29 +148,31 @@ $(document).ready(function() {
     {% if slides %}
 
         <div class="card border-0">
-            <div class="card-body align-content" style="margin-left: auto; padding-top: 10px; padding-bottom: 10px">
+        <div class="card-body align-content" style="margin-left: auto; padding-top: 10px; padding-bottom: 10px">
 
             <ul class="nav nav-pills card-header-pills imageBrowserNavTabs">
                 <li class="nav-item">
-                    <a href="#grid-view" class="LPButton nav-link active" data-toggle="tab">{% bs_icon 'grid' %}Grid</a>
+                    <a href="#grid-view" class="LPButton nav-link active"
+                       data-bs-toggle="tab">{% bs_icon 'grid' %}Grid</a>
                 </li>
                 <li class="nav-item">
-                    <a href="#list-view" class="LPButton nav-link" data-toggle="tab">{% bs_icon 'list' %}List</a>
+                    <a href="#list-view" class="LPButton nav-link"
+                       data-bs-toggle="tab">{% bs_icon 'list' %}List</a>
                 </li>
             </ul>
 
-            </div>
+        </div>
         </div>
 
         <div class="card" style="min-height: 600px; padding-top: 10px">
-            <div class="tab-content" id="tabs">
-                <div class="tab-pane active" id="grid-view">
-                    {% include 'slide/grid_view_task.html' with slides=slides %}
-                </div>
-                <div class="tab-pane" id="list-view">
-                    {% include 'slide/list_view.html' with slides=slides %}
-                </div>
+        <div class="tab-content" id="tabs">
+            <div class="tab-pane active" id="grid-view">
+                {% include 'slide/grid_view_task.html' with slides=slides %}
             </div>
+            <div class="tab-pane" id="list-view">
+                {% include 'slide/list_view.html' with slides=slides %}
+            </div>
+        </div>
         </div>
 
     {% else %}
