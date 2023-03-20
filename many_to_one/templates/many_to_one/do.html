@@ -207,9 +207,11 @@
                 for (var i = 0; i < answer_order[col_counter].length; i++) {
                     if (answer_order[col_counter][row_counter] === true) {
                         items[i].style.color = "green";
+                        items[i].innerHTML += " &#10004";
                     }
                     if (answer_order[col_counter][row_counter] === false)  {
                         items[i].style.color = "red";
+                        items[i].innerHTML += " &#10006;";
                     }
                     row_counter = row_counter+1;
                 }

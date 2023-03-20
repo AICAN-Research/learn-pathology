@@ -138,8 +138,10 @@
                 if (idOrder.includes(itemId)) {
                     if (answerOrder[idOrder.indexOf(itemId)]) {
                         items[i].style.color = "green";
+                        items[i].innerHTML += " &#10004";
                     } else {
                         items[i].style.color = "red";
+                        items[i].innerHTML += " &#10006;";
                     }
                 }
             }
