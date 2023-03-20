@@ -24,24 +24,38 @@ def do(request, task_id, course_id=None):
 
     task = ManyToOne.objects.get(task_id=task_id)
     mode = 'get'
-    id_order = [1, 2, 3]
+    indices = [1, 2, 3]
 
     answer_order = []
     if request.method == 'POST':
         print('POST')
         # Process form
 
-        id_order = request.POST.get('item_ids', None).split(',')
-        id_order = [int(x) for x in id_order]
-        for i, item in enumerate(id_order):
-            if item == i + 1:
-                answer_order.append(True)
-            else:
-                answer_order.append(False)
+        indices = {k: v for k, v in request.POST.items() if 'indices-sortable-list-' in k}
+        for column_string, index_string in indices.items():
+            answer_list = []
+            column_id = column_string.split('-')[-1]
+            if column_id != 'all':
+                column = TableColumn.objects.get(id=column_id)
+            else: column = None
+            item_list = index_string.split(',')
+            for item_string in item_list:
+                if 'blank-space' in item_string:
+                    answer_list.append(None)
+                    continue
+                item_id = item_string.split('-')[-1]
+                item = TableRow.objects.get(id=item_id)
+                if not column:
+                    answer_list.append(None)
+                    continue
+                if item.column.caption == column.caption:
+                    answer_list.append(True)
+                else:
+                    answer_list.append(False)
 
+            answer_order.append(answer_list)
 
         mode = 'post'
-
 
     slide_cache.load_slide_to_cache(task.task.annotated_slide.slide.id)
     return render(request, 'many_to_one/do.html', {
@@ -49,7 +63,7 @@ def do(request, task_id, course_id=None):
         'answer_order': json.dumps(answer_order),
         'course_id': course_id,
         'mode': mode,
-        'id_order': json.dumps(id_order),
+        'indices': json.dumps(indices),
 
     })
 
@@ -58,9 +72,9 @@ TableRowFormSet = inlineformset_factory(TableColumn, TableRow, fields=('answer',
 TableColumnFormSet = inlineformset_factory(ManyToOne, TableColumn, formset=TableRowFormSet, fields=('caption',),
                                            extra=5, max_num=5)
 
-
 TableColumnFormSet = inlineformset_factory(ManyToOne, TableColumn, form=TableColumnForm, formset=TableColumnFormSet,
                                            extra=5, max_num=5)
+
 
 @teacher_required
 def new(request, slide_id, course_id=None):
@@ -70,10 +84,8 @@ def new(request, slide_id, course_id=None):
 
     # Get slide
 
-
     slide = Slide.objects.get(pk=slide_id)
     slide_cache.load_slide_to_cache(slide.id)
-
 
     if request.method == 'POST':
         task_form = TaskForm(request.POST)
@@ -97,7 +109,6 @@ def new(request, slide_id, course_id=None):
                 organ_tags = task_form.cleaned_data['organ_tags']
                 other_tags = [tag for tag in task_form.cleaned_data['other_tags']]
                 task.tags.set([organ_tags] + other_tags)
-
 
                 for column_form in column_formset:
                     column = column_form.save(commit=False)
@@ -135,16 +146,13 @@ def new(request, slide_id, course_id=None):
         column_formset = TableColumnFormSet(instance=ManyToOne(), prefix='column')
         task_form = TaskForm()
 
-
-
-
         context = {
             'manyToOneForm': many_to_one_form,
             'column_formset': column_formset,
             'slide': slide,
             'taskForm': task_form,
 
-    }
+        }
     return render(request, 'many_to_one/new.html', context)
 
 
@@ -153,8 +161,6 @@ def edit(request, task_id, course_id=None):
     """
     Teacher form for editing a many-to-one sorting task
     """
-
-
 
     # Get model instances from database
     task = get_object_or_404(Task, id=task_id)
@@ -174,12 +180,10 @@ def edit(request, task_id, course_id=None):
         many_to_one_form = ManyToOneForm(request.POST or None, instance=many_to_one)
         column_formset = TableColumnFormSet(request.POST or None)
 
-
-
         # pointers = Pointer.objects.filter(annotated_slide=task.annotated_slide)
 
         with transaction.atomic():  # Make save operation atomic
-            if task_form.is_valid() and many_to_one_form.is_valid() :
+            if task_form.is_valid() and many_to_one_form.is_valid():
 
                 # Save instance data to database
                 task = task_form.save()
@@ -194,7 +198,6 @@ def edit(request, task_id, course_id=None):
                 for table_column in table_columns:
                     table_column.tablerow_set.all().delete()
                 table_columns.delete()
-
 
                 for column_form in column_formset:
                     column = TableColumn()
