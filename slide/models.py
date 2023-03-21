@@ -7,6 +7,7 @@ import numpy as np
 from PIL import Image
 from django.conf import settings
 from slide.timing import Timer
+from slide.utils.XMLParserForVSI import XMLParserForVSI
 from tag.models import Tag
 
 
@@ -92,6 +93,8 @@ class Slide(models.Model):
             self._osd_tile_width = osd_tile_width
             self._osd_tile_height = osd_tile_height
             self._osd_to_fast_level = osd_to_fast_level_map
+
+            self.read_vsi_metadata()
 
     @property
     def image(self):
@@ -185,6 +188,15 @@ class Slide(models.Model):
                 timer.print()
 
         return buffer
+
+    def read_vsi_metadata(self):
+
+        xml_parser = XMLParserForVSI(self)
+
+        self._metadata = None
+
+
+
 
 
 class AnnotatedSlide(models.Model):
