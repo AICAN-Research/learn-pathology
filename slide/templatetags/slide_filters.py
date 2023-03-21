@@ -35,3 +35,8 @@ def as_chunks(indexable, chunk_size):
 @register.filter
 def model_name(model):
     return model.__class__.__name__
+
+
+@register.filter
+def get_scale(slide):
+    return 1    # TODO: Update with slide.scale_factor
