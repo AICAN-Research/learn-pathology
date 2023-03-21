@@ -24,17 +24,21 @@ def do(request, task_id, course_id=None):
     # get id of next task
     if course_id:
         course = Course.objects.get(id=course_id)
-        all_tasks = list(Task.objects.filter(course=course).values_list('id', flat=True))
+        all_tasks = Task.objects.filter(course=course)
 
     else:
-        all_tasks = list(MultipleChoice.objects.values_list('id', flat=True))
-        course_id = 0
+        all_tasks = Task.objects.all()
+    this_task = Task.objects.get(id=task_id)
 
-    current_index = all_tasks.index(task_id)
-    try:
-        next_id = all_tasks[current_index + 1]
-    except IndexError:
-        next_id = all_tasks[0]
+    this_task_index = list(all_tasks).index(this_task)
+
+    # Get the task ID of the next object in the queryset
+    if this_task_index < len(all_tasks) - 1:
+        next_task_id = all_tasks[this_task_index + 1].id
+    else:
+        next_task_id = all_tasks[0].id
+
+    next_task_type = Task.objects.get(id=next_task_id).type
 
     answered = []
     choice_text = []
@@ -65,9 +69,10 @@ def do(request, task_id, course_id=None):
         'answered': answered,
         'len_answered': len(answered),
         'choice_text': choice_text,
-        'next_id': next_id,
         'course_id': course_id,
         'counter_corr_answ': counter_corr_answ,
+        'next_task_id': next_task_id,
+        'next_task_type': next_task_type,
     })
 
 

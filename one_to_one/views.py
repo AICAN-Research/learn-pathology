@@ -22,6 +22,26 @@ def do(request, task_id, course_id=None):
     """
 
     task = OneToOne.objects.get(task_id=task_id)
+
+    if course_id:
+        course = Course.objects.get(id=course_id)
+        all_tasks = Task.objects.filter(course=course)
+
+    else:
+        all_tasks = Task.objects.all()
+    this_task = Task.objects.get(id=task_id)
+
+    this_task_index = list(all_tasks).index(this_task)
+
+    # Get the task ID of the next object in the queryset
+    if this_task_index < len(all_tasks) - 1:
+        next_task_id = all_tasks[this_task_index + 1].id
+    else:
+        next_task_id = all_tasks[0].id
+
+    next_task_type = Task.objects.get(id=next_task_id).type
+
+
     mode = 'get'
     id_order = [1,2,3]
 
@@ -49,6 +69,8 @@ def do(request, task_id, course_id=None):
         'course_id': course_id,
         'mode': mode,
         'id_order': json.dumps(id_order),
+        'next_task_id': next_task_id,
+        'next_task_type': next_task_type,
 
 
     })

@@ -18,21 +18,23 @@ def do(request, task_id, course_id=None):
     """
     task = ClickQuestion.objects.get(task_id=task_id)
 
-    # get id of next task
-    #TODO include all task types for next task
-    # if course_id:
-    #     course = Course.objects.get(id=course_id)
-    #     all_tasks = list(Task.objects.filter(course=course).values_list('id', flat=True))
-    #
-    # else:
-    #     all_tasks = list(FreeText.objects.values_list('id', flat=True))
-    #     course_id = 0
-    #
-    # current_index = all_tasks.index(task_id)
-    # try:
-    #     next_id = all_tasks[current_index + 1]
-    # except IndexError:
-    #     next_id = all_tasks[0]
+    if course_id:
+        course = Course.objects.get(id=course_id)
+        all_tasks = Task.objects.filter(course=course)
+
+    else:
+        all_tasks = Task.objects.all()
+    this_task = Task.objects.get(id=task_id)
+
+    this_task_index = list(all_tasks).index(this_task)
+
+    # Get the task ID of the next object in the queryset
+    if this_task_index < len(all_tasks) - 1:
+        next_task_id = all_tasks[this_task_index + 1].id
+    else:
+        next_task_id = all_tasks[0].id
+
+    next_task_type = Task.objects.get(id=next_task_id).type
 
     student_selection = None
     answered = None
@@ -51,6 +53,8 @@ def do(request, task_id, course_id=None):
         'answered': answered,
         'course_id': course_id,
         'student_selection': student_selection,
+        'next_task_id': next_task_id,
+        'next_task_type': next_task_type,
     })
 
 

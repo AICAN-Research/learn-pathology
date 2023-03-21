@@ -39,10 +39,11 @@
 
 
 
-                        <input type="submit" value="Submit">
-                        {#                        <div class="LPButton" style="margin-top: 0; ">#}
-                        {#                            <a href="{% url 'multiple_choice:do' task_id=next_id course_id=course_id %}">Next Task</a>#}
-                        {#                        </div>#}
+                        <br><input type="submit" value="Submit">
+                     <div class="LPButton" style="margin-top: 0; ">
+                        <a href=" {% url ''|add:next_task_type|add:':do' task_id=next_task_id course_id=course_id %}">Next Task</a>
+
+                </div>
                     </form>
 
                 </div>
