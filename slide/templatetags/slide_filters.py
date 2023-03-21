@@ -1,6 +1,9 @@
 import django.db.models
 from django import template
 from math import ceil
+import xml.etree.ElementTree as ET
+from pathlib import Path
+import os
 
 
 register = template.Library()
@@ -39,4 +42,13 @@ def model_name(model):
 
 @register.filter
 def get_scale(slide):
-    return 1    # TODO: Update with slide.scale_factor
+    slide_folder = os.path.dirname(slide.path)
+    path_to_metadata = os.path.join(slide_folder, 'metadata.xml')
+
+    tree = ET.parse(Path(path_to_metadata))
+    root = tree.getroot()
+
+    property_elem = root.find(".//Property[@ID='20007']")
+    cdvec2_elem = property_elem.find('CdVec2')
+    values = [float(d.text) for d in cdvec2_elem.findall('double')]
+    return values[0]

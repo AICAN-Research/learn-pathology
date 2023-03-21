@@ -204,6 +204,8 @@ def whole_slide_view_full(request, slide_id):
     stain = slide.tags.get(is_stain=True)
     general_pathology_tags = [tag for tag in slide.tags.filter(is_organ=False, is_stain=False)
                               if tag.name.lower() in GENERAL_PATHOLOGY_TAGS]
+
+
     context = {
         'slide': slide,
         'stain_name': stain.name,

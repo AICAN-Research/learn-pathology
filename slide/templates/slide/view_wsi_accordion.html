@@ -282,7 +282,8 @@
             }
         });
 
-        let um_per_pixel = {{ slide|get_scale }}; // TODO: Find initial zoom level from metadata?
+        let um_per_pixel = {{ slide|get_scale }};
+        console.log('Scale factor is: ' +um_per_pixel)
         viewer.scalebar({
             type: OpenSeadragon.ScalebarType.MICROSCOPY,
             pixelsPerMeter: Math.round(1e6 / um_per_pixel),
