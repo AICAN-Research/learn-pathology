@@ -35,7 +35,7 @@
                                         <ul class="list-group " id="sortable-list-{{ column.id }}">
 
 
-                                            <li class="list-group-item" id="blank-space-{{ column.id }}"><br></li>
+                                            <li class="list-group-item ui-state-default ui-state-disabled disabled" id="blank-space-{{ column.id }}"><br></li>
                                         </ul>
                                         {##}
                                         {#                                        <input type="hidden" name="sortable-list-{{ column.id }}"#}
@@ -48,7 +48,7 @@
                     <div class="col-md-2">
                         <ul class="list-group " id="sortable-list-all">
                             Answers
-                        <li class="list-group-item" id="blank-space-all"><br></li>
+                            <li class="list-group-item ui-state-default ui-state-disabled disabled" id="blank-space-all"><br></li>
                             {% for column_form in task.tablecolumn_set.all %}
 
                                 {% for row_form in column_form.tablerow_set.all %}
@@ -83,20 +83,11 @@
         $('ul.list-group').each(function () {
             // Get the id of the current list
             var id = $(this).attr('id');
-            console.log(id)
 
-            // Make the current list sortable and connect it to all other lists with class 'list-group'
+
             $('#' + id).sortable({
-                connectWith: ".list-group",
+                connectWith:  ".list-group",
                 dropOnEmpty: false
-            }).disableSelection();
-        });
-
-        $(function () {
-            $("#sortable").sortable({
-                connectWith: ".list-group",
-                appendTo: ".list-group",
-                items: "> li:not(.fixed)" // only allow sorting of items that are not fixed
             }).disableSelection();
         });
 
@@ -190,7 +181,7 @@
                 var lists_indices = indices['indices-' + $(this).attr('id')].split(',');
 
                 for (var i = 0; i < lists_indices.length; i++) {
-                        list.appendChild(document.getElementById(lists_indices[i]));
+                    list.appendChild(document.getElementById(lists_indices[i]));
 
                 }
             });
@@ -209,13 +200,13 @@
                         items[i].style.color = "green";
                         items[i].innerHTML += " &#10004";
                     }
-                    if (answer_order[col_counter][row_counter] === false)  {
+                    if (answer_order[col_counter][row_counter] === false) {
                         items[i].style.color = "red";
                         items[i].innerHTML += " &#10006;";
                     }
-                    row_counter = row_counter+1;
+                    row_counter = row_counter + 1;
                 }
-                col_counter = col_counter +1;
+                col_counter = col_counter + 1;
 
             });
 
