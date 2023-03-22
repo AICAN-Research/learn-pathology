@@ -1,18 +1,16 @@
-import random
 import json
-from crispy_forms.helper import FormHelper
 
 from django.contrib import messages
 from django.db import transaction
-from django.forms import formset_factory, modelformset_factory, inlineformset_factory
-from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
+from django.forms import inlineformset_factory
+from django.shortcuts import render, redirect, get_object_or_404
 
 from slide.models import Slide, Pointer, AnnotatedSlide, BoundingBox
 from slide.views import slide_cache, save_boundingbox_annotation, save_pointer_annotation
 from task.models import Task
 from task.forms import TaskForm
 from many_to_one.models import ManyToOne, TableColumn, TableRow
-from many_to_one.forms import ManyToOneForm, TableColumnForm, TableRowForm
+from many_to_one.forms import ManyToOneForm, TableColumnForm
 from course.models import Course
 from user.decorators import teacher_required
 
@@ -26,10 +24,10 @@ def do(request, task_id, course_id=None):
     mode = 'get'
     indices = [1, 2, 3]
 
-    #get next task
+    # get next task
     if course_id:
         course = Course.objects.get(id=course_id)
-        all_tasks =Task.objects.filter(course=course)
+        all_tasks = Task.objects.filter(course=course)
 
     else:
         all_tasks = Task.objects.all()
@@ -45,7 +43,6 @@ def do(request, task_id, course_id=None):
 
     next_task_type = Task.objects.get(id=next_task_id).type
 
-
     answer_order = []
     if request.method == 'POST':
         print('POST')
@@ -57,7 +54,8 @@ def do(request, task_id, course_id=None):
             column_id = column_string.split('-')[-1]
             if column_id != 'all':
                 column = TableColumn.objects.get(id=column_id)
-            else: column = None
+            else:
+                column = None
             item_list = index_string.split(',')
             for item_string in item_list:
                 if 'blank-space' in item_string:
@@ -173,7 +171,6 @@ def new(request, slide_id, course_id=None):
             'column_formset': column_formset,
             'slide': slide,
             'taskForm': task_form,
-
         }
     return render(request, 'many_to_one/new.html', context)
 

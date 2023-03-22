@@ -9,7 +9,7 @@ class ManyToOne(models.Model):
     """
     task = models.OneToOneField(Task, on_delete=models.CASCADE)
     question = models.CharField(max_length=2048)
-    instructions = models.CharField(max_length=2048, default='Sort the elements into the correct column.')
+    instructions = models.CharField(max_length=2048, default='Sort the elements on the right into the correct column.')
 
 
 class TableColumn(models.Model):

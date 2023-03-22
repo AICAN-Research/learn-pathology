@@ -29,40 +29,44 @@
                         <div class="row">
                             {% for column in task.tablecolumn_set.all %}
                                 <div class="col-md-2">
-                                    <div class="list group">
-                                        {{ column.caption }}
+                                    <div class="list-group" style="background-color: #a2ba8e;">
+                                        <h2> {{ column.caption }} </h2>
 
                                         <ul class="list-group " id="sortable-list-{{ column.id }}">
-                                            <li class="list-group-item ui-state-default ui-state-disabled disabled" id="blank-space-{{ column.id }}"><br></li>
+                                            <li class="list-group-item ui-state-default ui-state-disabled disabled"
+                                                id="blank-space-{{ column.id }}"><br></li>
                                         </ul>
-                                        {##}
-                                        {#                                        <input type="hidden" name="sortable-list-{{ column.id }}"#}
-                                        {#                                               id="sortable-list-{{ column.id }}-value" value="">#}
                                     </div>
                                 </div>
                             {% endfor %}
                         </div>
                     </div>
                     <div class="col-md-2">
-                        <ul class="list-group " id="sortable-list-all">
-                            Answers
-                            <li class="list-group-item ui-state-default ui-state-disabled disabled" id="blank-space-all"><br></li>
-                            {% for column_form in task.tablecolumn_set.all %}
+                        <div class="list-group" style="background-color: #a2ba8e;">
+                            <h2>Answers</h2>
+                            <ul class="list-group " id="sortable-list-all" style="background-color: #a2ba8e;">
 
-                                {% for row_form in column_form.tablerow_set.all %}
+                                <li class="list-group-item ui-state-default ui-state-disabled disabled"
+                                    id="blank-space-all"><br></li>
+                                {% for column_form in task.tablecolumn_set.all %}
 
-                                    <li class="list-group-item" id="item-{{ row_form.id }}">{{ row_form.answer }}</li>
+                                    {% for row_form in column_form.tablerow_set.all %}
 
+                                        <li class="list-group-item" id="item-{{ row_form.id }}"
+                                            style="background-color: #a2ba8e;">{{ row_form.answer }}</li>
+
+                                    {% endfor %}
                                 {% endfor %}
-                            {% endfor %}
-                        </ul>
+                            </ul>
 
+                        </div>
                     </div>
                 </div>
 
                 <input type="submit" value="Submit">
                 <div class="LPButton" style="margin-top: 0; ">
-                        <a href=" {% url ''|add:next_task_type|add:':do' task_id=next_task_id course_id=course_id %}">Next Task</a>
+                    <a href=" {% url ''|add:next_task_type|add:':do' task_id=next_task_id course_id=course_id %}">Next
+                        Task</a>
                 </div>
 
                 <div id="mode" data-mode="{{ mode }}"></div>
@@ -85,7 +89,7 @@
 
 
             $('#' + id).sortable({
-                connectWith:  ".list-group",
+                connectWith: ".list-group",
                 dropOnEmpty: false
             }).disableSelection();
         });
@@ -126,9 +130,12 @@
 
         function shuffleList() {
             var ul = document.querySelector('#sortable-list-all');
+            var blankSpace = ul.querySelector('#blank-space-all');
+            ul.removeChild(blankSpace);
             for (var i = ul.children.length; i >= 0; i--) {
                 ul.appendChild(ul.children[Math.random() * i | 0]);
             }
+            ul.appendChild(blankSpace);
         }
 
         var mode = document.querySelector('#mode').dataset.mode;
@@ -143,13 +150,11 @@
             if (mode === 'post') {
 
                 console.log('Dont shuffel List.')
-                console.log(indices)
-                console.log(answerOrder)
                 rearrangeList(indices)
                 colorAnswer(answerOrder)
             }
-
         })
+
         var myForm = document.querySelector('#my-form');
 
         $('#my-form').submit(function () {
@@ -161,8 +166,6 @@
                 $('#' + column_id + ' li').each(function () {
                     var itemId = $(this).attr('id');
                     itemIds.push(itemId);
-
-
                 });
 
                 var input = document.createElement('input');
@@ -181,10 +184,8 @@
 
                 for (var i = 0; i < lists_indices.length; i++) {
                     list.appendChild(document.getElementById(lists_indices[i]));
-
                 }
             });
-
         }
 
         function colorAnswer(answer_order) {
@@ -206,9 +207,7 @@
                     row_counter = row_counter + 1;
                 }
                 col_counter = col_counter + 1;
-
             });
-
         }
 
 
