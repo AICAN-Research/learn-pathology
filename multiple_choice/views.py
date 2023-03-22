@@ -24,17 +24,21 @@ def do(request, task_id, course_id=None):
     # get id of next task
     if course_id:
         course = Course.objects.get(id=course_id)
-        all_tasks = list(Task.objects.filter(course=course).values_list('id', flat=True))
+        all_tasks = Task.objects.filter(course=course)
 
     else:
-        all_tasks = list(MultipleChoice.objects.values_list('id', flat=True))
-        course_id = 0
+        all_tasks = Task.objects.all()
+    this_task = Task.objects.get(id=task_id)
 
-    current_index = all_tasks.index(task_id)
-    try:
-        next_id = all_tasks[current_index + 1]
-    except IndexError:
-        next_id = all_tasks[0]
+    this_task_index = list(all_tasks).index(this_task)
+
+    # Get the task ID of the next object in the queryset
+    if this_task_index < len(all_tasks) - 1:
+        next_task_id = all_tasks[this_task_index + 1].id
+    else:
+        next_task_id = all_tasks[0].id
+
+    next_task_type = Task.objects.get(id=next_task_id).type
 
     answered = []
     choice_text = []
@@ -65,9 +69,10 @@ def do(request, task_id, course_id=None):
         'answered': answered,
         'len_answered': len(answered),
         'choice_text': choice_text,
-        'next_id': next_id,
         'course_id': course_id,
         'counter_corr_answ': counter_corr_answ,
+        'next_task_id': next_task_id,
+        'next_task_type': next_task_type,
     })
 
 
@@ -158,7 +163,7 @@ def new(request, slide_id, course_id=None):
 
                 # Store annotations (pointers)
                 for key in request.POST:
-                    print(key, request.POST[key])
+
                     if key.startswith('right-arrow-overlay-') and key.endswith('-text'):
                         prefix = key[:-len('text')]
                         pointer = Pointer()
@@ -265,7 +270,7 @@ def edit(request, task_id,course_id=None):
         # pointers = Pointer.objects.filter(annotated_slide=task.annotated_slide)
 
         with transaction.atomic():  # Make save operation atomic
-            if task_form.is_valid() and multiple_choice_form.is_valid() and choice_formset.is_valid():
+            if task_form.is_valid() and multiple_choice_form.is_valid():
 
                 # Save instance data to database
                 task = task_form.save()
@@ -275,11 +280,21 @@ def edit(request, task_id,course_id=None):
                 task.tags.set([organ_tags] + other_tags)
 
                 multiple_choice = multiple_choice_form.save()
+                Choice.objects.filter(task=multiple_choice).delete()
 
                 for choiceForm in choice_formset:
-                    choice = choiceForm.save(commit=False)
-                    if len(choice.text) > 0:
+                    choice = Choice()
+                    text = request.POST.get(f"{choiceForm.prefix}-text")
+                    correct = request.POST.get(f"{choiceForm.prefix}-correct")
+                    print(correct)
+
+                    if len(text) > 0:
                         choice.task = multiple_choice
+                        choice.text = text
+                        if correct:
+                            choice.correct = True
+                        else:
+                            choice.correct = False
                         choice.save()
 
                 # Store annotations (pointers)
@@ -288,7 +303,7 @@ def edit(request, task_id,course_id=None):
                 BoundingBox.objects.filter(annotated_slide=annotated_slide).delete()
                 # Add all current pointers
                 for key in request.POST:
-                    print(key, request.POST[key])
+
                     if key.startswith('right-arrow-overlay-') and key.endswith('-text'):
                         save_pointer_annotation(request,key,annotated_slide)
 

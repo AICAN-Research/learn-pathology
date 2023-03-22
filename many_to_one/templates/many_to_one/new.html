@@ -1,0 +1,105 @@
+{% extends 'learnpathology/base.html' %}
+
+
+{% block content %}
+    <div class="container">
+        <h1>New Many-to-One Sorting Task</h1>
+    </div>
+
+    <div class="card mx-auto text-center" style="width: 90%">
+        <div class="card-body">
+            <div class="card-text">
+
+                <p>
+                    Enter the name, question and answer pairs for the many-to-one sorting task. <br>
+                    Add tags and annotate the slide (optional)
+                </p>
+
+                <form class="form" method="post">
+                    {% csrf_token %}
+                    {{ taskForm.management_form }}
+                    {{ manyToOneForm.management_form }}
+                    {{ column_formset.management_form }}
+
+
+                    <table class="table" style="margin-left: auto; margin-right:auto; width: 80%;">
+                        <thead class="thead-light">
+                        <tr>
+                            <th colspan="6">Task info</th>
+                        </tr>
+                        </thead>
+                        <tr>
+                            <th>{{ taskForm.name.label }} (short, decriptive)</th>
+                            <td>{{ taskForm.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ manyToOneForm.question.label }}</th>
+                            <td>{{ manyToOneForm.question }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ manyToOneForm.instructions.label }}</th>
+                            <td>{{ manyToOneForm.instructions }}</td>
+                        </tr>
+
+                     <thead class="thead-light">
+    <tr>
+        <th colspan="6">Sorting Table</th>
+    </tr>
+</thead>
+
+<tbody>
+    <tr>
+        <td colspan="6">
+            {% for column_form in column_formset %}
+                {{ column_form.id }}
+                {{ column_form.caption }}
+                {{ column_form.nested.management_form }}
+                {% for row_form in column_form.nested.forms %}
+                    {{ row_form.id }}
+                    {{ row_form.answer }}
+
+                {% endfor %} <br>
+            {% endfor %}
+        </td>
+    </tr>
+</tbody>
+
+
+                        <thead class="thead-light">
+                        <tr>
+                            <th colspan="6">Task metadata and tagging</th>
+                        </tr>
+                        </thead>
+                        <tr>
+                            <th>{{ taskForm.pathology.label }}</th>
+                            <td>{{ taskForm.pathology }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ taskForm.organ_tags.label }}</th>
+                            <td>{{ taskForm.organ_tags }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ taskForm.other_tags.label }}</th>
+                            <td>{{ taskForm.other_tags }}</td>
+                        </tr>
+
+                        <thead class="thead-light">
+                        <tr>
+                            <th colspan="6">Annotate WSI</th>
+                        </tr>
+                        </thead>
+                        <tr>
+                            <td colspan="6">
+                                {% include 'slide/view_wsi_and_edit_annotations.html' with slide=slide %}
+                                <br>
+                                <input type="submit" value="Submit">
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+
+
+            </div>
+        </div>
+    </div>
+{% endblock content %}
