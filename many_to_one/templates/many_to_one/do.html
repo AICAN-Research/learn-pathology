@@ -33,8 +33,6 @@
                                         {{ column.caption }}
 
                                         <ul class="list-group " id="sortable-list-{{ column.id }}">
-
-
                                             <li class="list-group-item ui-state-default ui-state-disabled disabled" id="blank-space-{{ column.id }}"><br></li>
                                         </ul>
                                         {##}
@@ -63,19 +61,15 @@
                 </div>
 
                 <input type="submit" value="Submit">
-               <div class="LPButton" style="margin-top: 0; ">
+                <div class="LPButton" style="margin-top: 0; ">
                         <a href=" {% url ''|add:next_task_type|add:':do' task_id=next_task_id course_id=course_id %}">Next Task</a>
-
                 </div>
 
                 <div id="mode" data-mode="{{ mode }}"></div>
             </form>
-
-
             <br>
 
             {% include 'slide/view_wsi.html' with slide=task.task.annotated_slide.slide annotated_slide=task.task.annotated_slide %}
-
 
         </div>
     </div>

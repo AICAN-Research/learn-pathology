@@ -40,27 +40,27 @@
                             <td>{{ manyToOneForm.instructions }}</td>
                         </tr>
 
-                     <thead class="thead-light">
-    <tr>
-        <th colspan="6">Sorting Table</th>
-    </tr>
-</thead>
+                        <thead class="thead-light">
+                            <tr>
+                                <th colspan="6">Sorting Table</th>
+                            </tr>
+                        </thead>
 
-<tbody>
-    <tr>
-        <td colspan="6">
-            {% for column_form in column_formset %}
-                {{ column_form.caption }}
-                {{ column_form.id }}
-                {{ column_form.nested.management_form }}
-                {% for row_form in column_form.nested.forms %}
-                    {{ row_form.answer }}
-                    {{ row_form.id }}
-                {% endfor %} <br>
-            {% endfor %}
-        </td>
-    </tr>
-</tbody>
+                        <tbody>
+                            <tr>
+                                <td colspan="6">
+                                    {% for column_form in column_formset %}
+                                        {{ column_form.caption }}
+                                        {{ column_form.id }}
+                                        {{ column_form.nested.management_form }}
+                                        {% for row_form in column_form.nested.forms %}
+                                            {{ row_form.answer }}
+                                            {{ row_form.id }}
+                                        {% endfor %} <br>
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                        </tbody>
 
 
                         <thead class="thead-light">
