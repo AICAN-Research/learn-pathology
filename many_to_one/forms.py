@@ -3,8 +3,6 @@ from many_to_one.models import ManyToOne, TableColumn, TableRow
 from task.models import Task
 
 
-
-
 class ManyToOneForm(ModelForm):
     class Meta:
         model = ManyToOne
@@ -17,7 +15,6 @@ class ManyToOneForm(ModelForm):
             'question': Textarea(attrs={'rows': 1, 'cols': 70, 'resize': 'none'}),
             'instructions': Textarea(attrs={'rows': 1, 'cols': 70}),
         }
-
 
 
 class TableColumnForm(ModelForm):
@@ -41,6 +38,8 @@ class TableColumnForm(ModelForm):
 
 
 TableRowFormSet = inlineformset_factory(TableColumn, TableRow, fields=('answer',), extra=5, max_num=5)
+
+
 class TableRowForm(ModelForm):
     class Meta:
         model = TableRow
