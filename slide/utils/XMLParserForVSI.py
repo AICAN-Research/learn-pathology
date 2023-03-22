@@ -3,6 +3,9 @@ from xml.dom.minidom import parse, Node
 
 import untangle
 import xmltodict
+import xml.etree.ElementTree as ET
+from pathlib import Path
+import os
 
 
 class XMLParserForVSI(object):
@@ -21,6 +24,17 @@ class XMLParserForVSI(object):
         else:
             print(f"No metadata was found for slide with ID {slide.id}.")
             return
+
+    def get_scale_factor(self):
+        tree = ET.parse(Path(self.path_to_metadata))
+        root = tree.getroot()
+
+        property_elem = root.find(".//Property[@ID='20007']")
+        cdvec2_elem = property_elem.find('CdVec2')
+        values = [float(d.text) for d in cdvec2_elem.findall('double')]
+        return values[0]
+
+
 
     # ================================
     #   xmltodict (3rd party lib)

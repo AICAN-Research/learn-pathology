@@ -1,4 +1,5 @@
 {% load static %}
+{% load slide_filters %}
 <div class="container" style="height:85%; background-color: #dcdcdc">
 <div id="wsi-canvas" class="wsi_canvas" style="height: calc(100% - 100px);"></div>
 {% if annotated_slide %}
@@ -78,22 +79,28 @@
         }
     });
 
-    var zoomLevel = 5 - 1; //slide.osd_levels - 1;
-    var um_per_pixel = 0.05; // TODO: Find initial zoom level from metadata?
-    viewer.scalebar({
-        type: OpenSeadragon.ScalebarType.MICROSCOPY,
-        pixelsPerMeter: Math.round(1e6 / um_per_pixel),
-        minWidth: "100px",
-        location: OpenSeadragon.ScalebarLocation.BOTTOM_RIGHT,
-        xOffset: 10,
-        yOffset: 20,
-        stayInsideImage: true,
-        color: "rgba(100,100,100,0.9)",
-        fontColor: "rgb(50,50,50)",
-        backgroundColor: "rgba(230, 230, 230, 0.5)",
-        fontSize: "large",
-        barThickness: 3
-    });
+
+
+      try {
+            let um_per_pixel = {{ slide|get_scale }};
+            console.log('Scale factor is: ' + um_per_pixel)
+            viewer.scalebar({
+                type: OpenSeadragon.ScalebarType.MICROSCOPY,
+                pixelsPerMeter: Math.round(1e6 / um_per_pixel),
+                minWidth: "250px",
+                location: OpenSeadragon.ScalebarLocation.BOTTOM_LEFT,
+                xOffset: 10,
+                yOffset: 20,
+                stayInsideImage: true,
+                color: "rgba(100,100,100,0.9)",
+                fontColor: "rgb(50,50,50)",
+                backgroundColor: "rgba(230, 230, 230, 0.5)",
+                fontSize: "large",
+                barThickness: 3
+            });
+        } catch (e) {
+            alert('Couldn\'t get scaling factor')
+        }
 
     viewer.addControl(screenshotButton.element, {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
     viewer.addControl(overlayButton.element, {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
