@@ -10,6 +10,7 @@
     var viewer = OpenSeadragon({
         id: "wsi-canvas",
         zoomPerScroll: 2, // Scroll speed
+        minScrollDeltaTime: 150, //	Number of milliseconds between canvas-scroll events.
         showNavigator: true, // The navigation window top-right
         prefixUrl: "{% static 'slide/images/' %}", // Where to find OpenSedragon button images
         tileSources: {

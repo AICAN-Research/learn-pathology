@@ -1,28 +1,30 @@
-import random
 import json
 
 from django.contrib import messages
 from django.db import transaction
-from django.forms import formset_factory, modelformset_factory
-from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
+from django.forms import inlineformset_factory
+from django.shortcuts import render, redirect, get_object_or_404
 
 from slide.models import Slide, Pointer, AnnotatedSlide, BoundingBox
 from slide.views import slide_cache, save_boundingbox_annotation, save_pointer_annotation
 from task.models import Task
 from task.forms import TaskForm
-from one_to_one.models import OneToOne, SortingPair
-from one_to_one.forms import OneToOneForm, SortingPairForm
+from many_to_one.models import ManyToOne, TableColumn, TableRow
+from many_to_one.forms import ManyToOneForm, TableColumnForm
 from course.models import Course
 from user.decorators import teacher_required
 
 
 def do(request, task_id, course_id=None):
     """
-    Student form for answering/viewing a one-to-one sorting task
+    Student form for answering/viewing a many-to-one sorting task
     """
 
-    task = OneToOne.objects.get(task_id=task_id)
+    task = ManyToOne.objects.get(task_id=task_id)
+    mode = 'get'
+    indices = [1, 2, 3]
 
+    # get next task
     if course_id:
         course = Course.objects.get(id=course_id)
         all_tasks = Task.objects.filter(course=course)
@@ -41,88 +43,108 @@ def do(request, task_id, course_id=None):
 
     next_task_type = Task.objects.get(id=next_task_id).type
 
-
-    mode = 'get'
-    id_order = [1,2,3]
-
     answer_order = []
     if request.method == 'POST':
         print('POST')
         # Process form
 
-        id_order = request.POST.get('item_ids', None).split(',')
-        id_order =[int(x) for x in id_order]
-        for i, item in enumerate(id_order):
-            if item == i + 1:
-                answer_order.append(True)
+        indices = {k: v for k, v in request.POST.items() if 'indices-sortable-list-' in k}
+        for column_string, index_string in indices.items():
+            answer_list = []
+            column_id = column_string.split('-')[-1]
+            if column_id != 'all':
+                column = TableColumn.objects.get(id=column_id)
             else:
-                answer_order.append(False)
+                column = None
+            item_list = index_string.split(',')
+            for item_string in item_list:
+                if 'blank-space' in item_string:
+                    answer_list.append(None)
+                    continue
+                item_id = item_string.split('-')[-1]
+                item = TableRow.objects.get(id=item_id)
+                if not column:
+                    answer_list.append(None)
+                    continue
+                if item.column.caption == column.caption:
+                    answer_list.append(True)
+                else:
+                    answer_list.append(False)
 
+            answer_order.append(answer_list)
 
         mode = 'post'
 
-
     slide_cache.load_slide_to_cache(task.task.annotated_slide.slide.id)
-    return render(request, 'one_to_one/do.html', {
+    return render(request, 'many_to_one/do.html', {
         'task': task,
         'answer_order': json.dumps(answer_order),
         'course_id': course_id,
         'mode': mode,
-        'id_order': json.dumps(id_order),
+        'indices': json.dumps(indices),
         'next_task_id': next_task_id,
         'next_task_type': next_task_type,
 
-
     })
+
+
+TableRowFormSet = inlineformset_factory(TableColumn, TableRow, fields=('answer',), extra=5, max_num=5)
+TableColumnFormSet = inlineformset_factory(ManyToOne, TableColumn, formset=TableRowFormSet, fields=('caption',),
+                                           extra=5, max_num=5)
+
+TableColumnFormSet = inlineformset_factory(ManyToOne, TableColumn, form=TableColumnForm, formset=TableColumnFormSet,
+                                           extra=5, max_num=5)
 
 
 @teacher_required
 def new(request, slide_id, course_id=None):
     """
-    Teacher form for creating a one-to-one sorting task
+    Teacher form for creating a many-to-one sorting task
     """
 
     # Get slide
+
     slide = Slide.objects.get(pk=slide_id)
     slide_cache.load_slide_to_cache(slide.id)
 
-    # Process forms
-    SortingPairFormSet = formset_factory(SortingPairForm, extra=5)
-    if request.method == 'POST':  # Form was submitted
-        print("POST")
+    if request.method == 'POST':
         task_form = TaskForm(request.POST)
-        one_to_one_form = OneToOneForm(request.POST)
-        sorting_pair_formset = SortingPairFormSet(request.POST)
+        many_to_one_form = ManyToOneForm(request.POST)
+        column_formset = TableColumnFormSet(request.POST or None, prefix='column')
+        with transaction.atomic():  # Make save operation atomic
+            if many_to_one_form.is_valid() and task_form.is_valid() and column_formset.is_valid():
 
-        with transaction.atomic():
-         # Make save operation atomic
-            if one_to_one_form.is_valid() and task_form.is_valid() and sorting_pair_formset.is_valid():
-                # Create annotated slide
                 annotated_slide = AnnotatedSlide()
                 annotated_slide.slide = slide
                 annotated_slide.save()
 
-                # Create task
                 task = task_form.save(commit=False)
                 task.annotated_slide = annotated_slide
                 task.save()
+
+                many_to_one_task = many_to_one_form.save(commit=False)
+                many_to_one_task.task = task
+                many_to_one_task.save()
 
                 organ_tags = task_form.cleaned_data['organ_tags']
                 other_tags = [tag for tag in task_form.cleaned_data['other_tags']]
                 task.tags.set([organ_tags] + other_tags)
 
-                # Create one to one sorting task
-                one_to_one_task = one_to_one_form.save(commit=False)
-                one_to_one_task.task = task
-                one_to_one_task.save()
+                for column_form in column_formset:
+                    column = column_form.save(commit=False)
 
-                for pairForm in sorting_pair_formset:
-                    pair = pairForm.save(commit=False)
-                    if len(pair.fixed) > 0 and len(pair.draggable) > 0:
-                        pair.task = one_to_one_task
-                        pair.save()
+                    if len(column.caption) > 0:
+                        column.task = many_to_one_task
+                        column.save()
 
-                # Store annotations (pointers)
+                        for row_form in column_form.nested.forms:
+                            row = row_form.save(commit=False)
+                            answer = request.POST.get(f"{row_form.prefix}-answer")
+
+                            if len(answer) > 0:
+                                row.answer = answer
+                                row.save()
+
                 for key in request.POST:
 
                     if key.startswith('right-arrow-overlay-') and key.endswith('-text'):
@@ -131,38 +153,38 @@ def new(request, slide_id, course_id=None):
                     if key.startswith('boundingbox-') and key.endswith('-text'):
                         save_boundingbox_annotation(request, key, annotated_slide)
 
-                # Give a message back to the user
+                    # Give a message back to the user
                 messages.add_message(request, messages.SUCCESS, 'Task added successfully!')
                 if course_id is not None and course_id in Course.objects.values_list('id', flat=True):
                     course = Course.objects.get(id=course_id)
                     course.task.add(task)
                     return redirect('course:view', course_id=course_id, active_tab='tasks')
                 return redirect('task:list')
-    else:
-        task_form = TaskForm()
-        one_to_one_form = OneToOneForm()
-        sorting_pair_formset = SortingPairFormSet()
 
-    return render(request, 'one_to_one/new.html', {
-        'slide': slide,
-        'oneToOneForm': one_to_one_form,
-        'taskForm': task_form,
-        'sortingPairFormSet': sorting_pair_formset,
-    })
+    else:
+        many_to_one_form = ManyToOneForm()
+        column_formset = TableColumnFormSet(instance=ManyToOne(), prefix='column')
+        task_form = TaskForm()
+
+        context = {
+            'manyToOneForm': many_to_one_form,
+            'column_formset': column_formset,
+            'slide': slide,
+            'taskForm': task_form,
+        }
+    return render(request, 'many_to_one/new.html', context)
 
 
 @teacher_required
-def edit(request, task_id,course_id=None):
+def edit(request, task_id, course_id=None):
     """
-    Teacher form for editing a one-to-one sorting task
+    Teacher form for editing a many-to-one sorting task
     """
-
-    SortingPairFormSet = modelformset_factory(SortingPair, form=SortingPairForm, extra=5)
 
     # Get model instances from database
     task = get_object_or_404(Task, id=task_id)
-    one_to_one = get_object_or_404(OneToOne, task=task)
-    sorting_pair = SortingPair.objects.filter(task=one_to_one)
+    many_to_one = get_object_or_404(ManyToOne, task=task)
+    column = TableColumn.objects.filter(task=many_to_one)
 
     # Get slide and pointers
     annotated_slide = task.annotated_slide
@@ -174,13 +196,13 @@ def edit(request, task_id,course_id=None):
 
         # Get submitted forms
         task_form = TaskForm(request.POST or None, instance=task)
-        one_to_one_form = OneToOneForm(request.POST or None, instance=one_to_one)
-        sorting_pair_formset = SortingPairFormSet(request.POST)
+        many_to_one_form = ManyToOneForm(request.POST or None, instance=many_to_one)
+        column_formset = TableColumnFormSet(request.POST or None)
 
         # pointers = Pointer.objects.filter(annotated_slide=task.annotated_slide)
 
         with transaction.atomic():  # Make save operation atomic
-            if task_form.is_valid() and one_to_one_form.is_valid():
+            if task_form.is_valid() and many_to_one_form.is_valid():
 
                 # Save instance data to database
                 task = task_form.save()
@@ -189,16 +211,31 @@ def edit(request, task_id,course_id=None):
                 other_tags = [tag for tag in task_form.cleaned_data['other_tags']]
                 task.tags.set([organ_tags] + other_tags)
 
-                one_to_one = one_to_one_form.save()
-                one_to_one.sortingpair_set.all().delete()
+                many_to_one_task = many_to_one_form.save()
 
+                table_columns = TableColumn.objects.filter(task=many_to_one)
+                for table_column in table_columns:
+                    table_column.tablerow_set.all().delete()
+                table_columns.delete()
 
-                for pairForm in sorting_pair_formset:
-                    if pairForm.is_valid():
-                        pair = pairForm.save(commit=False)
-                        if len(pair.fixed) > 0 and len(pair.draggable) > 0:
-                            pair.task = one_to_one
-                            pair.save()
+                for column_form in column_formset:
+                    column = TableColumn()
+                    caption = request.POST.get(f"{column_form.prefix}-caption")
+
+                    if len(caption) > 0:
+                        column.task = many_to_one_task
+                        column.caption = caption
+                        column.save()
+
+                        for row_form in column_form.nested.forms:
+
+                            row = TableRow()
+                            answer = request.POST.get(f"{row_form.prefix}-answer")
+
+                            if len(answer) > 0:
+                                row.column = column
+                                row.answer = answer
+                                row.save()
 
                 # Store annotations (pointers)
                 # Delete old pointers first
@@ -221,20 +258,20 @@ def edit(request, task_id,course_id=None):
         return redirect('task:list')
 
     else:  # GET
-        task_form = TaskForm(instance=task)  # , initial=task.tags.all())
+        task_form = TaskForm(instance=task)
         task_form.fields['organ_tags'].initial = task.tags.filter(is_organ=True)
         task_form.fields['other_tags'].initial = task.tags.filter(is_stain=False, is_organ=False)
 
-        one_to_one_form = OneToOneForm(instance=task.onetoone)
-        sorting_pair_formset = SortingPairFormSet(queryset=sorting_pair)
+        many_to_one_form = ManyToOneForm(instance=task.manytoone)
+        column_formset = TableColumnFormSet(instance=many_to_one)
 
     context = {
         'slide': slide,
         'annotated_slide': annotated_slide,
-        'oneToOneForm': one_to_one_form,
+        'manyToOneForm': many_to_one_form,
         'taskForm': task_form,
-        'sortingPairFormSet': sorting_pair_formset,
+        'column_formset': column_formset,
         'pointers': Pointer.objects.filter(annotated_slide=annotated_slide),
         'boxes': BoundingBox.objects.filter(annotated_slide=annotated_slide),
     }
-    return render(request, 'one_to_one/edit.html', context)
+    return render(request, 'many_to_one/edit.html', context)

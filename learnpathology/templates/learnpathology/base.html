@@ -103,7 +103,7 @@
 <div class="container-fluid">
     {% if messages %}
         {% for message in messages %}
-            <div{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+            <div{% if message.tags %} class="{{ message.tags }} timeout"{% endif %}>{{ message }}</div>
         {% endfor %}
     {% endif %}
 
@@ -123,6 +123,12 @@
     </div>
 
 </div>
+
+    <script>
+        setTimeout(function() {
+            $('.timeout').slideUp();
+        }, 5000);
+    </script>
 
 </body>
 </html>

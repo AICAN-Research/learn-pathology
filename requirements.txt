@@ -2,3 +2,6 @@ django==3.2.*
 pyfast==4.5.0
 pillow==8.*
 pyyaml==5.*
+
+numpy~=1.23.5
+django-ckeditor~=6.5.1
