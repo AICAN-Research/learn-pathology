@@ -29,10 +29,10 @@
                         <div class="row">
                             {% for column in task.tablecolumn_set.all %}
                                 <div class="col-md-2">
-                                    <div class="list-group" style="background-color: #a2ba8e;">
+                                    <div class="list-group">
                                         <h2> {{ column.caption }} </h2>
 
-                                        <ul class="list-group " id="sortable-list-{{ column.id }}">
+                                        <ul class="list-group" id="sortable-list-{{ column.id }}" style="background-color: #a2ba8e; min-height: 300px;">
                                             <li class="list-group-item ui-state-default ui-state-disabled disabled"
                                                 id="blank-space-{{ column.id }}"><br></li>
                                         </ul>
@@ -42,7 +42,7 @@
                         </div>
                     </div>
                     <div class="col-md-2">
-                        <div class="list-group" style="background-color: #a2ba8e;">
+                        <div class="list-group">
                             <h2>Answers</h2>
                             <ul class="list-group " id="sortable-list-all" style="background-color: #a2ba8e;">
 
