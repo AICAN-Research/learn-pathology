@@ -1,11 +1,16 @@
+import os
+import time
 import threading
 from io import BytesIO
-from django.db import models
+
 import fast
-import time
 import numpy as np
 from PIL import Image
+from pathlib import Path
+import xml.etree.ElementTree as ET
+from django.db import models
 from django.conf import settings
+
 from slide.timing import Timer
 from tag.models import Tag
 
@@ -93,7 +98,7 @@ class Slide(models.Model):
             self._osd_tile_height = osd_tile_height
             self._osd_to_fast_level = osd_to_fast_level_map
 
-            self.get_scale_factor()
+            self.find_image_scale_factor()
 
     @property
     def image(self):
@@ -188,10 +193,29 @@ class Slide(models.Model):
 
         return buffer
 
-    def get_scale_factor(self):
-        #TODO Implement
+    def find_image_scale_factor(self):
+        """
+        Finds the slide scale (in um/px) from the WSI's metadata.xml file.
+        The scale is given for the highest level (lowest resolution) of the
+        image pyramid.
+        """
+        try:
+            slide_folder = os.path.dirname(self.path)
+            path_to_metadata = os.path.join(slide_folder, 'metadata.xml')
 
-        self.scale_factor = None
+            #Parse XML tree
+            tree = ET.parse(Path(path_to_metadata))
+            root = tree.getroot()
+
+            # Find the scale property
+            property_elem = root.find(".//Property[@ID='20007']")
+            cdvec2_elem = property_elem.find('CdVec2')
+            values = [float(d.text) for d in cdvec2_elem.findall('double')]
+
+            self.scale_factor = values[0]
+
+        except Exception as err:
+            raise FileNotFoundError(f"The requested metadata.xml file for {self.path} was not found")
 
 
 class AnnotatedSlide(models.Model):
