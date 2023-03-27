@@ -130,6 +130,11 @@ class Slide(models.Model):
         self.load_image()
         return self._tile_height
 
+    @property
+    def scale_factor(self):
+        self.load_image()
+        return self._scale_factor
+
     def get_fast_level(self, osd_level):
         """
         Get FAST image pyramid level from OSD level
@@ -212,7 +217,7 @@ class Slide(models.Model):
             cdvec2_elem = property_elem.find('CdVec2')
             values = [float(d.text) for d in cdvec2_elem.findall('double')]
 
-            self.scale_factor = values[0]
+            self._scale_factor = values[0]
 
         except Exception as err:
             raise FileNotFoundError(f"The requested metadata.xml file for {self.path} was not found")
