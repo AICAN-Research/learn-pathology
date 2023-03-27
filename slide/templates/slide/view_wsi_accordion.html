@@ -284,11 +284,10 @@
         });
 
         try {
-            let um_per_pixel = {{ slide|get_scale }};
-            console.log('Scale factor is: ' + um_per_pixel)
+            let pixelsPerMeter = {{ slide|get_pixels_per_meter }};
             viewer.scalebar({
                 type: OpenSeadragon.ScalebarType.MICROSCOPY,
-                pixelsPerMeter: Math.round(1e6 / um_per_pixel),
+                pixelsPerMeter: pixelsPerMeter,
                 minWidth: "250px",
                 location: OpenSeadragon.ScalebarLocation.BOTTOM_LEFT,
                 xOffset: 10,

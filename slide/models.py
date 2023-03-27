@@ -132,9 +132,23 @@ class Slide(models.Model):
 
     @property
     def scale_factor(self):
+        """
+        Returns the scale factor of the slide (in um/px).
+
+        Note
+        ----
+        For now only the x scale is returned since this is used for displaying
+        the scalebar. If the Slide._scale_factor is to be used for another
+        purpose, this function should be updated.
+
+        If Slide._slide_factor is not found (or another error occurs), None
+        will be returned and the scalebar will not be displayed.
+        """
         self.load_image()
-        # TODO: Handle if x/y scale factors are more than slightly different? For now, return first entry
-        return self._scale_factor[0]
+        try:
+            return self._scale_factor[0]
+        except:
+            return None  # Returning None will display slide without scalebar
 
     def get_fast_level(self, osd_level):
         """
@@ -209,20 +223,21 @@ class Slide(models.Model):
             slide_folder = os.path.dirname(self.path)
             path_to_metadata = os.path.join(slide_folder, 'metadata.xml')
 
-            #Parse XML tree
+            # Parse XML tree
             tree = ET.parse(Path(path_to_metadata))
             root = tree.getroot()
 
             # Find the scale property
-            property_elem = root.find(".//Property[@ID='20007']")
+            property_elem = root.find(".//Property[@ID='20007']")   # ImagePlaneScale property
             cdvec2_elem = property_elem.find('CdVec2')
-            values = [float(d.text) for d in cdvec2_elem.findall('double')]
+            scale_xy = [float(d.text) for d in cdvec2_elem.findall('double')]
 
-            print('Scale factor (um/px):', values)
-            self._scale_factor = values
+            print('Scale factor (um/px):', scale_xy)
+            self._scale_factor = scale_xy
 
         except Exception as err:
-            raise FileNotFoundError(f"The requested metadata.xml file for {self.path} was not found")
+            print(f"An error occurred: The requested metadata.xml file for {self.path} was not found. Setting scale factor None")
+            self._scale_factor = None
 
 
 class AnnotatedSlide(models.Model):
