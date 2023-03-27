@@ -133,7 +133,8 @@ class Slide(models.Model):
     @property
     def scale_factor(self):
         self.load_image()
-        return self._scale_factor
+        # TODO: Handle if x/y scale factors are more than slightly different? For now, return first entry
+        return self._scale_factor[0]
 
     def get_fast_level(self, osd_level):
         """
@@ -217,7 +218,8 @@ class Slide(models.Model):
             cdvec2_elem = property_elem.find('CdVec2')
             values = [float(d.text) for d in cdvec2_elem.findall('double')]
 
-            self._scale_factor = values[0]
+            print('Scale factor (um/px):', values)
+            self._scale_factor = values
 
         except Exception as err:
             raise FileNotFoundError(f"The requested metadata.xml file for {self.path} was not found")
