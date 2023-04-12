@@ -161,29 +161,28 @@
                                  data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
 
+                                    <input type="checkbox" id="toggle-annotation" data-width="150">
+                                    <input type="checkbox" id="toggle-text" data-width="100">
 
-                                    <input type="checkbox" id="toggle-annotation"
-                                           data-width="150"> <input type="checkbox" id="toggle-text" data-width="100">
-                                    <br>
-
+                                    <h5 style="margin-top: 1rem">Annotation list</h5>
+                                    <ul>
                                     {% for box in boxes %}
-                                        <tr colspan="2" style="text-align: center">
-                                            <a id="boundingbox-listitem-{{ box.id }}" onclick="highlightAnnotation
-                                                    ('boundingbox-listitem-{{ box.id }}')">
-                                                {{ box.text }} <br>
+                                        <li style="text-align: start;">
+                                            <a id="boundingbox-listitem-{{ box.id }}" onclick="highlightAnnotation('boundingbox-listitem-{{ box.id }}')">
+                                                {{ box.text }}
                                             </a>
-                                        </tr>
+                                        </li>
                                     {% endfor %}
                                     {% for pointer in pointers %}
-                                        <tr colspan="2" style="text-align: center">
-                                            <a id="arrow-listitem-{{ pointer.id }}" onclick="highlightAnnotation
-                                                    ('arrow-listitem-{{ pointer.id }}')">
-                                                {{ pointer.text }} <br>
+                                        <li style="text-align: start;">
+                                            <a id="arrow-listitem-{{ pointer.id }}" onclick="highlightAnnotation('arrow-listitem-{{ pointer.id }}')">
+                                                {{ pointer.text }}
                                             </a>
-                                        </tr>
+                                        </li>
                                     {% endfor %}
-                                    <div class="LPButton"><a
-                                            href="{% url 'slide:base_annotations' slide_id=slide.id %}">
+                                    </ul>
+
+                                    <div class="LPButton"><a href="{% url 'slide:base_annotations' slide_id=slide.id %}">
                                         Add descriptive annotations
                                     </a></div>
                                 </div>
