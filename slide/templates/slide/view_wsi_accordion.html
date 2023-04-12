@@ -1,4 +1,5 @@
 {% extends 'learnpathology/base.html' %}
+{% load slide_filters %}
 {% load static %}
 
 {% block content %}
@@ -160,29 +161,28 @@
                                  data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
 
+                                    <input type="checkbox" id="toggle-annotation" data-width="150">
+                                    <input type="checkbox" id="toggle-text" data-width="100">
 
-                                    <input type="checkbox" id="toggle-annotation"
-                                           data-width="150"> <input type="checkbox" id="toggle-text" data-width="100">
-                                    <br>
-
+                                    <h5 style="margin-top: 1rem">Annotation list</h5>
+                                    <ul>
                                     {% for box in boxes %}
-                                        <tr colspan="2" style="text-align: center">
-                                            <a id="boundingbox-listitem-{{ box.id }}" onclick="highlightAnnotation
-                                                    ('boundingbox-listitem-{{ box.id }}')">
-                                                {{ box.text }} <br>
+                                        <li style="text-align: start;">
+                                            <a id="boundingbox-listitem-{{ box.id }}" onclick="highlightAnnotation('boundingbox-listitem-{{ box.id }}')">
+                                                {{ box.text }}
                                             </a>
-                                        </tr>
+                                        </li>
                                     {% endfor %}
                                     {% for pointer in pointers %}
-                                        <tr colspan="2" style="text-align: center">
-                                            <a id="arrow-listitem-{{ pointer.id }}" onclick="highlightAnnotation
-                                                    ('arrow-listitem-{{ pointer.id }}')">
-                                                {{ pointer.text }} <br>
+                                        <li style="text-align: start;">
+                                            <a id="arrow-listitem-{{ pointer.id }}" onclick="highlightAnnotation('arrow-listitem-{{ pointer.id }}')">
+                                                {{ pointer.text }}
                                             </a>
-                                        </tr>
+                                        </li>
                                     {% endfor %}
-                                    <div class="LPButton"><a
-                                            href="{% url 'slide:base_annotations' slide_id=slide.id %}">
+                                    </ul>
+
+                                    <div class="LPButton"><a href="{% url 'slide:base_annotations' slide_id=slide.id %}">
                                         Add descriptive annotations
                                     </a></div>
                                 </div>
@@ -212,6 +212,7 @@
 
 
     <script src="{% static 'slide/openseadragon.min.js' %}"></script>
+    <script src="{% static 'slide/openseadragon-scalebar.js' %}"></script>
     <script type="text/javascript">
         let buttonElement = document.createElement("button");
         buttonElement.innerText = "Screenshot";
@@ -262,6 +263,7 @@
         var viewer = OpenSeadragon({
             id: "wsi-canvas",
             zoomPerScroll: 2, // Scroll speed
+            minScrollDeltaTime: 150, //	Number of milliseconds between canvas-scroll events.
             showNavigator: true, // The navigation window top-right
             prefixUrl: "{% static 'slide/images/' %}", // Where to find OpenSedragon button images
             tileSources: {
@@ -279,6 +281,26 @@
                 ],
             }
         });
+
+        try {
+            let pixelsPerMeter = {{ slide|get_pixels_per_meter }};
+            viewer.scalebar({
+                type: OpenSeadragon.ScalebarType.MICROSCOPY,
+                pixelsPerMeter: pixelsPerMeter,
+                minWidth: "250px",
+                location: OpenSeadragon.ScalebarLocation.BOTTOM_LEFT,
+                xOffset: 10,
+                yOffset: 20,
+                stayInsideImage: true,
+                color: "rgba(100,100,100,0.9)",
+                fontColor: "rgb(50,50,50)",
+                backgroundColor: "rgba(230, 230, 230, 0.5)",
+                fontSize: "large",
+                barThickness: 3
+            });
+        } catch (e) {
+            alert('Couldn\'t get scaling factor')
+        }
 
 
         viewer.addControl(screenshotButton.element, {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});

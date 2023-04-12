@@ -1,11 +1,16 @@
+import os
+import time
 import threading
 from io import BytesIO
-from django.db import models
+
 import fast
-import time
 import numpy as np
 from PIL import Image
+from pathlib import Path
+import xml.etree.ElementTree as ET
+from django.db import models
 from django.conf import settings
+
 from slide.timing import Timer
 from tag.models import Tag
 
@@ -62,7 +67,7 @@ class Slide(models.Model):
             osd_to_fast_level_map = {0: 0}
             print('Smallest width', smallest_width)
             while abs(current_width - smallest_width/2) > 1:
-                print(osd_level, current_width, current_height)
+
                 current_width = int(current_width/2)
                 current_height = int(current_height/2)
                 #if self.path.endswith('.vsi'): # TODO Hack for now
@@ -74,15 +79,15 @@ class Slide(models.Model):
                     osd_tile_width[osd_level] = tile_width
                     osd_tile_height[osd_level] = tile_height
                     osd_to_fast_level_map[osd_level] = osd_to_fast_level_map[osd_level - 1] + 1
-                    print('Map to next: ', osd_to_fast_level_map[osd_level])
+
                 else:
                     osd_tile_width[osd_level] = osd_tile_width[osd_level-1]*2
                     osd_tile_height[osd_level] = osd_tile_height[osd_level-1]*2
                     osd_to_fast_level_map[osd_level] = osd_to_fast_level_map[osd_level - 1]
-                    print('Map to previous', osd_to_fast_level_map[osd_level])
+
                 if current_width < 1024:
                     break
-            print('Total OSD levels', osd_level+1)
+
             self._fast_levels = image.getNrOfLevels()
             self._osd_levels = osd_level+1
             self._width = image.getFullWidth()
@@ -92,6 +97,8 @@ class Slide(models.Model):
             self._osd_tile_width = osd_tile_width
             self._osd_tile_height = osd_tile_height
             self._osd_to_fast_level = osd_to_fast_level_map
+
+            self.find_image_scale_factor()
 
     @property
     def image(self):
@@ -122,6 +129,26 @@ class Slide(models.Model):
     def tile_height(self):
         self.load_image()
         return self._tile_height
+
+    @property
+    def scale_factor(self):
+        """
+        Returns the scale factor of the slide (in um/px).
+
+        Note
+        ----
+        For now only the x scale is returned since this is used for displaying
+        the scalebar. If the Slide._scale_factor is to be used for another
+        purpose, this function should be updated.
+
+        If Slide._slide_factor is not found (or another error occurs), None
+        will be returned and the scalebar will not be displayed.
+        """
+        self.load_image()
+        try:
+            return self._scale_factor[0]
+        except:
+            return None  # Returning None will display slide without scalebar
 
     def get_fast_level(self, osd_level):
         """
@@ -185,6 +212,32 @@ class Slide(models.Model):
                 timer.print()
 
         return buffer
+
+    def find_image_scale_factor(self):
+        """
+        Finds the slide scale (in um/px) from the WSI's metadata.xml file.
+        The scale is given for the highest level (lowest resolution) of the
+        image pyramid.
+        """
+        try:
+            slide_folder = os.path.dirname(self.path)
+            path_to_metadata = os.path.join(slide_folder, 'metadata.xml')
+
+            # Parse XML tree
+            tree = ET.parse(Path(path_to_metadata))
+            root = tree.getroot()
+
+            # Find the scale property
+            property_elem = root.find(".//Property[@ID='20007']")   # ImagePlaneScale property
+            cdvec2_elem = property_elem.find('CdVec2')
+            scale_xy = [float(d.text) for d in cdvec2_elem.findall('double')]
+
+            print('Scale factor (um/px):', scale_xy)
+            self._scale_factor = scale_xy
+
+        except Exception as err:
+            print(f"An error occurred: The requested metadata.xml file for {self.path} was not found. Setting scale factor None")
+            self._scale_factor = None
 
 
 class AnnotatedSlide(models.Model):

@@ -18,6 +18,24 @@ def do(request, task_id, course_id=None):
     """
     task = FreeText.objects.get(task_id=task_id)
 
+    if course_id:
+        course = Course.objects.get(id=course_id)
+        all_tasks = Task.objects.filter(course=course)
+
+    else:
+        all_tasks = Task.objects.all()
+    this_task = Task.objects.get(id=task_id)
+
+    this_task_index = list(all_tasks).index(this_task)
+
+    # Get the task ID of the next object in the queryset
+    if this_task_index < len(all_tasks) - 1:
+        next_task_id = all_tasks[this_task_index + 1].id
+    else:
+        next_task_id = all_tasks[0].id
+
+    next_task_type = Task.objects.get(id=next_task_id).type
+
 
     student_text = None
     answered = None
@@ -36,6 +54,8 @@ def do(request, task_id, course_id=None):
         'answered': answered,
         'course_id': course_id,
         'student_text': student_text,
+        'next_task_id': next_task_id,
+        'next_task_type': next_task_type,
     })
 
 
@@ -79,7 +99,7 @@ def new(request, slide_id, course_id=None):
 
                 # Store annotations (pointers)
                 for key in request.POST:
-                    print(key, request.POST[key])
+
                     if key.startswith('right-arrow-overlay-') and key.endswith('-text'):
                         save_pointer_annotation(request, key, annotated_slide)
 
@@ -146,7 +166,7 @@ def edit(request, task_id,course_id = None):
                 BoundingBox.objects.filter(annotated_slide=annotated_slide).delete()
                 # Add all current pointers
                 for key in request.POST:
-                    print(key, request.POST[key])
+
                     if key.startswith('right-arrow-overlay-') and key.endswith('-text'):
                         save_pointer_annotation(request, key, annotated_slide)
 

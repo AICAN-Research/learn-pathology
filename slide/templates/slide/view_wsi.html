@@ -1,4 +1,5 @@
 {% load static %}
+{% load slide_filters %}
 <div class="container" style="height:85%; background-color: #dcdcdc">
 <div id="wsi-canvas" class="wsi_canvas" style="height: calc(100% - 100px);"></div>
 {% if annotated_slide %}
@@ -6,6 +7,7 @@
 {% endif %}
 </div>
 <script src="{% static 'slide/openseadragon.min.js' %}"></script>
+<script src="{% static 'slide/openseadragon-scalebar.js' %}"></script>
 <script type="text/javascript">
     let buttonElement = document.createElement("button");
     buttonElement.innerText = "Screenshot";
@@ -56,9 +58,11 @@
     });
     var viewer = OpenSeadragon({
         id: "wsi-canvas",
-        zoomPerScroll: 2, // Scroll speed
+        zoomPerScroll: 2,// Scroll speed
+        minScrollDeltaTime: 150, //	Number of milliseconds between canvas-scroll events.
         showNavigator: true, // The navigation window top-right
-        prefixUrl: "{% static 'slide/images/' %}", // Where to find OpenSedragon button images
+        prefixUrl: "{% static 'slide/images/' %}",
+        // Where to find OpenSedragon button images
         tileSources: {
             width: {{ slide.width }},
             height:  {{ slide.height }},
@@ -74,6 +78,28 @@
             ],
         }
     });
+
+
+
+      try {
+            let pixelsPerMeter = {{ slide|get_pixels_per_meter }};
+            viewer.scalebar({
+                type: OpenSeadragon.ScalebarType.MICROSCOPY,
+                pixelsPerMeter: pixelsPerMeter,
+                minWidth: "250px",
+                location: OpenSeadragon.ScalebarLocation.BOTTOM_LEFT,
+                xOffset: 10,
+                yOffset: 20,
+                stayInsideImage: true,
+                color: "rgba(100,100,100,0.9)",
+                fontColor: "rgb(50,50,50)",
+                backgroundColor: "rgba(230, 230, 230, 0.5)",
+                fontSize: "large",
+                barThickness: 3
+            });
+        } catch (e) {
+            alert('Couldn\'t get scaling factor')
+        }
 
     viewer.addControl(screenshotButton.element, {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
     viewer.addControl(overlayButton.element, {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
