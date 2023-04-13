@@ -18,8 +18,18 @@ from user.decorators import teacher_required
 def do(request, task_id, course_id=None):
     """
     Student form for answering/viewing a multiple choice task
+
+    Parameters
+    ----------
+    request : Http request
+
+    task_id : int
+        ID of Task instance
+    course_id : int
+        ID of Course instance
     """
-    multiple_choice = MultipleChoice.objects.get(task=task_id)
+    this_task = Task.objects.get(id=task_id)
+    multiple_choice = this_task.multiplechoice
 
     # get id of next task
     if course_id:
@@ -27,11 +37,9 @@ def do(request, task_id, course_id=None):
         all_tasks = Task.objects.filter(course=course)
     else:
         all_tasks = Task.objects.all()
-    this_task = Task.objects.get(id=task_id)
-
-    this_task_index = list(all_tasks).index(this_task)
 
     # Get the task ID of the next object in the queryset
+    this_task_index = list(all_tasks).index(this_task)
     if this_task_index < len(all_tasks) - 1:
         next_task_id = all_tasks[this_task_index + 1].id
     else:
@@ -44,7 +52,7 @@ def do(request, task_id, course_id=None):
     if request.method == 'POST':
         print('POST')
         # Process form
-        id_post_choice = request.POST.getlist('choice',None)
+        id_post_choice = request.POST.getlist('choice', None)
         if id_post_choice:
             for id in id_post_choice:
                 choice = Choice.objects.get(task=multiple_choice, id=id)
@@ -56,12 +64,13 @@ def do(request, task_id, course_id=None):
         else:
             answered.append('no')
 
-    # determin if question is single or multiple choice
+    # Determine if question is single or multiple choice
     counter_corr_answ = len(list(Choice.objects.filter(task=multiple_choice, correct=True)))
 
-    slide = slide_cache.load_slide_to_cache(multiple_choice.task.annotated_slide.slide.id)
+    slide = slide_cache.load_slide_to_cache(this_task.annotated_slide.slide.id)
     return render(request, 'multiple_choice/do.html', {
-        'task': multiple_choice,
+        'task': this_task,
+        'multiple_choice': multiple_choice,
         'slide': slide,
         'answered': answered,
         'len_answered': len(answered),
