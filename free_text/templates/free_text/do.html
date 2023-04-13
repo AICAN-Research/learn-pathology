@@ -1,16 +1,16 @@
 {% extends "task/do_task_two_column.html" %}
 
 {% block task_question %}
-{{ task.question }}
+{{ free_text.question }}
 {% endblock task_question %}
 
 {% block task_instructions %}
-{{ task.instructions }}
+{{ free_text.instructions }}
 {% endblock task_instructions %}
 
 {% block content_left %}
 
-<form class="form-check text-start" action="{% url 'free_text:do' task_id=task.task_id course_id=course_id %}" method="post">
+<form class="form-check text-start" action="{% url 'free_text:do' task_id=task.id course_id=course_id %}" method="post">
     {% csrf_token %}
     {% if answered == 'yes' %}
         <textarea name="studentText" style="height: 100%; min-height: 100px; width: 100%;">{{ student_text }}</textarea>
@@ -27,7 +27,7 @@
 {% if answered == 'yes' %}
     <div class="card border-success">
         <div class="card-tile">Optimal answer</div>
-        <div class="card-body">{{ task.answer }}</div>
+        <div class="card-body">{{ free_text.answer }}</div>
     </div>
 {% elif answered == 'no' %}
     <div class="card border-warning">
