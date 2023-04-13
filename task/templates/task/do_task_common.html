@@ -2,19 +2,17 @@
 {% load static %}
 {% load slide_filters %}
 
+
 {% block content %}
 
 {% block top_content %}
 {% endblock top_content %}
 
-<div class="card mx-auto text-center" style="width: 90%; height: auto; min-height: 500px;">
-    <div class="card-body" style="height: 100%">
-        {% block card_content %}
-        {% endblock card_content %}
-    </div>
-</div>
+{% block card_content %}
+{% endblock card_content %}
 
 {% endblock content %}
+
 
 <script type="text/javascript">
 {% block javascript %}
