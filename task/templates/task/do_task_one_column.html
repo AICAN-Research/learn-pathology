@@ -30,11 +30,13 @@
         {% block card_content_top %}
         {% endblock card_content_top %}
 
+        {% block card_content_bottom %}
         {% if slide %}
             {% include 'slide/view_wsi_do_task.html' with two_column=0 slide=slide annotated_slide=task.task.annotated_slide %}
         {% else %}
-            {% include 'slide/view_wsi_do_task.html' with slide=task.task.annotated_slide.slide annotated_slide=task.task.annotated_slide %}
+            {% include 'slide/view_wsi_do_task.html' with slide=task.annotated_slide.slide annotated_slide=task.task.annotated_slide %}
         {% endif %}
+        {% endblock card_content_bottom %}
     </div>
     </div>
 
