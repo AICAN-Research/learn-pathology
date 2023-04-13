@@ -1,5 +1,12 @@
 {% extends "task/do_task_two_column.html" %}
 
+{% block task_question %}
+{{ task.question }}
+{% endblock task_question %}
+
+{% block task_instructions %}
+{{ task.instructions }}
+{% endblock task_instructions %}
 
 {% block content_left %}
 
