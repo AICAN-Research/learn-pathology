@@ -16,7 +16,7 @@ def do(request, task_id, course_id=None):
     """
     Student form for answering/viewing a free text task
     """
-    task = FreeText.objects.get(task_id=task_id)
+    free_text = FreeText.objects.get(task_id=task_id)
 
     if course_id:
         course = Course.objects.get(id=course_id)
@@ -48,9 +48,10 @@ def do(request, task_id, course_id=None):
         else:
             answered = 'no'
 
-    slide_cache.load_slide_to_cache(task.task.annotated_slide.slide.id)
+    slide = slide_cache.load_slide_to_cache(free_text.task.annotated_slide.slide.id)
     return render(request, 'free_text/do.html', {
-        'task': task,
+        'task': free_text,
+        'slide': slide,
         'answered': answered,
         'course_id': course_id,
         'student_text': student_text,

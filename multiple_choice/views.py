@@ -19,13 +19,12 @@ def do(request, task_id, course_id=None):
     """
     Student form for answering/viewing a multiple choice task
     """
-    task = MultipleChoice.objects.get(task=task_id)
+    multiple_choice = MultipleChoice.objects.get(task=task_id)
 
     # get id of next task
     if course_id:
         course = Course.objects.get(id=course_id)
         all_tasks = Task.objects.filter(course=course)
-
     else:
         all_tasks = Task.objects.all()
     this_task = Task.objects.get(id=task_id)
@@ -45,12 +44,10 @@ def do(request, task_id, course_id=None):
     if request.method == 'POST':
         print('POST')
         # Process form
-
-
         id_post_choice = request.POST.getlist('choice',None)
         if id_post_choice:
             for id in id_post_choice:
-                choice = Choice.objects.get(task=task, id=id)
+                choice = Choice.objects.get(task=multiple_choice, id=id)
                 choice_text.append(choice.text)
                 if choice.correct:
                     answered.append('correct')
@@ -60,12 +57,12 @@ def do(request, task_id, course_id=None):
             answered.append('no')
 
     # determin if question is single or multiple choice
-    counter_corr_answ = len(list(Choice.objects.filter(task=task, correct=True)))
+    counter_corr_answ = len(list(Choice.objects.filter(task=multiple_choice, correct=True)))
 
-
-    slide_cache.load_slide_to_cache(task.task.annotated_slide.slide.id)
+    slide = slide_cache.load_slide_to_cache(multiple_choice.task.annotated_slide.slide.id)
     return render(request, 'multiple_choice/do.html', {
-        'task': task,
+        'task': multiple_choice,
+        'slide': slide,
         'answered': answered,
         'len_answered': len(answered),
         'choice_text': choice_text,
