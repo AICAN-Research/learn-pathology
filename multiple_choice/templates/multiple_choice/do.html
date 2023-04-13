@@ -1,96 +1,70 @@
 {% extends "task/do_task_one_column.html" %}
 
-{% block top_content %}
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col">
-                <h1>{{ task.question }}</h1>
-                <p>{{ task.instructions }}</p>
-            </div>
-            <div class="col-4">
-                <div class="LPButton" style="margin-top: 0; ">
-                    {% if course_id == 0 %}
-                        <a href="{% url 'task:list' %}">Task Overview</a>
+
+{% block card_content_top %}
+    <div class="row">
+        <div class="col"></div>
+        <div class="col">
+        <form action="{% url 'multiple_choice:do' task_id=task.id course_id=course_id %}" method="post">
+            {% csrf_token %}
+            {% for choice in task.choice_set.all %}
+                {% if counter_corr_answ <= 1 %}
+                    {% if choice.text in choice_text %}
+                        <input class="form-check-input" type="radio" checked name="choice" value="{{ choice.id }}">
                     {% else %}
-                        <a href=" {% url 'course:view' course_id=course_id active_tab='tasks' %}">Back to course</a>
+                        <input class="form-check-input" type="radio" name="choice" value="{{ choice.id }}">
                     {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-{% endblock top_content %}
-
-{% block card_content %}
-    <div class="card mx-auto text-center" style="width: 90%; height: 100%; ">
-    <div class="card-body" style="height: 100%">
-        <div class="row">
-            <div class="col"></div>
-            <div class="col">
-            <form action="{% url 'multiple_choice:do' task_id=task.id course_id=course_id %}" method="post">
-                {% csrf_token %}
-                {% for choice in task.choice_set.all %}
-                    {% if counter_corr_answ <= 1 %}
-                        {% if choice.text in choice_text %}
-                            <input class="form-check-input" type="radio" checked name="choice" value="{{ choice.id }}">
-                        {% else %}
-                            <input class="form-check-input" type="radio" name="choice" value="{{ choice.id }}">
-                        {% endif %}
-                    {% else %}
-                        {% if choice.text in choice_text %}
-                            <input class="form-check-input" type="checkbox" checked name="choice" value="{{ choice.id }}">
-                        {% else %}
-                            <input class="form-check-input" type="checkbox" name="choice" value="{{ choice.id }}">
-                        {% endif %}
-                    {% endif %}
-
-                    <span
-                        {% if answered %}
-                            {% if not 'no' in answered %}
-                                {% if choice.correct %}
-                                    style="color: green"
-                                {% else %}
-                                    style="color: red"
-                                {% endif %}
-                            {% endif %}
-                        {% endif %}>
-                        {{ choice.text }}
-                        {% if answered and not 'no' in answered %}
-                            {% if choice.correct %}
-                                &#10004;    {# check mark #}
-                            {% else %}
-                                &#10006;    {# cross/X #}
-                            {% endif %}
-                        {% endif %}
-                    </span><br>
-                {% endfor %}
-
-                <input type="submit" value="Submit">
-                <div class="LPButton" style="margin-top: 0;">
-                    <a href=" {% url ''|add:next_task_type|add:':do' task_id=next_task_id course_id=course_id %}">Next Task</a>
-                </div>
-            </form>
-            {% if answered %}
-                {% if 'no' in answered %}
-                    <a style="color: darkslateblue; font-size: large; font-weight: bold">Please make a choice!</a>
                 {% else %}
-                    {% if 'incorrect' in answered %}
-                        <a style="color: red; font-size: large; font-weight: bold">Wrong!</a>
+                    {% if choice.text in choice_text %}
+                        <input class="form-check-input" type="checkbox" checked name="choice" value="{{ choice.id }}">
                     {% else %}
-                        {% if len_answered == counter_corr_answ %}
-                            <a style="color: green; font-size: large; font-weight: bold">Correct!</a>
-                        {% else %}
-                            <a style="color: darkorange; font-size: large; font-weight: bold">You are missing some answers!</a>
+                        <input class="form-check-input" type="checkbox" name="choice" value="{{ choice.id }}">
+                    {% endif %}
+                {% endif %}
+
+                <span
+                    {% if answered %}
+                        {% if not 'no' in answered %}
+                            {% if choice.correct %}
+                                style="color: green"
+                            {% else %}
+                                style="color: red"
+                            {% endif %}
                         {% endif %}
+                    {% endif %}>
+                    {{ choice.text }}
+                    {% if answered and not 'no' in answered %}
+                        {% if choice.correct %}
+                            &#10004;    {# check mark #}
+                        {% else %}
+                            &#10006;    {# cross/X #}
+                        {% endif %}
+                    {% endif %}
+                </span><br>
+            {% endfor %}
+
+            <input type="submit" value="Submit">
+            <div class="LPButton" style="margin-top: 0;">
+                <a href=" {% url ''|add:next_task_type|add:':do' task_id=next_task_id course_id=course_id %}">Next Task</a>
+            </div>
+        </form>
+        {% if answered %}
+            {% if 'no' in answered %}
+                <a style="color: darkslateblue; font-size: large; font-weight: bold">Please make a choice!</a>
+            {% else %}
+                {% if 'incorrect' in answered %}
+                    <a style="color: red; font-size: large; font-weight: bold">Wrong!</a>
+                {% else %}
+                    {% if len_answered == counter_corr_answ %}
+                        <a style="color: green; font-size: large; font-weight: bold">Correct!</a>
+                    {% else %}
+                        <a style="color: darkorange; font-size: large; font-weight: bold">You are missing some answers!</a>
                     {% endif %}
                 {% endif %}
             {% endif %}
-            </div>
-            <div class="col"></div>
+        {% endif %}
         </div>
-
-        <br>
-        {% include 'slide/view_wsi_do_task.html' with two_column=0 slide=slide annotated_slide=task.task.annotated_slide %}
-    </div>
+        <div class="col"></div>
     </div>
 
-{% endblock card_content %}
+{% endblock card_content_top %}

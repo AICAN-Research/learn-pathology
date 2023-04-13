@@ -1,25 +1,5 @@
 {% extends "task/do_task_two_column.html" %}
 
-{% block top_content %}
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col">
-                <h1>{{ task.question }}</h1>
-                <p>{{ task.instructions }}</p>
-            </div>
-            <div class="col-4" >
-                <div class="LPButton" style="margin-top: 0; ">
-                    {% if course_id == 0 %}
-                        <a href="{% url 'task:list' %}">Task Overview</a>
-                    {% else %}
-                        <a href=" {% url 'course:view' course_id=course_id active_tab='tasks' %}">Back to course</a>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-{% endblock top_content %}
-
 
 {% block content_left %}
 
