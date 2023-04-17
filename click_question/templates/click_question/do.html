@@ -1,12 +1,13 @@
 {% extends "task/do_task_one_column.html" %}
 
-{% block task_question %}
-{{ click_question.question }}
-{% endblock task_question %}
 
 {% block task_instructions %}
 {{ click_question.instructions }}
 {% endblock task_instructions %}
+
+{% block task_question %}
+{{ click_question.question }}
+{% endblock task_question %}
 
 {% block card_content_top %}
     <div class="row">

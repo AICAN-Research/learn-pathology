@@ -1,17 +1,16 @@
-{% extends "task/do_task_one_column.html" %}
+{% extends "task/do_task_two_column.html" %}
 
-{% block task_question %}
-{{ multiple_choice.question }}
-{% endblock task_question %}
 
 {% block task_instructions %}
 {{ multiple_choice.instructions }}
 {% endblock task_instructions %}
 
-{% block card_content_top %}
+{% block task_question %}
+{{ multiple_choice.question }}
+{% endblock task_question %}
+
+{% block content_left %}
     <div class="row">
-        <div class="col"></div>
-        <div class="col">
         <form action="{% url 'multiple_choice:do' task_id=task.id course_id=course_id %}" method="post">
             {% csrf_token %}
             {% for choice in multiple_choice.choice_set.all %}
@@ -50,9 +49,11 @@
                 </span><br>
             {% endfor %}
 
-            <input type="submit" value="Submit">
-            <div class="LPButton" style="margin-top: 0;">
-                <a href=" {% url ''|add:next_task_type|add:':do' task_id=next_task_id course_id=course_id %}">Next Task</a>
+            <div style="margin-top: 10px;">
+                <input class="LPButton" type="submit" value="Submit">
+                <div class="LPButton" style="margin-top: 0;">
+                    <a href=" {% url ''|add:next_task_type|add:':do' task_id=next_task_id course_id=course_id %}">Next Task</a>
+                </div>
             </div>
         </form>
         {% if answered %}
@@ -70,8 +71,6 @@
                 {% endif %}
             {% endif %}
         {% endif %}
-        </div>
-        <div class="col"></div>
     </div>
 
-{% endblock card_content_top %}
+{% endblock content_left %}

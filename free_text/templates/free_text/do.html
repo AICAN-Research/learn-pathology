@@ -1,12 +1,13 @@
 {% extends "task/do_task_two_column.html" %}
 
-{% block task_question %}
-{{ free_text.question }}
-{% endblock task_question %}
 
 {% block task_instructions %}
 {{ free_text.instructions }}
 {% endblock task_instructions %}
+
+{% block task_question %}
+{{ free_text.question }}
+{% endblock task_question %}
 
 {% block content_left %}
 
@@ -18,9 +19,11 @@
         <textarea name="studentText" style="height: 100%; min-height: 100px; width: 100%;"></textarea>
     {% endif %}
     <br>
-    <input type="submit" value="Compare to teacher's solution">
-    <div class="LPButton" style="margin-top: 0; ">
-        <a href="{% url ''|add:next_task_type|add:':do' task_id=next_task_id course_id=course_id %}">Next Task</a>
+    <div style="margin-top: 10px;">
+        <input class="LPButton" type="submit" value="Compare to teacher's solution">
+        <div class="LPButton" style="margin-top: 0; ">
+            <a href="{% url ''|add:next_task_type|add:':do' task_id=next_task_id course_id=course_id %}">Next Task</a>
+        </div>
     </div>
 </form>
 

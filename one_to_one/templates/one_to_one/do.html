@@ -1,24 +1,25 @@
-{% extends "task/do_task_one_column.html" %}
+{% extends "task/do_task_two_column.html" %}
 
-{% block task_question %}
-{{ one_to_one.question }}
-{% endblock task_question %}
 
 {% block task_instructions %}
 {{ one_to_one.instructions }}
 {% endblock task_instructions %}
 
-{% block card_content_top %}
-    <div class="row">
-        <div class="col">
-            <ul class="list-group " id="fixed-list">
-                {% for pair in one_to_one.sortingpair_set.all %}
-                    <li class="list-group-item ui-state-default ui-state-disabled disabled">{{ pair.fixed }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-        <div class="col">
-            <form id="my-form" method="POST">
+{% block task_question %}
+{{ one_to_one.question }}
+{% endblock task_question %}
+
+{% block content_left %}
+    <form id="my-form" method="POST">
+        <div class="row">
+            <div class="col">
+                <ul class="list-group " id="fixed-list">
+                    {% for pair in one_to_one.sortingpair_set.all %}
+                        <li class="list-group-item ui-state-default ui-state-disabled disabled">{{ pair.fixed }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="col">
                 {% csrf_token %}
                 <ul class="list-group sortable" id="sortable-list">
                     {% for pair in one_to_one.sortingpair_set.all %}
@@ -26,18 +27,18 @@
                     {% endfor %}
                 </ul>
                 <br>
-
-                <input type="submit" value="Submit">
-                <div class="LPButton" style="margin-top: 0; ">
-                    <a href=" {% url ''|add:next_task_type|add:':do' task_id=next_task_id course_id=course_id %}">
-                        Next Task
-                    </a>
-                </div>
                 <div id="mode" data-mode="{{ mode }}"></div>
-            </form>
+            </div>
         </div>
-    </div>
-{% endblock card_content_top %}
+
+        <input class="LPButton" type="submit" value="Submit">
+        <div class="LPButton" style="margin-top: 0; ">
+            <a href=" {% url ''|add:next_task_type|add:':do' task_id=next_task_id course_id=course_id %}">
+                Next Task
+            </a>
+        </div>
+    </form>
+{% endblock content_left %}
 
 
 {% block task_javascript %}
