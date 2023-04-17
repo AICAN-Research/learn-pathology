@@ -11,12 +11,12 @@
 
 {% block content_left %}
 
-<form class="form-check text-start" action="{% url 'free_text:do' task_id=task.id course_id=course_id %}" method="post">
+<form class="form-check text-center" action="{% url 'free_text:do' task_id=task.id course_id=course_id %}" method="post">
     {% csrf_token %}
     {% if answered == 'yes' %}
-        <textarea name="studentText" style="height: 100%; min-height: 100px; width: 100%;">{{ student_text }}</textarea>
+        <textarea name="studentText" style="height: 100%; min-height: 100px; width: 100%; max-width: 800px;">{{ student_text }}</textarea>
     {% else %}
-        <textarea name="studentText" style="height: 100%; min-height: 100px; width: 100%;"></textarea>
+        <textarea name="studentText" style="height: 100%; min-height: 100px; width: 100%; max-width: 800px;"></textarea>
     {% endif %}
     <br>
     <div style="margin-top: 10px;">
