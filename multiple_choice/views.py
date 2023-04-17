@@ -45,7 +45,7 @@ def do(request, task_id, course_id=None):
     else:
         next_task_id = all_tasks[0].id
 
-    next_task_type = Task.objects.get(id=next_task_id).type
+    next_task = Task.objects.get(id=next_task_id)
 
     answered = []
     choice_text = []
@@ -78,7 +78,7 @@ def do(request, task_id, course_id=None):
         'course_id': course_id,
         'counter_corr_answ': counter_corr_answ,
         'next_task_id': next_task_id,
-        'next_task_type': next_task_type,
+        'next_task': next_task,
     })
 
 

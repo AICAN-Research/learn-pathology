@@ -33,9 +33,7 @@
 
         <input class="LPButton" type="submit" value="Submit">
         <div class="LPButton" style="margin-top: 0; ">
-            <a href=" {% url ''|add:next_task_type|add:':do' task_id=next_task_id course_id=course_id %}">
-                Next Task
-            </a>
+            <a href="{% url next_task.do_url task_id=next_task_id course_id=course_id %}">Next Task</a>
         </div>
     </form>
 {% endblock content_left %}
