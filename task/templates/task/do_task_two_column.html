@@ -7,8 +7,13 @@
     <div class="container">
         <div class="row align-items-center">
             <div class="col">
-                <h1>{% block task_question %}{% endblock %}</h1>
-                <p>{% block task_instructions %}{% endblock %}</p>
+                <h1>
+                    {{ task.name }}
+                </h1>
+                <h6>
+                    {% block task_instructions %}
+                    {% endblock task_instructions %}
+                </h6>
             </div>
             <div class="col-4">
                 <div class="LPButton" style="margin-top: 0; ">
@@ -30,8 +35,12 @@
         <div class="row h-100">
             <div class="col-4">
                 <div id="contentLeft" style="width: 100%;">
+                    <h4 style="margin-top: 20px; margin-bottom: 20px;">
+                        {% block task_question %}
+                        {% endblock task_question %}
+                    </h4>
                     {% block content_left %}
-                    {% endblock %}
+                    {% endblock content_left %}
                 </div>
             </div>
             <div class="col-8" style="height: 100%;">
@@ -42,7 +51,7 @@
                         {% include 'slide/view_wsi_do_task.html' with slide=task.task.annotated_slide.slide annotated_slide=task.task.annotated_slide %}
                     {% endif %}
                     {% block content_right %}
-                    {% endblock %}
+                    {% endblock content_right %}
                 </div>
             </div>
         </div>

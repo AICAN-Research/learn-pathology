@@ -7,8 +7,13 @@
     <div class="container">
         <div class="row align-items-center">
             <div class="col">
-                <h1>{% block task_question %}{% endblock %}</h1>
-                <p>{% block task_instructions %}{% endblock %}</p>
+                <h1>
+                    {{ task.name }}
+                </h1>
+                <h6>
+                    {% block task_instructions %}
+                    {% endblock task_instructions %}
+                </h6>
             </div>
             <div class="col-4">
                 <div class="LPButton" style="margin-top: 0; ">
@@ -27,6 +32,11 @@
 
     <div class="card mx-auto text-center" style="width: 90%; height: 100%; min-height: 600px;">
     <div class="card-body" style="height: 100%">
+        <h4 style="margin-top: 20px; margin-bottom: 20px;">
+            {% block task_question %}
+            {% endblock task_question %}
+        </h4>
+
         {% block card_content_top %}
         {% endblock card_content_top %}
 
