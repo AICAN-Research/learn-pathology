@@ -1,215 +1,153 @@
-{% extends "learnpathology/base.html" %}
+{% extends "task/do_task_one_column.html" %}
 
-{% block content %}
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col">
-                <h1>{{ task.question }}</h1>
-                <p>{{ task.instructions }}</p>
-            </div>
-            <div class="col-4">
-                <div class="LPButton" style="margin-top: 0; ">
-                    {% if course_id == 0 %}
-                        <a href="{% url 'task:list' %}">Task Overview</a>
-                    {% else %}
-                        <a href=" {% url 'course:view' course_id=course_id active_tab='tasks' %}">Back to course</a>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="card mx-auto text-center" style="width: 90%; height: 100%; ">
-        <div class="card-body" style="height: 100%">
-            <form id="my-form" method="POST">
-                {% csrf_token %}
+{% block task_instructions %}
+{{ many_to_one.instructions }}
+{% endblock task_instructions %}
 
-                <div class="row">
-                    <div class="col-md-10">
-                        <div class="row">
-                            {% for column in task.tablecolumn_set.all %}
-                                <div class="col-md-2">
-                                    <div class="list-group">
-                                        <h2> {{ column.caption }} </h2>
+{% block task_question %}
+{{ many_to_one.question }}
+{% endblock task_question %}
 
-                                        <ul class="list-group" id="sortable-list-{{ column.id }}" style="background-color: #a2ba8e; min-height: 300px;">
-                                            <li class="list-group-item ui-state-default ui-state-disabled disabled"
-                                                id="blank-space-{{ column.id }}"><br></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="list-group">
-                            <h2>Answers</h2>
-                            <ul class="list-group " id="sortable-list-all" style="background-color: #a2ba8e;">
-
-                                <li class="list-group-item ui-state-default ui-state-disabled disabled"
-                                    id="blank-space-all"><br></li>
-                                {% for column_form in task.tablecolumn_set.all %}
-
-                                    {% for row_form in column_form.tablerow_set.all %}
-
-                                        <li class="list-group-item" id="item-{{ row_form.id }}"
-                                            style="background-color: #a2ba8e;">{{ row_form.answer }}</li>
-
-                                    {% endfor %}
-                                {% endfor %}
-                            </ul>
-
-                        </div>
-                    </div>
-                </div>
-
-                <input type="submit" value="Submit">
-                <div class="LPButton" style="margin-top: 0; ">
-                    <a href=" {% url ''|add:next_task_type|add:':do' task_id=next_task_id course_id=course_id %}">Next
-                        Task</a>
-                </div>
-
-                <div id="mode" data-mode="{{ mode }}"></div>
-            </form>
-            <br>
-
-            {% include 'slide/view_wsi.html' with slide=task.task.annotated_slide.slide annotated_slide=task.task.annotated_slide %}
-
-        </div>
-    </div>
+{% block card_content_top %}
 
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.1/themes/smoothness/jquery-ui.css">
-
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
-    <script>
+
+    <form id="my-form" method="POST">
+        {% csrf_token %}
+
+        <div class="row">
+            <div class="col-md-10">
+                <div class="row">
+                    {% for column in many_to_one.tablecolumn_set.all %}
+                        <div class="col-md-2">
+                            <div class="list-group">
+                                <h2> {{ column.caption }} </h2>
+                                <ul class="list-group" id="sortable-list-{{ column.id }}" style="background-color: #a2ba8e; min-height: 300px;">
+                                    <li class="list-group-item ui-state-default ui-state-disabled disabled" id="blank-space-{{ column.id }}"><br></li>
+                                </ul>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="list-group">
+                    <h2>Answers</h2>
+                    <ul class="list-group" id="sortable-list-all" style="background-color: #a2ba8e;">
+                        <li class="list-group-item ui-state-default ui-state-disabled disabled" id="blank-space-all"><br></li>
+                        {% for column_form in many_to_one.tablecolumn_set.all %}
+                            {% for row_form in column_form.tablerow_set.all %}
+                                <li class="list-group-item" id="item-{{ row_form.id }}" style="background-color: #a2ba8e;">{{ row_form.answer }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <input class="LPButton" type="submit" value="Submit">
+        <div class="LPButton" style="margin-top: 0; ">
+            <a href="{% url next_task.do_url task_id=next_task_id course_id=course_id %}">Next Task</a>
+        </div>
+
+        <div id="mode" data-mode="{{ mode }}"></div>
+    </form>
+{% endblock card_content_top %}
+
+
+{% block task_javascript %}
+    $('ul.list-group').each(function () {
+        // Get the id of the current list
+        var id = $(this).attr('id');
+
+        $('#' + id).sortable({
+            connectWith: ".list-group",
+            dropOnEmpty: false
+        }).disableSelection();
+    });
+
+    function shuffleList() {
+        var ul = document.querySelector('#sortable-list-all');
+        var blankSpace = ul.querySelector('#blank-space-all');
+        ul.removeChild(blankSpace);
+        for (var i = ul.children.length; i >= 0; i--) {
+            ul.appendChild(ul.children[Math.random() * i | 0]);
+        }
+        ul.appendChild(blankSpace);
+    }
+
+    var mode = document.querySelector('#mode').dataset.mode;
+    var indices = JSON.parse('{{indices| safe}}');
+    var answerOrder = JSON.parse("{{answer_order}}");
+
+    window.addEventListener('DOMContentLoaded', function () {
+        if (mode === 'get') {
+            console.log('Shuffel List.')
+            shuffleList()
+        }
+        if (mode === 'post') {
+
+            console.log('Dont shuffel List.')
+            rearrangeList(indices)
+            colorAnswer(answerOrder)
+        }
+    })
+
+    var myForm = document.querySelector('#my-form');
+
+    $('#my-form').submit(function () {
+
         $('ul.list-group').each(function () {
-            // Get the id of the current list
-            var id = $(this).attr('id');
+            var column_id = $(this).attr('id');
+            var itemIds = [];
 
-
-            $('#' + id).sortable({
-                connectWith: ".list-group",
-                dropOnEmpty: false
-            }).disableSelection();
-        });
-
-
-        viewer.addHandler('viewport-change', updateTextLocation);
-        viewer.addHandler('tile-drawing', updateTextLocation);
-
-        addEventListener("resize", () => {
-        });
-
-        onresize = () => {
-            timer = setTimeout(function () {
-
-                updateTextLocation();
-
-            }, 20);
-        };
-
-
-        function updateTextLocation(event) {
-
-            let arrow_overlays = $("[id^=right-arrow-overlay-]")
-            let text_overlays = $("[id^=arrow-text-overlay-]")
-
-            for (let i = 0; i < arrow_overlays.length; i++) {
-
-                let arrowElement = arrow_overlays[i];
-                let textElement = text_overlays[i];
-
-                let arrowX = parseFloat(arrowElement.style.left);
-                let arrowY = parseFloat(arrowElement.style.top);
-
-                let viewportPoint = viewer.viewport.pointFromPixel(new OpenSeadragon.Point(arrowX - 5, arrowY + 15));
-                viewer.updateOverlay(textElement, viewportPoint);
-            }
-        }
-
-        function shuffleList() {
-            var ul = document.querySelector('#sortable-list-all');
-            var blankSpace = ul.querySelector('#blank-space-all');
-            ul.removeChild(blankSpace);
-            for (var i = ul.children.length; i >= 0; i--) {
-                ul.appendChild(ul.children[Math.random() * i | 0]);
-            }
-            ul.appendChild(blankSpace);
-        }
-
-        var mode = document.querySelector('#mode').dataset.mode;
-        var indices = JSON.parse('{{indices| safe}}');
-        var answerOrder = JSON.parse("{{answer_order}}");
-
-        window.addEventListener('DOMContentLoaded', function () {
-            if (mode === 'get') {
-                console.log('Shuffel List.')
-                shuffleList()
-            }
-            if (mode === 'post') {
-
-                console.log('Dont shuffel List.')
-                rearrangeList(indices)
-                colorAnswer(answerOrder)
-            }
-        })
-
-        var myForm = document.querySelector('#my-form');
-
-        $('#my-form').submit(function () {
-
-            $('ul.list-group').each(function () {
-                var column_id = $(this).attr('id');
-                var itemIds = [];
-
-                $('#' + column_id + ' li').each(function () {
-                    var itemId = $(this).attr('id');
-                    itemIds.push(itemId);
-                });
-
-                var input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'indices-' + column_id;
-                input.value = itemIds;
-                myForm.appendChild(input);
+            $('#' + column_id + ' li').each(function () {
+                var itemId = $(this).attr('id');
+                itemIds.push(itemId);
             });
+
+            var input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'indices-' + column_id;
+            input.value = itemIds;
+            myForm.appendChild(input);
         });
+    });
 
-        function rearrangeList(indices) {
-            $('ul.list-group').each(function () {
+    function rearrangeList(indices) {
+        $('ul.list-group').each(function () {
 
-                var list = document.getElementById($(this).attr('id'));
-                var lists_indices = indices['indices-' + $(this).attr('id')].split(',');
+            var list = document.getElementById($(this).attr('id'));
+            var lists_indices = indices['indices-' + $(this).attr('id')].split(',');
 
-                for (var i = 0; i < lists_indices.length; i++) {
-                    list.appendChild(document.getElementById(lists_indices[i]));
+            for (var i = 0; i < lists_indices.length; i++) {
+                list.appendChild(document.getElementById(lists_indices[i]));
+            }
+        });
+    }
+
+    function colorAnswer(answer_order) {
+        var col_counter = 0;
+        $('ul.list-group').each(function () {
+            var list = document.getElementById($(this).attr('id'));
+            var items = list.getElementsByTagName("li");
+            var row_counter = 0;
+
+            for (var i = 0; i < answer_order[col_counter].length; i++) {
+                if (answer_order[col_counter][row_counter] === true) {
+                    items[i].style.color = "green";
+                    items[i].innerHTML += " &#10004";
                 }
-            });
-        }
-
-        function colorAnswer(answer_order) {
-            var col_counter = 0;
-            $('ul.list-group').each(function () {
-                var list = document.getElementById($(this).attr('id'));
-                var items = list.getElementsByTagName("li");
-                var row_counter = 0;
-
-                for (var i = 0; i < answer_order[col_counter].length; i++) {
-                    if (answer_order[col_counter][row_counter] === true) {
-                        items[i].style.color = "green";
-                        items[i].innerHTML += " &#10004";
-                    }
-                    if (answer_order[col_counter][row_counter] === false) {
-                        items[i].style.color = "red";
-                        items[i].innerHTML += " &#10006;";
-                    }
-                    row_counter = row_counter + 1;
+                if (answer_order[col_counter][row_counter] === false) {
+                    items[i].style.color = "red";
+                    items[i].innerHTML += " &#10006;";
                 }
-                col_counter = col_counter + 1;
-            });
-        }
-
-
-    </script>
-{% endblock content %}
+                row_counter = row_counter + 1;
+            }
+            col_counter = col_counter + 1;
+        });
+    }
+{% endblock task_javascript %}

@@ -18,31 +18,37 @@ from user.decorators import teacher_required
 def do(request, task_id, course_id=None):
     """
     Student form for answering/viewing a many-to-one sorting task
-    """
 
-    task = ManyToOne.objects.get(task_id=task_id)
-    mode = 'get'
-    indices = [1, 2, 3]
+    Parameters
+    ----------
+    request : Http request
+
+    task_id : int
+        ID of Task instance
+    course_id : int
+        ID of Course instance
+    """
+    this_task = Task.objects.get(id=task_id)
+    many_to_one = ManyToOne.objects.get(task_id=task_id)
 
     # get next task
     if course_id:
         course = Course.objects.get(id=course_id)
         all_tasks = Task.objects.filter(course=course)
-
     else:
         all_tasks = Task.objects.all()
-    this_task = Task.objects.get(id=task_id)
-
-    this_task_index = list(all_tasks).index(this_task)
 
     # Get the task ID of the next object in the queryset
+    this_task_index = list(all_tasks).index(this_task)
     if this_task_index < len(all_tasks) - 1:
         next_task_id = all_tasks[this_task_index + 1].id
     else:
         next_task_id = all_tasks[0].id
 
-    next_task_type = Task.objects.get(id=next_task_id).type
+    next_task = Task.objects.get(id=next_task_id)
 
+    mode = 'get'
+    indices = [1, 2, 3]
     answer_order = []
     if request.method == 'POST':
         print('POST')
@@ -75,16 +81,17 @@ def do(request, task_id, course_id=None):
 
         mode = 'post'
 
-    slide_cache.load_slide_to_cache(task.task.annotated_slide.slide.id)
+    slide = slide_cache.load_slide_to_cache(this_task.annotated_slide.slide.id)
     return render(request, 'many_to_one/do.html', {
-        'task': task,
+        'task': this_task,
+        'many_to_one': many_to_one,
+        'slide': slide,
         'answer_order': json.dumps(answer_order),
         'course_id': course_id,
         'mode': mode,
         'indices': json.dumps(indices),
         'next_task_id': next_task_id,
-        'next_task_type': next_task_type,
-
+        'next_task': next_task,
     })
 
 

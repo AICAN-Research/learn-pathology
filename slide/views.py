@@ -307,7 +307,7 @@ def edit_description(request, slide_id):
     Form for editing a slide's long_description field
     """
 
-    slide = get_object_or_404(Slide, id=slide_id)
+    slide = slide_cache.load_slide_to_cache(slide_id)
     form = SlideDescriptionForm(request.POST or None, instance=slide)
 
     if request.method == 'POST':  # Form was submitted

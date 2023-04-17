@@ -1,155 +1,76 @@
-{% extends "learnpathology/base.html" %}
+{% extends "task/do_task_two_column.html" %}
 
-{% block content %}
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col">
-                <h1>{{ task.question }}</h1>
-                <p>{{ task.instructions }}</p>
-            </div>
-            <div class="col-4">
-                <div class="LPButton" style="margin-top: 0; ">
-                    {% if course_id == 0 %}
-                        <a href="{% url 'task:list' %}">Task Overview</a>
+
+{% block task_instructions %}
+{{ multiple_choice.instructions }}
+{% endblock task_instructions %}
+
+{% block task_question %}
+{{ multiple_choice.question }}
+{% endblock task_question %}
+
+{% block content_left %}
+    <div class="row">
+        <form action="{% url 'multiple_choice:do' task_id=task.id course_id=course_id %}" method="post">
+            {% csrf_token %}
+            {% for choice in multiple_choice.choice_set.all %}
+                {% if counter_corr_answ <= 1 %}
+                    {% if choice.text in choice_text %}
+                        <input class="form-check-input" type="radio" checked name="choice" value="{{ choice.id }}">
                     {% else %}
-                        <a href=" {% url 'course:view' course_id=course_id active_tab='tasks' %}">Back to course</a>
+                        <input class="form-check-input" type="radio" name="choice" value="{{ choice.id }}">
                     {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
+                {% else %}
+                    {% if choice.text in choice_text %}
+                        <input class="form-check-input" type="checkbox" checked name="choice" value="{{ choice.id }}">
+                    {% else %}
+                        <input class="form-check-input" type="checkbox" name="choice" value="{{ choice.id }}">
+                    {% endif %}
+                {% endif %}
 
-    <div class="card mx-auto text-center" style="width: 90%; height: 100%; ">
-        <div class="card-body" style="height: 100%">
-            <div class="row">
-                <div class="col">
-
-
-                </div>
-                <div class="col">
-                    <form action="{% url 'multiple_choice:do' task_id=task.id course_id=course_id %}" method="post">
-                        {% csrf_token %}
-                        {% for choice in task.choice_set.all %}
-                            {% if counter_corr_answ <= 1 %}
-
-                                {% if  choice.text in choice_text %}
-
-                                    <input class="form-check-input" type="radio" checked name="choice"
-                                           value="{{ choice.id }}">
-                                {% else %}
-                                    <input class="form-check-input" type="radio" name="choice" value="{{ choice.id }}">
-                                {% endif %}
-                            {% else %}
-
-                                {% if  choice.text in choice_text %}
-
-                                    <input class="form-check-input" type="checkbox" checked name="choice"
-                                           value="{{ choice.id }}">
-                                {% else %}
-                                    <input class="form-check-input" type="checkbox" name="choice"
-                                           value="{{ choice.id }}">
-                                {% endif %}
-                            {% endif %}
-
-                            <span
-                                    {% if answered %}
-                                        {% if not 'no' in answered %}
-                                            {% if choice.correct %}
-                                                style="color: green"
-                                                choice.innerHTML +=" &#10004"
-                                            {% else %}
-                                                style="color: red"
-                                                choice.innerHTML +=" &#10006;"
-                                            {% endif %}
-                                        {% endif %}
-                                    {% endif %}>
-                            {{ choice.text }}
-                                {% if answered and not 'no' in answered %}
-                                    {% if choice.correct %}
-                                        &#10004;
-                                    {% else %}
-                                        &#10006;
-                                    {% endif %}
-                                {% endif %}</span><br>
-                        {% endfor %}
-
-                        <input type="submit" value="Submit">
-                  <div class="LPButton" style="margin-top: 0; ">
-                        <a href=" {% url ''|add:next_task_type|add:':do' task_id=next_task_id course_id=course_id %}">Next Task</a>
-
-                </div>
-                    </form>
+                <span
                     {% if answered %}
-                        {% if 'no' in answered %}
-                            <a style="color: darkslateblue; font-size: large; font-weight: bold">Please make a
-                                choice!</a>
-                        {% else %}
-                            {% if 'incorrect' in answered %}
-                                <a style="color: red; font-size: large; font-weight: bold">Wrong!</a>
+                        {% if not 'no' in answered %}
+                            {% if choice.correct %}
+                                style="color: green"
                             {% else %}
-                                {% if len_answered == counter_corr_answ %}
-                                    <a style="color: green; font-size: large; font-weight: bold">Correct!</a>
-                                {% else %}
-                                    <a style="color: darkorange; font-size: large; font-weight: bold">You are missing
-                                        some
-                                        answeres !</a>
-
-                                {% endif %}
+                                style="color: red"
                             {% endif %}
-                        {% endif %}     {% endif %}
+                        {% endif %}
+                    {% endif %}>
+                    {{ choice.text }}
+                    {% if answered and not 'no' in answered %}
+                        {% if choice.correct %}
+                            &#10004;    {# check mark #}
+                        {% else %}
+                            &#10006;    {# cross/X #}
+                        {% endif %}
+                    {% endif %}
+                </span><br>
+            {% endfor %}
+
+            <div style="margin-top: 10px;">
+                <input class="LPButton" type="submit" value="Submit">
+                <div class="LPButton" style="margin-top: 0;">
+                    <a href="{% url next_task.do_url task_id=next_task_id course_id=course_id %}">Next Task</a>
                 </div>
-                <div class="col"></div>
             </div>
-
-            <br>
-
-            {% include 'slide/view_wsi.html' with slide=task.task.annotated_slide.slide annotated_slide=task.task.annotated_slide %}
-
-
-        </div>
+        </form>
+        {% if answered %}
+            {% if 'no' in answered %}
+                <a style="color: darkslateblue; font-size: large; font-weight: bold">Please make a choice!</a>
+            {% else %}
+                {% if 'incorrect' in answered %}
+                    <a style="color: red; font-size: large; font-weight: bold">Wrong!</a>
+                {% else %}
+                    {% if len_answered == counter_corr_answ %}
+                        <a style="color: green; font-size: large; font-weight: bold">Correct!</a>
+                    {% else %}
+                        <a style="color: darkorange; font-size: large; font-weight: bold">You are missing some answers!</a>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        {% endif %}
     </div>
 
-
-
-    <script>
-        viewer.addHandler('viewport-change', updateTextLocation);
-        viewer.addHandler('tile-drawing', updateTextLocation);
-        addEventListener("resize", () => {
-        });
-
-        onresize = () => {
-            timer = setTimeout(function () {
-
-                updateTextLocation();
-
-            }, 20);
-        };
-
-        function updateTextLocation(event) {
-
-            let slide_overlays = viewer.currentOverlays;
-
-
-            let arrow_overlays = $("[id^=right-arrow-overlay-]")
-            let text_overlays = $("[id^=arrow-text-overlay-]")
-
-
-            for (let i = 0; i < arrow_overlays.length; i++) {
-
-                let arrowElement = arrow_overlays[i];
-                let textElement = text_overlays[i];
-
-
-                let arrowX = parseFloat(arrowElement.style.left);
-                let arrowY = parseFloat(arrowElement.style.top);
-
-
-                let viewportPoint = viewer.viewport.pointFromPixel(new OpenSeadragon.Point(arrowX - 5, arrowY + 15));
-                viewer.updateOverlay(textElement, viewportPoint);
-            }
-
-
-        }
-
-    </script>
-{% endblock content %}
+{% endblock content_left %}

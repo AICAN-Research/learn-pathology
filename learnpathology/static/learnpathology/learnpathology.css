@@ -302,6 +302,18 @@ body {
     width: fit-content;
 }
 
+#contentLeft {
+    float: left;
+    padding-right: 15px;
+    box-sizing: border-box;
+}
+
+#contentRight {
+    float: left;
+    padding-left: 15px;
+    box-sizing: border-box;
+}
+
 .content-card card{
     all: inherit;
     width: 90%;

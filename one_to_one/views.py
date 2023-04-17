@@ -19,37 +19,40 @@ from user.decorators import teacher_required
 def do(request, task_id, course_id=None):
     """
     Student form for answering/viewing a one-to-one sorting task
-    """
 
-    task = OneToOne.objects.get(task_id=task_id)
+    Parameters
+    ----------
+    request : Http request
+
+    task_id : int
+        ID of Task instance
+    course_id : int
+        ID of Course instance
+    """
+    this_task = Task.objects.get(id=task_id)
+    one_to_one = OneToOne.objects.get(task_id=task_id)
 
     if course_id:
         course = Course.objects.get(id=course_id)
         all_tasks = Task.objects.filter(course=course)
-
     else:
         all_tasks = Task.objects.all()
-    this_task = Task.objects.get(id=task_id)
-
-    this_task_index = list(all_tasks).index(this_task)
 
     # Get the task ID of the next object in the queryset
+    this_task_index = list(all_tasks).index(this_task)
     if this_task_index < len(all_tasks) - 1:
         next_task_id = all_tasks[this_task_index + 1].id
     else:
         next_task_id = all_tasks[0].id
 
-    next_task_type = Task.objects.get(id=next_task_id).type
-
+    next_task = Task.objects.get(id=next_task_id)
 
     mode = 'get'
-    id_order = [1,2,3]
-
+    id_order = [1, 2, 3]
     answer_order = []
     if request.method == 'POST':
         print('POST')
         # Process form
-
         id_order = request.POST.get('item_ids', None).split(',')
         id_order =[int(x) for x in id_order]
         for i, item in enumerate(id_order):
@@ -58,21 +61,19 @@ def do(request, task_id, course_id=None):
             else:
                 answer_order.append(False)
 
-
         mode = 'post'
 
-
-    slide_cache.load_slide_to_cache(task.task.annotated_slide.slide.id)
+    slide = slide_cache.load_slide_to_cache(this_task.annotated_slide.slide.id)
     return render(request, 'one_to_one/do.html', {
-        'task': task,
+        'task': this_task,
+        'one_to_one': one_to_one,
+        'slide': slide,
         'answer_order': json.dumps(answer_order),
         'course_id': course_id,
         'mode': mode,
         'id_order': json.dumps(id_order),
         'next_task_id': next_task_id,
-        'next_task_type': next_task_type,
-
-
+        'next_task': next_task,
     })
 
 
@@ -190,12 +191,16 @@ def edit(request, task_id,course_id=None):
                 task.tags.set([organ_tags] + other_tags)
 
                 one_to_one = one_to_one_form.save()
-                one_to_one.sortingpair_set.all().delete()
+                #one_to_one.sortingpair_set.all().delete()
 
 
                 for pairForm in sorting_pair_formset:
+                    print(pairForm.errors)
+
                     if pairForm.is_valid():
+
                         pair = pairForm.save(commit=False)
+                        print(f'{pair.fixed} is valid ')
                         if len(pair.fixed) > 0 and len(pair.draggable) > 0:
                             pair.task = one_to_one
                             pair.save()

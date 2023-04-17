@@ -30,7 +30,7 @@ function addPointer(viewportPoint, text) {
    textDiv.innerHTML = '<a>X</a> ' +
        '<input type="hidden" name="right-arrow-overlay-' + strCounter + '-x" value="' + viewportPoint.x.toString() + '"> ' +
        '<input type="hidden" name="right-arrow-overlay-' + strCounter + '-y" value="' + viewportPoint.y.toString() + '"> ' +
-       '<input type="text" name="right-arrow-overlay-' + strCounter + '-text" value="' + text + '">';
+       '<input type="text" name="right-arrow-overlay-' + strCounter + '-text" value="' + text + '"> &#8594;';
    counter += 1;
 
    viewer.addOverlay(textDiv, viewportPoint, OpenSeadragon.Placement.RIGHT);
