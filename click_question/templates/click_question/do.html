@@ -1,26 +1,19 @@
-{% extends "learnpathology/base.html" %}
+{% extends "task/do_task_one_column.html" %}
 
-{% block content %}
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col">
-                <h1>{{ task.question }}</h1>
-                <p>{{ task.instructions }}</p>
-            </div>
-            <div class="col-4">
-                <div class="LPButton" style="margin-top: 0; ">
-                    {% if course_id == 0 %}
-                        <a href="{% url 'task:list' %}">Task Overview</a>
-                    {% else %}
-                        <a href=" {% url 'course:view' course_id=course_id active_tab='tasks' %}">Back to course</a>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="card mx-auto text-center" style="width: 90%; height: 100%; background-color: #dcdcdc">
-        <div class="card-body" style="height: 100%">
+{% block task_instructions %}
+{{ click_question.instructions }}
+{% endblock task_instructions %}
+
+{% block task_question %}
+{{ click_question.question }}
+{% endblock task_question %}
+
+{% block card_content_top %}
+    <div class="row">
+        <div class="col">
+        <form action="{% url 'click_question:do' task_id=task.id course_id=course_id %}" method="post">
+            {% csrf_token %}
             <div class="row">
                 <div class="col"></div>
                 <div class="col">
@@ -29,76 +22,28 @@
                     </div>
                      <div class="LPButton" style="margin-top: 0; ">
                         <a href="{% url next_task.do_url task_id=next_task_id course_id=course_id %}">Next Task</a>
-
-                </div>
+                    </div>
                 </div>
                 <div class="col">
                     <div class="card" style="border-color: green; border-width: thick; display: none" id="answered_correct">
-                        This is right !
+                        This is right!
                     </div>
-
                     <div class="card" style="border-color: red; border-width: thick; display: none" id="answered_false">
-                        This is wrong ! Try again
+                        This is wrong! Try again
                     </div>
-
                 </div>
             </div>
 
-            <br>
-            {% include 'slide/click_question_view_wsi.html' with slide=task.task.annotated_slide.slide annotated_slide=task.task.annotated_slide %}
-
+        </form>
         </div>
     </div>
+{% endblock card_content_top %}
 
 
+{% block card_content_bottom %}
+    {% include 'slide/click_question_view_wsi.html' with slide=slide annotated_slide=task.annotated_slide %}
+{% endblock card_content_bottom %}
 
-    <script>
-        viewer.addHandler('open', toggleAnnotationOff); // in normal view
-        window.onLoad = toggleAnnotationOff(); // when having the console open
 
-        document.body.addEventListener('dblclick', function (event) {
-
-            let container_correct = document.getElementById('answered_correct');
-            let container_false = document.getElementById('answered_false');
-
-            let correct_selection = false;
-
-            let current_overlays = viewer.currentOverlays;
-            for (let i = 0; i < current_overlays.length; i++) {
-
-                if (current_overlays[i].element.contains(event.target)) {
-                    console.log('Clicked inside');
-                    correct_selection = true;
-                } else {
-                    console.log('Clicked outside');
-                }
-            }
-            if (correct_selection) {
-                container_correct.style.display = 'block';
-                container_false.style.display = 'none';
-            } else {
-                container_false.style.display = 'block';
-                container_correct.style.display = 'none';
-            }
-        });
-
-        function toggleAnnotationOff() {
-            $(".textOverlay").toggle();
-
-            let current_overlays = viewer.currentOverlays
-            for (let i = 0; i < current_overlays.length; i++) {
-                let current_element = current_overlays[i].element
-                current_element.style.opacity = '0.0';
-            }
-        }
-
-        function toggleAnnotationOn() {
-            let current_overlays = viewer.currentOverlays;
-            for (let i = 0; i < current_overlays.length; i++) {
-                var current_element = current_overlays[i].element
-                current_element.style.opacity = '';
-            }
-        }
-
-    </script>
-{% endblock content %}
+{% block task_javascript %}
+{% endblock task_javascript %}

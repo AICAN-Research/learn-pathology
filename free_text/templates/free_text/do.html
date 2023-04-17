@@ -1,125 +1,47 @@
-{% extends "learnpathology/base.html" %}
+{% extends "task/do_task_two_column.html" %}
 
-{% block content %}
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col">
-                <h1>{{ task.question }}</h1>
-                <p>{{ task.instructions }}</p>
-            </div>
-            <div class="col-4" >
-                <div class="LPButton" style="margin-top: 0; ">
-                    {% if course_id == 0 %}
-                        <a href="{% url 'task:list' %}">Task Overview</a>
-                    {% else %}
-                        <a href=" {% url 'course:view' course_id=course_id active_tab='tasks' %}">Back to course</a>
-                    {% endif %}
-                </div>
-            </div>
+
+{% block task_instructions %}
+{{ free_text.instructions }}
+{% endblock task_instructions %}
+
+{% block task_question %}
+{{ free_text.question }}
+{% endblock task_question %}
+
+{% block content_left %}
+
+<form class="form-check text-start" action="{% url 'free_text:do' task_id=task.id course_id=course_id %}" method="post">
+    {% csrf_token %}
+    {% if answered == 'yes' %}
+        <textarea name="studentText" style="height: 100%; min-height: 100px; width: 100%;">{{ student_text }}</textarea>
+    {% else %}
+        <textarea name="studentText" style="height: 100%; min-height: 100px; width: 100%;"></textarea>
+    {% endif %}
+    <br>
+    <div style="margin-top: 10px;">
+        <input class="LPButton" type="submit" value="Compare to teacher's solution">
+        <div class="LPButton" style="margin-top: 0; ">
+            <a href="{% url next_task.do_url task_id=next_task_id course_id=course_id %}">Next Task</a>
         </div>
     </div>
+</form>
 
-    <div class="card mx-auto text-center" style="width: 90%; height: 100%; ">
-        <div class="card-body" style="height: 100%">
-            <div class="row">
-                <div class="col">
-
-                </div>
-                <div class="col">
-                    <form class="form-check text-start"
-                          action="{% url 'free_text:do' task_id=task.task_id course_id=course_id %}" method="post">
-                        {% csrf_token %}
-                        {% if answered == 'yes' %}
-                            <textarea name="studentText" cols="40" rows="5">{{ student_text }}</textarea>
-                        {% else %}
-                            <textarea name="studentText" cols="40" rows="5"></textarea>
-                        {% endif %}
-
-
-
-
-
-                        <br><input type="submit" value="Compare to teacher's solution">
-                     <div class="LPButton" style="margin-top: 0; ">
-                        <a href="{% url next_task.do_url task_id=next_task_id course_id=course_id %}">Next Task</a>
-
-                </div>
-                    </form>
-
-                </div>
-                <div class="col">
-                    {% if answered == 'yes' %}
-                        <div class="card border-success">
-                        <div class="card-tile">
-                            Optimal answer
-
-                        </div>
-                        <div class="card-body">
-                              {{ task.answer }}
-                        </div>
-                        </div>
-
-
-                    {% elif answered == 'no' %}
-                        <div class="card border-warning">
-                        <div class="card-tile">
-                            Please enter your answer, so you can compare it to the teacher's solution.
-
-
-                        </div></div>
-                            {% endif %}
-                </div>
-            </div>
-
-            <br>
-
-            {% include 'slide/view_wsi.html' with slide=task.task.annotated_slide.slide annotated_slide=task.task.annotated_slide %}
-
-
+{% if answered == 'yes' %}
+    <div class="card border-success">
+        <div class="card-tile">Optimal answer</div>
+        <div class="card-body">{{ free_text.answer }}</div>
+    </div>
+{% elif answered == 'no' %}
+    <div class="card border-warning">
+        <div class="card-tile">
+            Please enter your answer, so you can compare it to the teacher's solution.
         </div>
     </div>
+{% endif %}
+
+{% endblock content_left %}
 
 
-
-    <script>
-        viewer.addHandler('viewport-change', updateTextLocation);
-        viewer.addHandler('tile-drawing', updateTextLocation);
-        addEventListener("resize", () => {
-        });
-
-        onresize = () => {
-            timer = setTimeout(function () {
-
-                updateTextLocation();
-
-            }, 20);
-        };
-
-        function updateTextLocation(event) {
-
-            let slide_overlays = viewer.currentOverlays;
-
-
-            let arrow_overlays = $("[id^=right-arrow-overlay-]")
-            let text_overlays = $("[id^=arrow-text-overlay-]")
-
-
-            for (let i = 0; i < arrow_overlays.length; i++) {
-
-                let arrowElement = arrow_overlays[i];
-                let textElement = text_overlays[i];
-
-
-                let arrowX = parseFloat(arrowElement.style.left);
-                let arrowY = parseFloat(arrowElement.style.top);
-
-
-                let viewportPoint = viewer.viewport.pointFromPixel(new OpenSeadragon.Point(arrowX - 5, arrowY + 15));
-                viewer.updateOverlay(textElement, viewportPoint);
-            }
-
-
-        }
-
-    </script>
-{% endblock content %}
+{% block content_right %}
+{% endblock content_right %}

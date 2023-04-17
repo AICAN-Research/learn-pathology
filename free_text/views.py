@@ -15,20 +15,27 @@ from user.decorators import teacher_required
 def do(request, task_id, course_id=None):
     """
     Student form for answering/viewing a free text task
+
+    Parameters
+    ----------
+    request : Http request
+
+    task_id : int
+        ID of Task instance
+    course_id : int
+        ID of Course instance
     """
-    task = FreeText.objects.get(task_id=task_id)
+    this_task = Task.objects.get(id=task_id)
+    free_text = FreeText.objects.get(task_id=task_id)
 
     if course_id:
         course = Course.objects.get(id=course_id)
         all_tasks = Task.objects.filter(course=course)
-
     else:
         all_tasks = Task.objects.all()
-    this_task = Task.objects.get(id=task_id)
-
-    this_task_index = list(all_tasks).index(this_task)
 
     # Get the task ID of the next object in the queryset
+    this_task_index = list(all_tasks).index(this_task)
     if this_task_index < len(all_tasks) - 1:
         next_task_id = all_tasks[this_task_index + 1].id
     else:
@@ -36,8 +43,8 @@ def do(request, task_id, course_id=None):
 
     next_task = Task.objects.get(id=next_task_id)
 
-    student_text = None
     answered = None
+    student_text = None
     if request.method == 'POST':
         print('POST')
         # Process form
@@ -47,9 +54,11 @@ def do(request, task_id, course_id=None):
         else:
             answered = 'no'
 
-    slide_cache.load_slide_to_cache(task.task.annotated_slide.slide.id)
+    slide = slide_cache.load_slide_to_cache(this_task.annotated_slide.slide.id)
     return render(request, 'free_text/do.html', {
-        'task': task,
+        'task': this_task,
+        'free_text': free_text,
+        'slide': slide,
         'answered': answered,
         'course_id': course_id,
         'student_text': student_text,
