@@ -39,8 +39,7 @@ def do(request, task_id, course_id=None):
     else:
         next_task_id = all_tasks[0].id
 
-    next_task_type = Task.objects.get(id=next_task_id).type
-
+    next_task = Task.objects.get(id=next_task_id)
 
     mode = 'get'
     id_order = [1,2,3]
@@ -70,9 +69,7 @@ def do(request, task_id, course_id=None):
         'mode': mode,
         'id_order': json.dumps(id_order),
         'next_task_id': next_task_id,
-        'next_task_type': next_task_type,
-
-
+        'next_task': next_task,
     })
 
 
