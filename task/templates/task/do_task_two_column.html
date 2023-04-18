@@ -46,9 +46,9 @@
             <div class="col-8" style="height: 100%;">
                 <div id="contentRight" style="width: 100%; height: 100%;">
                     {% if slide %}
-                        {% include 'slide/view_wsi_do_task.html' with two_column=1 slide=slide annotated_slide=task.task.annotated_slide %}
+                        {% include 'slide/view_wsi_do_task.html' with two_column=1 slide=slide annotated_slide=task.annotated_slide %}
                     {% else %}
-                        {% include 'slide/view_wsi_do_task.html' with slide=task.task.annotated_slide.slide annotated_slide=task.task.annotated_slide %}
+                        {% include 'slide/view_wsi_do_task.html' with slide=slide annotated_slide=task.annotated_slide %}
                     {% endif %}
                     {% block content_right %}
                     {% endblock content_right %}
