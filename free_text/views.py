@@ -14,28 +14,37 @@ from user.decorators import teacher_required
 
 def do(request, task_id, course_id=None):
     """
-    Student form for answering/viewing a multiple choice task
+    Student form for answering/viewing a free text task
+
+    Parameters
+    ----------
+    request : Http request
+
+    task_id : int
+        ID of Task instance
+    course_id : int
+        ID of Course instance
     """
-    task = FreeText.objects.get(task_id=task_id)
+    this_task = Task.objects.get(id=task_id)
+    free_text = FreeText.objects.get(task_id=task_id)
 
-    # get id of next task
-    #TODO include all task types for next task
-    # if course_id:
-    #     course = Course.objects.get(id=course_id)
-    #     all_tasks = list(Task.objects.filter(course=course).values_list('id', flat=True))
-    #
-    # else:
-    #     all_tasks = list(FreeText.objects.values_list('id', flat=True))
-    #     course_id = 0
-    #
-    # current_index = all_tasks.index(task_id)
-    # try:
-    #     next_id = all_tasks[current_index + 1]
-    # except IndexError:
-    #     next_id = all_tasks[0]
+    if course_id:
+        course = Course.objects.get(id=course_id)
+        all_tasks = Task.objects.filter(course=course)
+    else:
+        all_tasks = Task.objects.all()
 
-    student_text = None
+    # Get the task ID of the next object in the queryset
+    this_task_index = list(all_tasks).index(this_task)
+    if this_task_index < len(all_tasks) - 1:
+        next_task_id = all_tasks[this_task_index + 1].id
+    else:
+        next_task_id = all_tasks[0].id
+
+    next_task = Task.objects.get(id=next_task_id)
+
     answered = None
+    student_text = None
     if request.method == 'POST':
         print('POST')
         # Process form
@@ -45,19 +54,23 @@ def do(request, task_id, course_id=None):
         else:
             answered = 'no'
 
-    slide_cache.load_slide_to_cache(task.task.annotated_slide.slide.id)
+    slide = slide_cache.load_slide_to_cache(this_task.annotated_slide.slide.id)
     return render(request, 'free_text/do.html', {
-        'task': task,
+        'task': this_task,
+        'free_text': free_text,
+        'slide': slide,
         'answered': answered,
         'course_id': course_id,
         'student_text': student_text,
+        'next_task_id': next_task_id,
+        'next_task': next_task,
     })
 
 
 @teacher_required
 def new(request, slide_id, course_id=None):
     """
-    Teacher form for creating a multiple choice task
+    Teacher form for creating a free text task
     """
 
     # Get slide
@@ -94,7 +107,7 @@ def new(request, slide_id, course_id=None):
 
                 # Store annotations (pointers)
                 for key in request.POST:
-                    print(key, request.POST[key])
+
                     if key.startswith('right-arrow-overlay-') and key.endswith('-text'):
                         save_pointer_annotation(request, key, annotated_slide)
 
@@ -106,7 +119,7 @@ def new(request, slide_id, course_id=None):
                 if course_id is not None and course_id in Course.objects.values_list('id', flat=True):
                     course = Course.objects.get(id=course_id)
                     course.task.add(task)
-                    return redirect('course:view', course_id=course_id)
+                    return redirect('course:view', course_id=course_id, active_tab='tasks')
                 return redirect('task:list')
     else:
         task_form = TaskForm()
@@ -120,9 +133,9 @@ def new(request, slide_id, course_id=None):
 
 
 @teacher_required
-def edit(request, task_id):
+def edit(request, task_id,course_id = None):
     """
-    Teacher form for editing a multiple choice task
+    Teacher form for editing a free text task
     """
 
     # Get model instances from database
@@ -161,7 +174,7 @@ def edit(request, task_id):
                 BoundingBox.objects.filter(annotated_slide=annotated_slide).delete()
                 # Add all current pointers
                 for key in request.POST:
-                    print(key, request.POST[key])
+
                     if key.startswith('right-arrow-overlay-') and key.endswith('-text'):
                         save_pointer_annotation(request, key, annotated_slide)
 
@@ -170,8 +183,10 @@ def edit(request, task_id):
 
                 messages.add_message(request, messages.SUCCESS,
                                      f'The task {task.name} was altered!')
+                if course_id is not None and course_id in Course.objects.values_list('id', flat=True):
+                    return redirect('course:view', course_id=course_id, active_tab='tasks')
 
-        return redirect('list')
+        return redirect('task:list')
 
     else:  # GET
         task_form = TaskForm(instance=task)  # , initial=task.tags.all())
@@ -186,6 +201,7 @@ def edit(request, task_id):
         'taskForm': task_form,
         'freeTextForm': free_text_form,
         'pointers': Pointer.objects.filter(annotated_slide=annotated_slide),
+        'boxes': BoundingBox.objects.filter(annotated_slide=annotated_slide),
 
     }
     return render(request, 'free_text/edit.html', context)

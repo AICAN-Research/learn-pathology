@@ -361,7 +361,7 @@ def edit_description(request, slide_id):
     Form for editing a slide's long_description field
     """
 
-    slide = get_object_or_404(Slide, id=slide_id)
+    slide = slide_cache.load_slide_to_cache(slide_id)
     form = SlideDescriptionForm(request.POST or None, instance=slide)
 
     if request.method == 'POST':  # Form was submitted
@@ -468,7 +468,7 @@ def add_or_edit_descriptive_annotation(request, slide_id):
 
             # Store annotations (pointers)
             for key in request.POST:
-                print(key, request.POST[key])
+
                 if key.startswith('right-arrow-overlay-') and key.endswith('-text'):
                     save_pointer_annotation(request, key, annotated_slide)
                 elif key.startswith('boundingbox-') and key.endswith('-text'):

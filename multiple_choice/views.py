@@ -18,35 +18,44 @@ from user.decorators import teacher_required
 def do(request, task_id, course_id=None):
     """
     Student form for answering/viewing a multiple choice task
+
+    Parameters
+    ----------
+    request : Http request
+
+    task_id : int
+        ID of Task instance
+    course_id : int
+        ID of Course instance
     """
-    task = MultipleChoice.objects.get(task=task_id)
+    this_task = Task.objects.get(id=task_id)
+    multiple_choice = this_task.multiplechoice
 
     # get id of next task
     if course_id:
         course = Course.objects.get(id=course_id)
-        all_tasks = list(Task.objects.filter(course=course).values_list('id', flat=True))
-
+        all_tasks = Task.objects.filter(course=course)
     else:
-        all_tasks = list(MultipleChoice.objects.values_list('id', flat=True))
-        course_id = 0
+        all_tasks = Task.objects.all()
 
-    current_index = all_tasks.index(task_id)
-    try:
-        next_id = all_tasks[current_index + 1]
-    except IndexError:
-        next_id = all_tasks[0]
+    # Get the task ID of the next object in the queryset
+    this_task_index = list(all_tasks).index(this_task)
+    if this_task_index < len(all_tasks) - 1:
+        next_task_id = all_tasks[this_task_index + 1].id
+    else:
+        next_task_id = all_tasks[0].id
+
+    next_task = Task.objects.get(id=next_task_id)
 
     answered = []
     choice_text = []
     if request.method == 'POST':
         print('POST')
         # Process form
-
-
-        id_post_choice = request.POST.getlist('choice',None)
+        id_post_choice = request.POST.getlist('choice', None)
         if id_post_choice:
             for id in id_post_choice:
-                choice = Choice.objects.get(task=task, id=id)
+                choice = Choice.objects.get(task=multiple_choice, id=id)
                 choice_text.append(choice.text)
                 if choice.correct:
                     answered.append('correct')
@@ -55,19 +64,21 @@ def do(request, task_id, course_id=None):
         else:
             answered.append('no')
 
-    # determin if question is single or multiple choice
-    counter_corr_answ = len(list(Choice.objects.filter(task=task, correct=True)))
+    # Determine if question is single or multiple choice
+    counter_corr_answ = len(list(Choice.objects.filter(task=multiple_choice, correct=True)))
 
-
-    slide_cache.load_slide_to_cache(task.task.annotated_slide.slide.id)
+    slide = slide_cache.load_slide_to_cache(this_task.annotated_slide.slide.id)
     return render(request, 'multiple_choice/do.html', {
-        'task': task,
+        'task': this_task,
+        'multiple_choice': multiple_choice,
+        'slide': slide,
         'answered': answered,
         'len_answered': len(answered),
         'choice_text': choice_text,
-        'next_id': next_id,
         'course_id': course_id,
         'counter_corr_answ': counter_corr_answ,
+        'next_task_id': next_task_id,
+        'next_task': next_task,
     })
 
 
@@ -158,7 +169,7 @@ def new(request, slide_id, course_id=None):
 
                 # Store annotations (pointers)
                 for key in request.POST:
-                    print(key, request.POST[key])
+
                     if key.startswith('right-arrow-overlay-') and key.endswith('-text'):
                         prefix = key[:-len('text')]
                         pointer = Pointer()
@@ -176,14 +187,14 @@ def new(request, slide_id, course_id=None):
                 if course_id is not None and course_id in Course.objects.values_list('id', flat=True):
                     course = Course.objects.get(id=course_id)
                     course.task.add(task)
-                    return redirect('course:view', course_id=course_id)
+                    return redirect('course:view', course_id=course_id, active_tab='tasks')
                 return redirect('task:list')
     else:
         task_form = TaskForm()
         multiple_choice_form = MultipleChoiceForm()
         choice_formset = ChoiceFormset()
 
-    return render(request, 'multiple_choice/tasktypes/new_mc.html', {
+    return render(request, 'multiple_choice/new.html', {
         'slide': slide,
         'multipleChoiceForm': multiple_choice_form,
         'taskForm': task_form,
@@ -237,7 +248,7 @@ def new_random(num_choices=5):
 
 
 @teacher_required
-def edit(request, task_id):
+def edit(request, task_id,course_id=None):
     """
     Teacher form for editing a multiple choice task
     """
@@ -265,7 +276,7 @@ def edit(request, task_id):
         # pointers = Pointer.objects.filter(annotated_slide=task.annotated_slide)
 
         with transaction.atomic():  # Make save operation atomic
-            if task_form.is_valid() and multiple_choice_form.is_valid() and choice_formset.is_valid():
+            if task_form.is_valid() and multiple_choice_form.is_valid():
 
                 # Save instance data to database
                 task = task_form.save()
@@ -275,11 +286,21 @@ def edit(request, task_id):
                 task.tags.set([organ_tags] + other_tags)
 
                 multiple_choice = multiple_choice_form.save()
+                Choice.objects.filter(task=multiple_choice).delete()
 
                 for choiceForm in choice_formset:
-                    choice = choiceForm.save(commit=False)
-                    if len(choice.text) > 0:
+                    choice = Choice()
+                    text = request.POST.get(f"{choiceForm.prefix}-text")
+                    correct = request.POST.get(f"{choiceForm.prefix}-correct")
+                    print(correct)
+
+                    if len(text) > 0:
                         choice.task = multiple_choice
+                        choice.text = text
+                        if correct:
+                            choice.correct = True
+                        else:
+                            choice.correct = False
                         choice.save()
 
                 # Store annotations (pointers)
@@ -288,21 +309,19 @@ def edit(request, task_id):
                 BoundingBox.objects.filter(annotated_slide=annotated_slide).delete()
                 # Add all current pointers
                 for key in request.POST:
-                    print(key, request.POST[key])
+
                     if key.startswith('right-arrow-overlay-') and key.endswith('-text'):
-                        prefix = key[:-len('text')]
-                        pointer = Pointer()
-                        pointer.text = request.POST[key]
-                        pointer.position_x = float(request.POST[prefix + 'x'])
-                        pointer.position_y = float(request.POST[prefix + 'y'])
-                        pointer.annotated_slide = annotated_slide
-                        pointer.save()
+                        save_pointer_annotation(request,key,annotated_slide)
+
 
                     if key.startswith('boundingbox-') and key.endswith('-text'):
                         save_boundingbox_annotation(request, key, annotated_slide)
 
                 messages.add_message(request, messages.SUCCESS,
                                      f'The task {task.name} was altered!')
+
+                if course_id is not None and course_id in Course.objects.values_list('id', flat=True):
+                    return redirect('course:view', course_id=course_id, active_tab='tasks')
 
         return redirect('task:list')
 
@@ -321,5 +340,6 @@ def edit(request, task_id):
         'multipleChoiceForm': multiple_choice_form,
         'choiceFormset': choice_formset,
         'pointers': Pointer.objects.filter(annotated_slide=annotated_slide),
+        'boxes': BoundingBox.objects.filter(annotated_slide=annotated_slide),
     }
     return render(request, 'multiple_choice/edit.html', context)

@@ -30,7 +30,7 @@ function addPointer(viewportPoint, text) {
    textDiv.innerHTML = '<a>X</a> ' +
        '<input type="hidden" name="right-arrow-overlay-' + strCounter + '-x" value="' + viewportPoint.x.toString() + '"> ' +
        '<input type="hidden" name="right-arrow-overlay-' + strCounter + '-y" value="' + viewportPoint.y.toString() + '"> ' +
-       '<input type="text" name="right-arrow-overlay-' + strCounter + '-text" value="' + text + '">';
+       '<input type="text" name="right-arrow-overlay-' + strCounter + '-text" value="' + text + '"> &#8594;';
    counter += 1;
 
    viewer.addOverlay(textDiv, viewportPoint, OpenSeadragon.Placement.RIGHT);
@@ -255,6 +255,126 @@ function removeBoundingBoxHandlers() {
     viewer.removeHandler('canvas-release', onReleaseBoundingBox);
 }
 
+/*
+    BOUNDING BOX WITHOUT TEXT INPUT (used for click question)
+ */
+function activateBoxAnnotationNoTextInput() {
+    console.log('Activating BoundingBox annotation. counter = ', counter);
+
+    deactivateAnnotationMode();
+    disablePanAndZoom();
+
+    $('#box-annotation-btn').addClass('active');
+        //.disable();
+    $('#annotation-instructions').text(
+        'Click and drag to make a bounding box'
+    );
+    addBoundingBoxHandlersNoTextInput();
+}
+
+function addBoundingBoxNoTextInput(x1, y1, x2, y2) {
+    console.log("In function addBoundingBoxWithoutTextInput()");
+
+    let divElement = document.createElement('div');
+    viewer.addOverlay(divElement);
+    divElement.id = 'boundingbox-' + counter.toString();
+    divElement = drawBoundingBox(divElement.id, x1, y1, x2, y2, '');
+    divElement.innerHTML = boundingBoxNoTextInputInnerHTML(x1, y1, x2, y2);
+
+    // MouseTracker is required for links to function in overlays
+    let tracker = mouseTrackerRemoveBoundingBox(divElement);
+
+    counter += 1;
+    return divElement.id;
+}
+
+function newBoundingBoxNoTextInput(x1, y1, x2, y2) {
+    console.log("In function newBoundingBoxNoTextInput()");
+
+    viewer.removeOverlay(g_lastDrawnBoundingBoxId);
+
+    let divElement = document.createElement('div');
+    viewer.addOverlay(divElement);
+    divElement.id = 'boundingbox-' + counter.toString();
+    console.log(divElement.id);
+
+    divElement = drawBoundingBoxNoTextInput(divElement.id, x1, y1, x2, y2);
+    divElement.innerHTML = boundingBoxNoTextInputInnerHTML(x1, y1, x2, y2);
+
+    // MouseTracker is required for links to function in overlays
+    let tracker = mouseTrackerRemoveBoundingBox(divElement);
+
+    counter += 1;
+    return divElement.id;
+}
+
+function drawBoundingBoxNoTextInput(elementId, x1, y1, x2, y2) {
+
+    let tempElement = document.getElementById(elementId);
+
+    let x0 = Math.min(x1, x2);
+    let y0 = Math.min(y1, y2);
+    let width = Math.abs(x1-x2);
+    let height = Math.abs(y1-y2);
+    console.log(x0, y0, width, height);
+
+    viewer.removeOverlay(tempElement);
+    viewer.addOverlay({     //box, startPoint, OpenSeadragon.Placement.BOTTOM_RIGHT);
+        element: tempElement,
+        location: new OpenSeadragon.Rect(x0, y0, width, height)
+    });
+    tempElement.className = 'overlay card LPBoundingBox';
+    tempElement.innerHTML = boundingBoxNoTextInputInnerHTML(x1, y1, x2, y2);
+    console.log('Drew bounding box nr ' + counter);
+    return tempElement;
+}
+
+function boundingBoxNoTextInputInnerHTML(x1, y1, x2, y2) {
+    let x0 = Math.min(x1, x2);
+    let y0 = Math.min(y1, y2);
+    let width = Math.abs(x1-x2);
+    let height = Math.abs(y1-y2);
+    return '<a style="margin: 3px;">X</a>' +
+        '<input type="hidden" name="boundingbox-' + counter + '-text" value="">' +
+        '<input type="hidden" name="boundingbox-' + counter + '-x" value="' + x0.toString() + '">' +
+        '<input type="hidden" name="boundingbox-' + counter + '-y" value="' + y0.toString() + '">' +
+        '<input type="hidden" name="boundingbox-' + counter + '-width" value="' + width.toString() + '">' +
+        '<input type="hidden" name="boundingbox-' + counter + '-height" value="' + height.toString() + '">'
+}
+
+function onReleaseBoundingBoxNoTextInput(event) {
+    let webPoint = event.position;
+    let endViewportPoint = viewer.viewport.pointFromPixel(webPoint);
+    console.log('Canvas release at (' + endViewportPoint.x.toString() + ', ' + endViewportPoint.x.toString() + ')');
+
+    // Remove the last drawn bounding box
+    viewer.removeOverlay(document.getElementById(g_lastDrawnBoundingBoxId));
+    g_lastDrawnBoundingBoxId = null;
+
+    // Create bounding box
+    g_lastBoundingBoxId = newBoundingBoxNoTextInput(
+        g_lastBoundingBoxStartX, g_lastBoundingBoxStartY,
+        endViewportPoint.x, endViewportPoint.y,
+    );
+    g_lastBoundingBoxStartX = -1;
+    g_lastBoundingBoxStartY = -1;
+
+    // Re-enable pan/zoom and remove canvas actions for bounding box
+    deactivateAnnotationMode();
+    removeBoundingBoxHandlersNoTextInput();
+}
+
+function addBoundingBoxHandlersNoTextInput() {
+    viewer.addHandler('canvas-press', onPressBoundingBox);
+    viewer.addHandler('canvas-drag', onDragBoundingBox);
+    viewer.addHandler('canvas-release', onReleaseBoundingBoxNoTextInput);
+}
+
+function removeBoundingBoxHandlersNoTextInput() {
+    viewer.removeHandler('canvas-press', onPressBoundingBox);
+    viewer.removeHandler('canvas-drag', onDragBoundingBox);
+    viewer.removeHandler('canvas-release', onReleaseBoundingBoxNoTextInput);
+}
 
 /*
     HELPER FUNCTIONS

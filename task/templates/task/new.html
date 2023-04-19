@@ -13,22 +13,52 @@
         <div class="card-body">
             <div class="card-text">
                 Select the type of task ypu want to create
-                <div class="row" >
+                <div class="row">
                     <div class="column">
                         <div class="column">
                             <div class="LPButton" style="margin-top: 0; ">
                                 {% if course_id %}
-                                    <a href="{% url 'multiple_choice:new' slide_id=slide_id course_id=course_id %}">Single/Multiple Choice</a>
+                                    <a href="{% url 'multiple_choice:new' slide_id=slide_id course_id=course_id %}">Single/Multiple
+                                        Choice</a>
                                 {% else %}
-                                    <a href="{% url 'multiple_choice:new' slide_id=slide_id %}">Single/Multiple Choice</a>
+                                    <a href="{% url 'multiple_choice:new' slide_id=slide_id %}">Single/Multiple
+                                        Choice</a>
                                 {% endif %}
                             </div>
                             <br>
                             <div class="LPButton" style="margin-top: 0; ">
                                 {% if course_id %}
-                                    <a href="{% url 'free_text:new' slide_id=slide_id course_id=course_id %}">Free Text Question</a>
+                                    <a href="{% url 'free_text:new' slide_id=slide_id course_id=course_id %}">Free Text
+                                        Question</a>
                                 {% else %}
                                     <a href="{% url 'free_text:new' slide_id=slide_id %}">Free Text Question</a>
+                                {% endif %}
+                            </div>
+                            <br>
+                            <div class="LPButton" style="margin-top: 0; ">
+                                {% if course_id %}
+                                    <a href="{% url 'click_question:new' slide_id=slide_id course_id=course_id %}">Click
+                                        Question</a>
+                                {% else %}
+                                    <a href="{% url 'click_question:new' slide_id=slide_id %}">Click Question</a>
+                                {% endif %}
+                            </div>
+                            <br>
+                            <div class="LPButton" style="margin-top: 0; ">
+                                {% if course_id %}
+                                    <a href="{% url 'one_to_one:new' slide_id=slide_id course_id=course_id %}">One-to-One
+                                        Sorting Task</a>
+                                {% else %}
+                                    <a href="{% url 'one_to_one:new' slide_id=slide_id %}">One-to-One Sorting Task</a>
+                                {% endif %}
+                            </div>
+                           <br>
+                            <div class="LPButton" style="margin-top: 0; ">
+                                {% if course_id %}
+                                    <a href="{% url 'many_to_one:new' slide_id=slide_id course_id=course_id %}">Many-to-One
+                                        Sorting Task</a>
+                                {% else %}
+                                    <a href="{% url 'many_to_one:new' slide_id=slide_id %}">Many-to-One Sorting Task</a>
                                 {% endif %}
                             </div>
                         </div>

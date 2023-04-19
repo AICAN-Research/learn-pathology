@@ -302,6 +302,18 @@ body {
     width: fit-content;
 }
 
+#contentLeft {
+    float: left;
+    padding-right: 15px;
+    box-sizing: border-box;
+}
+
+#contentRight {
+    float: left;
+    padding-left: 15px;
+    box-sizing: border-box;
+}
+
 .content-card card{
     all: inherit;
     width: 90%;
@@ -466,7 +478,7 @@ Course navigation tabs
 }
 
 .courseNavTabs .nav-link.active {
-    /*background-color: var(--button-colour-active);*/
+    background-color: var(--button-colour-active);
     color: var(--text-colour-dark);
     font-weight: bold;
     border-style: solid;
@@ -577,7 +589,7 @@ Annotations
 
 .textOverlay{
     background-color: rgba(0, 0, 0, 0%);
-    color: blue;
+    color: #000000;
 
 }
 

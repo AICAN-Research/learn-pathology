@@ -125,6 +125,7 @@
 
 
 <script src="{% static 'slide/openseadragon.min.js' %}"></script>
+<script src="{% static 'slide/openseadragon-scalebar.js' %}"></script>
 <script type="text/javascript">
     let buttonElement = document.createElement("button");
     buttonElement.innerText = "Screenshot";
@@ -175,6 +176,7 @@
     var viewer = OpenSeadragon({
         id: "wsi-canvas",
         zoomPerScroll: 2, // Scroll speed
+        minScrollDeltaTime: 150, //	Number of milliseconds between canvas-scroll events.
         showNavigator: true, // The navigation window top-right
         prefixUrl: "{% static 'slide/images/' %}", // Where to find OpenSedragon button images
         tileSources: {
@@ -232,6 +234,24 @@
         */
 
     }
+
+
+    var zoomLevel = 5 - 1; //slide.osd_levels - 1;
+    var um_per_pixel = 0.05; // TODO: Find initial zoom level from metadata?
+    viewer.scalebar({
+        type: OpenSeadragon.ScalebarType.MICROSCOPY,
+        pixelsPerMeter: Math.round(1e6 / um_per_pixel),
+        minWidth: "100px",
+        location: OpenSeadragon.ScalebarLocation.BOTTOM_RIGHT,
+        xOffset: 10,
+        yOffset: 20,
+        stayInsideImage: true,
+        color: "rgba(100,100,100,0.9)",
+        fontColor: "rgb(50,50,50)",
+        backgroundColor: "rgba(230, 230, 230, 0.5)",
+        fontSize: "large",
+        barThickness: 3
+    });
 
 </script>
 {% endblock %}

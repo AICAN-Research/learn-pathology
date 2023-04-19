@@ -1,0 +1,49 @@
+{% extends "task/do_task_one_column.html" %}
+
+
+{% block task_instructions %}
+{{ click_question.instructions }}
+{% endblock task_instructions %}
+
+{% block task_question %}
+{{ click_question.question }}
+{% endblock task_question %}
+
+{% block card_content_top %}
+    <div class="row">
+        <div class="col">
+        <form action="{% url 'click_question:do' task_id=task.id course_id=course_id %}" method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col"></div>
+                <div class="col">
+                    <div class="LPButton" style="margin-top: 0;" onclick="toggleAnnotationOn();">
+                        Show solution
+                    </div>
+                     <div class="LPButton" style="margin-top: 0; ">
+                        <a href="{% url next_task.do_url task_id=next_task_id course_id=course_id %}">Next Task</a>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card" style="border-color: green; border-width: thick; display: none" id="answered_correct">
+                        This is right!
+                    </div>
+                    <div class="card" style="border-color: red; border-width: thick; display: none" id="answered_false">
+                        This is wrong! Try again
+                    </div>
+                </div>
+            </div>
+
+        </form>
+        </div>
+    </div>
+{% endblock card_content_top %}
+
+
+{% block card_content_bottom %}
+    {% include 'slide/click_question_view_wsi.html' with slide=slide annotated_slide=task.annotated_slide %}
+{% endblock card_content_bottom %}
+
+
+{% block task_javascript %}
+{% endblock task_javascript %}

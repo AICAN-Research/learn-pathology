@@ -29,7 +29,7 @@ def index(request):
                   {'courses': Course.objects.all().order_by('code')})
 
 
-def course_page(request, course_id, return_task=None ):
+def course_page(request, course_id, return_task=None , active_tab=None):
     """
     Display a course page with course information and related slides and tasks
     """
@@ -39,12 +39,14 @@ def course_page(request, course_id, return_task=None ):
     slides = Slide.objects.filter(course=course)
     course_materials = CourseMaterial.objects.filter(course=course)
 
+
     return render(request, 'course/course_page.html', {
         'course': course,
         'tasks': tasks,
         'slides': slides,
         'course_materials': course_materials,
         'return_task': return_task,
+        'active_tab': active_tab,
     })
 
 
@@ -85,7 +87,7 @@ def edit(request, course_id):
             courseForm.save()
             messages.add_message(request, messages.SUCCESS,
                  f'The course {course.code} - {course.title} was altered!')
-            return redirect('course:view', course_id=course_id)
+            return redirect('course:view', course_id=course_id, active_tab='course-description')
 
     return render(request, 'course/edit.html', {'form': courseForm})
 
@@ -126,7 +128,7 @@ def edit_learning_outcomes(request, course_id):
             form.save()
             messages.add_message(request, messages.SUCCESS,
                  f'The course {course.code} - {course.title} was altered!')
-            return redirect('course:view', course_id=course_id)
+            return redirect('course:view', course_id=course_id, active_tab='learning-outcomes')
 
     return render(request, 'course/edit_learning_outcomes.html', {
         'course': course,
@@ -330,7 +332,7 @@ def upload_material(request, course_id):
                 course_material.save()
 
                 messages.add_message(request, messages.SUCCESS, 'Course material added to database')
-                return redirect('course:view', course_id=course_id)
+                return redirect('course:view', course_id=course_id, active_tab='course-material')
     else:
         form = CourseMaterialForm()
 

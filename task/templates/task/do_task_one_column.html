@@ -1,0 +1,59 @@
+{% extends "task/do_task_common.html" %}
+
+
+{% block content %}
+
+{% block top_content %}
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col">
+                <h1>
+                    {{ task.name }}
+                </h1>
+                <h6>
+                    {% block task_instructions %}
+                    {% endblock task_instructions %}
+                </h6>
+            </div>
+            <div class="col-4">
+                <div class="LPButton" style="margin-top: 0; ">
+                    {% if course_id == 0 %}
+                        <a href="{% url 'task:list' %}">Task Overview</a>
+                    {% else %}
+                        <a href=" {% url 'course:view' course_id=course_id active_tab='tasks' %}">Back to course</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock top_content %}
+
+{% block card_content %}
+
+    <div class="card mx-auto text-center" style="width: 90%; height: 100%; min-height: 600px;">
+    <div class="card-body" style="height: 100%">
+        <h4 style="margin-top: 20px; margin-bottom: 20px;">
+            {% block task_question %}
+            {% endblock task_question %}
+        </h4>
+
+        {% block card_content_top %}
+        {% endblock card_content_top %}
+
+        {% block card_content_bottom %}
+        {% if slide %}
+            {% include 'slide/view_wsi_do_task.html' with two_column=0 slide=slide annotated_slide=task.annotated_slide %}
+        {% else %}
+            {% include 'slide/view_wsi_do_task.html' with slide=slide annotated_slide=task.annotated_slide %}
+        {% endif %}
+        {% endblock card_content_bottom %}
+    </div>
+    </div>
+
+{% endblock card_content %}
+
+{% endblock content %}
+
+
+{% block task_javascript %}
+{% endblock task_javascript %}
