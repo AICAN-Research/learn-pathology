@@ -84,8 +84,8 @@
 
                                 <!-- Other organ buttons -->
                                 {% for organ in organ_tags %}
-                                    <input type="radio" name="organ-system" id={{ organ.id }} value={{ organ.id }} onchange="this.form.submit();">
-                                    <label for="{{ organ.id }}" class="wideLabel {% if organ in selected_organ_tag %}active{% endif %}">{{ organ.name }}</label>
+                                    <input type="radio" name="organ-system" id="{{ organ.id }}" value="{{ organ.id }}" onchange="this.form.submit();">
+                                    <label for="{{ organ.id }}" class="wideLabel{% if organ in selected_organ_tag %} active{% endif %}">{{ organ.name }}</label>
                                 {% endfor %}
                             </div>
                         </div>
