@@ -187,7 +187,7 @@ def image_browser(request):
     # ==================================================================
     # Update context
     # ==================================================================
-    context['slides'] = slides
+    context['slides'] = sorted(slides, key=lambda s: s.name)
     context['selected_organ_tag'] = ['all'] if 'all' in selected_organ_tag_id else Tag.objects.filter(id__in=selected_organ_tag_id)
     context['selected_both'] = selected_both
     context['selected_histology'] = selected_histology
