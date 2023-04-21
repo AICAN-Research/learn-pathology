@@ -9,6 +9,7 @@ app_name = 'slide'
 urlpatterns = [
     path('list/', views.index, name='list'),
     path('browser/', views.image_browser, name='browser'),
+    path('browser/reset', views.reset_image_browser, name='browser_reset'),
     #path('browser/grid-view', views.grid_view, name='grid_view'),
     #path('browser/list-view', views.list_view, name='list_view'),
     path('view/<int:slide_id>/', views.whole_slide_view_full, name='view_full'),
