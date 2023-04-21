@@ -14,15 +14,27 @@
 
         <!-- Menu/toolbar -->
         <div class="col" style="padding: 0 0 0 0;">
-            <form class="form" id="slideDisplayForm" onsubmit="{% url 'slide:browser' %}">
 
-                <style>
-                    label::first-letter {
-                        text-transform:capitalize;
-                    }
-                </style>
+            <style>
+                label::first-letter {
+                    text-transform:capitalize;
+                }
+            </style>
 
-                <div class="card">
+            <div class="card">
+                <div class="card border-0 w-100 text-start">
+                    <div class="card-body" style="padding-bottom: 0;">
+                        <div class="radio-toolbar" style="margin-top: 2px;">
+                            <a href="{% url 'slide:browser_reset' %}">
+                                <button class="wideLabel" style="text-align: center; border: 2px solid #c65127;">
+                                    Clear selection {% bs_icon 'x-circle' %}
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <form class="form" id="slideDisplayForm" onsubmit="{% url 'slide:browser' %}">
                     <!-- SEARCH feature -->
                     <h4 style="margin: 14px 0 0 0;"><label for="search_input">Search</label></h4>
                     <div class="card border-0 w-100 text-start">
@@ -76,9 +88,8 @@
                             </div>
                         </div>
                     </div>
-                </div>
-
-            </form>
+                </form>
+            </div>
         </div>
 
         <!-- Slide grid/list -->

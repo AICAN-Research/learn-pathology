@@ -214,6 +214,12 @@ def image_browser(request):
     return render(request, 'slide/image_browser.html', context)
 
 
+def reset_image_browser(request):
+    if 'image_browser_context' in request.session:
+        del request.session['image_browser_context']
+    return redirect('slide:browser')
+
+
 def queryset_to_id_list(queryset):
     if isinstance(queryset, django.db.models.query.QuerySet):
         id_list = [i[0] for i in queryset.values_list('id')]
