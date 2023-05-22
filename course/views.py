@@ -4,6 +4,7 @@ import sys
 
 from django.contrib import messages
 from django.db import transaction
+from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.files.uploadedfile import UploadedFile
@@ -13,6 +14,7 @@ from course.forms import CourseForm, DeleteCourseForm, \
     CourseLongDescriptionForm, CourseLearningOutcomesForm, CourseMaterialForm
 from learnpathology.settings import MEDIA_ROOT
 from slide.models import Slide
+from slide.views import queryset_to_id_list, GENERAL_PATHOLOGY_TAGS
 from tag.models import Tag
 from task.models import Task
 from task.views import new as new_task
@@ -184,39 +186,116 @@ def slide_selection(request, course_id):
     Teacher form for adding slide(s) to a course
     """
 
+    last_url = request.META.get('HTTP_REFERER', '')
+    prev_context = {} if ('course/slide-selection/' not in last_url) else request.session.get('image_browser_context', {})
+    request.session['image_browser_context'] = {}
+    # Initialize empty context dictionary
+    context = {}
+
+    # ==================================================================
+    # Set up variables for which filtering options have been applied
+    # ==================================================================
+    organ_changed = ('organ-system' in request.GET)  # Organ selection changed
+    general_path_changed = ('general_pathology_button' in request.GET)  # General pathology changed
+    hist_path_changed = (general_path_changed or ('histology-pathology' in request.GET))  # Hist/path changed
+    search_button_clicked = ('submit_button' in request.GET)  # Search query entered
+    clear_search_clicked = ('clear_button' in request.GET)  # Search cleared
+
+    # ==================================================================
+    # Find selections for filtering options
+    # ==================================================================
+    # ORGAN FILTER
+    if organ_changed:
+        selected_organ_tag_id = [request.GET.get('organ-system')]
+    else:
+        selected_organ_tag_id = prev_context['selected_organ_tag_ids'] if ('selected_organ_tag_ids' in prev_context) else ['all']
+    if 'all' in selected_organ_tag_id:
+        organ_tags = Tag.objects.filter(is_organ=True)
+    else:
+        organ_tags = Tag.objects.filter(is_organ=True, id__in=selected_organ_tag_id)
+
+    # HISTOLOGY/PATHOLOGY FILTER
+    if hist_path_changed:
+        if general_path_changed:
+            histology_pathology = 'pathology'
+            general_path_selected = True
+        else:
+            histology_pathology = request.GET.get('histology-pathology')
+            general_path_selected = False
+
+        selected_histology = (histology_pathology == 'histology')
+        selected_pathology = (histology_pathology == 'pathology')
+        selected_both = (not selected_histology and not selected_pathology)
+    else:
+        selected_both = prev_context['selected_both'] if 'selected_both' in prev_context else True
+        selected_histology = prev_context['selected_histology'] if 'selected_histology' in prev_context else False
+        selected_pathology = prev_context['selected_pathology'] if 'selected_pathology' in prev_context else False
+
+        general_path_selected = ('selected_general_pathology_ids' in prev_context)
+
+    # SEARCH
+    if search_button_clicked:
+        search_query = request.GET.get('search')
+        if search_query is None or len(search_query) == 0:
+            search_query = None
+    elif clear_search_clicked:
+        search_query = None
+    else:
+        try:
+            search_query = prev_context['search_query']
+        except KeyError as err:
+            search_query = None
+
+    # ==================================================================
+    # Filter slides, and apply search if the search button was clicked
+    # ==================================================================
+    slides = Slide.objects.all()
+    slides = slides.filter(tags__in=organ_tags)
+    if not selected_both:
+        slides = slides.filter(pathology=selected_pathology)
+    if general_path_selected:
+        if general_path_changed:
+            gen_path_tag_id = int(request.GET.get('general_pathology_button').split('-')[-1])
+        elif 'selected_general_pathology_ids' in prev_context:
+            gen_path_tag_id = prev_context['selected_general_pathology_ids'][0]
+        gen_path_tag = Tag.objects.get(id=gen_path_tag_id)
+        slides = slides.filter(tags__in=[gen_path_tag])
+        context['selected_general_pathology'] = gen_path_tag
+        request.session['image_browser_context']['selected_general_pathology_ids'] = queryset_to_id_list(Tag.objects.filter(id=gen_path_tag_id))  # function takes queryset
+    if search_query is not None:  # If search was updated, search among applicable_slides
+        slides = slides.filter(Q(name__contains=search_query) | Q(description__contains=search_query))
+
+    # ==================================================================
+    # Update context
+    # ==================================================================
+    context['slides'] = slides.order_by('name')
+    context['selected_organ_tag'] = ['all'] if 'all' in selected_organ_tag_id else Tag.objects.filter(id__in=selected_organ_tag_id)
+    context['selected_both'] = selected_both
+    context['selected_histology'] = selected_histology
+    context['selected_pathology'] = selected_pathology
+    context['search_query'] = search_query
+    context['organ_tags'] = Tag.objects.filter(is_organ=True).order_by('name')
+    general_pathology_tags = [tag for tag in Tag.objects.filter(is_organ=False, is_stain=False) if tag.name.lower() in GENERAL_PATHOLOGY_TAGS]
+    context['general_pathology_tags'] = sorted(general_pathology_tags, key=lambda tag: tag.name)
+
+    for key, val in prev_context.items():
+        if key not in context and key not in ('selected_organ_tag_ids', 'selected_general_pathology_ids'):
+            context[key] = prev_context[key]
+
+    # ==================================================================
+    # Update session variable to store selection
+    # ==================================================================
+    keys_that_contain_querysets = ('slides', 'selected_organ_tag', 'organ_tags', 'general_pathology_tags', 'selected_general_pathology', 'selected_general_pathology_ids')
+    for key, val in context.items():
+        if key not in request.session['image_browser_context'] and key not in keys_that_contain_querysets:
+            request.session['image_browser_context'][key] = context[key]
+    request.session['image_browser_context']['selected_organ_tag_ids'] = queryset_to_id_list(context['selected_organ_tag'])
+    request.session.modified = True
+
+    # Add course and list of slides in the course
     course = get_object_or_404(Course, id=course_id)
-    slidesInCourse = [slide for slide in course.slide.all()]
-
-    # Filter slides by tags
-    filteredSlides = Slide.objects.all()
-    organs = request.GET.getlist('organ[]')
-    if len(organs) > 0:
-        filteredSlides = filteredSlides.filter(tags__in=organs)
-    stains = request.GET.getlist('stain[]')
-    if len(stains) > 0:
-        filteredSlides = filteredSlides.filter(tags__in=stains)
-    tags = request.GET.getlist('tag[]')
-    if len(tags) > 0:
-        filteredSlides = filteredSlides.filter(tags__in=tags)
-
-    # Get list of the filtered slides that are NOT in course
-    slidesXor = []
-    for slide in filteredSlides:
-        if slide not in slidesInCourse:
-            slidesXor.append(slide)
-    filteredSlides = slidesXor
-
-    context = {
-        'course': course,
-        'slides_in_course': slidesInCourse,
-        'filtered_slides': filteredSlides,
-        'organ_tags': Tag.objects.filter(is_organ=True),
-        'stain_tags': Tag.objects.filter(is_stain=True),
-        'other_tags': Tag.objects.filter(is_stain=False, is_organ=False),
-        'selected_organ_tags': organs,
-        'selected_stain_tags': stains,
-        'selected_other_tags': tags,
-    }
+    context['course'] = course
+    context['slides_in_course'] = [slide for slide in course.slide.all()]
 
     return render(request, 'course/slide_selection.html', context)
 
