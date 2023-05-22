@@ -125,13 +125,13 @@
                                                 <td>-</td>
                                             {% endif %}
                                         </tr>
-                                        <tr>
+                                        {% if slide.pathology %}
+                                            <tr>
                                             <th>
                                                 General pathology tags
                                                 {% if request.user.is_teacher or request.user.is_superuser %}
                                                     <div class="card-content" style="padding-top: 5px">
-                                                        <a class="LPButton" href="{% url 'slide:edit_tags' slide.id %}"
-                                                           style="margin: 0;">
+                                                        <a class="LPButton" href="{% url 'slide:edit_tags' slide.id %}" style="margin: 0;">
                                                             Edit tags
                                                         </a>
                                                     </div>
@@ -144,7 +144,8 @@
                                                     {% endfor %}
                                                 {% endif %}
                                             </td>
-                                        </tr>
+                                            </tr>
+                                        {% endif %}
                                     </table>
                                 </div>
                             </div>
