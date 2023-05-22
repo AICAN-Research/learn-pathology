@@ -367,6 +367,10 @@ def edit_general_pathology_tags(request, slide_id):
 
     slide = slide_cache.load_slide_to_cache(slide_id)
 
+    if not slide.pathology:
+        messages.add_message(request, messages.ERROR, 'This slide is not a pathology slide. Cannot add general pathology tags.')
+        return redirect('slide:view_full', slide_id=slide.id)
+
     other_tags = Tag.objects.filter(is_organ=False, is_stain=False)
     general_pathology_tags = []
     for tag in other_tags:

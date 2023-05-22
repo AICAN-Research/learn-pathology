@@ -321,8 +321,6 @@ class BoundingBox(models.Model):
     A bounding box annotation on a slide consisting of a top/bottom left
     position (x,y), width and height, and a text.
     """
-
-
     annotated_slide = models.ForeignKey(AnnotatedSlide, on_delete=models.CASCADE)
     position_x = models.FloatField()
     position_y = models.FloatField()
@@ -336,12 +334,14 @@ class BoundingBox(models.Model):
         ]
 
     def get_html(self):
-        html=''
-        html += f'<div id="boundingbox-{self.id}" class="overlay"><div </div>'
+        html = f'<div id="boundingbox-{self.id}" class="overlay"></div>'
         print('Got BoundingBox html')
 
-        html += f'<div id="boundingbox-text-overlay-{self.id}" ><div class="textOverlay"' \
-                f'>{self.text}</div></div>'
+        html += f'<div id="boundingbox-text-overlay-{self.id}">' \
+                f'    <div class="textOverlay" style="padding-top: 5px; padding-left: 5px;">' \
+                f'        {self.text}' \
+                f'    </div>' \
+                f'</div>'
         print('Got BoundingBox Text html')
         return html
 
