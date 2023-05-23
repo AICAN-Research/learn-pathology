@@ -2,8 +2,8 @@
 {% load to_class_name %}
 
 
-<div class="slideGridViewCard card {% if add_border == 'true' %}remove_button border-success{% else %}add_button{% endif %}"
-     style="max-height: 300px;{% if add_border == 'true' %} border-width: 3px;{% endif %}"
+<div class="slideGridViewCard card {% if slide_selected == 'true' %}remove_button border-success{% else %}add_button{% endif %}"
+     style="max-height: 300px;{% if slide_selected == 'true' %} border-width: 3px;{% endif %}"
      data-course_id={{ course.id }} data-model_name={{ slide | to_class_name }} data-instance_id={{ slide.id }}>
 
     {# Image display #}
@@ -16,7 +16,7 @@
             </div>
         </div>
 
-        {% if add_border == 'true' %}
+        {% if slide_selected == 'true' %}
             <div style="float: right; position: absolute; top: 5px; right: 5px;">
                 <svg class="bi text-success" width="32px" height="32px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                     {% bs_icon 'check-circle' %}
