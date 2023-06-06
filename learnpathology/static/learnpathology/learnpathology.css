@@ -11,6 +11,7 @@
     --button-text-colour: #ffffff;
     --text-colour: #3b3a30;
     --text-colour-dark: #2d2c28;
+    --text-colour-light: #fff7f7;
 }
 
 main {
@@ -82,6 +83,28 @@ main {
     --background-collapsed-menu: #c4c4c4;
     --background: #a2ba8e;
     --background-dark: #5c6346;
+    --button-colour: #dce7cd;
+    --button-colour-hover: rgba(218, 247, 209, 0.98);
+    --button-colour-active: #c3e4ba;
+    --button-border-colour: #888;
+    --logo-hue: 240deg;
+    --logo-saturation: 20;
+    --logo-brightness: 10;
+    --logo-opacity: 60%;
+    --grid-card-background: #eaeee5;
+    --grid-card-border: rgba(130, 152, 105, 0.50);
+}
+
+.theme_test{
+    --background-card: #ffffff;
+    --background-header: #eaece5;
+    --background-collapsed-menu: #c4c4c4;
+    --background: #a2ba8e;
+    --background-dark: #5c6346;
+    --sidebar-colour-base: #f4f4f4;
+    --sidebar-colour-item: #5e58d2;
+    --sidebar-colour-hover: #b5afaf;
+    --sidebar-colour-text: #050034;
     --button-colour: #dce7cd;
     --button-colour-hover: rgba(218, 247, 209, 0.98);
     --button-colour-active: #c3e4ba;
@@ -670,19 +693,28 @@ Sidebar
     min-width: 250px;
     max-width: 250px;
     min-height: 100vh;
-    background: #7386D5;
+    background: var(--sidebar-colour-base);
     color: #fff;
     transition: all 0.2s;
 }
 
 #sidebar .sidebar-header {
-    padding: 20px;
-    background: #6d7fcc;
+    /*padding: 20px;*/
+    /*background: #6d7fcc;*/
+}
+
+#sidebar .sidebar-item-icon {
+    padding: 5px;
+}
+
+#sidebar .sidebar-item-text {
+    padding: 5px;
+    display: inline;
 }
 
 #sidebar ul.components {
     padding: 20px 0;
-    border-bottom: 1px solid #47748b;
+    /*border-bottom: 1px solid #47748b;*/
 }
 
 #sidebar ul p {
@@ -694,6 +726,7 @@ Sidebar
     padding: 10px;
     font-size: 1.5em;
     display: block;
+    height: fit-content;
     /*margin-bottom: 5px;*/
 }
 
@@ -701,16 +734,26 @@ Sidebar
     padding: 10px;
     font-size: 1.1em;
     /*display: block;*/
+    display: none;
+}
+
+#sidebar ul li a.active {
+    /*color: var(--text-colour-light);*/
+    background: var(--sidebar-colour-item);
+}
+
+#sidebar ul li a.active > span {
+    color: var(--text-colour-light);
 }
 
 #sidebar ul li a:hover {
     color: #7386D5;
-    background: #fff;
+    background: var(--sidebar-colour-hover);
 }
 
 #sidebar ul li.active > a, a[aria-expanded="true"] {
     color: var(--text-colour-dark);
-    background: #6d7fcc;
+    /*background: #6d7fcc;*/
 }
 ul ul a {
     font-size: 0.9em !important;
@@ -740,6 +783,9 @@ and showing the small heading [strong] and vice versa
 }
 #sidebar.active .sidebar-item-text {
     display: none;
+}
+#sidebar.active .sidebar-item-icon {
+    display: inline;
 }
 #sidebar.active .sidebar-header strong {
     display: block;
