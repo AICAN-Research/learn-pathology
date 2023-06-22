@@ -39,9 +39,10 @@
 <div class="wrapper">
     <!-- Sidebar  -->
     <nav id="sidebar">
-        <div style="margin: 10px;">
-            <div class="sidebar-header">
-                <a class="noLinkStyling w-100 h-100" href="{% url 'frontpage' %}" style="display: inline-block;">
+        <div class="h-100">
+
+            <div class="sidebar-header" style="padding: 25px;">
+                <a class="sidebar-header w-100 h-100 noLinkStyling" href="{% url 'frontpage' %}" style="display: inline-block;">
                     <div style="width: fit-content; margin: 15px auto auto auto;">
                         <img class="logoSmallImage" src="{% static 'learnpathology/images/logo_small.png' %}" style="text-align: center;" alt="LearnPathology logo small">
                         {#<span id="sidebar-header-text">LearnPathology</span>#}
@@ -49,67 +50,76 @@
                 </a>
             </div>
 
-            <ul class="list-unstyled flex-column components">
-                <li class="active">
-                    <!-- TODO: Make active tab active, not just Home button -->
-                    <a class="noLinkStyling active" href="{% url 'frontpage' %}">
-                        <span class="sidebar-item-icon"><i class="bi-house"></i></span>
-                        <span class="sidebar-item-text">Home</span>
-                    </a>
-                    <a class="noLinkStyling" href="{% url 'slide:browser' %}">
-                        <span class="sidebar-item-icon"><i class="bi-image"></i></span>
-                        <span class="sidebar-item-text">Images</span>
-                    </a>
-                    <a class="noLinkStyling" href="{% url 'course:index' %}">
-                        <span class="sidebar-item-icon"><i class="bi-mortarboard"></i></span>
-                        <span class="sidebar-item-text">Courses</span>
-                    </a>
-                    <a class="noLinkStyling" href="{% url 'task:list' %}">
-                        <span class="sidebar-item-icon"><i class="bi-question-square"></i></span>
-                        <span class="sidebar-item-text">Tasks</span>
-                    </a>
-                    {% if request.user.is_teacher or request.user.is_superuser %}
-                        <!-- specific options for teachers or superuser -->
-                        <a class="noLinkStyling" href="{% url 'tag:index' %}">
-                            <span class="sidebar-item-icon"><i class="bi-tags"></i></span>
-                            <span class="sidebar-item-text">Tags</span>
-                        </a>
-                    {% endif %}
-                    {% if request.user.is_student %}
-                        <!-- specific options for students-->
-                    {% endif %}
+            <div class="sidebar-content" style="padding: 25px;">
+                <ul class="list-unstyled flex-column components h-100">
+                    <li class="active h-100">
 
-                    <hr>
+                            <div class="row align-items-start" style="display: inline;">
+                                <!-- TODO: Make active tab active, not just Home button -->
+                                <a class="noLinkStyling active" href="{% url 'frontpage' %}">
+                                    <span class="sidebar-item-icon"><i class="bi-house"></i></span>
+                                    <span class="sidebar-item-text">Home</span>
+                                </a>
+                                <a class="noLinkStyling" href="{% url 'slide:browser' %}">
+                                    <span class="sidebar-item-icon"><i class="bi-image"></i></span>
+                                    <span class="sidebar-item-text">Images</span>
+                                </a>
+                                <a class="noLinkStyling" href="{% url 'course:index' %}">
+                                    <span class="sidebar-item-icon"><i class="bi-mortarboard"></i></span>
+                                    <span class="sidebar-item-text">Courses</span>
+                                </a>
+                                <a class="noLinkStyling" href="{% url 'task:list' %}">
+                                    <span class="sidebar-item-icon"><i class="bi-question-square"></i></span>
+                                    <span class="sidebar-item-text">Tasks</span>
+                                </a>
+                                {% if request.user.is_teacher or request.user.is_superuser %}
+                                    <!-- specific options for teachers or superuser -->
+                                    <a class="noLinkStyling" href="{% url 'tag:index' %}">
+                                        <span class="sidebar-item-icon"><i class="bi-tags"></i></span>
+                                        <span class="sidebar-item-text">Tags</span>
+                                    </a>
+                                {% endif %}
+                                {% if request.user.is_student %}
+                                    <!-- specific options for students-->
+                                {% endif %}
+                            </div>
 
-                    {% if request.user.is_superuser %}
-                        <!-- specific options for superuser-->
-                        <a class="noLinkStyling" href="/admin/">
-                            <span class="sidebar-item-icon"><i class="bi-gear-fill"></i></span>
-                            <span class="sidebar-item-text">Admin</span>
-                        </a>
-                    {% endif %}
-                    <a class="noLinkStyling dropdown-toggle" href="#" id="dropdownAbout" data-bs-toggle="dropdown" aria-expanded="false">
-                        <span class="sidebar-item-icon"><i class="bi-info-lg"></i></span>
-                        <span class="sidebar-item-text">About</span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="navbarDropdown">
-                        {% get_flatpages for request.user as flatpages %}
-                        {% for page in flatpages %}
-                            <li><a class="dropdown-item" href="{{ page.url }}">{{ page.title }}</a></li>
-                        {% endfor %}
-                    </ul>
-                    <a class="noLinkStyling dropdown-toggle" href="#" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                        <span class="sidebar-item-icon"><i class="bi-person-fill"></i></span>
-                        <span class="sidebar-item-text">{{ request.user.username }}</span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-                        <li><a class="dropdown-item" href="#">Profile</a></li>
-    {#                    <li><a class="dropdown-item" href="#">Settings</a></li>#}
-    {#                    <li><hr class="dropdown-divider"></li>#}
-                        <li><a class="dropdown-item" href="#">Sign out</a></li>
-                    </ul>
-                </li>
-            </ul>
+                            <!-- TODO: Add box to fill empty space -> top/bottom alignment of other items -->
+                            <div class="row" style="flex: 1 1 auto; min-height: 35%;"></div>
+
+                            <div class="row align-items-end" style="display: inline; margin-bottom: 25px;">
+                                {% if request.user.is_superuser %}
+                                    <!-- specific options for superuser-->
+                                    <a class="noLinkStyling" href="/admin/">
+                                        <span class="sidebar-item-icon"><i class="bi-gear-fill"></i></span>
+                                        <span class="sidebar-item-text">Admin</span>
+                                    </a>
+                                {% endif %}
+                                <a class="noLinkStyling dropdown-toggle" href="#" id="dropdownAbout" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <span class="sidebar-item-icon"><i class="bi-info-lg"></i></span>
+                                    <span class="sidebar-item-text">About</span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="navbarDropdown">
+                                    {% get_flatpages for request.user as flatpages %}
+                                    {% for page in flatpages %}
+                                        <li><a class="dropdown-item" href="{{ page.url }}">{{ page.title }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                                <a class="noLinkStyling dropdown-toggle" href="#" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <span class="sidebar-item-icon"><i class="bi-person-fill"></i></span>
+                                    <span class="sidebar-item-text">{{ request.user.username }}</span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+                                    <li><a class="dropdown-item" href="#">Profile</a></li>
+                {#                    <li><a class="dropdown-item" href="#">Settings</a></li>#}
+                {#                    <li><hr class="dropdown-divider"></li>#}
+                                    <li><a class="dropdown-item" href="#">Sign out</a></li>
+                                </ul>
+                            </div>
+
+                    </li>
+                </ul>
+            </div>
 
         </div>
     </nav>

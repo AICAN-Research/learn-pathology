@@ -6,7 +6,7 @@
     --header-height: 70px;
     --logo-bg-width: 40%;
     --sintef-wm-width: 20%;
-    --logo-small-height: 60px;
+    --logo-small-height: 80px;
     --shadow: rgba(0, 0, 0, 0.5); /*rgba(0, 0, 102, 0.5);*/
     --button-text-colour: #ffffff;
     --text-colour: #3b3a30;
@@ -103,8 +103,11 @@ main {
     --background-dark: #5c6346;
     --sidebar-colour-base: #f4f4f4;
     --sidebar-colour-item: #5e58d2;
+    --sidebar-colour-item-hover: #dfdada;
+    --sidebar-colour-item-selected: #cdc6c6;
     --sidebar-colour-hover: #b5afaf;
     --sidebar-colour-text: #050034;
+    --sidebar-colour-text-hover: #7386D5;
     --button-colour: #dce7cd;
     --button-colour-hover: rgba(218, 247, 209, 0.98);
     --button-colour-active: #c3e4ba;
@@ -699,15 +702,11 @@ Sidebar
 }
 
 #sidebar .sidebar-header {
-    height: 10%;
-    /*padding: 20px;*/
-    /*background: #6d7fcc;*/
+    height: 15%;
 }
 
 #sidebar .sidebar-content {
-    height: 90%;
-    /*padding: 20px;*/
-    /*background: #6d7fcc;*/
+    height: 85%;
 }
 
 #sidebar .sidebar-item-icon {
@@ -730,11 +729,13 @@ Sidebar
 }
 
 #sidebar ul li a {
-    padding: 10px;
+    padding: 5px;
+    /*margin: 5px;*/
     font-size: 1.5em;
     display: block;
     height: fit-content;
     /*margin-bottom: 5px;*/
+    border-radius: 8px;
 }
 
 #sidebar #sidebar-header-text {
@@ -746,16 +747,23 @@ Sidebar
 
 #sidebar ul li a.active {
     /*color: var(--text-colour-light);*/
-    background: var(--sidebar-colour-item);
+    background: var(--sidebar-colour-item-selected);
 }
 
 #sidebar ul li a.active > span {
-    color: var(--text-colour-light);
+    /*color: var(--text-colour-light);*/
+    color: var(--sidebar-colour-item);
+    /*background: var(--sidebar-colour-base);*/
+}
+
+#sidebar .ul.li.a.active > span.sidebar-item-icon {
+    color: var(--sidebar-colour-text);
+    background: var(--sidebar-colour-item-selected);
 }
 
 #sidebar ul li a:hover {
-    color: #7386D5;
-    background: var(--sidebar-colour-hover);
+    color: var(--sidebar-colour-text-hover);
+    background: var(--sidebar-colour-item-hover);
 }
 
 #sidebar ul li.active > a, a[aria-expanded="true"] {
@@ -812,7 +820,6 @@ and showing the small heading [strong] and vice versa
 
 #sidebar.active ul li a i {
     margin-right:  0;
-    display: block;
     font-size: 1.5em;
     /*margin-bottom: 5px;*/
 }
