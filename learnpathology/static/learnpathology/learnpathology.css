@@ -699,6 +699,13 @@ Sidebar
 }
 
 #sidebar .sidebar-header {
+    height: 10%;
+    /*padding: 20px;*/
+    /*background: #6d7fcc;*/
+}
+
+#sidebar .sidebar-content {
+    height: 90%;
     /*padding: 20px;*/
     /*background: #6d7fcc;*/
 }
@@ -755,6 +762,7 @@ Sidebar
     color: var(--text-colour-dark);
     /*background: #6d7fcc;*/
 }
+
 ul ul a {
     font-size: 0.9em !important;
     padding-left: 30px !important;

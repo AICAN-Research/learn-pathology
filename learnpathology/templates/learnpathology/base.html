@@ -41,10 +41,11 @@
     <nav id="sidebar">
         <div style="margin: 10px;">
             <div class="sidebar-header">
-                {#<strong>BS</strong>#}
-                <a class="noLinkStyling" href="{% url 'frontpage' %}">
-                    <img class="logoSmallImage" src="{% static 'learnpathology/images/logo_small.png' %}" alt="LearnPathology logo small">
-                    {#<span id="sidebar-header-text">LearnPathology</span>#}
+                <a class="noLinkStyling w-100 h-100" href="{% url 'frontpage' %}" style="display: inline-block;">
+                    <div style="width: fit-content; margin: 15px auto auto auto;">
+                        <img class="logoSmallImage" src="{% static 'learnpathology/images/logo_small.png' %}" style="text-align: center;" alt="LearnPathology logo small">
+                        {#<span id="sidebar-header-text">LearnPathology</span>#}
+                    </div>
                 </a>
             </div>
 
