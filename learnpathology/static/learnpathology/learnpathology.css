@@ -2,14 +2,17 @@
     --font-family:Calibri, 'Helvetica Neue', Helvetica, Arial, sans-serif;
     --text-size: large;
     --h1-size: large;
-    --menu-width: 300px;
     --header-height: 70px;
     --logo-bg-width: 40%;
     --sintef-wm-width: 20%;
-    --logo-small-height: 80px;
+    --logo-small-height: 66px;
+    --icon-size: 24px;
     --shadow: rgba(0, 0, 0, 0.5); /*rgba(0, 0, 102, 0.5);*/
+    --sidebar-width: 185px;
+    --sidebar-width-collapsed: 100px;
+    --border-radius: 8px;
     --button-text-colour: #ffffff;
-    --text-colour: #3b3a30;
+    /*--text-colour: #3b3a30;*/
     --text-colour-dark: #2d2c28;
     --text-colour-light: #fff7f7;
 }
@@ -21,6 +24,31 @@ main {
 /* ===================================
     COLOUR THEMES
 =================================== */
+.theme_lp {
+    --background: #f5f8fe;
+    /* Blue-violet color scheme */
+    --color-blue-light: #dedefe;
+    --color-blue: #8d9bfe;
+    --color-blue-dark: #4458b0;
+    /* Text color */
+    --text-colour: #263347;         /* default text colour */
+    --text-colour-light: #586273;
+    --text-colour-lighter: #cfd9e7;
+    --text-colour-lightest: #e6f0fc;
+    /* Feedback, confirmation, success */
+    --color-positive-light: #b7fdec;
+    --color-positive: #21b499;
+    --color-positive-dark: #005b4c;
+    /* Warning */
+    --color-warning-light: #fddedf;
+    --color-warning: #de0040;
+    --color-warning-dark: #860022;
+    /* Error */
+    --color-error-light: #fdfdfe;
+    --color-error-: #fdcf33;
+    --color-error-dark: #795d01;
+}
+
 .theme_teacher{
     --background-card: #ffffff;
     --background-header: #eaece5;
@@ -210,7 +238,7 @@ body {
     margin-top: 30px;
     margin-bottom: 0px;
     font-family: var(--font-family);
-    color: var(--text-colour-dark);
+    color: var(--text-colour);
     position: relative;
     display: flex;
     flex-direction: column;
@@ -288,7 +316,7 @@ body {
 }
 
 .navigation .menuInfo{
-    color: var(--text-colour-dark)
+    color: var(--text-colour)
 }
 
 .navigation a {
@@ -303,7 +331,7 @@ body {
 .annotation_teacher{
     background-color: rgba(255, 255, 255, 0.75);
     outline: 2px solid white;
-    color: var(--text-colour-dark);
+    color: var(--text-colour);
     font-size: 20px;
 }
 
@@ -320,7 +348,8 @@ body {
     box-sizing: border-box;
     /*padding-top: 40px;*/
     overflow-y: auto;
-    background-color: var(--background);
+    /*background-color: var(--background);*/
+    background-color: var(--color-blue-light);
     z-index: -1;
 }
 
@@ -329,6 +358,7 @@ body {
     /*width: -moz-fit-content;*/
     /*width: fit-content;*/
     width: 100%;
+    background: var(--color-blue-light);
 }
 
 #contentLeft {
@@ -362,32 +392,32 @@ body {
 
 .LPButton {
     display: inline-block;
-    background-color: var(--button-colour);
+    background-color: var(--color-blue-light);
     padding: 5px 10px;
     margin: 10px;
     font-family: sans-serif, Arial;
     font-size: 1rem;
     font-weight: 400;
-    border: 1px solid var(--button-border-colour);
+    border: 1px solid var(--color-blue);
     border-radius: 4px;
     width: fit-content;
 }
 
 .LPButton:hover {
-    background-color: var(--button-colour-hover);
+    background-color: var(--color-blue-light);
 }
 
 .LPButton .a {
-    color: var(--text-colour-dark)!important;
+    color: var(--text-colour)!important;
 }
 
 .LPButton .a:hover {
-    color: var(--text-colour-dark)!important;
+    color: var(--text-colour)!important;
 }
 
 .LPButton_selected {
     box-shadow: inset 0 0 3px var(--shadow);
-    background-color: var(--button-colour-active);
+    background-color: var(--color-blue);
 }
 
 /* =============================================
@@ -403,22 +433,22 @@ Radio button toolbar used with slide filters
 
 .radio-toolbar label {
     display: inline-block;
-    background-color: var(--button-colour);
+    background-color: var(--color-blue-light);
     padding: 10px 20px;
     font-family: sans-serif, Arial;
     font-size: 1rem;
     font-weight: 400;
-    border: 1px solid var(--button-border-colour);
+    border: 1px solid var(--color-blue);
     border-radius: 4px;
 }
 
 .radio-toolbar label.wideLabel {
     display: inline-block;
-    background-color: var(--button-colour);
+    background-color: var(--color-blue-light);
     font-family: sans-serif, Arial;
     font-size: 1rem;
     font-weight: 400;
-    border: 0 solid var(--button-border-colour);
+    border: 0 solid var(--color-blue);
     border-radius: 4px;
     padding: 5px 5px;
     margin-top: 1px;
@@ -428,11 +458,11 @@ Radio button toolbar used with slide filters
 
 .radio-toolbar button.wideLabel {
     display: inline-block;
-    background-color: var(--button-colour);
+    background-color: var(--color-blue-light);
     font-family: sans-serif, Arial;
     font-size: 1rem;
     font-weight: 400;
-    border: 0 solid var(--button-border-colour);
+    border: 0 solid var(--color-blue);
     border-radius: 4px;
     padding: 4px 4px;
     margin-top: 1px;
@@ -441,16 +471,16 @@ Radio button toolbar used with slide filters
     text-align: left;
 }
 .radio-toolbar button.wideLabel.active {
-    background-color: var(--button-colour-active);
+    background-color: var(--color-blue);
 }
 
 .imageBrowserSearchButtons {
     display: inline-block;
-    background-color: var(--button-colour);
+    background-color: var(--color-blue-light);
     font-family: sans-serif, Arial;
     font-size: 1rem;
     font-weight: 400;
-    border: 0 solid var(--button-border-colour);
+    border: 0 solid var(--color-blue);
     border-radius: 4px;
     padding: 5px 5px;
     margin: 1px 0 1px 0;
@@ -458,10 +488,10 @@ Radio button toolbar used with slide filters
 }
 
 .radio-toolbar label:hover {
-    background-color: var(--button-colour-hover);
+    background-color: var(--color-blue-light);
 }
 .radio-toolbar label.active {
-    background-color: var(--button-colour-active);
+    background-color: var(--color-blue);
 }
 
 /* =============================================
@@ -485,42 +515,42 @@ Course navigation tabs
 ============================================= */
 .courseNavTabs .nav-tabs {
     /*background-color: var(--button-colour-active);*/
-    color: var(--text-colour-dark);
+    color: var(--text-colour);
 }
 
 .courseNavTabs .nav-link {
     /*background-color: var(--button-colour-active);*/
-    color: var(--text-colour-dark);
+    color: var(--text-colour);
     border-style: solid;
     border-width: 1px  1px 0 1px;
     border-top-left-radius: 0.25rem;
     border-top-right-radius: 0.25rem;
-    border-color: var(--button-border-colour);
+    border-color: var(--color-blue);
 }
 
 .courseNavTabs .nav-link:hover {
-    background-color: var(--button-colour-hover);
+    background-color: var(--color-blue-light);
     border-style: solid;
     border-width: 1px  1px 0 1px;
     border-top-left-radius: 0.25rem;
     border-top-right-radius: 0.25rem;
-    border-color: var(--button-border-colour);
+    border-color: var(--color-blue-dark);
 }
 
 .courseNavTabs .nav-link.active {
-    background-color: var(--button-colour-active);
-    color: var(--text-colour-dark);
+    background-color: var(--background);
+    color: var(--text-colour);
     font-weight: bold;
     border-style: solid;
     border-width: 1px  1px 0 1px;
     border-top-left-radius: 0.25rem;
     border-top-right-radius: 0.25rem;
-    border-color: var(--button-border-colour);
+    border-color: var(--color-blue);
 }
 
 .courseNavPanes {
     border-style: solid;
-    border-color: var(--button-border-colour);
+    border-color: var(--color-blue);
     border-width: 0 1px 1px 1px;
     border-radius: 0 0.25rem 0.25rem 0.25rem;
 }
@@ -565,16 +595,16 @@ Slide viewer
 Image browser
 ============================================= */
 .imageBrowserNavTabs .nav-pills .nav-link {
-    color: var(--text-colour-dark);
+    color: var(--text-colour);
     margin: 0 10px 0 10px;
 }
 .imageBrowserNavTabs .nav-link:hover {
     background-color: var(--button-colour-hover);
-    color: var(--text-colour-dark);
+    color: var(--text-colour);
 }
 .imageBrowserNavTabs .nav-link.active {
     background-color: var(--button-colour-active);
-    color: var(--text-colour-dark);
+    color: var(--text-colour);
 }
 
 /* Styling for cards containing thumbnails, name, short description */
@@ -656,10 +686,10 @@ Image browser
 
 .noLinkStyling {
     text-decoration: none;
-    color: var(--text-colour-dark);
+    color: var(--text-colour);
 }
 .noLinkStyling:hover {
-    color: var(--text-colour-dark);
+    color: var(--text-colour);
 }
 
 /* =============================================
@@ -693,29 +723,78 @@ Sidebar
 }
 
 #sidebar {
-    min-width: 250px;
-    max-width: 250px;
+    min-width: var(--sidebar-width);
+    max-width: var(--sidebar-width);
     min-height: 100vh;
-    background: var(--sidebar-colour-base);
+    background: var(--background);
     color: #fff;
     transition: all 0.2s;
+    /* Below from Figma */
+    display: inline-flex;
+    padding: 24px 40px 24px 24px;
+    /*align-items: flex-start;*/
+    /*gap: 16px;*/
+    /*flex-shrink: 0;*/
+}
+
+#sidebar .sidebar-contents {
+    width: calc(var(--sidebar-width) - 64px);
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    align-self: stretch;
+    gap: 200px;
+}
+
+#sidebar .sidebar-top-group {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 48px;
+    display: flex;
 }
 
 #sidebar .sidebar-header {
-    height: 15%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 35px;
 }
 
-#sidebar .sidebar-content {
-    height: 85%;
+#sidebar .sidebar-top-items {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+}
+
+#sidebar .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    align-self: stretch;
 }
 
 #sidebar .sidebar-item-icon {
-    padding: 5px;
+    display: inline-flex;
+    width: 40px;
+    height: 40px;
+    padding: 8px;
+    justify-content: center;
+    align-items: center;
+    /* Style */
+    border-radius: var(--border-radius);
 }
 
 #sidebar .sidebar-item-text {
-    padding: 5px;
-    display: inline;
+    /*padding: 5px;*/
+    font-size: 16px;
+    /*display: inline;*/
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
 }
 
 #sidebar ul.components {
@@ -724,91 +803,141 @@ Sidebar
 }
 
 #sidebar ul p {
-    color: #fff;
+    color: var(--text-colour-lightest);
     padding: 10px;
 }
 
+/* Dropdown menus in sidebar */
 #sidebar ul li a {
     padding: 5px;
     /*margin: 5px;*/
-    font-size: 1.5em;
+    font-size: 14px;
+    text-align: left;
     display: block;
     height: fit-content;
     /*margin-bottom: 5px;*/
     border-radius: 8px;
 }
 
-#sidebar #sidebar-header-text {
-    padding: 10px;
-    font-size: 1.1em;
-    /*display: block;*/
-    display: none;
+/*#sidebar a > span {*/
+/*    padding: 5px;*/
+/*    !*margin: 5px;*!*/
+/*    font-size: 14px;*/
+/*    text-align: left;*/
+/*    display: block;*/
+/*    height: fit-content;*/
+/*    !*margin-bottom: 5px;*!*/
+/*    border-radius: 8px;*/
+/*}*/
+
+/*#sidebar ul li a.active {*/
+/*    !*color: var(--text-colour-light);*!*/
+/*    background: var(--color-blue-light);*/
+/*}*/
+
+/*#sidebar ul li a.active > span {*/
+/*    color: var(--color-blue-dark);*/
+/*    !*background: var(--sidebar-colour-base);*!*/
+/*}*/
+
+/*#sidebar .ul.li.a.active > span.sidebar-item-icon {*/
+/*    color: var(--color-blue);*/
+/*    !*background: var(--sidebar-colour-item-selected);*!*/
+/*}*/
+
+#sidebar .a.active .sidebar-item-icon {
+    color: var(--color-blue-dark);
+    background: var(--color-blue-light);
 }
 
-#sidebar ul li a.active {
-    /*color: var(--text-colour-light);*/
-    background: var(--sidebar-colour-item-selected);
-}
-
-#sidebar ul li a.active > span {
-    /*color: var(--text-colour-light);*/
-    color: var(--sidebar-colour-item);
-    /*background: var(--sidebar-colour-base);*/
-}
-
-#sidebar .ul.li.a.active > span.sidebar-item-icon {
-    color: var(--sidebar-colour-text);
-    background: var(--sidebar-colour-item-selected);
+#sidebar .a.active .sidebar-item-text {
+    color: var(--color-blue-dark);
+    /*background: var(--color-blue-light);*/
 }
 
 #sidebar ul li a:hover {
-    color: var(--sidebar-colour-text-hover);
-    background: var(--sidebar-colour-item-hover);
+    /*color: var(--sidebar-colour-text-hover);*/
+    background: var(--color-blue-light);
 }
 
 #sidebar ul li.active > a, a[aria-expanded="true"] {
-    color: var(--text-colour-dark);
+    color: var(--text-colour);
     /*background: #6d7fcc;*/
 }
 
-ul ul a {
+#sidebar ul {
+    background: var(--color-blue-light);
     font-size: 0.9em !important;
     padding-left: 30px !important;
-    background: #6d7fcc;
+}
+
+#sidebar ul li .dropdown-item {
+    color: var(--text-colour)!important;
 }
 
 
 /* Shrinking the sidebar from 250px to 80px and center aligining its content*/
 #sidebar.active {
-    min-width: 100px;
-    max-width: 100px;
-    text-align: center;
+    min-width: var(--sidebar-width-collapsed);
+    max-width: var(--sidebar-width-collapsed);
+    align-items: flex-start;
+    padding: 24px 16px;
 }
+
+#sidebar.active .sidebar-contents {
+    width: calc(var(--sidebar-width-collapsed) - 40px);
+    display: flex;
+    /*padding: 0 8px 0 0;*/
+    padding: 0;
+    flex-direction: column;
+    align-items: center;
+    gap: 200px;
+    align-self: stretch;
+}
+
+#sidebar.active .sidebar-top-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 48px;
+}
+
+#sidebar.active .sidebar-header {
+    /*padding: 25px 10px 25px 10px;*/
+    padding-right: 8px;
+}
+
+#sidebar.active .sidebar-top-items {
+    /*width: 121px; height: 248px;*/
+    justify-content: flex-start;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+}
+
+#sidebar.active .sidebar-top-items-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+}
+
 
 /* Toggling the sidebar header content, hide the big heading [h3]
 and showing the small heading [strong] and vice versa
 */
-#sidebar .sidebar-header strong {
-    display: none;
-}
-#sidebar.active .sidebar-header h3 {
-    display: none;
-}
-#sidebar.active .sidebar-header #sidebar-header-text {
-    display: none;
-}
 #sidebar.active .sidebar-item-text {
     display: none;
 }
 #sidebar.active .sidebar-item-icon {
-    display: inline;
-}
-#sidebar.active .sidebar-header strong {
-    display: block;
+    /*display: inline-flex;*/
+    /*padding: 0;*/
 }
 
-#sidebar ul li a {
-    text-align: left;
+#sidebar.active .a.active .sidebar-item-icon {
+    color: var(--color-blue-dark);
+    background: var(--color-blue-light);
 }
 
 #sidebar.active ul li a {
@@ -855,19 +984,6 @@ and showing the small heading [strong] and vice versa
     /* Reappearing the sidebar on toggle button click */
     #sidebar {
         margin-left: 0;
-    }
-
-    /* Toggling the sidebar header content,
-       hide the big heading [h3] and showing the small heading [strong] and vice versa
-    */
-    #sidebar .sidebar-header strong {
-        display: none;
-    }
-    #sidebar.active .sidebar-header h3 {
-        display: none;
-    }
-    #sidebar.active .sidebar-header strong {
-        display: block;
     }
 
     /* Downsize the navigation links font size */
