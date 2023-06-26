@@ -747,12 +747,13 @@ Sidebar
     gap: 200px;
 }
 
+/* Header and top items */
 #sidebar .sidebar-top-group {
+    display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
     gap: 48px;
-    display: flex;
 }
 
 #sidebar .sidebar-header {
@@ -767,9 +768,29 @@ Sidebar
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 24px;
+    gap: 12px;
 }
 
+/* Bottom items */
+#sidebar .sidebar-bottom-group {
+    display: inline-flex;
+    flex: 1 1 0;
+    justify-content: center;
+    align-items: flex-end;
+    padding-top: 32px;
+    padding-bottom: 32px;
+    gap: 10px;
+}
+
+#sidebar .sidebar-bottom-items {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+/* Sidebar items, etc. */
 #sidebar .sidebar-item {
     display: flex;
     align-items: center;
@@ -784,19 +805,18 @@ Sidebar
     padding: 8px;
     justify-content: center;
     align-items: center;
-    /* Style */
     border-radius: var(--border-radius);
 }
 
 #sidebar .sidebar-item-text {
-    /*padding: 5px;*/
-    font-size: 16px;
-    /*display: inline;*/
     display: inline-flex;
+    font-size: 16px;
+    /*font-weight: bold;*/
     align-items: center;
     gap: 10px;
 }
 
+/* List styling */
 #sidebar ul.components {
     padding: 20px 0;
     /*border-bottom: 1px solid #47748b;*/
@@ -845,12 +865,12 @@ Sidebar
 /*    !*background: var(--sidebar-colour-item-selected);*!*/
 /*}*/
 
-#sidebar .a.active .sidebar-item-icon {
+#sidebar .sidebar-item.active .sidebar-item-icon {
     color: var(--color-blue-dark);
     background: var(--color-blue-light);
 }
 
-#sidebar .a.active .sidebar-item-text {
+#sidebar .sidebar-item.active .sidebar-item-text {
     color: var(--color-blue-dark);
     /*background: var(--color-blue-light);*/
 }

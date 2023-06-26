@@ -41,16 +41,15 @@
     <!-- Sidebar  -->
     <nav id="sidebar" class="">
         <div class="sidebar-contents">
+
             <div class="sidebar-top-group">
                 <div class="sidebar-header">
                     <a class="w-100 h-100 noLinkStyling" href="{% url 'frontpage' %}" style="display: inline-block;">
                         <img class="logoSmallImage" src="{% static 'learnpathology/images/logo_small.png' %}" style="text-align: center; padding-right: 4px;" alt="LearnPathology logo small">
                     </a>
                 </div>
-
                 <div class="sidebar-top-items">
                     <!-- TODO: Make active tab active, not just Home button -->
-{#                    <div class="sidebar-top-items-wrapper">#}
                     <a class="sidebar-item noLinkStyling active" href="{% url 'frontpage' %}">
                         <div class="sidebar-item-icon">
                             {# <i class="bi-house"></i> #}
@@ -92,12 +91,11 @@
                     {% if request.user.is_student %}
                         <!-- specific options for students-->
                     {% endif %}
-{#                    </div>#}
                 </div>
             </div>
 
-            <div class="sidebar-bottom-group" style="flex: 1 1 0; padding-top: 32px; padding-bottom: 32px; justify-content: center; align-items: flex-end; gap: 10px; display: inline-flex">
-                <div class="sidebar-bottom-items" style="flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 12px; display: inline-flex">
+            <div class="sidebar-bottom-group">
+                <div class="sidebar-bottom-items">
 
                     {% if request.user.is_superuser %}
                         <!-- specific options for superuser-->
