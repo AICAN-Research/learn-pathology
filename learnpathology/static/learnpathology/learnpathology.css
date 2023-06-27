@@ -40,13 +40,13 @@ main {
     --color-positive: #21b499;
     --color-positive-dark: #005b4c;
     /* Warning */
-    --color-warning-light: #fddedf;
-    --color-warning: #de0040;
-    --color-warning-dark: #860022;
+    --color-warning-light: #fdfdfe;
+    --color-warning: #fdcf33;
+    --color-warning-dark: #795d01;
     /* Error */
-    --color-error-light: #fdfdfe;
-    --color-error-: #fdcf33;
-    --color-error-dark: #795d01;
+    --color-error-light: #fddedf;
+    --color-error-: #de0040;
+    --color-error-dark: #860022;
 }
 
 .theme_teacher{
