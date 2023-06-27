@@ -152,10 +152,10 @@
                         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <!-- TODO: Populate breadcrumb trail in each file -->
-                                {% block breadcrumb_items %}
-                                {% endblock breadcrumb_items %}
                                 <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
                                 <li class="breadcrumb-item active" aria-current="page">Library</li>
+                                {% block breadcrumb_items %}
+                                {% endblock breadcrumb_items %}
                             </ol>
                         </nav>
                     </div>
@@ -171,8 +171,21 @@
                         </div>
 
                         <div class="headline-container">
+                            <div class="search-bar-container" style="">
+                                <div style="display: inline-flex;">
+                                    <span class="iconify" data-icon="fluent:search-24-filled" data-width="24" data-height="24"></span>
+                                </div>
+                                <div style="display: inline-flex">
+                                    <input type="text" id="main-search-input" name="Search" class="main-search-input" style="height: 24px; width: 300px;" placeholder="Search" >
+                                </div>
+                            </div>
                             {% block button_row %}
-                                <input type="text" id="main-search-input" name="Search" class="card" style="height: 35px; width: 150px;" placeholder="Search" >
+                                <div class="custom-button" style="">
+                                    <span class="iconify" data-icon="fluent:add-24-regular" data-width="24" data-height="24" style="color: var(--color-white); font-weight: bolder;"></span>
+                                    <div class="ButtonText" style="justify-content: flex-start; align-items: center; display: flex">
+                                        <div class="ButtonText" style="text-align: center; color: white; font-size: var(--font-size-buttons); font-weight: 700; letter-spacing: 0.42px; word-wrap: break-word">Add course</div>
+                                    </div>
+                                </div>
                             {% endblock button_row %}
                         </div>
 
@@ -187,10 +200,8 @@
                         a two-column layout with a narrow left column
                     {% endcomment %}
 
-                    <div>
-                        {% block content %}
-                        {% endblock content %}
-                    </div>
+                    {% block content %}
+                    {% endblock content %}
                 </div>
 
                 <!-- background logo watermark -->
