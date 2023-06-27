@@ -155,8 +155,51 @@
             {% endif %}
 
             <div class="pageContent">
-                {% block content %}
-                {% endblock content %}
+
+                <div class="content-header">
+
+                    <div class="breadcrumb-container">
+                        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <!-- TODO: Populate breadcrumb trail in each file -->
+                                {% block breadcrumb_items %}
+                                {% endblock breadcrumb_items %}
+                                <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Library</li>
+                            </ol>
+                        </nav>
+                    </div>
+
+                    <div class="page-header-container">
+
+                        <div class="page-title-container">
+                            {% block page_title %}
+                                <h1>Dashboard</h1>
+                            {% endblock page_title %}
+                        </div>
+
+                        <div class="headline-container">
+                            {% block button_row %}
+                                <input type="text" id="main-search-input" name="Search" class="card" style="height: 35px; width: 150px;" placeholder="Search" >
+                            {% endblock button_row %}
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="content-main">
+                    {% comment %}
+                    For main content on page, have either
+                        one single card, or
+                        a two-column layout with a narrow left column
+                    {% endcomment %}
+
+                    <div>
+                        {% block content %}
+                        {% endblock content %}
+                    </div>
+                </div>
 
                 <!-- background logo watermark -->
                 {#<div id="logoContainer" class="logoBGContainer">#}
