@@ -7,16 +7,20 @@
 <div class="two-column-container">
     <div class="content-left">
 
-        <div class="card" style="width: 100%; height: 600px;">
-            card
-        </div>
+        {% block content_left %}
+            <div class="card" style="width: 100%; height: 600px;">
+                placeholder card content left
+            </div>
+        {% endblock content_left %}
 
     </div>
     <div class="content-right">
 
-        <div class="card" style="width: 100%; height: 600px;">
-            content
-        </div>
+        {% block content_right %}
+            <div class="card" style="width: 100%; height: 600px;">
+                placeholder card content right
+            </div>
+        {% endblock content_right %}
 
     </div>
 </div>
