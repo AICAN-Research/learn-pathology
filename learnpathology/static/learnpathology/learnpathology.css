@@ -1,16 +1,22 @@
 :root{
-    --font-family:Calibri, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --font-family:'DM Sans', Calibri, 'Helvetica Neue', Helvetica, Arial, sans-serif;
     --text-size: large;
     --h1-size: large;
-    --menu-width: 300px;
     --header-height: 70px;
     --logo-bg-width: 40%;
     --sintef-wm-width: 20%;
-    --logo-small-height: 60px;
+    --logo-small-height: 66px;
+    --icon-size: 24px;
     --shadow: rgba(0, 0, 0, 0.5); /*rgba(0, 0, 102, 0.5);*/
+    --sidebar-width: 185px;
+    --sidebar-width-collapsed: 100px;
+    --border-radius: 8px;
     --button-text-colour: #ffffff;
-    --text-colour: #3b3a30;
-    --text-colour-dark: #2d2c28;
+    --font-size-buttons: 16px;
+    /*--text-colour: #3b3a30;*/
+    /*--text-colour-dark: #2d2c28;*/
+    /*--text-colour-light: #fff7f7;*/
+
 }
 
 main {
@@ -20,6 +26,36 @@ main {
 /* ===================================
     COLOUR THEMES
 =================================== */
+.theme_lp {
+    --background: #f5f8fe;
+    /* Base colors */
+    --color-white: #ffffff;
+    --color-light-gray: #ebebff;
+    --color-gray: #e1e3f3;
+    /*--background-content: #ebebff;*/
+    /* Blue-violet color scheme */
+    --color-blue-light: #dedefe;
+    --color-blue: #8d9bfe;
+    --color-blue-dark: #4458b0;
+    /* Text color */
+    --text-colour: #263347;         /* default text colour */
+    --text-colour-light: #586273;
+    --text-colour-lighter: #cfd9e7;
+    --text-colour-lightest: #e6f0fc;
+    /* Feedback, confirmation, success */
+    --color-positive-light: #b7fdec;
+    --color-positive: #21b499;
+    --color-positive-dark: #005b4c;
+    /* Warning */
+    --color-warning-light: #fdfdfe;
+    --color-warning: #fdcf33;
+    --color-warning-dark: #795d01;
+    /* Error */
+    --color-error-light: #fddedf;
+    --color-error-: #de0040;
+    --color-error-dark: #860022;
+}
+
 .theme_teacher{
     --background-card: #ffffff;
     --background-header: #eaece5;
@@ -82,6 +118,31 @@ main {
     --background-collapsed-menu: #c4c4c4;
     --background: #a2ba8e;
     --background-dark: #5c6346;
+    --button-colour: #dce7cd;
+    --button-colour-hover: rgba(218, 247, 209, 0.98);
+    --button-colour-active: #c3e4ba;
+    --button-border-colour: #888;
+    --logo-hue: 240deg;
+    --logo-saturation: 20;
+    --logo-brightness: 10;
+    --logo-opacity: 60%;
+    --grid-card-background: #eaeee5;
+    --grid-card-border: rgba(130, 152, 105, 0.50);
+}
+
+.theme_test{
+    --background-card: #ffffff;
+    --background-header: #eaece5;
+    --background-collapsed-menu: #c4c4c4;
+    --background: #a2ba8e;
+    --background-dark: #5c6346;
+    --sidebar-colour-base: #f4f4f4;
+    --sidebar-colour-item: #5e58d2;
+    --sidebar-colour-item-hover: #dfdada;
+    --sidebar-colour-item-selected: #cdc6c6;
+    --sidebar-colour-hover: #b5afaf;
+    --sidebar-colour-text: #050034;
+    --sidebar-colour-text-hover: #7386D5;
     --button-colour: #dce7cd;
     --button-colour-hover: rgba(218, 247, 209, 0.98);
     --button-colour-active: #c3e4ba;
@@ -184,7 +245,7 @@ body {
     margin-top: 30px;
     margin-bottom: 0px;
     font-family: var(--font-family);
-    color: var(--text-colour-dark);
+    color: var(--text-colour);
     position: relative;
     display: flex;
     flex-direction: column;
@@ -262,7 +323,7 @@ body {
 }
 
 .navigation .menuInfo{
-    color: var(--text-colour-dark)
+    color: var(--text-colour)
 }
 
 .navigation a {
@@ -277,29 +338,40 @@ body {
 .annotation_teacher{
     background-color: rgba(255, 255, 255, 0.75);
     outline: 2px solid white;
-    color: var(--text-colour-dark);
+    color: var(--text-colour);
     font-size: 20px;
 }
 
 .pageContent {
-    position: fixed;
+    /*position: fixed;*/
+    height: 100%;
+    width: 100%;
     top: var(--header-height);
-    padding-top: 10px;
-    right: 0px;
-    bottom: 0px;
-    left: 0px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding-top: 32px;
+    --padding-horizontal: 20px; /* Already 12 px padding on left and right */
+    /*padding-top: 24px;*/
+    /*--padding-horizontal: 12px; !* Already 12 px padding on left and right *!*/
+    padding-left: var(--padding-horizontal);
+    padding-right: var(--padding-horizontal);
+    /*right: 0px;*/
+    /*bottom: 0px;*/
+    /*left: 0px;*/
     float: right;
     box-sizing: border-box;
-    /*padding-top: 40px;*/
     overflow-y: auto;
-    background-color: var(--background);
+    /*background-color: var(--color-blue-light);*/
     z-index: -1;
 }
 
 #content {
-    width: -webkit-fit-content;
-    width: -moz-fit-content;
-    width: fit-content;
+    /*width: -webkit-fit-content;*/
+    /*width: -moz-fit-content;*/
+    /*width: fit-content;*/
+    width: 100%;
+    background: var(--color-light-gray);
 }
 
 #contentLeft {
@@ -333,32 +405,32 @@ body {
 
 .LPButton {
     display: inline-block;
-    background-color: var(--button-colour);
+    background-color: var(--color-blue-light);
     padding: 5px 10px;
     margin: 10px;
     font-family: sans-serif, Arial;
     font-size: 1rem;
     font-weight: 400;
-    border: 1px solid var(--button-border-colour);
+    border: 1px solid var(--color-blue);
     border-radius: 4px;
     width: fit-content;
 }
 
 .LPButton:hover {
-    background-color: var(--button-colour-hover);
+    background-color: var(--color-blue-light);
 }
 
 .LPButton .a {
-    color: var(--text-colour-dark)!important;
+    color: var(--text-colour)!important;
 }
 
 .LPButton .a:hover {
-    color: var(--text-colour-dark)!important;
+    color: var(--text-colour)!important;
 }
 
 .LPButton_selected {
     box-shadow: inset 0 0 3px var(--shadow);
-    background-color: var(--button-colour-active);
+    background-color: var(--color-blue);
 }
 
 /* =============================================
@@ -374,22 +446,22 @@ Radio button toolbar used with slide filters
 
 .radio-toolbar label {
     display: inline-block;
-    background-color: var(--button-colour);
+    background-color: var(--color-blue-light);
     padding: 10px 20px;
     font-family: sans-serif, Arial;
     font-size: 1rem;
     font-weight: 400;
-    border: 1px solid var(--button-border-colour);
+    border: 1px solid var(--color-blue);
     border-radius: 4px;
 }
 
 .radio-toolbar label.wideLabel {
     display: inline-block;
-    background-color: var(--button-colour);
+    background-color: var(--color-blue-light);
     font-family: sans-serif, Arial;
     font-size: 1rem;
     font-weight: 400;
-    border: 0 solid var(--button-border-colour);
+    border: 0 solid var(--color-blue);
     border-radius: 4px;
     padding: 5px 5px;
     margin-top: 1px;
@@ -399,11 +471,11 @@ Radio button toolbar used with slide filters
 
 .radio-toolbar button.wideLabel {
     display: inline-block;
-    background-color: var(--button-colour);
+    background-color: var(--color-blue-light);
     font-family: sans-serif, Arial;
     font-size: 1rem;
     font-weight: 400;
-    border: 0 solid var(--button-border-colour);
+    border: 0 solid var(--color-blue);
     border-radius: 4px;
     padding: 4px 4px;
     margin-top: 1px;
@@ -412,16 +484,16 @@ Radio button toolbar used with slide filters
     text-align: left;
 }
 .radio-toolbar button.wideLabel.active {
-    background-color: var(--button-colour-active);
+    background-color: var(--color-blue);
 }
 
 .imageBrowserSearchButtons {
     display: inline-block;
-    background-color: var(--button-colour);
+    background-color: var(--color-blue-light);
     font-family: sans-serif, Arial;
     font-size: 1rem;
     font-weight: 400;
-    border: 0 solid var(--button-border-colour);
+    border: 0 solid var(--color-blue);
     border-radius: 4px;
     padding: 5px 5px;
     margin: 1px 0 1px 0;
@@ -429,10 +501,10 @@ Radio button toolbar used with slide filters
 }
 
 .radio-toolbar label:hover {
-    background-color: var(--button-colour-hover);
+    background-color: var(--color-blue-light);
 }
 .radio-toolbar label.active {
-    background-color: var(--button-colour-active);
+    background-color: var(--color-blue);
 }
 
 /* =============================================
@@ -456,42 +528,42 @@ Course navigation tabs
 ============================================= */
 .courseNavTabs .nav-tabs {
     /*background-color: var(--button-colour-active);*/
-    color: var(--text-colour-dark);
+    color: var(--text-colour);
 }
 
 .courseNavTabs .nav-link {
     /*background-color: var(--button-colour-active);*/
-    color: var(--text-colour-dark);
+    color: var(--text-colour);
     border-style: solid;
     border-width: 1px  1px 0 1px;
     border-top-left-radius: 0.25rem;
     border-top-right-radius: 0.25rem;
-    border-color: var(--button-border-colour);
+    border-color: var(--color-blue);
 }
 
 .courseNavTabs .nav-link:hover {
-    background-color: var(--button-colour-hover);
+    background-color: var(--color-blue-light);
     border-style: solid;
     border-width: 1px  1px 0 1px;
     border-top-left-radius: 0.25rem;
     border-top-right-radius: 0.25rem;
-    border-color: var(--button-border-colour);
+    border-color: var(--color-blue-dark);
 }
 
 .courseNavTabs .nav-link.active {
-    background-color: var(--button-colour-active);
-    color: var(--text-colour-dark);
+    background-color: var(--background);
+    color: var(--text-colour);
     font-weight: bold;
     border-style: solid;
     border-width: 1px  1px 0 1px;
     border-top-left-radius: 0.25rem;
     border-top-right-radius: 0.25rem;
-    border-color: var(--button-border-colour);
+    border-color: var(--color-blue);
 }
 
 .courseNavPanes {
     border-style: solid;
-    border-color: var(--button-border-colour);
+    border-color: var(--color-blue);
     border-width: 0 1px 1px 1px;
     border-radius: 0 0.25rem 0.25rem 0.25rem;
 }
@@ -536,16 +608,16 @@ Slide viewer
 Image browser
 ============================================= */
 .imageBrowserNavTabs .nav-pills .nav-link {
-    color: var(--text-colour-dark);
+    color: var(--text-colour);
     margin: 0 10px 0 10px;
 }
 .imageBrowserNavTabs .nav-link:hover {
     background-color: var(--button-colour-hover);
-    color: var(--text-colour-dark);
+    color: var(--text-colour);
 }
 .imageBrowserNavTabs .nav-link.active {
     background-color: var(--button-colour-active);
-    color: var(--text-colour-dark);
+    color: var(--text-colour);
 }
 
 /* Styling for cards containing thumbnails, name, short description */
@@ -627,10 +699,10 @@ Image browser
 
 .noLinkStyling {
     text-decoration: none;
-    color: var(--text-colour-dark);
+    color: var(--text-colour);
 }
 .noLinkStyling:hover {
-    color: var(--text-colour-dark);
+    color: var(--text-colour);
 }
 
 /* =============================================
@@ -652,4 +724,470 @@ Annotations
 
 .LPAnnotationArrow {
 
+}
+
+/* ===========================================
+Sidebar
+=========================================== */
+.wrapper {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+}
+
+#sidebar {
+    min-width: var(--sidebar-width);
+    max-width: var(--sidebar-width);
+    min-height: 100vh;
+    background: var(--background);
+    color: #fff;
+    transition: all 0.2s;
+    /* Below from Figma */
+    display: inline-flex;
+    padding: 24px 40px 24px 24px;
+    /*align-items: flex-start;*/
+    /*gap: 16px;*/
+    /*flex-shrink: 0;*/
+}
+
+#sidebar .sidebar-contents {
+    width: calc(var(--sidebar-width) - 64px);
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    align-self: stretch;
+    gap: 200px;
+}
+
+/* Header and top items */
+#sidebar .sidebar-top-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 48px;
+}
+
+#sidebar .sidebar-header {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 35px;
+}
+
+#sidebar .sidebar-top-items {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Bottom items */
+#sidebar .sidebar-bottom-group {
+    display: inline-flex;
+    flex: 1 1 0;
+    justify-content: center;
+    align-items: flex-end;
+    padding-top: 32px;
+    padding-bottom: 32px;
+    gap: 10px;
+}
+
+#sidebar .sidebar-bottom-items {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+/* Sidebar items, etc. */
+#sidebar .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    align-self: stretch;
+}
+
+#sidebar .sidebar-item-icon {
+    display: inline-flex;
+    width: 40px;
+    height: 40px;
+    padding: 8px;
+    justify-content: center;
+    align-items: center;
+    border-radius: var(--border-radius);
+}
+
+#sidebar .sidebar-item-text {
+    display: inline-flex;
+    font-size: var(--font-size-buttons);
+    /*font-weight: bold;*/
+    align-items: center;
+    gap: 10px;
+}
+
+/* List styling */
+#sidebar ul.components {
+    padding: 20px 0;
+    /*border-bottom: 1px solid #47748b;*/
+}
+
+#sidebar ul p {
+    color: var(--text-colour-lightest);
+    padding: 10px;
+}
+
+/* Dropdown menus in sidebar */
+#sidebar ul li a {
+    padding: 5px;
+    /*margin: 5px;*/
+    font-size: 14px;
+    text-align: left;
+    display: block;
+    height: fit-content;
+    /*margin-bottom: 5px;*/
+    border-radius: 8px;
+}
+
+/*#sidebar a > span {*/
+/*    padding: 5px;*/
+/*    !*margin: 5px;*!*/
+/*    font-size: 14px;*/
+/*    text-align: left;*/
+/*    display: block;*/
+/*    height: fit-content;*/
+/*    !*margin-bottom: 5px;*!*/
+/*    border-radius: 8px;*/
+/*}*/
+
+/*#sidebar ul li a.active {*/
+/*    !*color: var(--text-colour-light);*!*/
+/*    background: var(--color-blue-light);*/
+/*}*/
+
+/*#sidebar ul li a.active > span {*/
+/*    color: var(--color-blue-dark);*/
+/*    !*background: var(--sidebar-colour-base);*!*/
+/*}*/
+
+/*#sidebar .ul.li.a.active > span.sidebar-item-icon {*/
+/*    color: var(--color-blue);*/
+/*    !*background: var(--sidebar-colour-item-selected);*!*/
+/*}*/
+
+#sidebar .sidebar-item.active .sidebar-item-icon {
+    color: var(--color-blue-dark);
+    background: var(--color-blue-light);
+}
+
+#sidebar .sidebar-item.active .sidebar-item-text {
+    color: var(--color-blue-dark);
+    /*background: var(--color-blue-light);*/
+}
+
+#sidebar ul li a:hover {
+    /*color: var(--sidebar-colour-text-hover);*/
+    background: var(--color-blue-light);
+}
+
+#sidebar ul li.active > a, a[aria-expanded="true"] {
+    color: var(--text-colour);
+    /*background: #6d7fcc;*/
+}
+
+#sidebar ul {
+    background: var(--color-blue-light);
+    font-size: 0.9em !important;
+    padding-left: 30px !important;
+}
+
+#sidebar ul li .dropdown-item {
+    color: var(--text-colour)!important;
+}
+
+
+/* Shrinking the sidebar from 250px to 80px and center aligining its content*/
+#sidebar.active {
+    min-width: var(--sidebar-width-collapsed);
+    max-width: var(--sidebar-width-collapsed);
+    align-items: flex-start;
+    padding: 24px 16px;
+}
+
+#sidebar.active .sidebar-contents {
+    width: calc(var(--sidebar-width-collapsed) - 40px);
+    display: flex;
+    /*padding: 0 8px 0 0;*/
+    padding: 0;
+    flex-direction: column;
+    align-items: center;
+    gap: 200px;
+    align-self: stretch;
+}
+
+#sidebar.active .sidebar-top-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 48px;
+}
+
+#sidebar.active .sidebar-header {
+    /*padding: 25px 10px 25px 10px;*/
+    /*padding-right: 8px;*/
+}
+
+#sidebar.active .sidebar-top-items {
+    /*width: 121px; height: 248px;*/
+    justify-content: flex-start;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+}
+
+#sidebar.active .sidebar-top-items-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+
+/* Toggling the sidebar header content, hide the big heading [h3]
+and showing the small heading [strong] and vice versa
+*/
+#sidebar.active .sidebar-item-text {
+    display: none;
+}
+#sidebar.active .sidebar-item-icon {
+    /*display: inline-flex;*/
+    /*padding: 0;*/
+}
+
+#sidebar.active .a.active .sidebar-item-icon {
+    color: var(--color-blue-dark);
+    background: var(--color-blue-light);
+}
+
+#sidebar.active ul li a {
+    padding: 10px;
+    text-align: center;
+    font-size: 1.1em;
+    text-decoration: none;
+}
+
+#sidebar.active ul li a i {
+    margin-right:  0;
+    font-size: 1.5em;
+    /*margin-bottom: 5px;*/
+}
+
+/* Same dropdown links padding*/
+#sidebar.active ul ul a {
+    padding: 10px !important;
+}
+
+/* Changing the arrow position to bottom center position,
+   translateX(50%) works with right: 50%
+   to accurately  center the arrow */
+#sidebar.active .dropdown-toggle::after {
+    top: auto;
+    bottom: 10px;
+    right: 50%;
+    -webkit-transform: translateX(50%);
+    -ms-transform: translateX(50%);
+    transform: translateX(50%);
+}
+
+@media (max-width: 768px) {
+    /* 80px and its content aligned to centre. Pushing it off the screen with the
+       negative left margin
+    */
+    #sidebar.active {
+        min-width: 80px;
+        max-width: 80px;
+        text-align: center;
+        margin-left: -80px !important;
+    }
+
+    /* Reappearing the sidebar on toggle button click */
+    #sidebar {
+        margin-left: 0;
+    }
+
+    /* Downsize the navigation links font size */
+    #sidebar.active ul li a {
+        padding: 20px 10px;
+        font-size: 0.85em;
+    }
+
+    #sidebar.active ul li a i {
+        margin-right:  0;
+        display: block;
+        font-size: 1.8em;
+        margin-bottom: 5px;
+    }
+
+    /* Adjust the dropdown links padding*/
+    #sidebar.active ul ul a {
+        padding: 10px !important;
+    }
+
+    /* Changing the arrow position to bottom center position,
+      translateX(50%) works with right: 50%
+      to accurately  center the arrow */
+    .dropdown-toggle::after {
+        top: auto;
+        bottom: 10px;
+        right: 50%;
+        -webkit-transform: translateX(50%);
+        -ms-transform: translateX(50%);
+        transform: translateX(50%);
+    }
+}
+
+
+/* ===========================================
+Header of page main content
+=========================================== */
+.content-header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.breadcrumb-container {
+    justify-content: flex-start;
+    align-items: flex-start;
+    display: inline-flex;
+    gap: 4px;
+}
+
+.breadcrumb {
+    margin-bottom: 0;
+    font-size: medium;
+}
+
+.page-header-container {
+    width: 100%;
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    align-self: stretch;
+    gap: 200px;
+}
+
+/* Left title and right item group */
+.page-title-container {
+    display: flex;
+    flex: 0;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    flex-basis: initial;
+    gap: 12px;
+}
+
+.page-title-container h1 {
+    font-size: xx-large;
+    margin-bottom: 0;
+}
+
+.headline-container {
+    display: flex;
+    flex: 1 1 0;
+    justify-content: end;
+    align-items: flex-end;
+    /*padding-top: 32px;*/
+    /*padding-bottom: 32px;*/
+    gap: 12px;
+}
+
+.search-bar-container {
+    width: 350px;
+    height: 40px;
+    display: inline-flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: start;
+
+    padding: 8px;
+    background: var(--background);
+    border: 1px solid var(--color-light-gray);
+    border-radius: var(--border-radius);
+}
+
+.main-search-input {
+    /*height: 24px;*/
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex: 1 0 0;
+
+    color: var(--text-colour);
+    font-size: var(--font-size-buttons);
+    line-height: 24px;
+    border: 0;
+}
+
+/* Main page content where the {% block content %} is placed */
+.content-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0; /*24px;*/
+    /*border-radius: var(--border-radius);*/
+    /*background: var(--background);*/
+    border: 2px solid var(--color-blue); /* TODO: Remove after positioning */
+    /*border: none!important;*/
+}
+
+/* One-column layout */
+.one-column-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Two-column layout */
+.two-column-container {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    gap: 24px;
+}
+
+.content-left {
+    width: 220px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: start;
+}
+
+.content-right {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: start;
+}
+
+/* Custom objects/items */
+.custom-button {
+    width: 139px;
+    height: 48px;
+    display: inline-flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    background: #4A59B0;
+    border-radius: 8px;
 }
