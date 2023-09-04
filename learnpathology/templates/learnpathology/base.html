@@ -181,12 +181,14 @@
                                 </div>
                             </div>
                             {% block button_row %}
+                                {% comment %}
                                 <div class="custom-button" style="">
                                     <span class="iconify" data-icon="fluent:add-24-regular" data-width="24" data-height="24" style="color: var(--color-white); font-weight: bolder;"></span>
                                     <div class="ButtonText" style="justify-content: flex-start; align-items: center; display: flex">
-                                        <div class="ButtonText" style="text-align: center; color: white; font-size: var(--font-size-buttons); font-weight: 700; letter-spacing: 0.42px; word-wrap: break-word">Add course</div>
+                                        <div class="ButtonText" style="text-align: center; color: white; font-size: var(--font-size-buttons); font-weight: 700; letter-spacing: 0.42px; white-space: nowrap;">Add course</div>
                                     </div>
                                 </div>
+                                {% endcomment %}
                             {% endblock button_row %}
                         </div>
 
