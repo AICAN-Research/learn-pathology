@@ -441,18 +441,22 @@ Radio button toolbar used with slide filters
 }
 
 .radio-toolbar input[type="radio"] {
-    display: none;
+    /*display: block;*/
+    /*display: inline-flex;*/
+    color: var(--text-colour-dark);
 }
 
 .radio-toolbar label {
-    display: inline-block;
-    background-color: var(--color-blue-light);
-    padding: 10px 20px;
-    font-family: sans-serif, Arial;
-    font-size: 1rem;
-    font-weight: 400;
-    border: 1px solid var(--color-blue);
-    border-radius: 4px;
+    /*display: inline-block;*/
+    /*display: inline-block;*/
+    /*width: auto;*/
+    /*background-color: var(--color-blue-light);*/
+    /*padding: 10px 20px;*/
+    /*font-family: sans-serif, Arial;*/
+    /*font-size: 1rem;*/
+    /*font-weight: 400;*/
+    /*border: 1px solid var(--color-blue);*/
+    /*border-radius: 4px;*/
 }
 
 .radio-toolbar label.wideLabel {
@@ -466,7 +470,7 @@ Radio button toolbar used with slide filters
     padding: 5px 5px;
     margin-top: 1px;
     margin-bottom: 1px;
-    width: 100%;
+    /*width: 100%;*/
 }
 
 .radio-toolbar button.wideLabel {
