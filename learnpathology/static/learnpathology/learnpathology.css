@@ -598,7 +598,8 @@ Slide viewer
 }
 
 .slideViewerCard {
-    height: 100%;
+    /*height: 100%;*/
+    height: 600px;
     width: 100%;
 }
 
