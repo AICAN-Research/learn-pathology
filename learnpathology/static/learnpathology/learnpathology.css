@@ -1246,9 +1246,9 @@ Header of page main content
 
 .content-right {
     width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
+    display: inline-block;
+    /*flex-direction: row;*/
+    /*justify-content: flex-end;*/
     align-items: start;
 }
 

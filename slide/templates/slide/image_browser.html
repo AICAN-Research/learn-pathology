@@ -130,32 +130,12 @@ Image browser
 
 
 {% block content_right %}
-<!-- Slide grid/list -->
+<!-- Slide grid -->
 
 <div class="card border-0">
     {% if slides %}
-        <div class="card border-0">
-        <div class="card-body align-content" style="margin-left: auto; padding-top: 10px; padding-bottom: 10px">
-            <ul class="nav nav-pills card-header-pills imageBrowserNavTabs">
-                <li class="nav-item">
-                    <a href="#grid-view" class="nav-link active" data-bs-toggle="tab">{% bs_icon 'grid' %}Grid</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#list-view" class="nav-link" data-bs-toggle="tab">{% bs_icon 'list' %}List</a>
-                </li>
-            </ul>
-        </div>
-        </div>
-
         <div class="card border-0" style="min-height: 600px; padding-top: 10px">
-        <div class="tab-content" id="tabs">
-            <div class="tab-pane active" id="grid-view">
-                {% include 'slide/grid_view_task.html' with slides=slides %}
-            </div>
-            <div class="tab-pane" id="list-view">
-                {% include 'slide/list_view.html' with slides=slides %}
-            </div>
-        </div>
+            {% include 'slide/grid_view_task.html' with slides=slides %}
         </div>
 
     {% else %}
