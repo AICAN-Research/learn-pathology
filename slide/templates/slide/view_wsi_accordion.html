@@ -2,6 +2,22 @@
 {% load slide_filters %}
 {% load static %}
 
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'slide:browser' %}">Image browser</a></li>
+<li class="breadcrumb-item active" aria-current="page">Viewer: {{ slide.name }}</li>
+{% endblock breadcrumb_items %}
+
+
+{% block page_title %}
+{{ slide.name }}
+{% endblock page_title %}
+
+
+{% block button_row %}
+{% endblock button_row %}
+
+
 {% block content %}
 
 <!-- WSI VIEWER -->
