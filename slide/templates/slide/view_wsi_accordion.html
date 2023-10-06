@@ -5,7 +5,8 @@
 
 {% block breadcrumb_items %}
 <li class="breadcrumb-item"><a href="{% url 'slide:browser' %}">Image browser</a></li>
-<li class="breadcrumb-item active" aria-current="page">Viewer: {{ slide.name }}</li>
+{#<li class="breadcrumb-item active" aria-current="page">Viewer: {{ slide.name }}</li>#}
+<li class="breadcrumb-item active" aria-current="page">{{ slide.name }}</li>
 {% endblock breadcrumb_items %}
 
 
@@ -302,3 +303,12 @@
 </script>
 
 {% endblock content %}
+
+
+{% block javascript %}
+
+$(document).ready(function(){
+    collapseSidebar();
+});
+
+{% endblock javascript %}
