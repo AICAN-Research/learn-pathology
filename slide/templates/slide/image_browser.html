@@ -152,11 +152,13 @@ Image browser
     {% endif %}
 </div>
 
+{% endblock content_right %}
 
-<script>
+
+{% block javascript %}
 
 $(document).ready(function(){
-    activateTab('aaa');
+    /*activateTab('aaa');*/
     collapseSidebar();
 });
 
@@ -170,6 +172,4 @@ $(document).ready(function() {
     });
 });
 
-</script>
-
-{% endblock content_right %}
+{% endblock javascript %}
