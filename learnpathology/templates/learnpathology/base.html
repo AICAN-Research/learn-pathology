@@ -43,11 +43,13 @@
 
             <div class="sidebar-top-group">
                 <div class="sidebar-header">
-                    <div>   <!-- TODO: Remove when done working on layout -->
+                    {% comment %}
+                    <div>
                         <div id="sidebarCollapse" class="btn sidebar-item-icon" style="background-color: var(--color-blue); color: var(--text-colour);">
                             <span class="iconify" data-icon="fluent:panel-left-contract-28-regular" data-width="24" data-height="24"></span>
                         </div>
                     </div>
+                    {% endcomment %}
                     <a class="w-100 h-100 noLinkStyling" href="{% url 'frontpage' %}" style="display: inline-block;">
                         <img class="logoSmallImage" src="{% static 'learnpathology/images/logo_small.png' %}" style="text-align: center; padding-right: 4px;" alt="LearnPathology logo small">
                     </a>
@@ -153,8 +155,7 @@
                         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <!-- TODO: Populate breadcrumb trail in each file -->
-                                <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">Library</li>
+{#                                <li class="breadcrumb-item"><a href="/">Dashboard</a></li> <!-- TODO: Remove dashboard? Can access from menu bar -->#}
                                 {% block breadcrumb_items %}
                                 {% endblock breadcrumb_items %}
                             </ol>
