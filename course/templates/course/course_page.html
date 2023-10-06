@@ -1,59 +1,69 @@
-{% extends 'learnpathology/base.html' %}
+{% extends 'learnpathology/single_content_layout.html' %}
 {% load bootstrap_icons %}
 {% load static %}
 
 
+{% block page_title %}
+{{ course.code }} - {{ course.title }}
+{% endblock page_title %}
+
+
+{% block breadcrumb_items %}
+    <li class="breadcrumb-item"><a href="{% url 'course:index' %}">Courses</a></li>
+    <li class="breadcrumb-item">{{ course.code }} - {{ course.title }}</li>
+{% endblock breadcrumb_items %}
+
+
+{% block button_row %}
+
+{% if request.user.is_teacher or request.user.is_superuser %}
+<div class="custom-button button-light"> <!-- TODO: removed style, should add with class instead -->
+    <a href="{% url 'course:new' %}" style="display: inline-flex;">
+        <div class="button-icon">
+            <span class="iconify" data-icon="fluent:bin-recycle-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
+        </div>
+        <div style="justify-content: flex-start; align-items: center; display: flex;">
+            <div class="button-text">Delete course</div>
+        </div>
+    </a>
+</div>
+<div class="custom-button">
+    <a href="{% url 'course:new' %}" style="display: inline-flex;">
+        <div class="button-icon">
+            <span class="iconify" data-icon="fluent:edit-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
+        </div>
+        <div style="justify-content: flex-start; align-items: center; display: flex;">
+            <div class="button-text">Edit course</div>
+        </div>
+    </a>
+</div>
+{% endif %}
+
+{% endblock button_row %}
 
 
 
 {% block content %}
 
-
-    <div class="container">
-        <h1>Course page</h1>
-    </div>
-
-    <div class="card mx-auto text-center" style="width: 90%">
+    <div class="card mx-auto text-center transparentBackground" style="width: 100%;">
         <div class="card-body">
             <div class="card-text">
 
+                {% comment %}
                 <div class="card courseHeaderCard border-0">
-                    <div class="card-body" style=" padding-bottom: 0;">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col-12 col-md-8" style="margin: 0;">
-                                <div class="card-title" style="text-align: left; margin: 0;"><h1>
-                                    {{ course.code }} - {{ course.title }}
-                                </h1></div>
-                                <div class="card-text" style="text-align: left; font-size: larger;">
-                                    <b>Instructors:</b>
-                                    {% for teacher in course.teacher.all %}
-                                        {% if teacher.first_name %}{{ teacher.first_name }} {{ teacher.last_name }},
-                                            {% else %}{{ teacher.username }},{% endif %}
-                                    {% endfor %}
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="card-text" style="text-align: right;">
-                                    {% if request.user.is_teacher or request.user.is_superuser %}
-                                        <div class="LPButton btn" style="width: fit-content; margin: 5px;"><a
-                                                href="{% url 'course:edit' course.id %}"
-                                                style="color: var(--text-colour-dark);">{% bs_icon 'gear' %}Edit
-                                            course</a></div>
-                                        <div class="LPButton btn border-danger"
-                                             style="width: fit-content; margin: 5px;"><a
-                                                href="{% url 'course:delete' course.id %}"
-                                                style="color: var(--text-colour-dark)">{% bs_icon 'trash' %}Delete
-                                            course</a></div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
+                    <div class="card-body" style="padding-bottom: 0;">
+                        <b>Instructors:</b>
+                        {% for teacher in course.teacher.all %}
+                            {% if teacher.first_name %}{{ teacher.first_name }} {{ teacher.last_name }},
+                                {% else %}{{ teacher.username }},{% endif %}
+                        {% endfor %}
                     </div>
                 </div>
+                {% endcomment %}
 
-                <div class="card courseContentCard border-0" style="min-height: 400px;">
+                <div class="card courseContentCard transparentBackground border-0" style="min-height: 400px;">
 
-                    <div class="card align-content border-0" style="margin-top: 10px; padding-bottom: 10px">
+                    <div class="card transparentBackground align-content border-0" style="margin-top: 10px; padding-bottom: 10px">
                         {# Place nav-tabs on top #}
                         <ul class="nav nav-tabs courseNavTabs" id="myTab" role="tablist">
                             <li class="nav-item" role="presentation">
@@ -163,3 +173,13 @@
 
 
 {% endblock content %}
+
+
+
+{% block javascript %}
+
+$(document).ready(function(){
+    collapseSidebar();
+});
+
+{% endblock javascript %}
