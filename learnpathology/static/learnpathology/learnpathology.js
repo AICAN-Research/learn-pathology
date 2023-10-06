@@ -16,3 +16,13 @@ function setBackground(colorHex) {
 (function () {
     setTheme('theme_default')
 })();
+
+
+// Toggle or collapse sidebar/menu bar
+function toggleSidebar() {
+    $('#sidebar').toggleClass('active');
+}
+
+function collapseSidebar() {
+    $('#sidebar').addClass('active');
+}

@@ -376,6 +376,7 @@ body {
     /*width: -moz-fit-content;*/
     /*width: fit-content;*/
     width: 100%;
+    margin-left: var(--sidebar-width-collapsed); /* TODO: Need to update based on whether sidebar is collapsed or not */
     background: var(--color-light-gray);
 }
 
@@ -749,9 +750,11 @@ Sidebar
     min-width: var(--sidebar-width);
     max-width: var(--sidebar-width);
     min-height: 100vh;
+    max-height: 100%;
     background: var(--background);
     color: #fff;
     transition: all 0.2s;
+    position: fixed;
     /* Below from Figma */
     display: inline-flex;
     padding: 24px 40px 24px 24px;
@@ -956,7 +959,7 @@ Sidebar
     display: inline-flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 24px;
+    gap: 12px;
 }
 
 #sidebar.active .sidebar-top-items-wrapper {
