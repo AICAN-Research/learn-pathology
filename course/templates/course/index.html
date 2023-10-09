@@ -13,10 +13,12 @@ Course database
 
 {% block button_row %}
 <div class="custom-button" style="">
-    <a href="{% url 'course:new' %}" style="display: inline-flex">
-        <span class="iconify" data-icon="fluent:add-24-regular" data-width="24" data-height="24" style="color: var(--color-white); font-weight: bolder;"></span>
-        <div class="button-text" style="justify-content: flex-start; align-items: center; display: flex">
-            <div class="button-text" style="text-align: center; color: white; font-size: var(--font-size-buttons); font-weight: 700; letter-spacing: 0.42px; white-space: nowrap">Add course</div>
+    <a href="{% url 'course:new' %}" style="display: inline-flex;">
+        <div class="button-icon">
+            <span class="iconify" data-icon="fluent:add-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
+        </div>
+        <div style="justify-content: flex-start; align-items: center; display: flex">
+            <div class="button-text">Add course</div>
         </div>
     </a>
 </div>
