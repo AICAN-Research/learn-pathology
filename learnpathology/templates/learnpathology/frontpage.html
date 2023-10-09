@@ -18,3 +18,13 @@
     </div>
     </div>
 {% endblock %}
+
+{% block javascript %}
+
+    // Ensure sidebar is expanded correctly
+$(document).ready(function(){
+    collapseSidebar();
+    toggleSidebar();
+});
+
+{% endblock javascript %}
