@@ -12,6 +12,11 @@
     --sidebar-width-collapsed: 100px;
     --border-radius: 8px;
     --button-text-colour: #ffffff;
+    /* Font sizes */
+    --font-page-title: 40px;
+    --font-size-headline: 24px;
+    --font-size-buttons: 16px;
+    --font-size-buttons: 16px;
     --font-size-buttons: 16px;
     /*--text-colour: #3b3a30;*/
     /*--text-colour-dark: #2d2c28;*/
@@ -371,6 +376,7 @@ body {
     /*width: -moz-fit-content;*/
     /*width: fit-content;*/
     width: 100%;
+    margin-left: var(--sidebar-width-collapsed); /* TODO: Need to update based on whether sidebar is collapsed or not */
     background: var(--color-light-gray);
 }
 
@@ -732,6 +738,7 @@ Sidebar
 .wrapper {
     display: flex;
     width: 100%;
+    min-height: 100vh;
     align-items: stretch;
 }
 
@@ -739,9 +746,11 @@ Sidebar
     min-width: var(--sidebar-width);
     max-width: var(--sidebar-width);
     min-height: 100vh;
+    max-height: 100%;
     background: var(--background);
     color: #fff;
     transition: all 0.2s;
+    position: fixed;
     /* Below from Figma */
     display: inline-flex;
     padding: 24px 40px 24px 24px;
@@ -946,7 +955,7 @@ Sidebar
     display: inline-flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 24px;
+    gap: 12px;
 }
 
 #sidebar.active .sidebar-top-items-wrapper {
@@ -1052,6 +1061,70 @@ and showing the small heading [strong] and vice versa
 
 
 /* ===========================================
+Fonts
+=========================================== */
+.wrapper h1 {
+    font-family: var(--font-family);
+    font-size: 40px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%;
+}
+
+.wrapper h2 {
+    font-family: var(--font-family);
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%;
+}
+
+.wrapper h3 {
+    font-family: var(--font-family);
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%;
+}
+
+.wrapper h4 {
+    font-family: var(--font-family);
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 120%;
+}
+
+.wrapper .body-title {
+    font-family: var(--font-family);
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 120%;
+}
+
+.wrapper .body-text {
+    font-family: var(--font-family);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+}
+
+.wrapper .feedback-text {
+    font-family: var(--font-family);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+}
+
+
+#slideDisplayForm h4 {
+    margin: 10px 24px 0 24px;
+}
+
+/* ===========================================
 Header of page main content
 =========================================== */
 .content-header {
@@ -1093,10 +1166,10 @@ Header of page main content
     gap: 12px;
 }
 
-.page-title-container h1 {
-    font-size: xx-large;
-    margin-bottom: 0;
-}
+/*.page-title-container h1 {*/
+/*    font-size: xx-large;*/
+/*    margin-bottom: 0;*/
+/*}*/
 
 .headline-container {
     display: flex;
@@ -1109,7 +1182,7 @@ Header of page main content
 }
 
 .search-bar-container {
-    width: 350px;
+    width: 250px;
     height: 40px;
     display: inline-flex;
     flex-direction: row;
@@ -1117,7 +1190,7 @@ Header of page main content
     justify-content: start;
 
     padding: 8px;
-    background: var(--background);
+    background: var(--color-white);
     border: 1px solid var(--color-light-gray);
     border-radius: var(--border-radius);
 }

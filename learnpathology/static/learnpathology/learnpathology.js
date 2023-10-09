@@ -16,3 +16,25 @@ function setBackground(colorHex) {
 (function () {
     setTheme('theme_default')
 })();
+
+
+// Toggle or collapse sidebar/menu bar
+function toggleSidebar() {
+    if ($('#sidebar').hasClass('active')) {
+        expandSidebar();
+    } else {
+        collapseSidebar();
+    }
+}
+
+function collapseSidebar() {
+    $('#sidebar').addClass('active');
+    // Adjust margin/location of other content
+    document.getElementById('content').style['margin-left'] = 'var(--sidebar-width-collapsed)';
+}
+
+function expandSidebar() {
+    $('#sidebar').removeClass('active');
+    // Adjust margin/location of other content
+    document.getElementById('content').style['margin-left'] = 'var(--sidebar-width)';
+}
