@@ -1181,7 +1181,7 @@ Header of page main content
 }
 
 .search-bar-container {
-    width: 350px;
+    width: 250px;
     height: 40px;
     display: inline-flex;
     flex-direction: row;
