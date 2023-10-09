@@ -1219,10 +1219,7 @@ Header of page main content
     flex-direction: column;
     align-items: center;
     padding: 0; /*24px;*/
-    /*border-radius: var(--border-radius);*/
-    /*background: var(--background);*/
-    border: 2px solid var(--color-blue); /* TODO: Remove after positioning */
-    /*border: none!important;*/
+    border: none!important;
 }
 
 /* One-column layout */
