@@ -12,6 +12,7 @@
     --sidebar-width-collapsed: 100px;
     --border-radius: 8px;
     --button-text-colour: #ffffff;
+    --button-height: 48px;
     /* Font sizes */
     --font-page-title: 40px;
     --font-size-headline: 24px;
@@ -42,6 +43,7 @@ main {
     --color-blue-light: #dedefe;
     --color-blue: #8d9bfe;
     --color-blue-dark: #4458b0;
+    --color-blue-border: #a6a8d1;
     /* Text color */
     --text-colour: #263347;         /* default text colour */
     --text-colour-light: #586273;
@@ -537,12 +539,15 @@ Course page styling
 Course navigation tabs
 ============================================= */
 .courseNavTabs .nav-tabs {
+    width: 100%;
+    gap: 8px;
     /*background-color: var(--button-colour-active);*/
     color: var(--text-colour);
+    /*border-bottom: 2px solid var(--color-white)!important;*/
 }
 
 .courseNavTabs .nav-link {
-    /*background-color: var(--button-colour-active);*/
+    background-color: var(--color-white);
     color: var(--text-colour);
     border-style: solid;
     border-width: 1px  1px 0 1px;
@@ -553,29 +558,24 @@ Course navigation tabs
 
 .courseNavTabs .nav-link:hover {
     background-color: var(--color-blue-light);
-    border-style: solid;
-    border-width: 1px  1px 0 1px;
-    border-top-left-radius: 0.25rem;
-    border-top-right-radius: 0.25rem;
     border-color: var(--color-blue-dark);
 }
 
 .courseNavTabs .nav-link.active {
     background-color: var(--background);
-    color: var(--text-colour);
     font-weight: bold;
-    border-style: solid;
-    border-width: 1px  1px 0 1px;
-    border-top-left-radius: 0.25rem;
-    border-top-right-radius: 0.25rem;
     border-color: var(--color-blue);
+    border-bottom-color: var(--color-white);
+    /*z-index: 0;*/
 }
 
 .courseNavPanes {
+    width: 100%;
+    align-content: start;
     border-style: solid;
-    border-color: var(--color-blue);
-    border-width: 0 1px 1px 1px;
-    border-radius: 0 0.25rem 0.25rem 0.25rem;
+    border-color: var(--color-blue-border);
+    border-width: 0px 1px 1px 1px;
+    border-radius: 0 0.5rem 0.5rem 0.5rem;
 }
 
 /* =============================================
@@ -1258,14 +1258,38 @@ Header of page main content
 }
 
 /* Custom objects/items */
+.button-text {
+    text-align: center;
+    color: var(--color-white);
+    font-size: var(--font-size-buttons);
+    font-weight: 700;
+    letter-spacing: 0.42px;
+    white-space: nowrap;
+    text-decoration: none;
+}
+
 .custom-button {
-    width: 139px;
+    width: fit-content;
     height: 48px;
     display: inline-flex;
     justify-content: flex-start;
     align-items: center;
     gap: 8px;
     padding: 12px;
-    background: #4A59B0;
+    background: var(--color-blue-dark);
     border-radius: 8px;
+}
+.custom-button .button-icon {
+    color: var(--color-white);
+}
+
+.custom-button.button-light {
+    background: var(--color-white);
+    border: 2px solid var(--color-blue);
+}
+.custom-button.button-light .button-icon {
+    color: var(--color-blue-dark);
+}
+.custom-button.button-light .button-text {
+    color: var(--color-blue-dark);
 }

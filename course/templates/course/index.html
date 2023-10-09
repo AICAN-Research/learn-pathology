@@ -1,19 +1,31 @@
 {% extends 'learnpathology/base.html' %}
 
-{% block content %}
-<div class="container">
-    <h1>Course database</h1>
+
+{% block page_title %}
+Course database
+{% endblock page_title %}
+
+
+{% block breadcrumb_items %}
+    <li class="breadcrumb-item">Courses</li>
+{% endblock breadcrumb_items %}
+
+
+{% block button_row %}
+<div class="custom-button" style="">
+    <a href="{% url 'course:new' %}" style="display: inline-flex">
+        <span class="iconify" data-icon="fluent:add-24-regular" data-width="24" data-height="24" style="color: var(--color-white); font-weight: bolder;"></span>
+        <div class="button-text" style="justify-content: flex-start; align-items: center; display: flex">
+            <div class="button-text" style="text-align: center; color: white; font-size: var(--font-size-buttons); font-weight: 700; letter-spacing: 0.42px; white-space: nowrap">Add course</div>
+        </div>
+    </a>
 </div>
+{% endblock button_row %}
 
-<div class="card mx-auto text-center" style="width: 90%">
+
+{% block content %}
+<div class="card mx-auto text-center" style="width: 100%">
 <div class="card-body">
-
-{% if request.user.is_teacher or request.user.is_superuser %}
-    <div class="LPButton" style="margin-top: 0;">
-        <a href="{% url 'course:new' %}">Make new course</a>
-    </div>
-{% endif %}
-
 <div class="card-text">
     {% if courses %}
         <table class="table">
@@ -47,3 +59,13 @@
 </div>
 </div>
 {% endblock content %}
+
+
+
+{% block javascript %}
+
+$(document).ready(function(){
+    collapseSidebar();
+});
+
+{% endblock javascript %}
