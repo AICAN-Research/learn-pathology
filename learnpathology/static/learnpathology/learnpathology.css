@@ -43,6 +43,7 @@ main {
     --color-blue-light: #dedefe;
     --color-blue: #8d9bfe;
     --color-blue-dark: #4458b0;
+    --color-blue-border: #a6a8d1;
     /* Text color */
     --text-colour: #263347;         /* default text colour */
     --text-colour-light: #586273;
@@ -534,12 +535,15 @@ Course page styling
 Course navigation tabs
 ============================================= */
 .courseNavTabs .nav-tabs {
+    width: 100%;
+    gap: 8px;
     /*background-color: var(--button-colour-active);*/
     color: var(--text-colour);
+    /*border-bottom: 2px solid var(--color-white)!important;*/
 }
 
 .courseNavTabs .nav-link {
-    /*background-color: var(--button-colour-active);*/
+    background-color: var(--color-white);
     color: var(--text-colour);
     border-style: solid;
     border-width: 1px  1px 0 1px;
@@ -550,29 +554,24 @@ Course navigation tabs
 
 .courseNavTabs .nav-link:hover {
     background-color: var(--color-blue-light);
-    border-style: solid;
-    border-width: 1px  1px 0 1px;
-    border-top-left-radius: 0.25rem;
-    border-top-right-radius: 0.25rem;
     border-color: var(--color-blue-dark);
 }
 
 .courseNavTabs .nav-link.active {
     background-color: var(--background);
-    color: var(--text-colour);
     font-weight: bold;
-    border-style: solid;
-    border-width: 1px  1px 0 1px;
-    border-top-left-radius: 0.25rem;
-    border-top-right-radius: 0.25rem;
     border-color: var(--color-blue);
+    border-bottom-color: var(--color-white);
+    /*z-index: 0;*/
 }
 
 .courseNavPanes {
+    width: 100%;
+    align-content: start;
     border-style: solid;
-    border-color: var(--color-blue);
-    border-width: 0 1px 1px 1px;
-    border-radius: 0 0.25rem 0.25rem 0.25rem;
+    border-color: var(--color-blue-border);
+    border-width: 0px 1px 1px 1px;
+    border-radius: 0 0.5rem 0.5rem 0.5rem;
 }
 
 /* =============================================
