@@ -1,144 +1,165 @@
-{% extends 'learnpathology/base.html' %}
+{% extends 'learnpathology/two_column_layout.html' %}
 {% load slide_filters %}
 {% load bootstrap_icons %}
 
 
-{% block content %}
+{% block page_title %}
+Image browser
+{% endblock page_title %}
 
-<div class="container">
-    <h1>Image browser</h1>
-</div>
-<div class="card mx-auto text-center" style="width: 95%">
-<div class="card-body">
-    <div class="row" style="margin: 0 0 0 0;">
 
-        <!-- Menu/toolbar -->
-        <div class="col" style="padding: 0 0 0 0;">
+{% block breadcrumb_items %}
+{#<li class="breadcrumb-item"><a href="{% url 'slide:browser' %}">Image browser</a></li>#}
+<li class="breadcrumb-item active" aria-current="page">Image browser</li>
+{#<li class="breadcrumb-item">List of images</li>#}
+{% endblock breadcrumb_items %}
 
-            <style>
-                label::first-letter {
-                    text-transform:capitalize;
-                }
-            </style>
 
-            <div class="card">
-                <div class="card border-0 w-100 text-start">
-                    <div class="card-body" style="padding-bottom: 0;">
-                        <div class="radio-toolbar" style="margin-top: 2px;">
-                            <a href="{% url 'slide:browser_reset' %}">
-                                <button class="wideLabel" style="text-align: center; border: 2px solid #c65127;">
-                                    Clear selection {% bs_icon 'x-circle' %}
-                                </button>
-                            </a>
-                        </div>
-                    </div>
+{% block button_row %}
+{#<div class="custom-button" style="">#}
+{#    <a href="#" style="display: inline-flex">#}
+{#        <span class="iconify" data-icon="fluent:add-24-regular" data-width="24" data-height="24" style="color: var(--color-white); font-weight: bolder;"></span>#}
+{#        <div class="ButtonText" style="justify-content: flex-start; align-items: center; display: flex">#}
+{#            <div class="ButtonText" style="text-align: center; color: white; font-size: var(--font-size-buttons); font-weight: 700; letter-spacing: 0.42px; white-space: nowrap">Some button</div>#}
+{#        </div>#}
+{#    </a>#}
+{#</div>#}
+{% endblock button_row %}
+
+
+{% block content_left %}
+<!-- Menu/toolbar -->
+
+<style>
+    label::first-letter {
+        text-transform:capitalize;
+    }
+</style>
+
+<div class="card image-filtering-sidepanel">
+    <div class="card border-0 w-100 text-start">
+        <div class="card-body" style="padding-bottom: 0;">
+            <div class="radio-toolbar" style="margin-top: 2px;">
+                <a href="{% url 'slide:browser_reset' %}">
+                    <button class="wideLabel" style="text-align: center; border: 2px solid #c65127;">
+                        Clear selection {% bs_icon 'x-circle' %}
+                    </button>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <form class="form" id="slideDisplayForm" onsubmit="{% url 'slide:browser' %}">
+    <div class="image-browser-side-panel">
+        <!-- SEARCH feature -->
+        <h4 style="margin: 14px 24px 0 24px;"><label for="search_input">Search</label></h4>
+        <div class="card border-0 w-100 text-start">
+            <div class="card-body">
+                <input type="text" name="search" placeholder="Search names, descriptions..." id="search_input"
+                       {% if search_query %}value="{{ search_query }}"{% endif %} style="width: 100%;">
+                <div style="margin-top: 2px;">
+                    <button class="imageBrowserSearchButtons" type="submit" name="submit_button">Search</button>
+                    <button class="imageBrowserSearchButtons" type="submit" name="clear_button">Clear search</button>
                 </div>
-
-                <form class="form" id="slideDisplayForm" onsubmit="{% url 'slide:browser' %}">
-                    <!-- SEARCH feature -->
-                    <h4 style="margin: 14px 0 0 0;"><label for="search_input">Search</label></h4>
-                    <div class="card border-0 w-100 text-start">
-                        <div class="card-body">
-                            <input type="text" name="search" placeholder="Search names, descriptions..." id="search_input"
-                                   {% if search_query %}value="{{ search_query }}"{% endif %} style="width: 100%;">
-                            <div style="margin-top: 2px;">
-                                <button class="imageBrowserSearchButtons" type="submit" name="submit_button">Search</button>
-                                <button class="imageBrowserSearchButtons" type="submit" name="clear_button">Clear search</button>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- HISTOLOGY/PATHOLOGY selection -->
-                    <h4 style="margin: 0;">Histology or pathology?</h4>
-                    <div class="card border-0 w-100 text-start">
-                        <div class="card-body">
-                            <div class="radio-toolbar">
-                                <input type="radio" name="histology-pathology" id="hist-path-btn" value="both" onchange="this.form.submit();">
-                                <label for="hist-path-btn" class="wideLabel{% if selected_both %} active{% endif %}">Both</label>
-
-                                <input type="radio" name="histology-pathology" id="histology-btn" value="histology" onchange="this.form.submit();">
-                                <label for="histology-btn" class="wideLabel{% if selected_histology %} active{% endif %}">Histology</label>
-
-                                <input type="radio" name="histology-pathology" id="pathology-btn" value="pathology" onchange="this.form.submit();">
-                                <label for="pathology-btn" class="wideLabel{% if selected_pathology %} active{% endif %}">Pathology</label>
-                                {% if selected_pathology %}
-                                    <ul class="" style="list-style: none;">
-                                        {% for tag in general_pathology_tags %}
-                                            <input type="radio" name="general_pathology_button" id="general_pathology-id-{{ tag.id }}" value="general_pathology_tag-id-{{ tag.id }}" onchange="this.form.submit();">
-                                            <label for="general_pathology-id-{{ tag.id }}" class="wideLabel{% if tag == selected_general_pathology %} active{% endif %}">{{ tag.name }}</label>
-                                        {% endfor %}
-                                    </ul>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                    <!-- ORGAN SYSTEM selection -->
-                    <h4 style="margin: 0;">Organ system</h4>
-                    <div class="card border-0 w-100 text-start">
-                        <div class="card-body container-fluid">
-                            <div class="radio-toolbar">
-                                <!-- Show 'All' button -->
-                                <input type="radio" name="organ-system" id="organ-all" value="all" onchange="this.form.submit();">
-                                <label for="organ-all" class="wideLabel {% if 'all' in selected_organ_tag %}active{% endif %}">All</label>
-
-                                <!-- Other organ buttons -->
-                                {% for organ in organ_tags %}
-                                    <input type="radio" name="organ-system" id="{{ organ.id }}" value="{{ organ.id }}" onchange="this.form.submit();">
-                                    <label for="{{ organ.id }}" class="wideLabel{% if organ in selected_organ_tag %} active{% endif %}">{{ organ.name }}</label>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                </form>
             </div>
         </div>
 
-        <!-- Slide grid/list -->
-        <div class="col-md-10 col-xs-1">
-        <div class="card border-0">
-            {% if slides %}
-                <div class="card border-0">
-                <div class="card-body align-content" style="margin-left: auto; padding-top: 10px; padding-bottom: 10px">
-                    <ul class="nav nav-pills card-header-pills imageBrowserNavTabs">
-                        <li class="nav-item">
-                            <a href="#grid-view" class="nav-link active" data-bs-toggle="tab">{% bs_icon 'grid' %}Grid</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#list-view" class="nav-link" data-bs-toggle="tab">{% bs_icon 'list' %}List</a>
-                        </li>
-                    </ul>
-                </div>
-                </div>
 
-                <div class="card border-0" style="min-height: 600px; padding-top: 10px">
-                <div class="tab-content" id="tabs">
-                    <div class="tab-pane active" id="grid-view">
-                        {% include 'slide/grid_view_task.html' with slides=slides %}
+        <!-- HISTOLOGY/PATHOLOGY selection -->
+        <h4>Types</h4>
+        <div class="card border-0 w-100 text-start">
+            <div class="card-body">
+                <div class="radio-toolbar">
+                    <div>
+                        <input type="radio" name="histology-pathology" id="hist-path-btn" value="both" {% if selected_both %}checked="checked"{% endif %} onchange="this.form.submit();">
+                        <label for="hist-path-btn" class="body-text">Both</label>
                     </div>
-                    <div class="tab-pane" id="list-view">
-                        {% include 'slide/list_view.html' with slides=slides %}
+                    <div>
+                        <input type="radio" name="histology-pathology" id="histology-btn" value="histology" {% if selected_histology %}checked="checked"{% endif %} onchange="this.form.submit();">
+                        <label for="histology-btn" class="body-text">Histology</label>
                     </div>
-                </div>
-                </div>
+                    <div>
+                        <input type="radio" name="histology-pathology" id="pathology-btn" value="pathology" {% if selected_pathology %}checked="checked"{% endif %} onchange="this.form.submit();">
+                        <label for="pathology-btn" class="body-text">Pathology</label>
+                    </div>
 
-            {% else %}
-                <div class="card" style="min-height: 200px; padding-top: 10px">
-                    No slides available.
-                </div>
-            {% endif %}
-        </div>
-        </div>
+                    {% comment %}
+                    <input type="radio" name="histology-pathology" id="hist-path-btn" value="both" onchange="this.form.submit();">
+                    <label for="hist-path-btn" class="wideLabel{% if selected_both %} active{% endif %}">Both</label>
 
+                    <input type="radio" name="histology-pathology" id="histology-btn" value="histology" onchange="this.form.submit();">
+                    <label for="histology-btn" class="wideLabel{% if selected_histology %} active{% endif %}">Histology</label>
+
+                    <input type="radio" name="histology-pathology" id="pathology-btn" value="pathology" onchange="this.form.submit();">
+                    <label for="pathology-btn" class="wideLabel{% if selected_pathology %} active{% endif %}">Pathology</label>
+                    {% endcomment %}
+                    {% if selected_pathology %}
+                        <ul class="" style="list-style: none;">
+                            {% for tag in general_pathology_tags %}
+                                <input type="radio" name="general_pathology_button" id="general_pathology-id-{{ tag.id }}" value="general_pathology_tag-id-{{ tag.id }}" onchange="this.form.submit();">
+                                <label for="general_pathology-id-{{ tag.id }}" class="wideLabel{% if tag == selected_general_pathology %} active{% endif %}">{{ tag.name }}</label>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <!-- ORGAN SYSTEM selection -->
+        <h4>Organ system</h4>
+        <div class="card border-0 w-100 text-start">
+            <div class="card-body container-fluid">
+                <div class="radio-toolbar">
+                    <!-- Show 'All' button -->
+{#                    <input type="radio" name="organ-system" id="organ-all" value="all" onchange="this.form.submit();">#}
+{#                    <label for="organ-all" class="wideLabel {% if 'all' in selected_organ_tag %}active{% endif %}">All</label>#}
+                    <div>
+                        <input type="radio" name="organ-system" id="organ-all" value="all" {% if 'all' in selected_organ_tag %}checked="checked"{% endif %} onchange="this.form.submit();">
+                        <label for="organ-all" class="body-text">All</label>
+                    </div>
+
+                    <!-- Other organ buttons -->
+                    {% for organ in organ_tags %}
+{#                        <input type="radio" name="organ-system" id="{{ organ.id }}" value="{{ organ.id }}" onchange="this.form.submit();">#}
+{#                        <label for="{{ organ.id }}" class="wideLabel{% if organ in selected_organ_tag %} active{% endif %}">{{ organ.name }}</label>#}
+                        <div>
+                            <input type="radio" name="organ-system" id="{{ organ.id }}" value="{{ organ.id }}" {% if organ in selected_organ_tag %}checked="checked"{% endif %} onchange="this.form.submit();">
+                            <label for="{{ organ.id }}" class="body-text">{{ organ.name }}</label>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
     </div>
-
+    </form>
 </div>
+
+{% endblock content_left %}
+
+
+{% block content_right %}
+<!-- Slide grid -->
+
+<div class="card border-0">
+    {% if slides %}
+        <div class="card border-0" style="min-height: 600px; padding-top: 10px">
+            {% include 'slide/grid_view_task.html' with slides=slides %}
+        </div>
+
+    {% else %}
+        <div class="card" style="min-height: 200px; padding-top: 10px">
+            No slides available.
+        </div>
+    {% endif %}
 </div>
-{% endblock content %}
+
+{% endblock content_right %}
 
 
-<script>
+{% block javascript %}
 
 $(document).ready(function(){
-  activateTab('aaa');
+    /*activateTab('aaa');*/
+    collapseSidebar();
 });
 
 function activateTab(tab){
@@ -151,4 +172,4 @@ $(document).ready(function() {
     });
 });
 
-</script>
+{% endblock javascript %}
