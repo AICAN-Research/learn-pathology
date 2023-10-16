@@ -170,6 +170,7 @@
                         </div>
 
                         <div class="headline-container">
+                            {% block search_bar %}
                             <div class="search-bar-container" style="">
                                 <div style="display: inline-flex;">
                                     <span class="iconify" data-icon="fluent:search-24-filled" data-width="24" data-height="24"></span>
@@ -178,13 +179,18 @@
                                     <input type="text" id="main-search-input" name="Search" class="main-search-input" placeholder="Search">
                                 </div>
                             </div>
+                            {% endblock search_bar %}
                             {% block button_row %}
                                 {% comment %}
                                 <div class="custom-button" style="">
-                                    <span class="iconify" data-icon="fluent:add-24-regular" data-width="24" data-height="24" style="color: var(--color-white); font-weight: bolder;"></span>
-                                    <div class="ButtonText" style="justify-content: flex-start; align-items: center; display: flex">
-                                        <div class="ButtonText" style="text-align: center; color: white; font-size: var(--font-size-buttons); font-weight: 700; letter-spacing: 0.42px; white-space: nowrap;">Add course</div>
-                                    </div>
+                                    <a href="{% url '#' %}" style="display: inline-flex;">
+                                        <div class="button-icon">
+                                            <span class="iconify" data-icon="fluent:add-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
+                                        </div>
+                                        <div style="justify-content: flex-start; align-items: center; display: flex">
+                                            <div class="button-text">Some button</div>
+                                        </div>
+                                    </a>
                                 </div>
                                 {% endcomment %}
                             {% endblock button_row %}
