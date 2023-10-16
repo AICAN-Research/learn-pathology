@@ -15,14 +15,17 @@
 {% block page_title %}
     {{ slide.name }}
 
- <!-- Slide Information CONTENT BEGIN -->
-    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#slideInfoModal">
-        Slide Information
-    </button>
+    <div id="toolbarDiv" style="position: relative ;">
+        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#slideInfoModal">
+            &#9432;
+        </button>
+        <button id="setZoomButton" class="btn btn-primary">Set Zoom to Whole Slide</button>
+    <button id="screenshotButton" class="btn btn-primary">&#128247;</button>
+    </div>
 
-   <button id="setZoomButton" class="btn btn-primary">Set Zoom to Whole Slide</button>
 
 
+    <!-- Slide Information CONTENT BEGIN -->
     <div class="modal fade" id="slideInfoModal" tabindex="-1" aria-labelledby="slideInfoModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -165,11 +168,6 @@
 
     <!-- Slide Information CONTENT END -->
 
-
-
-
-
-
 {% endblock page_title %}
 
 
@@ -191,48 +189,34 @@
     <script src="{% static 'slide/openseadragon-scalebar.js' %}"></script>
     <script type="text/javascript">
 
-const zoomLevels = [0.25, 1, 10, 20, 40]; // Include 0.25x
-let currentZoomIndex = 0;
+        const zoomLevels = [0.25, 1, 10, 20, 40]; // Include 0.25x
+        let currentZoomIndex = 0;
 
-const zoomButton = document.getElementById("setZoomButton");
+        const zoomButton = document.getElementById("setZoomButton");
 
-function updateButtonLabel() {
-  if (currentZoomIndex < zoomLevels.length) {
-    if (zoomLevels[currentZoomIndex] === 0.25) {
-      zoomButton.textContent = "Set Zoom to Whole Slide";
-    } else {
-      zoomButton.textContent = `Set Zoom to ${zoomLevels[currentZoomIndex]}x`;
-    }
-  }
-}
+        function updateButtonLabel() {
+            if (currentZoomIndex < zoomLevels.length) {
+                if (zoomLevels[currentZoomIndex] === 0.25) {
+                    zoomButton.textContent = "Set Zoom to Whole Slide";
+                } else {
+                    zoomButton.textContent = `Set Zoom to ${zoomLevels[currentZoomIndex]}x`;
+                }
+            }
+        }
 
-document.getElementById("setZoomButton").addEventListener("click", function () {
-  if (currentZoomIndex < zoomLevels.length) {
-    const targetZoom = zoomLevels[currentZoomIndex];
-    viewer.viewport.zoomTo(targetZoom);
-    currentZoomIndex = (currentZoomIndex + 1) % zoomLevels.length; // Loop back to 0 when reaching the end
-    updateButtonLabel();
-  }
-});
+        document.getElementById("setZoomButton").addEventListener("click", function () {
+            if (currentZoomIndex < zoomLevels.length) {
+                const targetZoom = zoomLevels[currentZoomIndex];
+                viewer.viewport.zoomTo(targetZoom);
+                currentZoomIndex = (currentZoomIndex + 1) % zoomLevels.length; // Loop back to 0 when reaching the end
+                updateButtonLabel();
+            }
+        });
 
-updateButtonLabel();
+        updateButtonLabel();
 
-
-
-
-
-
-        let buttonElement = document.createElement("button");
-        buttonElement.innerText = "Screenshot";
-        let screenshotButton = new OpenSeadragon.Button({
-            tooltip: 'Screenshot',
-            element: buttonElement,
-            //srcRest: `/images/Browser_Chrome.png`,
-            //srcGroup: `/images/Browser_Chrome.png`,
-            //srcHover: `/images/Browser_Chrome.png`,
-            //srcDown: `/images/Browser_Chrome.png`,
-            onClick: function () {
-                console.log('Click!');
+        document.getElementById("screenshotButton").addEventListener('click', function () {
+              console.log('Click!');
                 // Hide toolbar:
                 let toolbar = document.getElementsByClassName("openseadragon-container")[0].childNodes[1];
                 toolbar.style.display = "none";
@@ -252,8 +236,11 @@ updateButtonLabel();
                     let toolbar = document.getElementsByClassName("openseadragon-container")[0].childNodes[1];
                     toolbar.style.display = "block";
                 })
-            }
-        });
+
+        })
+
+
+
         let overlayElement = document.createElement("button");
         overlayElement.innerText = "Toggle Annotations";
         let overlayButton = new OpenSeadragon.Button({
@@ -274,6 +261,7 @@ updateButtonLabel();
             minScrollDeltaTime: 150, //	Number of milliseconds between canvas-scroll events.
             showNavigator: true, // The navigation window top-right
             prefixUrl: "{% static 'slide/images/' %}", // Where to find OpenSedragon button images
+            //toolbar: "toolbarDiv",
             tileSources: {
                 width: {{ slide.width }},
                 height:  {{ slide.height }},
@@ -311,7 +299,8 @@ updateButtonLabel();
         }
 
 
-        viewer.addControl(screenshotButton.element, {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
+
+        viewer.addControl(document.getElementById("toolbarDiv"), {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
 
     </script>
     <script>
