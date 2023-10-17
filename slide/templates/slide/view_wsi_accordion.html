@@ -35,23 +35,27 @@
 
 
         <div class="col col-2" style="height: fit-content;" style="width: 20%;" id="slideColumn">
-            <table>
-                <thead class="thead-light">
-                <tr>
-                    <th colspan="2">Test annotation list</th>
-                </tr>
-                </thead>
+
+
+            <h5 style="margin-top: 1rem">Annotation list</h5>
+            <ul>
                 {% for box in boxes %}
-                    <tr>
-                        <td colspan="2">
-                            <a id="boundingbox-listitem-{{ box.id }}"
-                               onclick="activateAnnotation('boundingbox-listitem-{{ box.id }}');">
-                                {{ box.text }}
-                            </a>
-                        </td>
-                    </tr>
+                    <li style="text-align: start;">
+                        <a id="boundingbox-listitem-{{ box.id }}"
+                           onclick="highlightAnnotation('boundingbox-listitem-{{ box.id }}')">
+                            {{ box.text }}
+                        </a>
+                    </li>
                 {% endfor %}
-            </table>
+                {% for pointer in pointers %}
+                    <li style="text-align: start;">
+                        <a id="arrow-listitem-{{ pointer.id }}"
+                           onclick="highlightAnnotation('arrow-listitem-{{ pointer.id }}')">
+                            {{ pointer.text }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
         </div>
     </div>
 </div>
@@ -224,6 +228,7 @@
 
         window.onLoad = toggleAnnotationOff();
         window.onLoad = createClickReaction();
+        window.onLoad = toggleCardVisibility();
 
          function createClickReaction() {
             let current_overlays = viewer.currentOverlays;
@@ -319,10 +324,10 @@
         });
 
         <!-- Annotation List Functionality -->
-        document.getElementById("annotationList").addEventListener("click",function () {
+        function toggleCardVisibility() {
             var x = document.getElementById("slideColumn");
-            var canvas_viewer = document.getElementById('imageViewer')
-            console.log("clicked button to toggle card visibility");
+            var canvas_viewer = document.getElementById('imageViewer');
+            console.log("Clicked button to toggle card visibility");
             console.log(x);
             if (x.style.display === "none") {
                 x.style.display = "block";
@@ -332,12 +337,12 @@
                 canvas_viewer.style.width = '100%';
             }
             timer = setTimeout(function () {
-
                 updateTextLocation();
-
             }, 20);
+        }
 
-        });
+        document.getElementById("annotationList").addEventListener("click", toggleCardVisibility);
+
 
         <!-- Info Button Functionality-->
         $(document).ready(function () {
