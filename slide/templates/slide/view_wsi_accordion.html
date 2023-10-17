@@ -232,6 +232,7 @@
 
          function createClickReaction() {
             let current_overlays = viewer.currentOverlays;
+             console.log('Create Click reaction ')
             for (let i = 0; i < current_overlays.length; i++) {
 
                 new OpenSeadragon.MouseTracker({
@@ -327,8 +328,7 @@
         function toggleCardVisibility() {
             var x = document.getElementById("slideColumn");
             var canvas_viewer = document.getElementById('imageViewer');
-            console.log("Clicked button to toggle card visibility");
-            console.log(x);
+
             if (x.style.display === "none") {
                 x.style.display = "block";
                 canvas_viewer.style.width = '';
@@ -367,6 +367,7 @@
          document.getElementById("annotation").addEventListener('click', function () {
             $(".overlay").toggle();
             if ($(".overlay").is(':visible')) {
+                createClickReaction();
             } else {
                 if ($(".textOverlay").is(':visible')) {
                     $(".textOverlay").toggle();
@@ -380,6 +381,7 @@
             if ($(".textOverlay").is(':visible')) {
                 if ($(".overlay").is(':hidden')) {
                     $(".overlay").toggle();
+                    createClickReaction();
                 }
             }
         });
