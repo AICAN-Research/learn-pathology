@@ -15,13 +15,27 @@
 {% block page_title %}
     {{ slide.name }}
 
-    <div id="toolbarDiv" style="position: relative ;">
-        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#slideInfoModal">
+
+
+    <div id="toolbarDiv" style="width: 100%;">
+
+        <!-- Custom buttons -->
+        <button type="button" class="custom-button btn  btn-secondary" data-bs-toggle="modal"
+                data-bs-target="#slideInfoModal">
             &#9432;
         </button>
-        <button id="setZoomButton" class="btn btn-primary">Set Zoom to Whole Slide</button>
-    <button id="screenshotButton" class="btn btn-primary">&#128247;</button>
+        <button id="setZoomButton" class="custom-button btn btn-secondary">Set Zoom to Whole Slide</button>
+        <button id="screenshotButton" class="custom-button btn btn-secondary ">&#128247;</button>
+        {% if request.user.is_teacher or request.user.is_superuser %}
+            <button id="setZoomButton" class="custom-button btn btn-secondary">Edite/ New Annotation</button>
+        {% endif %}
+        <button id="setZoomButton" class="custom-button btn btn-secondary">Toggle Annotation List</button>
+        <button id="setZoomButton" class="custom-button btn btn-secondary">Toggle Annotations</button>
+        <button id="setZoomButton" class="custom-button btn btn-secondary">Toogle Labels</button>
+
+
     </div>
+
 
 
 
@@ -164,6 +178,8 @@
                 setModalContent();
             });
         });
+
+
     </script>
 
     <!-- Slide Information CONTENT END -->
@@ -196,11 +212,9 @@
 
         function updateButtonLabel() {
             if (currentZoomIndex < zoomLevels.length) {
-                if (zoomLevels[currentZoomIndex] === 0.25) {
-                    zoomButton.textContent = "Set Zoom to Whole Slide";
-                } else {
-                    zoomButton.textContent = `Set Zoom to ${zoomLevels[currentZoomIndex]}x`;
-                }
+
+                zoomButton.textContent = `\u{1f50e} ${zoomLevels[currentZoomIndex]}x`;
+
             }
         }
 
@@ -216,29 +230,28 @@
         updateButtonLabel();
 
         document.getElementById("screenshotButton").addEventListener('click', function () {
-              console.log('Click!');
-                // Hide toolbar:
+            console.log('Click!');
+            // Hide toolbar:
+            let toolbar = document.getElementsByClassName("openseadragon-container")[0].childNodes[1];
+            toolbar.style.display = "none";
+            html2canvas($("#wsi-canvas")[0]).then(canvas => {
+                var now = new Date();
+                var formattedDate = now.format("yyyy-MM-dd hh-mm-ss");
+                console.log(now);
+                // Trigger download
+                var link = document.createElement('a');
+                link.href = canvas.toDataURL("image/jpeg");
+                link.download = 'LearnPathology Screenshot ' + formattedDate + '.jpg';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }).then(x => {
+                // Display toolbar again
                 let toolbar = document.getElementsByClassName("openseadragon-container")[0].childNodes[1];
-                toolbar.style.display = "none";
-                html2canvas($("#wsi-canvas")[0]).then(canvas => {
-                    var now = new Date();
-                    var formattedDate = now.format("yyyy-MM-dd hh-mm-ss");
-                    console.log(now);
-                    // Trigger download
-                    var link = document.createElement('a');
-                    link.href = canvas.toDataURL("image/jpeg");
-                    link.download = 'LearnPathology Screenshot ' + formattedDate + '.jpg';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                }).then(x => {
-                    // Display toolbar again
-                    let toolbar = document.getElementsByClassName("openseadragon-container")[0].childNodes[1];
-                    toolbar.style.display = "block";
-                })
+                toolbar.style.display = "block";
+            })
 
         })
-
 
 
         let overlayElement = document.createElement("button");
@@ -261,7 +274,6 @@
             minScrollDeltaTime: 150, //	Number of milliseconds between canvas-scroll events.
             showNavigator: true, // The navigation window top-right
             prefixUrl: "{% static 'slide/images/' %}", // Where to find OpenSedragon button images
-            //toolbar: "toolbarDiv",
             tileSources: {
                 width: {{ slide.width }},
                 height:  {{ slide.height }},
@@ -297,7 +309,6 @@
         } catch (e) {
             alert('Couldn\'t get scaling factor')
         }
-
 
 
         viewer.addControl(document.getElementById("toolbarDiv"), {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
