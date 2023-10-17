@@ -599,9 +599,9 @@ Slide viewer
 }
 
 .slideViewerCard {
-    /*height: 100%;*/
-    height: 600px;
+    height: 85vh ; /* Set the height to the full viewport height */
     width: 100%;
+
 }
 
 @media (max-width: 992.02px) {
@@ -1220,6 +1220,7 @@ Header of page main content
     align-items: center;
     padding: 0; /*24px;*/
     border: none!important;
+
 }
 
 /* One-column layout */

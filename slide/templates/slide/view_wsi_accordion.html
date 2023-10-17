@@ -14,12 +14,32 @@
 
 {% block page_title %}
     {{ slide.name }}
+{% endblock page_title %}
+
+
+{% block button_row %}
+{% endblock button_row %}
+
+
+{% block content %}
+
+
+
+
+            <div class="card slideViewerCard transparentBackground">
+                <div id="wsi-canvas" class="wsi_canvas" style="height: 100%;"></div>
+                {% if annotated_slide %}
+                    {{ annotated_slide.get_html | safe }}
+                {% endif %}
+            </div>
+
+
 
 
 
     <div id="toolbarDiv" style="width: 100%;">
 
-        <!-- Custom buttons -->
+        <!-- Custom buttons for Toolbar-->
         <button type="button" class="custom-button btn  btn-secondary" data-bs-toggle="modal"
                 data-bs-target="#slideInfoModal">
             &#9432;
@@ -27,16 +47,17 @@
         <button id="setZoomButton" class="custom-button btn btn-secondary">Set Zoom to Whole Slide</button>
         <button id="screenshotButton" class="custom-button btn btn-secondary ">&#128247;</button>
         {% if request.user.is_teacher or request.user.is_superuser %}
-            <button id="setZoomButton" class="custom-button btn btn-secondary">Edite/ New Annotation</button>
+            <a href="{% url 'slide:base_annotations' slide_id=slide.id %}" class="custom-button-link">
+                <button id="new_annotation" class="custom-button btn btn-secondary">
+                    Edit/ New Annotation
+                </button>
+            </a>
         {% endif %}
-        <button id="setZoomButton" class="custom-button btn btn-secondary">Toggle Annotation List</button>
-        <button id="setZoomButton" class="custom-button btn btn-secondary">Toggle Annotations</button>
-        <button id="setZoomButton" class="custom-button btn btn-secondary">Toogle Labels</button>
-
+        <button id="annotationList" class="custom-button btn btn-secondary">Toggle Annotation List</button>
+        <button id="annotation" class="custom-button btn btn-secondary">Toggle Annotations</button>
+        <button id="annotationLabel" class="custom-button btn btn-secondary">Toogle Labels</button>
 
     </div>
-
-
 
 
     <!-- Slide Information CONTENT BEGIN -->
@@ -48,7 +69,6 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" id="modal-table-content">
-                <!-- Table content will be inserted dynamically -->
                 <div id="table-content" style="display: none;">
                     <table class="table" style="font-size: 14px;">
                         <thead class="thead-light">
@@ -89,22 +109,6 @@
 
                         <thead class="thead-light">
                         <tr>
-                            <th colspan="2">Test annotation list</th>
-                        </tr>
-                        </thead>
-                        {% for box in boxes %}
-                            <tr>
-                                <td colspan="2">
-                                    <a id="boundingbox-listitem-{{ box.id }}"
-                                       onclick="activateAnnotation('boundingbox-listitem-{{ box.id }}');">
-                                        {{ box.text }}
-                                    </a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-
-                        <thead class="thead-light">
-                        <tr>
                             <th colspan="2">Supplementary information</th>
                         </tr>
                         </thead>
@@ -112,12 +116,12 @@
                             <th>
                                 Long description
                                 {% if request.user.is_teacher or request.user.is_superuser %}
-                                    <div class="card-content" style="padding-top: 5px">
-                                        <a class="LPButton" href="{% url 'slide:edit_description' slide.id %}"
-                                           style="margin: 0;">
-                                            Edit long description
-                                        </a>
-                                    </div>
+
+                                    <a class="custom-button-link" href="{% url 'slide:edit_description' slide.id %}">
+                                        <button class="custom-button ">&#9998;
+                                        </button>
+                                    </a>
+
                                 {% endif %}
                             </th>
                             {% if slide.long_description %}
@@ -130,12 +134,10 @@
                             <th>
                                 General pathology tags
                                 {% if request.user.is_teacher or request.user.is_superuser %}
-                                    <div class="card-content" style="padding-top: 5px">
-                                        <a class="LPButton" href="{% url 'slide:edit_tags' slide.id %}"
-                                           style="margin: 0;">
-                                            Edit tags
-                                        </a>
-                                    </div>
+
+                                    <a class="custom-button-link" href="{% url 'slide:edit_tags' slide.id %}">
+                                        <button class="custom-button ">&#9998;</button>
+                                    </a>
                                 {% endif %}
                             </th>
                             <td>
@@ -146,64 +148,17 @@
                                 {% endif %}
                             </td>
                         </tr>
-                        <tr>
-                            <td colspan="2">
-                                <div class="LPButton"><a href="{% url 'slide:base_annotations' slide_id=slide.id %}">
-                                    Add descriptive annotations
-                                </a></div>
-                            </td>
-                        </tr>
                     </table>
-
                 </div>
             </div>
         </div>
     </div>
 
-    <script>
-        $(document).ready(function () {
-            // Function to set the modal content
-            function setModalContent() {
-                var tableContent = $('#table-content').html();
-                $('#modal-table-content').html(tableContent);
-            }
-
-            // Initialize the modal
-            $('#slideInfoModal').modal({
-                show: false
-            });
-
-            // When the modal is shown, set its content
-            $('#slideInfoModal').on('show.bs.modal', function () {
-                setModalContent();
-            });
-        });
-
-
-    </script>
-
-    <!-- Slide Information CONTENT END -->
-
-{% endblock page_title %}
-
-
-{% block button_row %}
-{% endblock button_row %}
-
-
-{% block content %}
-
-    <!-- WSI VIEWER -->
-    <div class="card slideViewerCard transparentBackground">
-        <div id="wsi-canvas" class="wsi_canvas" style="height: 100%;"></div>
-        {% if annotated_slide %}
-            {{ annotated_slide.get_html | safe }}
-        {% endif %}
-    </div>
 
     <script src="{% static 'slide/openseadragon.min.js' %}"></script>
     <script src="{% static 'slide/openseadragon-scalebar.js' %}"></script>
     <script type="text/javascript">
+
 
         const zoomLevels = [0.25, 1, 10, 20, 40]; // Include 0.25x
         let currentZoomIndex = 0;
@@ -252,6 +207,24 @@
             })
 
         })
+
+            $(document).ready(function () {
+            // Function to set the modal content
+            function setModalContent() {
+                var tableContent = $('#table-content').html();
+                $('#modal-table-content').html(tableContent);
+            }
+
+            // Initialize the modal
+            $('#slideInfoModal').modal({
+                show: false
+            });
+
+            // When the modal is shown, set its content
+            $('#slideInfoModal').on('show.bs.modal', function () {
+                setModalContent();
+            });
+        });
 
 
         let overlayElement = document.createElement("button");
@@ -313,10 +286,8 @@
 
         viewer.addControl(document.getElementById("toolbarDiv"), {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
 
-    </script>
-    <script>
+
         window.onLoad = toggleAnnotationOff();
-        window.onLoad = toggleInfoCardVisibility();
         window.onLoad = createClickReaction();
 
         function createClickReaction() {
@@ -432,63 +403,24 @@
             }
         }
 
-        function toggleInfoCardVisibility() {
-            var x = document.getElementById("slideInfoCardContent");
-            var canvas_viewer = document.getElementById('imageViewer')
-            console.log("clicked button to toggle card visibility");
-            console.log(x);
-            if (x.style.display === "none") {
-                x.style.display = "block";
-                canvas_viewer.style.width = '';
+        document.getElementById("annotation").addEventListener('click', function () {
+            $(".overlay").toggle();
+            if ($(".overlay").is(':visible')) {
             } else {
-                x.style.display = "none";
-                canvas_viewer.style.width = '100%';
+                if ($(".textOverlay").is(':visible')) {
+                    $(".textOverlay").toggle();
+                }
             }
-            timer = setTimeout(function () {
-                updateTextLocation();
-            }, 20);
-        }
+        });
 
-        $(function () {
-            $('#toggle-annotation').bootstrapToggle({
-                on: ' Annotation',
-                off: ' Annotation'
-            })
-            $('#toggle-annotation').bootstrapToggle('off');
-        })
-        $(function () {
-            $('#toggle-text').bootstrapToggle({
-                on: ' Text',
-                off: ' Text'
-            })
-            $('#toggle-text').bootstrapToggle('off');
-        })
-
-        $(function () {
-            $('#toggle-annotation').change(function () {
-                $(".overlay").toggle();
-                if ($(this).is(':checked')) {
-
-                } else {
-                    if ($('#toggle-text').is(':checked')) {
-                        $('#toggle-text').bootstrapToggle('off');
-                    }
+        document.getElementById("annotationLabel").addEventListener('click', function () {
+            $(".textOverlay").toggle();
+            if ($(".textOverlay").is(':visible')) {
+                if ($(".overlay").is(':hidden')) {
+                    $(".overlay").toggle();
                 }
-            })
-        })
-
-        $(function () {
-            $('#toggle-text').on('change', function () {
-                $(".textOverlay").toggle();
-                if ($(this).is(':checked')) {
-                    if ($('#toggle-annotation').is(':checked')) {
-
-                    } else {
-                        $('#toggle-annotation').bootstrapToggle('on');
-                    }
-                }
-            })
-        })
+            }
+        });
 
 
     </script>
