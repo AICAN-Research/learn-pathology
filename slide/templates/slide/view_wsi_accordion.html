@@ -5,11 +5,8 @@
 
 {% block breadcrumb_items %}
     <li class="breadcrumb-item"><a href="{% url 'slide:browser' %}">Image browser</a></li>
-    {#<li class="breadcrumb-item active" aria-current="page">Viewer: {{ slide.name }}</li>#}
     <li class="breadcrumb-item active" aria-current="page">{{ slide.name }}</li>
 {% endblock breadcrumb_items %}
-
-
 
 
 {% block page_title %}
@@ -24,21 +21,14 @@
 {% block content %}
 
 
-
-
-            <div class="card slideViewerCard transparentBackground">
-                <div id="wsi-canvas" class="wsi_canvas" style="height: 100%;"></div>
-                {% if annotated_slide %}
-                    {{ annotated_slide.get_html | safe }}
-                {% endif %}
-            </div>
-
-
-
-
+    <div class="card slideViewerCard transparentBackground">
+        <div id="wsi-canvas" class="wsi_canvas" style="height: 100%;"></div>
+        {% if annotated_slide %}
+            {{ annotated_slide.get_html | safe }}
+        {% endif %}
+    </div>
 
     <div id="toolbarDiv" style="width: 100%;">
-
         <!-- Custom buttons for Toolbar-->
         <button type="button" class="custom-button btn  btn-secondary" data-bs-toggle="modal"
                 data-bs-target="#slideInfoModal">
@@ -56,9 +46,7 @@
         <button id="annotationList" class="custom-button btn btn-secondary">Toggle Annotation List</button>
         <button id="annotation" class="custom-button btn btn-secondary">Toggle Annotations</button>
         <button id="annotationLabel" class="custom-button btn btn-secondary">Toogle Labels</button>
-
     </div>
-
 
     <!-- Slide Information CONTENT BEGIN -->
     <div class="modal fade" id="slideInfoModal" tabindex="-1" aria-labelledby="slideInfoModalLabel" aria-hidden="true">
@@ -154,93 +142,11 @@
         </div>
     </div>
 
-
     <script src="{% static 'slide/openseadragon.min.js' %}"></script>
     <script src="{% static 'slide/openseadragon-scalebar.js' %}"></script>
     <script type="text/javascript">
 
-
-        const zoomLevels = [0.25, 1, 10, 20, 40]; // Include 0.25x
-        let currentZoomIndex = 0;
-
-        const zoomButton = document.getElementById("setZoomButton");
-
-        function updateButtonLabel() {
-            if (currentZoomIndex < zoomLevels.length) {
-
-                zoomButton.textContent = `\u{1f50e} ${zoomLevels[currentZoomIndex]}x`;
-
-            }
-        }
-
-        document.getElementById("setZoomButton").addEventListener("click", function () {
-            if (currentZoomIndex < zoomLevels.length) {
-                const targetZoom = zoomLevels[currentZoomIndex];
-                viewer.viewport.zoomTo(targetZoom);
-                currentZoomIndex = (currentZoomIndex + 1) % zoomLevels.length; // Loop back to 0 when reaching the end
-                updateButtonLabel();
-            }
-        });
-
-        updateButtonLabel();
-
-        document.getElementById("screenshotButton").addEventListener('click', function () {
-            console.log('Click!');
-            // Hide toolbar:
-            let toolbar = document.getElementsByClassName("openseadragon-container")[0].childNodes[1];
-            toolbar.style.display = "none";
-            html2canvas($("#wsi-canvas")[0]).then(canvas => {
-                var now = new Date();
-                var formattedDate = now.format("yyyy-MM-dd hh-mm-ss");
-                console.log(now);
-                // Trigger download
-                var link = document.createElement('a');
-                link.href = canvas.toDataURL("image/jpeg");
-                link.download = 'LearnPathology Screenshot ' + formattedDate + '.jpg';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }).then(x => {
-                // Display toolbar again
-                let toolbar = document.getElementsByClassName("openseadragon-container")[0].childNodes[1];
-                toolbar.style.display = "block";
-            })
-
-        })
-
-            $(document).ready(function () {
-            // Function to set the modal content
-            function setModalContent() {
-                var tableContent = $('#table-content').html();
-                $('#modal-table-content').html(tableContent);
-            }
-
-            // Initialize the modal
-            $('#slideInfoModal').modal({
-                show: false
-            });
-
-            // When the modal is shown, set its content
-            $('#slideInfoModal').on('show.bs.modal', function () {
-                setModalContent();
-            });
-        });
-
-
-        let overlayElement = document.createElement("button");
-        overlayElement.innerText = "Toggle Annotations";
-        let overlayButton = new OpenSeadragon.Button({
-            tooltip: 'Toggle Annotations',
-            element: overlayElement,
-            //srcRest: `/images/Browser_Chrome.png`,
-            //srcGroup: `/images/Browser_Chrome.png`,
-            //srcHover: `/images/Browser_Chrome.png`,
-            //srcDown: `/images/Browser_Chrome.png`,
-            onClick: function () {
-                console.log('Click!');
-                $(".overlay").toggle();
-            }
-        });
+        <!--WSI Viewer-->
         var viewer = OpenSeadragon({
             id: "wsi-canvas",
             zoomPerScroll: 2, // Scroll speed
@@ -263,6 +169,9 @@
             }
         });
 
+        viewer.addControl(document.getElementById("toolbarDiv"), {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
+
+        <!--Scalebar-->
         try {
             let pixelsPerMeter = {{ slide|get_pixels_per_meter }};
             viewer.scalebar({
@@ -283,14 +192,10 @@
             alert('Couldn\'t get scaling factor')
         }
 
-
-        viewer.addControl(document.getElementById("toolbarDiv"), {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
-
-
         window.onLoad = toggleAnnotationOff();
         window.onLoad = createClickReaction();
 
-        function createClickReaction() {
+         function createClickReaction() {
             let current_overlays = viewer.currentOverlays;
             for (let i = 0; i < current_overlays.length; i++) {
 
@@ -335,6 +240,103 @@
             $(".textOverlay").toggle();
         }
 
+        <!--Zoom Button Functionality-->
+        const zoomLevels = [0.25, 1, 10, 20, 40]; // Include 0.25x
+        let currentZoomIndex = 0;
+        const zoomButton = document.getElementById("setZoomButton");
+
+        function updateButtonLabel() {
+            if (currentZoomIndex < zoomLevels.length) {
+
+                zoomButton.textContent = `\u{1f50e} ${zoomLevels[currentZoomIndex]}x`;
+
+            }
+        }
+
+        document.getElementById("setZoomButton").addEventListener("click", function () {
+            if (currentZoomIndex < zoomLevels.length) {
+                const targetZoom = zoomLevels[currentZoomIndex];
+                viewer.viewport.zoomTo(targetZoom);
+                currentZoomIndex = (currentZoomIndex + 1) % zoomLevels.length; // Loop back to 0 when reaching the end
+                updateButtonLabel();
+            }
+        });
+        updateButtonLabel();
+
+        <!--Screenshoot Button Functionality-->
+        document.getElementById("screenshotButton").addEventListener('click', function () {
+            console.log('Click!');
+            // Hide toolbar:
+            let toolbar = document.getElementsByClassName("openseadragon-container")[0].childNodes[1];
+            toolbar.style.display = "none";
+            html2canvas($("#wsi-canvas")[0]).then(canvas => {
+                var now = new Date();
+                var formattedDate = now.format("yyyy-MM-dd hh-mm-ss");
+                console.log(now);
+                // Trigger download
+                var link = document.createElement('a');
+                link.href = canvas.toDataURL("image/jpeg");
+                link.download = 'LearnPathology Screenshot ' + formattedDate + '.jpg';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }).then(x => {
+                // Display toolbar again
+                let toolbar = document.getElementsByClassName("openseadragon-container")[0].childNodes[1];
+                toolbar.style.display = "block";
+            });
+
+        });
+
+        <!-- Annotation List Functionality -->
+        document.getElementById("right-column").addEventListener("click",function () {
+            ("#right-column").toggle();
+
+        });
+
+        <!-- Info Button Functionality-->
+        $(document).ready(function () {
+            // Function to set the modal content
+            function setModalContent() {
+                var tableContent = $('#table-content').html();
+                $('#modal-table-content').html(tableContent);
+            }
+
+            // Initialize the modal
+            $('#slideInfoModal').modal({
+                show: false
+            });
+
+            // When the modal is shown, set its content
+            $('#slideInfoModal').on('show.bs.modal', function () {
+                setModalContent();
+            });
+        });
+
+        <!-- Annotation Button Functionality-->
+         document.getElementById("annotation").addEventListener('click', function () {
+            $(".overlay").toggle();
+            if ($(".overlay").is(':visible')) {
+            } else {
+                if ($(".textOverlay").is(':visible')) {
+                    $(".textOverlay").toggle();
+                }
+            }
+        });
+
+        <!--Label Button Functionality-->
+        document.getElementById("annotationLabel").addEventListener('click', function () {
+            $(".textOverlay").toggle();
+            if ($(".textOverlay").is(':visible')) {
+                if ($(".overlay").is(':hidden')) {
+                    $(".overlay").toggle();
+                }
+            }
+        });
+
+
+
+
         function highlightAnnotation(annotationId) {
             var list_item = document.getElementById(annotationId);
             var list_id = annotationId.split('-').at(-1);
@@ -376,8 +378,6 @@
 
         viewer.addHandler('viewport-change', updateTextLocation);
         viewer.addHandler('tile-drawing', updateTextLocation);
-        addEventListener("resize", () => {
-        });
 
         onresize = () => {
             timer = setTimeout(function () {
@@ -403,24 +403,7 @@
             }
         }
 
-        document.getElementById("annotation").addEventListener('click', function () {
-            $(".overlay").toggle();
-            if ($(".overlay").is(':visible')) {
-            } else {
-                if ($(".textOverlay").is(':visible')) {
-                    $(".textOverlay").toggle();
-                }
-            }
-        });
 
-        document.getElementById("annotationLabel").addEventListener('click', function () {
-            $(".textOverlay").toggle();
-            if ($(".textOverlay").is(':visible')) {
-                if ($(".overlay").is(':hidden')) {
-                    $(".overlay").toggle();
-                }
-            }
-        });
 
 
     </script>

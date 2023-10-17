@@ -599,7 +599,7 @@ Slide viewer
 }
 
 .slideViewerCard {
-    height: 85vh ; /* Set the height to the full viewport height */
+    height: 80vh ; /* Set the height to the full viewport height */
     width: 100%;
 
 }
