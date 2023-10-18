@@ -1256,6 +1256,12 @@ Header of page main content
 }
 
 /* Custom objects/items */
+
+.button-group {
+    display: flex;
+    flex-wrap: wrap;
+}
+
 .button-text {
     text-align: center;
     color: var(--color-white);

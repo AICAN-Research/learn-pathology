@@ -62,25 +62,36 @@
 
 
 
-    <div id="toolbarDiv" style="width: 100%;">
-        <!-- Custom buttons for Toolbar-->
-        <button type="button" class="custom-button btn  btn-secondary" data-bs-toggle="modal"
-                data-bs-target="#slideInfoModal">
-            &#9432;
-        </button>
-        <button id="setZoomButton" class="custom-button btn btn-secondary">Set Zoom to Whole Slide</button>
-        <button id="screenshotButton" class="custom-button btn btn-secondary ">&#128247;</button>
-        {% if request.user.is_teacher or request.user.is_superuser %}
-            <a href="{% url 'slide:base_annotations' slide_id=slide.id %}" class="custom-button-link">
-                <button id="new_annotation" class="custom-button btn btn-secondary">
-                    Edit/ New Annotation
-                </button>
-            </a>
-        {% endif %}
-        <button id="annotationList" class="custom-button btn btn-secondary">Toggle Annotation List</button>
-        <button id="annotation" class="custom-button btn btn-secondary">Toggle Annotations</button>
-        <button id="annotationLabel" class="custom-button btn btn-secondary">Toogle Labels</button>
+<div id="toolbarDiv">
+    <!-- Custom buttons for Toolbar -->
+    <div class="button-group">
+        <button id="zoomInButton" class="custom-button btn btn-secondary">&#43;</button>
+        <button id="zoomOutButton" class="custom-button btn btn-secondary">&#8722;</button>
+        <button id="FullScreenButton" class="custom-button btn btn-secondary">&#x26F6;</button>
+        <button class="custom-button btn btn-secondary" data-bs-toggle="modal" data-bs-target="#slideInfoModal">&#9432;</button>
     </div>
+    <div class="button-group">
+        <button id="setZoomButton" class="custom-button btn btn-secondary">Set Zoom to Whole Slide</button>
+        <button id="screenshotButton" class="custom-button btn btn-secondary">&#128247;</button>
+    </div>
+    <div class="button-group">
+        {% if request.user.is_teacher or request.user.is_superuser %}
+        <a href="{% url 'slide:base_annotations' slide_id=slide.id %}" class="custom-button-link">
+            <button id="new_annotation" class="custom-button btn btn-secondary">Edit/ New Annotation</button>
+        </a>
+        {% endif %}
+    </div>
+    <div class="button-group">
+        <button id="annotationList" class="custom-button btn btn-secondary">Toggle Annotation List</button>
+    </div>
+    <div class="button-group">
+        <button id="annotation" class="custom-button btn btn-secondary">Toggle Annotations</button>
+    </div>
+    <div class="button-group">
+        <button id="annotationLabel" class="custom-button btn btn-secondary">Toggle Labels</button>
+    </div>
+</div>
+
 
     <!-- Slide Information CONTENT BEGIN -->
     <div class="modal fade" id="slideInfoModal" tabindex="-1" aria-labelledby="slideInfoModalLabel" aria-hidden="true">
@@ -187,6 +198,9 @@
             minScrollDeltaTime: 150, //	Number of milliseconds between canvas-scroll events.
             showNavigator: true, // The navigation window top-right
             prefixUrl: "{% static 'slide/images/' %}", // Where to find OpenSedragon button images
+            showHomeControl: false,     // Hide the home button
+            showFullPageControl: false, // Hide the full-page button
+            showZoomControl: false,     // Hide the zoom-in and zoom-out buttons
             tileSources: {
                 width: {{ slide.width }},
                 height:  {{ slide.height }},
@@ -203,7 +217,7 @@
             }
         });
 
-        viewer.addControl(document.getElementById("toolbarDiv"), {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
+        viewer.addControl(document.getElementById("toolbarDiv"), {anchor: OpenSeadragon.ControlAnchor.BOTTOM_LEFT});
 
         <!--Scalebar-->
         try {
@@ -323,6 +337,26 @@
             });
 
         });
+
+        <!--Default Button Functionality-->
+        document.getElementById("zoomInButton").addEventListener('click', function () {
+            viewer.viewport.zoomBy(2);
+        });
+
+        document.getElementById("zoomOutButton").addEventListener('click', function () {
+            viewer.viewport.zoomBy((1 / 2));
+
+        });
+
+        document.getElementById("FullScreenButton").addEventListener('click', function () {
+            if (OpenSeadragon.isFullScreen()) {
+                viewer.setFullScreen(false);
+            } else {
+                viewer.setFullScreen(true);
+            }
+        });
+
+
 
         <!-- Annotation List Functionality -->
         function toggleCardVisibility() {
