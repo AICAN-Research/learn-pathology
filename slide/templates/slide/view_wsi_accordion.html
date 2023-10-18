@@ -64,31 +64,33 @@
 
 <div id="toolbarDiv">
     <!-- Custom buttons for Toolbar -->
-    <div class="button-group">
-        <button id="zoomInButton" class="custom-button btn btn-secondary">&#43;</button>
-        <button id="zoomOutButton" class="custom-button btn btn-secondary">&#8722;</button>
-        <button id="FullScreenButton" class="custom-button btn btn-secondary">&#x26F6;</button>
-        <button class="custom-button btn btn-secondary" data-bs-toggle="modal" data-bs-target="#slideInfoModal">&#9432;</button>
+      <div class="button-group">
+         <button id="screenshotButton" class="custom-button btn btn-secondary"><div class="button-text">&#128247; </div></button>
+          <button   class="custom-button btn btn-secondary"><div id="setZoomButton" class="button-text"> </div></button>
+
     </div>
     <div class="button-group">
-        <button id="setZoomButton" class="custom-button btn btn-secondary">Set Zoom to Whole Slide</button>
-        <button id="screenshotButton" class="custom-button btn btn-secondary">&#128247;</button>
+        <button id="zoomInButton" style="width: 46px; text-align: center" class="custom-button btn btn-secondary"><div class="button-text"> &#43;</div></button>
+        <button id="zoomOutButton" style="width: 46px; text-align: center" class="custom-button btn btn-secondary"><div class="button-text">&#8722; </div></button>
+        <button id="FullScreenButton" style="width: 46px; text-align: center" class="custom-button btn btn-secondary"><div class="button-text">&#x26F6;</div></button>
+        <button class="custom-button btn btn-secondary" style="width: 46px;" data-bs-toggle="modal" data-bs-target="#slideInfoModal"><div class="button-text"> &#9432;</div></button>
     </div>
+
     <div class="button-group">
         {% if request.user.is_teacher or request.user.is_superuser %}
         <a href="{% url 'slide:base_annotations' slide_id=slide.id %}" class="custom-button-link">
-            <button id="new_annotation" class="custom-button btn btn-secondary">Edit/ New Annotation</button>
+            <button id="new_annotation" style="width: 200px;" class="custom-button btn btn-secondary"><div class="button-text"> Edit/ New Annotation</div></button>
         </a>
         {% endif %}
     </div>
     <div class="button-group">
-        <button id="annotationList" class="custom-button btn btn-secondary">Toggle Annotation List</button>
+        <button id="annotationList" style="width: 200px;" class="custom-button btn btn-secondary"><div class="button-text">Toggle Annotation List</div></button>
     </div>
     <div class="button-group">
-        <button id="annotation" class="custom-button btn btn-secondary">Toggle Annotations</button>
+        <button id="annotation" style="width: 200px;" class="custom-button btn btn-secondary"><div class="button-text">Toggle Annotations </div></button>
     </div>
     <div class="button-group">
-        <button id="annotationLabel" class="custom-button btn btn-secondary">Toggle Labels</button>
+        <button id="annotationLabel" style="width: 200px;" class="custom-button btn btn-secondary"><div class="button-text">Toggle Labels </div></button>
     </div>
 </div>
 
