@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'click_question',
     'one_to_one',
     'many_to_one',
+    'sorting',
     'course',
     'tag',
 ]
