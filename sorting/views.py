@@ -7,7 +7,7 @@ from slide.models import Slide, AnnotatedSlide, Pointer, BoundingBox
 from task.forms import TaskForm
 from .forms import SortingTaskForm, PairForm
 from .models import SortingTask, Pair
-from slide.views import slide_cache, save_pointer_annotation, save_boundingbox_annotation
+from slide.views import slide_cache, save_pointer_annotation, save_boundingbox_annotation, delete_existing_annotations
 from course.models import Course
 from user.decorators import teacher_required
 from task.models import Task
@@ -42,9 +42,6 @@ def new(request, slide_id, course_id=None):
         task_form = TaskForm(request.POST)
         sorting_task_form = SortingTaskForm(request.POST)
         pair_formset = PairFormSet(request.POST, initial=[{'fixed': chr(97 + x)} for x in range(PairFormSet.extra)])
-
-        print(pair_formset.is_valid())
-        print(pair_formset.errors)
 
         with transaction.atomic():
             if task_form.is_valid() and sorting_task_form.is_valid() and pair_formset.is_valid():
@@ -85,7 +82,7 @@ def new(request, slide_id, course_id=None):
                 # Give a message back to the user
                 messages.add_message(request, messages.SUCCESS, 'Task added successfully!')
 
-                if course_id is not None:
+                if course_id is not None and course_id in Course.objects.values_list('id', flat=True):
                     course = Course.objects.get(id=course_id)
                     course.task.add(task)
                     return redirect("course:view", course_id=course_id, active_tab='tasks')
@@ -97,8 +94,6 @@ def new(request, slide_id, course_id=None):
         sorting_task_form = SortingTaskForm()
         pair_formset = PairFormSet(queryset=Pair.objects.none(),
                                    initial=[{'fixed': chr(97 + x)} for x in range(PairFormSet.extra)])
-        print(pair_formset.initial)
-        print(pair_formset)
 
     return render(request, 'sorting/new.html', {
         'task_form': task_form,
@@ -118,13 +113,6 @@ def edit(request, task_id, course_id=None):
     slide_cache.load_slide_to_cache(slide_id=annotated_slide.slide_id)
 
     PairFormSet = modelformset_factory(Pair, form=PairForm, extra=5)
-    pair_formset = PairFormSet(request.POST,
-                               queryset=sorting_pair,
-                               initial=[{'fixed': chr(97 + sorting_pair.count() + x)} for x in
-                                        range(PairFormSet.extra)])
-    print(pair_formset.is_valid(), '\n')
-    for pair_form in pair_formset:
-        print(pair_form.has_changed(), pair_form.is_valid())
 
     if request.method == "POST":
         task_form = TaskForm(request.POST, instance=task)
@@ -135,7 +123,7 @@ def edit(request, task_id, course_id=None):
                                             range(PairFormSet.extra)])
 
         with transaction.atomic():
-            if task_form.is_valid() and sorting_task_form.is_valid() and pair_formset.is_valid():
+            if task_form.is_valid() and sorting_task_form.is_valid():
                 task = task_form.save()
 
                 organ_tags = task_form.cleaned_data['organ_tags']
@@ -145,12 +133,32 @@ def edit(request, task_id, course_id=None):
                 sorting_task_form.save()
 
                 for pair_form in pair_formset:
-                    '''
                     if pair_form.has_changed():
-                        pair = pair_form.save(commit=False)
-                        pair.sorting_task = sorting_task
-                        pair.save()
-                    '''
+                        if pair_form.is_valid():
+                            pair = pair_form.save(commit=False)
+                            pair.sorting_task = sorting_task
+                            pair.save()
+                        else:
+                            pair_form.cleaned_data['id'].delete()
+
+                # Delete all existing annotations
+                delete_existing_annotations(annotated_slide)
+
+                # Create new annotations (pointers and bounding box)
+                for key in request.POST:
+
+                    if key.startswith('right-arrow-overlay-') and key.endswith('-text'):
+                        save_pointer_annotation(request, key, annotated_slide)
+
+                    if key.startswith('boundingbox-') and key.endswith('-text'):
+                        save_boundingbox_annotation(request, key, annotated_slide)
+
+                # Give a message back to the user
+                messages.add_message(request, messages.SUCCESS,
+                                     f'The task {task.name} was altered!')
+
+                if course_id is not None and course_id in Course.objects.values_list('id', flat=True):
+                    return redirect("course:view", course_id=course_id, active_tab='tasks')
 
         return redirect('task:list')
 
