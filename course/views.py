@@ -91,7 +91,10 @@ def edit(request, course_id):
                  f'The course {course.code} - {course.title} was altered!')
             return redirect('course:view', course_id=course_id, active_tab='course-description')
 
-    return render(request, 'course/edit.html', {'form': courseForm})
+    return render(request, 'course/edit.html', {
+        'form': courseForm,
+        'course': course
+    })
 
 
 @teacher_required
@@ -416,7 +419,8 @@ def upload_material(request, course_id):
         form = CourseMaterialForm()
 
     return render(request, 'course/upload_material.html', {
-        'form': form
+        'form': form,
+        'course': Course.objects.get(id=course_id)
     })
 
 
