@@ -1,0 +1,108 @@
+{% extends 'task/new.html' %}
+
+
+{% block page_title %}
+New task: Second step
+{% endblock page_title %}
+
+
+{% block content %}
+
+<div class="card w-100 mx-auto">
+<div class="card-body"> <!-- TODO: Instead of card-body, add same padding as on other pages (e.g. image browser) -->
+
+    <div class="w-100" style="padding-bottom: 12px;">
+        <div class="progress " style="width: 25%; height: 32px; margin-left: auto;">
+            <div class="progress-bar" role="progressbar" style="width: 100%; background-color: var(--color-blue-dark);">
+                3/3 <!-- TODO: Update with current value for each step -->
+            </div>
+        </div>
+    </div>
+
+    <form class="form" method="post">
+        {% csrf_token %}
+        {{ taskForm.management_form }}
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+
+            <div class="tab-pane active" id="step2_task_info">
+
+                <div style="padding: 6px 24px 6px 24px;">
+                    <h2>
+                        {% block task_type %}{% endblock task_type %}: Task information
+                    </h2>
+                    <h3 style="color: var(--color-blue-dark);">
+                        Fill in the descriptive fields of the task
+                    </h3>
+                </div>
+
+                <div class="card transparentBackground w-100 border-0 text-center">
+                <div class="card-body">
+                <div class="card-text">
+                    {% block task_form %}
+                    {% endblock task_form %}
+                    <table class="table">
+                        <thead class="thead-light">
+                            <tr><th colspan="2">Task metadata and tagging</th></tr>
+                        </thead>
+                        <tr>
+                            <th>{{ taskForm.pathology.label }}</th>
+                            <td>{{ taskForm.pathology }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ taskForm.organ_tags.label }}</th>
+                            <td>{{ taskForm.organ_tags }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ taskForm.other_tags.label }}</th>
+                            <td>{{ taskForm.other_tags }}</td>
+                        </tr>
+                    </table>
+                </div>
+                </div>
+                </div>
+
+            </div>
+
+            <div class="tab-pane fade" id="step3_annotate_wsi">
+
+                <div style="padding: 6px 24px 6px 24px;">
+                    <h2>
+                        New task: Annotate WSI
+                    </h2>
+                    <h3 style="color: var(--color-blue-dark);">
+                        Fill in the descriptive fields of the task
+                    </h3>
+                </div>
+                {% include 'slide/view_wsi_and_edit_annotations.html' with slide=slide %}
+            </div>
+        </div>
+
+        <!-- Nav tabs -->
+        <ul class="nav nav-pills" style="justify-content: end;">
+            <li class="nav-item">
+                <a class="nav-link active" data-bs-toggle="tab" href="#step2_task_info">Task information</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#step3_annotate_wsi">Annotate slide</a>
+            </li>
+            <input type="submit" value="Submit">
+        </ul>
+
+    </form>
+
+
+</div>
+</div>
+
+{% endblock content %}
+
+
+{% block javascript %}
+
+$(document).ready(function(){
+    collapseSidebar();
+});
+
+{% endblock javascript %}

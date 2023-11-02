@@ -1,12 +1,42 @@
-{% extends 'learnpathology/base.html' %}
+{% extends 'learnpathology/single_content_layout.html' %}
 {% load to_class_name %}
 
-{% block content %}
-    <div class="container">
-        <h1>Tasks</h1>
-    </div>
 
-    <div class="card mx-auto text-center" style="width: 90%">
+{% block page_title %}
+Task list
+{% endblock page_title %}
+
+
+{% block breadcrumb_items %}
+{#    <li class="breadcrumb-item"><a href="{% url 'task:list' %}">Task list</a></li>#}
+    <li class="breadcrumb-item">Task list</li>
+{% endblock breadcrumb_items %}
+
+
+<!-- Uncommenting the below block (two lines) will hide the search bar -->
+{#{% block search_bar %}#}
+{#{% endblock search_bar %}#}
+
+
+{% block button_row %}
+<div class="custom-button" style="">
+    <!-- TODO: Update url to not include slide_id since slide is selected when making task -->
+    <a href="{% url 'task:new' %}" style="display: inline-flex;">
+        <div class="button-icon">
+            <span class="iconify" data-icon="fluent:add-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
+        </div>
+        <div style="justify-content: flex-start; align-items: center; display: flex">
+            <div class="button-text">New task</div>
+        </div>
+    </a>
+</div>
+{% endblock button_row %}
+
+
+
+{% block content %}
+
+    <div class="card mx-auto text-center" style="width: 100%">
         <div class="card-body">
             <div class="card-text">
 
@@ -81,3 +111,12 @@
         </div>
     </div>
 {% endblock content %}
+
+
+{% block javascript %}
+
+$(document).ready(function(){
+    collapseSidebar();
+});
+
+{% endblock javascript %}

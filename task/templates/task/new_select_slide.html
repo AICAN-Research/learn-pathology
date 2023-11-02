@@ -1,0 +1,277 @@
+{% extends 'task/new.html' %}
+
+
+{% block page_title %}
+New task: Second step
+{% endblock page_title %}
+
+
+{% block content %}
+
+<div class="card w-100 mx-auto">
+<div class="card-body"> <!-- TODO: Instead of card-body, add same padding as on other pages (e.g. image browser) -->
+
+    <form class="form" method="post">
+        {% csrf_token %}
+
+{#        <h2>Select task type and slide tabs/panes</h2>#}
+
+        <!-- Navigation buttons/tabs -->
+        <ul class="nav nav-pills" id="myTabs" style="justify-content: end;">
+            <li class="nav-item">
+                <a class="nav-link active" data-bs-toggle="tab" href="#step1">Step back</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#step2">Next step</a>
+            </li>
+        </ul>
+{#        <input type="submit" value="Submit">#}
+
+        <button id="back_button" class="custom-button">Step back</button>
+        <button id="next_button" class="custom-button">Next step</button>
+
+        <!-- Tab panes -->
+        <div class="tab-content" id="myPanes">
+
+            <div class="tab-pane active" id="step1">
+
+                <div class="w-100" style="padding-bottom: 12px;">
+                    <div class="progress " style="width: 25%; height: 32px; margin-left: auto;">
+                        <div class="progress-bar" role="progressbar" style="width: 33%; background-color: var(--color-blue-dark);">
+                            1/3 <!-- TODO: Update with current value for each step -->
+                        </div>
+                    </div>
+                </div>
+
+                <div style="padding: 6px 24px 6px 24px;">
+                    <h2>
+                        Select the type of task
+                    </h2>
+                    <h3 style="color: var(--color-blue-dark);">
+                        Choose from the options presented below
+                    </h3>
+                </div>
+
+                <div class="card transparentBackground border-0 text-center">
+                <div class="card-text">
+                    <div class="row">
+                        <div class="column">
+                            <div class="column">
+                                <div class="radio-toolbar">
+                                    <!-- Task type selction -->
+                                    <div>
+                                        <input type="radio" name="task_type" id="multiple_choice" value="multiple_choice"> <!-- onchange="this.form.submit();"> -->
+                                        <label for="multiple_choice" class="body-text">Multiple choice</label>
+                                    </div>
+                                    <div>
+                                        <input type="radio" name="task_type" id="free_text" value="free_text"> <!-- onchange="this.form.submit();"> -->
+                                        <label for="free_text" class="body-text">Paragraph/short answer question</label>
+                                    </div>
+                                    <div>
+                                        <input type="radio" name="task_type" id="click_question" value="click_question"> <!-- onchange="this.form.submit();"> -->
+                                        <label for="click_question" class="body-text">Click question</label>
+                                    </div>
+                                    <div>
+                                        <input type="radio" name="task_type" id="one_to_one_sort" value="one_to_one_sort"> <!-- onchange="this.form.submit();"> -->
+                                        <label for="one_to_one_sort" class="body-text">One-to-one sorting task</label>
+                                    </div>
+                                    <div>
+                                        <input type="radio" name="task_type" id="many_to_one_sort" value="many_to_one_sort"> <!-- onchange="this.form.submit();"> -->
+                                        <label for="many_to_one_sort" class="body-text">Many-to-one sorting task</label>
+                                    </div>
+                                </div>
+                                {% comment %}
+                                <div class="LPButton" style="margin-top: 0; ">
+                                    {% if course_id %}
+                                        <a href="{% url 'multiple_choice:new' slide_id=slide_id course_id=course_id %}">Single/Multiple
+                                            Choice</a>
+                                    {% else %}
+                                        <a href="{% url 'multiple_choice:new' slide_id=slide_id %}">Single/Multiple
+                                            Choice</a>
+                                    {% endif %}
+                                </div>
+                                <br>
+                                <div class="LPButton" style="margin-top: 0; ">
+                                    {% if course_id %}
+                                        <a href="{% url 'free_text:new' slide_id=slide_id course_id=course_id %}">Free Text
+                                            Question</a>
+                                    {% else %}
+                                        <a href="{% url 'free_text:new' slide_id=slide_id %}">Free Text Question</a>
+                                    {% endif %}
+                                </div>
+                                <br>
+                                <div class="LPButton" style="margin-top: 0; ">
+                                    {% if course_id %}
+                                        <a href="{% url 'click_question:new' slide_id=slide_id course_id=course_id %}">Click
+                                            Question</a>
+                                    {% else %}
+                                        <a href="{% url 'click_question:new' slide_id=slide_id %}">Click Question</a>
+                                    {% endif %}
+                                </div>
+                                <br>
+                                <div class="LPButton" style="margin-top: 0; ">
+                                    {% if course_id %}
+                                        <a href="{% url 'one_to_one:new' slide_id=slide_id course_id=course_id %}">One-to-One
+                                            Sorting Task</a>
+                                    {% else %}
+                                        <a href="{% url 'one_to_one:new' slide_id=slide_id %}">One-to-One Sorting Task</a>
+                                    {% endif %}
+                                </div>
+                               <br>
+                                <div class="LPButton" style="margin-top: 0; ">
+                                    {% if course_id %}
+                                        <a href="{% url 'many_to_one:new' slide_id=slide_id course_id=course_id %}">Many-to-One
+                                            Sorting Task</a>
+                                    {% else %}
+                                        <a href="{% url 'many_to_one:new' slide_id=slide_id %}">Many-to-One Sorting Task</a>
+                                    {% endif %}
+                                </div>
+                                {% endcomment %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+
+                <!-- Navigation buttons/tabs -->
+                {% comment %}
+                <a href="{% if course_id %}{% url 'course:view' course_id=course_id active_tab='tasks' %}{% else %}{% url 'task:list' %}{% endif %}">
+                    <div class="custom-button" id="cancelButton">Cancel</div>
+                </a>
+{#                <button>Step back</button>#}
+                <button onclick="activateStep('step2_select_slide');">Next step</button>
+                <a class="custom-button step2 btn btn-default" href="#">Next step</a>
+                <script>
+                    $(document).ready(function(){
+                        $('.step2').click(function(){
+                            console.log('go to step 2');
+                            $('.nav-tabs div[href="#step2"]').tab('show');
+                        });
+                    });
+                </script>
+
+                <a>
+                    <div class="custom-button" id="cancelButton">Cancel</div>
+                </a>
+                <ul class="nav nav-pills" style="justify-content: end;">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-bs-toggle="tab" href="#step1">Cancel</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#step2">Next</a>
+                    </li>
+                </ul>
+                {% endcomment %}
+
+            </div>
+
+            <div class="tab-pane" id="step2">
+
+                <div class="w-100" style="padding-bottom: 12px;">
+                    <div class="progress " style="width: 25%; height: 32px; margin-left: auto;">
+                        <div class="progress-bar" role="progressbar" style="width: 33%; background-color: var(--color-blue-dark);">
+                            1/3 <!-- TODO: Update with current value for each step -->
+                        </div>
+                    </div>
+                </div>
+
+                <div style="padding: 6px 24px 6px 24px;">
+                    <h2>
+                        Select image for the task
+                    </h2>
+                    <h3 style="color: var(--color-blue-dark);">
+                        Check a slide or confirm that the one you chose is selected. Press Next.
+                    </h3>
+                </div>
+
+                {% if course_id %}
+                    {% if slide_id %}
+                        <!-- TODO: List only slides in course, and highlight the slide with ID slide_id -->
+                        {% include 'task/slide_selection.html' with slides_in_course=slide_id %}
+                    {% else %}
+                        <!-- TODO: List only slides in course -->
+                        {% include 'task/slide_selection.html' %}
+                    {% endif %}
+                {% else %}
+                    {% if slide_id %}
+                        <!-- TODO: List all slides, and highlight the slide with ID slide_id -->
+                        {% include 'task/slide_selection.html' with slides_in_course=slide_id %}
+                    {% else %}
+                        <!-- TODO: List all slides -->
+                        {% include 'task/slide_selection.html' %}
+                    {% endif %}
+                {% endif %}
+
+                <button class="custom-button" onclick="this.form.submit();">Next</button>
+                <!-- Navigation buttons/tabs -->
+                {% comment %}
+                <a href="{% if course_id %}{% url 'course:view' course_id=course_id active_tab='tasks' %}{% else %}{% url 'task:list' %}{% endif %}">
+                    <div class="custom-button" id="cancelButton">Cancel</div>
+                </a>
+                <button onclick="activateStep('step1')">Step back</button>
+                <button onclick="this.form.submit();">Next step</button>
+
+                {% endcomment %}
+
+            </div>
+        </div>
+
+        {% comment %}
+        <!-- Nav tabs -->
+        <ul class="nav nav-pills" style="justify-content: end;">
+            <li class="nav-item">
+                <a class="nav-link active" data-bs-toggle="tab" href="#step1">Go back</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#step2">Select image</a>
+            </li>
+            <input type="submit" value="Submit">
+        </ul>
+        {% endcomment %}
+
+    </form>
+
+
+</div>
+</div>
+
+<script>
+
+    $('#back_button').click(function(event) {
+        event.preventDefault();
+        console.log('#back_button clicked');
+        console.log($('#mytabs a[class="active"]'));
+        console.log('$(\'#mytabs a[href="#step1"]\').hasClass("active") = ' + $('#mytabs a[href="#step1"]').hasClass('active'));
+
+        if ($('#mytabs a[href="#step1"]').hasClass('active')) {
+            // If type selection active, cancel making new task. Redirect to task list
+            // TODO: Redirect to task/list or course/task/list
+            window.location.href = "{% url 'task:list' %}";
+        } else if ($('#mytabs a[href="#step2"]').hasClass('active')) {
+            // If slide selection active, go back to type selection
+            $('#mytabs a[href="#step1"]').tab('show');
+        } else {
+            console.log('Undefined behaviour for #back_button');
+        }
+    })
+
+    $('#next_button').click(function(event) {
+        event.preventDefault();
+        console.log('#next_button clicked');
+        // If type selection active, go to slide selection
+        // If slide selection active, submit form and go to information/annotation
+        {#$('#mytabs a[href="#step1"]').tab('show');#}
+    })
+
+</script>
+
+{% endblock content %}
+
+
+{% block javascript %}
+
+    $(document).ready(function(){
+        collapseSidebar();
+    });
+
+{% endblock javascript %}

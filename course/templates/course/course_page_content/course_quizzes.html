@@ -12,7 +12,7 @@
                     <a href="{% url 'course:task_selection' course.id %}">Browse existing tasks</a>
                 </div>
                 <div class="LPButton">
-                    <a href="#" onclick="activateSlides();">Add new task</a>
+                    <a href="{% url 'task:new' course_id=course.id %}">Add new task</a>
                 </div>
             {% endif %}
             <br>

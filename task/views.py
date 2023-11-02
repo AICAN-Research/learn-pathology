@@ -54,21 +54,53 @@ def list(request):
 
 
 @teacher_required
-def new(request, slide_id, course_id=None):
+def new(request, slide_id=None, course_id=None):
     """
     Teacher form for creating a  task
     """
+    context = {}
 
-    # Get slide
-    slide_id = slide_id
-    slide = Slide.objects.get(pk=slide_id)
-    slide_cache.load_slide_to_cache(slide.id)
+    if request.method == 'POST':
 
-    context = {'slide_id': slide_id}
-    if course_id is not None:
-        context['course_id'] = course_id
+        # Either, the form with question type and slide selection is submitted
+        if 'question_type' in request.POST:
+            pass
+        # Or, the form with question information and annotations is submitted
 
-    return render(request, "task/new.html", context)
+
+        if slide_id is not None:
+            # Get slide
+            slide_id = slide_id
+            slide = Slide.objects.get(pk=slide_id)
+            slide_cache.load_slide_to_cache(slide.id)
+
+            context['slide_id'] = slide_id
+            context['slide'] = slide
+        if course_id is not None:
+            context['course_id'] = course_id
+            context['slides'] = Slide.objects.filter(course__id__in=[course_id])
+        else:
+            context['slides'] = Slide.objects.all()
+
+    else:  # GET
+        # TODO: Update this block. Current coed is from previous function
+        if slide_id is not None:
+            # Get slide
+            slide_id = slide_id
+            slide = Slide.objects.get(pk=slide_id)
+            slide_cache.load_slide_to_cache(slide.id)
+
+            context['slide_id'] = slide_id
+            context['slide'] = slide
+        if course_id is not None:
+            context['course_id'] = course_id
+            context['slides'] = Slide.objects.filter(course__id__in=[course_id])
+        else:
+            context['slides'] = Slide.objects.all()
+
+    # if slide_id is not None:
+    #     return render(request, 'task/new_info_and_annotation.html', context)
+    return render(request, "task/new_select_slide.html", context)
 
 
 @teacher_required
