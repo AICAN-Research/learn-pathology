@@ -3,10 +3,14 @@ import random
 from django.contrib import messages
 from django.db import transaction
 from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
+from django.urls import resolve
 
 from course.models import Course
+from multiple_choice.forms import MultipleChoiceForm
+from multiple_choice.views import get_choice_formset
 from slide.models import Slide, Pointer, AnnotatedSlide, BoundingBox
 from slide.views import slide_cache
+from task.forms import TaskForm
 from user.decorators import teacher_required
 from task.models import Task
 from tag.models import Tag
@@ -63,9 +67,29 @@ def new(request, slide_id=None, course_id=None):
     if request.method == 'POST':
 
         # Either, the form with question type and slide selection is submitted
-        if 'question_type' in request.POST:
-            pass
+        if 'task_type' in request.POST:
+            task_type = request.POST.get('task_type')
+            selected_slide_id = request.POST.get('selected_slide_id')
+            slide = Slide.objects.get(pk=selected_slide_id)
+            slide_cache.load_slide_to_cache(slide.id)
+
+            context['slide_id'] = slide_id
+            context['slide'] = slide
+
+            if course_id is not None:
+                context['course_id'] = course_id
+                context['slides'] = Slide.objects.filter(course__id__in=[course_id])
+            else:
+                context['slides'] = Slide.objects.all()
+            if task_type == 'multiple_choice':
+                context['new_url'] = '/multiple_choice/new'
+                context['taskForm'] = TaskForm()
+                context['multipleChoiceForm'] = MultipleChoiceForm()
+                context['choiceFormset'] = get_choice_formset()
+                return render(request, 'multiple_choice/new.html', context)
+
         # Or, the form with question information and annotations is submitted
+
 
 
         if slide_id is not None:

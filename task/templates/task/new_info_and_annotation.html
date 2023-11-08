@@ -19,9 +19,23 @@ New task: Second step
         </div>
     </div>
 
-    <form class="form" method="post">
+
+    <form class="form" method="post" action="{% block task_type_new_url %}{% endblock task_type_new_url %}/{{ slide.id }}/">
         {% csrf_token %}
         {{ taskForm.management_form }}
+
+
+        <!-- Nav tabs -->
+        <ul class="nav nav-pills" style="justify-content: end;">
+            <li class="nav-item">
+                <a class="nav-link active" data-bs-toggle="tab" href="#step2_task_info">Task information</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#step3_annotate_wsi">Annotate slide</a>
+            </li>
+            <input type="submit" value="Submit">
+        </ul>
+
 
         <!-- Tab panes -->
         <div class="tab-content">
@@ -40,8 +54,8 @@ New task: Second step
                 <div class="card transparentBackground w-100 border-0 text-center">
                 <div class="card-body">
                 <div class="card-text">
-                    {% block task_form %}
-                    {% endblock task_form %}
+                    {% block specific_task_type_form %}
+                    {% endblock specific_task_type_form %}
                     <table class="table">
                         <thead class="thead-light">
                             <tr><th colspan="2">Task metadata and tagging</th></tr>
@@ -78,17 +92,6 @@ New task: Second step
                 {% include 'slide/view_wsi_and_edit_annotations.html' with slide=slide %}
             </div>
         </div>
-
-        <!-- Nav tabs -->
-        <ul class="nav nav-pills" style="justify-content: end;">
-            <li class="nav-item">
-                <a class="nav-link active" data-bs-toggle="tab" href="#step2_task_info">Task information</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="tab" href="#step3_annotate_wsi">Annotate slide</a>
-            </li>
-            <input type="submit" value="Submit">
-        </ul>
 
     </form>
 

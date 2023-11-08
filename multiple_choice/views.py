@@ -343,3 +343,9 @@ def edit(request, task_id,course_id=None):
         'boxes': BoundingBox.objects.filter(annotated_slide=annotated_slide),
     }
     return render(request, 'multiple_choice/edit.html', context)
+
+
+def get_choice_formset(num_extra_fields=5):
+    ChoiceFormset = formset_factory(ChoiceForm, extra=num_extra_fields)
+    choice_formset = ChoiceFormset()
+    return choice_formset

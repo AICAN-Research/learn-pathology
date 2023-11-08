@@ -6,8 +6,12 @@ Multiple choice
 {% endblock task_type %}
 
 
+{% block task_type_new_url %}
+{{ new_url }}
+{% endblock task_type_new_url %}
 
-{% block task_form %}
+
+{% block specific_task_type_form %}
 
 {# The tag <form class="form" method="post"> is in 'task/new_info_and_annotation.html' #}
 <table class="table">
@@ -43,4 +47,4 @@ Multiple choice
 
 </table>
 
-{% endblock task_form %}
+{% endblock specific_task_type_form %}
