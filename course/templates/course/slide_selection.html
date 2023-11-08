@@ -1,21 +1,35 @@
-{% extends 'learnpathology/base.html' %}
+{% extends 'learnpathology/single_content_layout.html' %}
 {% load to_class_name %}
 {% load static %}
 {% load slide_filters %}
 {% load bootstrap_icons %}
 
+
+{% block page_title %}
+Select slides for <span style="color: var(--color-blue-dark);">{{ course.title }}</span>
+{% endblock page_title %}
+
+
+{% block breadcrumb_items %}
+    <li class="breadcrumb-item"><a href="{% url 'course:index' %}">Courses</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'course:view' course_id=course.id %}">{{ course.code }} - {{ course.title }}</a></li>
+    <li class="breadcrumb-item">Select images</li>
+{% endblock breadcrumb_items %}
+
+
+{% block search_bar %}
+{% endblock search_bar %}
+
+
 {% block content %}
 
-<div class="container">
-<h1>Add slides to course</h1>
-
-<p>
-    Click on a slide to add it to/remove it from the course <i>{{ course.code }} - {{ course.title }}</i>
-</p>
-</div>
-<div class="card mx-auto text-center" style="width: 90%">
+<div class="card w-100">
 <div class="card-body">
 <div class="card-text">
+
+<h3>
+    Click on a slide to add it to/remove it from the course <i>{{ course.code }} - {{ course.title }}</i>
+</h3>
 
 <div class="row" style="margin: 0 0 0 0;">
 
@@ -126,3 +140,12 @@
 </div>
 </div>
 {% endblock content %}
+
+
+{% block javascript %}
+
+$(document).ready(function(){
+    collapseSidebar();
+});
+
+{% endblock javascript %}
