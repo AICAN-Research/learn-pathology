@@ -17,6 +17,7 @@ New task: Second step
 {#        <h2>Select task type and slide tabs/panes</h2>#}
 
         <!-- Navigation buttons/tabs -->
+        {% comment %}
         <ul class="nav nav-pills" id="myTabs" style="justify-content: end;">
             <li class="nav-item">
                 <a class="nav-link active" data-bs-toggle="tab" href="#step1">Step back</a>
@@ -25,12 +26,10 @@ New task: Second step
                 <a class="nav-link" data-bs-toggle="tab" href="#step2">Next step</a>
             </li>
         </ul>
-{#        <input type="submit" value="Submit">#}
+        {% endcomment %}
 
         <button id="back_button" class="custom-button">Step back</button>
         <button id="next_button" class="custom-button">Next step</button>
-
-
 
 
         <div style="overflow:auto;">
@@ -44,10 +43,9 @@ New task: Second step
         <div style="text-align:center;margin-top:40px;">
             <span class="step"></span>
             <span class="step"></span>
-            <span class="step"></span>
-            <span class="step"></span>
+{#            <span class="step"></span>#}
+{#            <span class="step"></span>#}
         </div>
-
 
 
         <!-- Tab panes -->
@@ -63,6 +61,7 @@ New task: Second step
                         </div>
                     </div>
                 </div>
+                {% endcomment %}
 
                 <div style="padding: 6px 24px 6px 24px;">
                     <h2>
@@ -72,7 +71,6 @@ New task: Second step
                         Choose from the options presented below
                     </h3>
                 </div>
-                {% endcomment %}
 
                 <div class="card transparentBackground border-0 text-center">
                 <div class="card-text">
@@ -197,6 +195,7 @@ New task: Second step
                         </div>
                     </div>
                 </div>
+                {% endcomment %}
 
                 <div style="padding: 6px 24px 6px 24px;">
                     <h2>
@@ -206,7 +205,6 @@ New task: Second step
                         Check a slide or confirm that the one you chose is selected. Press Next.
                     </h3>
                 </div>
-                {% endcomment %}
 
                 {% if course_id %}
                     {% if slide_id %}

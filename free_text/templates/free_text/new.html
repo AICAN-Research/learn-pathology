@@ -1,115 +1,41 @@
-{% extends 'learnpathology/single_content_layout.html' %}
+{% extends 'task/new_info_and_annotation.html' %}
 
 
-{% block page_title %}
+{% block task_type %}
 <!-- TODO: What should this header be? Include "step 2" somehow, make step 2 template? -->
 Short answer question
-{% endblock page_title %}
+{% endblock task_type %}
 
 
-{% block breadcrumb_items %}
-    {% if course_id %}
-        <li class="breadcrumb-item"><a href="{% url 'course:index' %}">Courses</a></li>
-        <li class="breadcrumb-item"><a href="#">{{ course.code }} - {{ course.name }}</a></li> <!-- TODO: Use course name -->
-        <li class="breadcrumb-item">New task</li>
-    {% endif %}
-
-{% endblock breadcrumb_items %}
+{% block task_type_new_url %}
+{{ new_url }}
+{% endblock task_type_new_url %}
 
 
-{% block search_bar %}
-{% endblock search_bar %}
+{% block specific_task_type_form %}
 
+<table class="table">
 
-{% block button_row %}
-<div class="custom-button" style="">
-    <a href="{% url 'course:new' %}" style="display: inline-flex;">
-        <div class="button-icon">
-            <span class="iconify" data-icon="fluent:bin-recycle-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
-        </div>
-        <div style="justify-content: flex-start; align-items: center; display: flex">
-            <div class="button-text">Delete</div>
-        </div>
-    </a>
-</div>
-{% endblock button_row %}
+    <thead class="thead-light">
+        <tr><th colspan="2">Task info</th></tr>
+    </thead>
+    <tr>
+        <th>{{ taskForm.name.label }} (short, decriptive)</th>
+        <td>{{ taskForm.name }}</td>
+    </tr>
+    <tr>
+        <th>{{ freeTextForm.question.label }}</th>
+        <td>{{ freeTextForm.question }}</td>
+    </tr>
+    <tr>
+        <th>{{ freeTextForm.instructions.label }}</th>
+        <td>{{ freeTextForm.instructions }}</td>
+    </tr>
+           <tr>
+        <th>{{ freeTextForm.answer.label }}</th>
+        <td>{{ freeTextForm.answer }}</td>
+    </tr>
 
+</table>
 
-{% block content %}
-<div class="container">
-<h1>New Free Text Question</h1>
-</div>
-
-<div class="card mx-auto text-center" style="width: 90%">
-<div class="card-body">
-<div class="card-text">
-
-<p>
-    Enter the name, question and answers for the free text task.
-    Add tags and annotate the slide (optional)
-</p>
-
-<form class="form" method="post">
-    {% csrf_token %}
-    {{ taskForm.management_form }}
-
-    <table class="table" style="margin-left: auto; margin-right:auto; width: 80%;">
-
-        <thead class="thead-light">
-            <tr><th colspan="2">Task info</th></tr>
-        </thead>
-        <tr>
-            <th>{{ taskForm.name.label }} (short, decriptive)</th>
-            <td>{{ taskForm.name }}</td>
-        </tr>
-        <tr>
-            <th>{{ freeTextForm.question.label }}</th>
-            <td>{{ freeTextForm.question }}</td>
-        </tr>
-        <tr>
-            <th>{{ freeTextForm.instructions.label }}</th>
-            <td>{{ freeTextForm.instructions }}</td>
-        </tr>
-               <tr>
-            <th>{{ freeTextForm.answer.label }}</th>
-            <td>{{ freeTextForm.answer }}</td>
-        </tr>
-
-
-
-
-        <thead class="thead-light">
-            <tr><th colspan="2">Task metadata and tagging</th></tr>
-        </thead>
-        <tr>
-            <th>{{ taskForm.pathology.label }}</th>
-            <td>{{ taskForm.pathology }}</td>
-        </tr>
-        <tr>
-            <th>{{ taskForm.organ_tags.label }}</th>
-            <td>{{ taskForm.organ_tags }}</td>
-        </tr>
-        <tr>
-            <th>{{ taskForm.other_tags.label }}</th>
-            <td>{{ taskForm.other_tags }}</td>
-        </tr>
-
-        <thead class="thead-light">
-            <tr><th colspan="2">Annotate WSI</th></tr>
-        </thead>
-        <tr><td colspan="2">
-            {% include 'slide/view_wsi_and_edit_annotations.html' with slide=slide %}
-
-            <br>
-            <input type="submit" value="Submit">
-        </td></tr>
-
-    </table>
-
-</form>
-
-
-</div>
-</div>
-</div>
-{% endblock content %}
+{% endblock specific_task_type_form %}
