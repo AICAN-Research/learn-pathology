@@ -188,6 +188,7 @@ New task: Second step
             <div class="tab tab-pane" id="step2">
 
                 {% comment %}
+                {% endcomment %}
                 <div class="w-100" style="padding-bottom: 12px;">
                     <div class="progress " style="width: 25%; height: 32px; margin-left: auto;">
                         <div class="progress-bar" role="progressbar" style="width: 33%; background-color: var(--color-blue-dark);">
@@ -195,7 +196,6 @@ New task: Second step
                         </div>
                     </div>
                 </div>
-                {% endcomment %}
 
                 <div style="padding: 6px 24px 6px 24px;">
                     <h2>
@@ -224,9 +224,9 @@ New task: Second step
                     {% endif %}
                 {% endif %}
 
-                <button class="custom-button" onclick="this.form.submit();">Next</button>
                 <!-- Navigation buttons/tabs -->
                 {% comment %}
+                <button class="custom-button" onclick="this.form.submit();">Next</button>
                 <a href="{% if course_id %}{% url 'course:view' course_id=course_id active_tab='tasks' %}{% else %}{% url 'task:list' %}{% endif %}">
                     <div class="custom-button" id="cancelButton">Cancel</div>
                 </a>
