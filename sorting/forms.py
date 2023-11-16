@@ -1,5 +1,5 @@
 from django.forms import ModelForm, Textarea, TextInput
-from .models import SortingTask, Pair
+from sorting.models import SortingTask, Pair
 
 
 class SortingTaskForm(ModelForm):
