@@ -38,18 +38,11 @@
 
 <div class="wrapper">
     <!-- Sidebar  -->
-    <nav id="sidebar" class="">
+    <nav id="sidebar" class="active">
         <div class="sidebar-contents">
 
             <div class="sidebar-top-group">
                 <div class="sidebar-header">
-                    {% comment %}
-                    <div>
-                        <div id="sidebarCollapse" class="btn sidebar-item-icon" style="background-color: var(--color-blue); color: var(--text-colour);">
-                            <span class="iconify" data-icon="fluent:panel-left-contract-28-regular" data-width="24" data-height="24"></span>
-                        </div>
-                    </div>
-                    {% endcomment %}
                     <a class="w-100 h-100 noLinkStyling" href="{% url 'frontpage' %}" style="display: inline-block;">
                         <img class="logoSmallImage" src="{% static 'learnpathology/images/logo_small.png' %}" style="text-align: center; padding-right: 4px;" alt="LearnPathology logo small">
                     </a>
@@ -232,10 +225,6 @@
 </script>
 
 <script>
-    $('#sidebarCollapse').on('click', function () {
-        $('#sidebar').toggleClass('active');
-    });
-
     setTimeout(function() {
         $('.timeout').slideUp();
     }, 5000);
