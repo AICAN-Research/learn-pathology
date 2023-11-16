@@ -30,6 +30,17 @@ Task list
         </div>
     </a>
 </div>
+{#<div class="custom-button" style="">#}
+{#    <!-- TODO: Update url to not include slide_id since slide is selected when making task -->#}
+{#    <a href="{% url 'multiple_choice:do_random' %}" style="display: inline-flex;">#}
+{#        <div class="button-icon">#}
+{#            <span class="iconify" data-icon="fluent:arrow-shuffle-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>#}
+{#        </div>#}
+{#        <div style="justify-content: flex-start; align-items: center; display: flex">#}
+{#            <div class="button-text">Random question</div>#}
+{#        </div>#}
+{#    </a>#}
+{#</div>#}
 {% endblock button_row %}
 
 
@@ -40,42 +51,32 @@ Task list
         <div class="card-body">
             <div class="card-text">
 
-                {% if user.is_superuser or user.is_teacher %}
-                    <p>
-                        To add a new task, go to the
-                        <a href="{% url 'slide:browser' %}">slide browser</a>
-                        and choose <em>Create new task</em> next to the slide
-                    </p>
-                {% endif %}
-                <p>
-                    {#      <div class="LPButton" style="margin-top: 0;">#}
-                    {#        <a href="{% url 'multiple_choice:do_random' slide_id=1 %}">Random Question</a>#}
-                    {#    </div>#}
-                <form class="form">
-                    <b>Filter:</b>
-                    Organ:
-                    <select name="organ[]" multiple class="filter" style="width:20%">
-                        {% for tag in organ_tags %}
-                            <option value="{{ tag.id }}"{% if tag.id|slugify in selected_organ_tags %}selected="selected"{% endif %}>{{ tag.name }}</option>
-                        {% endfor %}
-                    </select>
-                    Stain:
-                    <select name="stain[]" multiple class="filter">
-                        {% for tag in stain_tags %}
-                            <option value="{{ tag.id }}"{% if tag.id|slugify in selected_stain_tags %}
-                                    selected="selected"{% endif %}>{{ tag.name }}</option>
-                        {% endfor %}
-                    </select>
-                    Pathology: <input type="checkbox" {% if selected_pathology %}checked="checked"{% endif %} name="pathology" onchange="this.form.submit();">
-                    Histology: <input type="checkbox" {% if selected_histology %}checked="checked"{% endif %} name="histology" onchange="this.form.submit();">
-                    Tag:
-                    <select name="tag[]" multiple class="filter">
-                        {% for tag in other_tags %}
-                            <option value="{{ tag.id }}"{% if tag.id|slugify in selected_other_tags %} selected="selected"{% endif %}>{{ tag.name }}</option>
-                        {% endfor %}
-                    </select>
-                </form>
-                </p>
+                <div style="margin-bottom: 12px;">
+                    <form class="form">
+                        <b>Filter:</b>
+                        Organ:
+                        <select name="organ[]" multiple class="filter" style="width:20%">
+                            {% for tag in organ_tags %}
+                                <option value="{{ tag.id }}"{% if tag.id|slugify in selected_organ_tags %}selected="selected"{% endif %}>{{ tag.name }}</option>
+                            {% endfor %}
+                        </select>
+                        Stain:
+                        <select name="stain[]" multiple class="filter">
+                            {% for tag in stain_tags %}
+                                <option value="{{ tag.id }}"{% if tag.id|slugify in selected_stain_tags %}
+                                        selected="selected"{% endif %}>{{ tag.name }}</option>
+                            {% endfor %}
+                        </select>
+                        Pathology: <input type="checkbox" {% if selected_pathology %}checked="checked"{% endif %} name="pathology" onchange="this.form.submit();">
+                        Histology: <input type="checkbox" {% if selected_histology %}checked="checked"{% endif %} name="histology" onchange="this.form.submit();">
+                        Tag:
+                        <select name="tag[]" multiple class="filter">
+                            {% for tag in other_tags %}
+                                <option value="{{ tag.id }}"{% if tag.id|slugify in selected_other_tags %} selected="selected"{% endif %}>{{ tag.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                </div>
                 {% if tasks %}
                     <table class="table">
                         <thead class="thead-light">
