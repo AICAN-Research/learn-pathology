@@ -64,22 +64,36 @@
 
 <div id="toolbarDiv">
     <!-- Custom buttons for Toolbar -->
-      <div class="button-group">
-         <button id="screenshotButton" class="custom-button btn btn-secondary"><div class="button-text">&#128247; </div></button>
-          <button   class="custom-button btn btn-secondary"><div id="setZoomButton" class="button-text"> </div></button>
+    <div class="button-group">
+    <button id="screenshotButton" class="custom-button btn btn-secondary"><div class="button-icon">
+        <span class="iconify" data-icon="fluent:camera-24-regular" data-width="24" data-height="24"></span>
+    </div></button>
+    <button class="custom-button btn btn-secondary"><div class="button-icon">
+        <span class="iconify" data-icon="fluent:zoom-in-24-regular" data-width="24" data-height="24"></span>
+    </div><div id="setZoomButton" class="button-text">
+
+    </div></button>
 
     </div>
     <div class="button-group">
-        <button id="zoomInButton" style="width: 46px; text-align: center" class="custom-button btn btn-secondary"><div class="button-text"> &#43;</div></button>
-        <button id="zoomOutButton" style="width: 46px; text-align: center" class="custom-button btn btn-secondary"><div class="button-text">&#8722; </div></button>
-        <button id="FullScreenButton" style="width: 46px; text-align: center" class="custom-button btn btn-secondary"><div class="button-text">&#x26F6;</div></button>
-        <button class="custom-button btn btn-secondary" style="width: 46px;" data-bs-toggle="modal" data-bs-target="#slideInfoModal"><div class="button-text"> &#9432;</div></button>
+        <button id="zoomInButton" style="width: 46px; text-align: center" class="custom-button btn btn-secondary"><div class="button-icon">
+            <span class="iconify" data-icon="fluent:add-24-regular" data-width="24" data-height="24"></span>
+        </div></button>
+        <button id="zoomOutButton" style="width: 46px; text-align: center" class="custom-button btn btn-secondary"><div class="button-icon">
+            <span class="iconify" data-icon="fluent:subtract-24-regular" data-width="24" data-height="24"></span>
+        </div></button>
+        <button id="FullScreenButton" style="width: 46px; text-align: center" class="custom-button btn btn-secondary"><div class="button-icon">
+            <span class="iconify" data-icon="fluent:arrow-expand-24-regular" data-width="24" data-height="24"></span>
+        </div></button>
+        <button class="custom-button btn btn-secondary" style="width: 46px;" data-bs-toggle="modal" data-bs-target="#slideInfoModal"><div class="button-icon">
+            <span class="iconify" data-icon="fluent:info-24-regular" data-width="24" data-height="24"></span>
+        </div></button>
     </div>
 
     <div class="button-group">
         {% if request.user.is_teacher or request.user.is_superuser %}
         <a href="{% url 'slide:base_annotations' slide_id=slide.id %}" class="custom-button-link">
-            <button id="new_annotation" style="width: 200px;" class="custom-button btn btn-secondary"><div class="button-text"> Edit/ New Annotation</div></button>
+            <button id="new_annotation" style="width: 200px;" class="custom-button btn btn-secondary"><div class="button-text">Edit/New Annotation</div></button>
         </a>
         {% endif %}
     </div>
@@ -300,7 +314,7 @@
         function updateButtonLabel() {
             if (currentZoomIndex < zoomLevels.length) {
 
-                zoomButton.textContent = `\u{1f50e} ${zoomLevels[currentZoomIndex]}x`;
+                zoomButton.textContent = `${zoomLevels[currentZoomIndex]}x`;
 
             }
         }
