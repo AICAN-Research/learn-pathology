@@ -61,6 +61,14 @@
                                     <a href="{% url 'many_to_one:new' slide_id=slide_id %}">Many-to-One Sorting Task</a>
                                 {% endif %}
                             </div>
+                            <br>
+                            <div class="LPButton" style="margin-top: 0; ">
+                                {% if course_id %}
+                                    <a href="{% url 'sorting:new' slide_id=slide_id course_id=course_id %}">Sorting Task</a>
+                                {% else %}
+                                    <a href="{% url 'sorting:new' slide_id=slide_id %}">Sorting Task</a>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>
