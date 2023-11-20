@@ -2,7 +2,7 @@
 {% load slide_filters %}
 
 <div class="container" style="height:{% if two_column %}100%{% else %}85%{% endif %}; background-color: #dcdcdc; padding: 0;">
-<div id="wsi-canvas" class="wsi_canvas" style="height: 100%;"></div>
+<div id="wsi-canvas" class="wsi_canvas" style="height: 600px;"></div>
 {% if annotated_slide %}
     {{ annotated_slide.get_html | safe }}
 {% endif %}
