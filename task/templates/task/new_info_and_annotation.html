@@ -11,7 +11,7 @@ New task: Second step
 <div class="card w-100 mx-auto">
 <div class="card-body"> <!-- TODO: Instead of card-body, add same padding as on other pages (e.g. image browser) -->
 
-    <form class="form" method="post" id="newTaskForm" action="{% block task_type_new_url %}{% endblock task_type_new_url %}/{{ slide.id }}/">
+    <form class="form" method="post" id="newTaskForm" action="{% block task_type_new_url %}{% endblock task_type_new_url %}/{{ slide.id }}/{% if course_id %}{{ course_id }}{% endif %}">
         {% csrf_token %}
         {{ taskForm.management_form }}
 
