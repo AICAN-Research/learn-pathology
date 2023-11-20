@@ -1,6 +1,7 @@
-import csv
 import os
-import shutil
+import csv
+import fast
+import numpy as np
 
 from django.core.management import BaseCommand
 from django.db import transaction
@@ -178,11 +179,22 @@ class Command(BaseCommand):
                     slide.save()
 
                     if path_to_slide.endswith('.vsi'):
-                        # Copy thumbnail.jpg file from data source to project files
-                        shutil.copyfile(
-                            src=os.path.join(os.path.split(path_to_slide)[0], 'thumbnail.jpg'),
-                            dst=os.path.join(thumbnails_dir, f'{slide.id}.jpg')
-                        )
+                        try:
+                            imagePyramid = fast.WholeSlideImageImporter.create(path_to_slide).runAndGetOutputData()
+
+                            image = imagePyramid.getAccess(fast.ACCESS_READ).getLevelAsImage(
+                                level=imagePyramid.getNrOfLevels() - 1)
+
+                            fast_image = fast.Image.createFromArray(np.asarray(image))
+
+                            resized_image = fast.ImageResizer.create(width=512, height=512).connect(fast_image)
+
+                            exporter = fast.ImageExporter.create(
+                                os.path.join(thumbnails_dir, f'{slide.id}.jpg')).connect(
+                                resized_image).run()
+
+                        except Exception as exc:
+                            print(exc)
 
                     new_paths.append(path_to_slide)  # to ensure duplicates aren't added
 
@@ -192,10 +204,22 @@ class Command(BaseCommand):
                 # Copy thumbnail.jpg file from data source to project files
                 if str(slide.id) + '.jpg' not in os.listdir(thumbnails_dir) \
                         and path_to_slide.endswith('.vsi'):
-                    shutil.copyfile(
-                        src=os.path.join(os.path.split(path_to_slide)[0], 'thumbnail.jpg'),
-                        dst=os.path.join(thumbnails_dir, f'{slide.id}.jpg')
-                    )
+                    try:
+                        imagePyramid = fast.WholeSlideImageImporter.create(path_to_slide).runAndGetOutputData()
+
+                        image = imagePyramid.getAccess(fast.ACCESS_READ).getLevelAsImage(
+                            level=imagePyramid.getNrOfLevels() - 1)
+
+                        fast_image = fast.Image.createFromArray(np.asarray(image))
+
+                        resized_image = fast.ImageResizer.create(width=512, height=512).connect(fast_image)
+
+                        exporter = fast.ImageExporter.create(os.path.join(thumbnails_dir, f'{slide.id}.jpg')).connect(
+                            resized_image).run()
+
+                    except Exception as exc:
+                        print(exc)
+
                 #except Exception as exc:
                 #    # TODO: Catch exception if > 1 entry with same path exists
                 #    pass
