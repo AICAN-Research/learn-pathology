@@ -1,6 +1,7 @@
-import csv
 import os
-import shutil
+import csv
+import fast
+import numpy as np
 
 from django.core.management import BaseCommand
 from django.db import transaction
@@ -8,7 +9,7 @@ from django.db import transaction
 from learnpathology.settings import BASE_DIR
 from slide.models import Slide
 from tag.models import Tag
-from slide.views import create_thumbnail
+# from slide.views import create_thumbnail
 
 
 class NoMatchingFileError(Exception):
@@ -76,6 +77,18 @@ def match_file_in_subfolder_to_wsi(file_name, slide_folder):
             continue
 
     raise NoMatchingFileError(f"No WSI file matching {file_name} was found in subfolders")
+
+
+def create_thumbnail(path_to_slide, slide, thumbnails_dir):
+    image_pyramid = fast.WholeSlideImageImporter.create(path_to_slide) \
+        .runAndGetOutputData()
+    access = image_pyramid.getAccess(fast.ACCESS_READ)
+    image = access.getLevelAsImage(level=image_pyramid.getNrOfLevels() - 1)
+    fast_image = fast.Image.createFromArray(np.asarray(image))
+    resized_image = fast.ImageResizer.create(width=512, height=512).connect(fast_image)
+    fast.ImageExporter.create(os.path.join(thumbnails_dir, f'{slide.id}.jpg')) \
+        .connect(resized_image) \
+        .run()
 
 
 # =====================================
@@ -178,11 +191,10 @@ class Command(BaseCommand):
                     slide.save()
 
                     if path_to_slide.endswith('.vsi'):
-                        # Copy thumbnail.jpg file from data source to project files
-                        shutil.copyfile(
-                            src=os.path.join(os.path.split(path_to_slide)[0], 'thumbnail.jpg'),
-                            dst=os.path.join(thumbnails_dir, f'{slide.id}.jpg')
-                        )
+                        try:
+                            create_thumbnail(path_to_slide, slide, thumbnails_dir)
+                        except Exception as exc:
+                            print(exc)
 
                     new_paths.append(path_to_slide)  # to ensure duplicates aren't added
 
@@ -192,10 +204,11 @@ class Command(BaseCommand):
                 # Copy thumbnail.jpg file from data source to project files
                 if str(slide.id) + '.jpg' not in os.listdir(thumbnails_dir) \
                         and path_to_slide.endswith('.vsi'):
-                    shutil.copyfile(
-                        src=os.path.join(os.path.split(path_to_slide)[0], 'thumbnail.jpg'),
-                        dst=os.path.join(thumbnails_dir, f'{slide.id}.jpg')
-                    )
+                    try:
+                        create_thumbnail(path_to_slide, slide, thumbnails_dir)
+                    except Exception as exc:
+                        print(exc)
+
                 #except Exception as exc:
                 #    # TODO: Catch exception if > 1 entry with same path exists
                 #    pass
