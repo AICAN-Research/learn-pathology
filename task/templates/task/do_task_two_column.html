@@ -1,63 +1,83 @@
-{% extends "task/do_task_common.html" %}
+{#{% extends "task/do_task_common.html" %}#}
+{% extends "learnpathology/two_column_layout.html" %}
+
+{% load get_type %}
+
+
+{% block page_title %}
+{{ task|get_task_type_for_header }}: {{ task.name }}
+{% endblock page_title %}
+
+
+{% block breadcrumb_items %}
+    {% if course_id %}
+        <li class="breadcrumb-item"><a href="{% url 'course:index' %}">Courses</a></li>
+        <li class="breadcrumb-item"><a href="#">"Course name"</a></li> <!-- TODO: Use course name -->
+        {#        <li class="breadcrumb-item"><a href="#">{{ course.code }} - {{ course.name }}</a></li>#}
+        <li class="breadcrumb-item">Task: {{ task.name }}</li>
+    {% else %}
+        <li class="breadcrumb-item"><a href="{% url 'task:list' %}">Task list</a></li>
+        <li class="breadcrumb-item">Task: {{ task.name }}</li>
+    {% endif %}
+
+{% endblock breadcrumb_items %}
+
+
+{% block search_bar %}
+{% endblock search_bar %}
+
+
+{% block button_row %}
+<div class="custom-button" style="">
+    <a href="{% if course_id %}{% url 'course:view' course_id=course_id active_tab='tasks' %}{% else %}{% url 'task:list' %}{% endif %}" style="display: inline-flex;">
+        <div class="button-icon">
+            <span class="iconify" data-icon="fluent:arrow-circle-left-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
+        </div>
+        <div style="justify-content: flex-start; align-items: center; display: flex">
+            <div class="button-text">Return to {% if course_id %}course{% else %}task list{% endif %}</div>
+        </div>
+    </a>
+</div>
+{% endblock button_row %}
 
 
 {% block content %}
 
-{% block top_content %}
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col">
-                <h1>
-                    {{ task.name }}
-                </h1>
-                <h6>
-                    {% block task_instructions %}
-                    {% endblock task_instructions %}
-                </h6>
+<div class="card w-100 mx-auto text-center" style="height: 85%; min-height: 600px;">
+<div class="card-body" style="height: 100%">
+
+    <div style="padding: 6px 24px 6px 24px;">
+        <h3>
+            {% block task_instructions %}
+            {% endblock task_instructions %}
+        </h3>
+    </div>
+
+    <div class="row h-100">
+        <div class="col-6">
+            <div id="contentLeft" style="width: 100%;">
+                <h4 style="margin-top: 20px; margin-bottom: 20px;">
+                    {% block task_question %}
+                    {% endblock task_question %}
+                </h4>
+                {% block content_left %}
+                {% endblock content_left %}
             </div>
-            <div class="col-4">
-                <div class="LPButton" style="margin-top: 0; ">
-                    {% if course_id == 0 %}
-                        <a href="{% url 'task:list' %}">Task Overview</a>
-                    {% else %}
-                        <a href=" {% url 'course:view' course_id=course_id active_tab='tasks' %}">Back to course</a>
-                    {% endif %}
-                </div>
+        </div>
+        <div class="col-6" style="height: 100%;">
+            <div id="contentRight" style="width: 100%; height: 100%;">
+                {% if slide %}
+                    {% include 'slide/view_wsi_do_task.html' with two_column=1 slide=slide annotated_slide=task.annotated_slide %}
+                {% else %}
+                    {% include 'slide/view_wsi_do_task.html' with slide=slide annotated_slide=task.annotated_slide %}
+                {% endif %}
+                {% block content_right %}
+                {% endblock content_right %}
             </div>
         </div>
     </div>
-{% endblock top_content %}
-
-{% block card_content %}
-
-    <div class="card mx-auto text-center" style="width: 90%; height: 85%; min-height: 600px;">
-    <div class="card-body" style="height: 100%">
-        <div class="row h-100">
-            <div class="col-6">
-                <div id="contentLeft" style="width: 100%;">
-                    <h4 style="margin-top: 20px; margin-bottom: 20px;">
-                        {% block task_question %}
-                        {% endblock task_question %}
-                    </h4>
-                    {% block content_left %}
-                    {% endblock content_left %}
-                </div>
-            </div>
-            <div class="col-6" style="height: 100%;">
-                <div id="contentRight" style="width: 100%; height: 100%;">
-                    {% if slide %}
-                        {% include 'slide/view_wsi_do_task.html' with two_column=1 slide=slide annotated_slide=task.annotated_slide %}
-                    {% else %}
-                        {% include 'slide/view_wsi_do_task.html' with slide=slide annotated_slide=task.annotated_slide %}
-                    {% endif %}
-                    {% block content_right %}
-                    {% endblock content_right %}
-                </div>
-            </div>
-        </div>
-    </div>
-    </div>
-{% endblock card_content %}
+</div>
+</div>
 
 {% endblock content %}
 
