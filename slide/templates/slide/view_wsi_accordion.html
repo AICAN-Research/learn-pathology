@@ -4,14 +4,13 @@
 
 
 {% block breadcrumb_items %}
-<li class="breadcrumb-item"><a href="{% url 'slide:browser' %}">Image browser</a></li>
-{#<li class="breadcrumb-item active" aria-current="page">Viewer: {{ slide.name }}</li>#}
-<li class="breadcrumb-item active" aria-current="page">{{ slide.name }}</li>
+    <li class="breadcrumb-item"><a href="{% url 'slide:browser' %}">Image browser</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ slide.name }}</li>
 {% endblock breadcrumb_items %}
 
 
 {% block page_title %}
-{{ slide.name }}
+    {{ slide.name }}
 {% endblock page_title %}
 
 
@@ -21,27 +20,317 @@
 
 {% block content %}
 
-<!-- WSI VIEWER -->
-<div class="card slideViewerCard transparentBackground">
-    <div id="wsi-canvas" class="wsi_canvas" style="height: 100%;"></div>
-    {% if annotated_slide %}
-        {{ annotated_slide.get_html | safe }}
-    {% endif %}
+
+<div class="card transparentBackground centerCardHorizontally border-0" style="width: 98%; height: 98%;">
+    <div class="row no-gutters w-100 h-100">
+        <!-- WSI Viewer -->
+        <div class="col " id="imageViewer" style="height: 95%; width: auto">
+            <div class="card slideViewerCard transparentBackground">
+                <div id="wsi-canvas" class="wsi_canvas" style="height: 100%;"></div>
+                {% if annotated_slide %}
+                    {{ annotated_slide.get_html | safe }}
+                {% endif %}
+            </div>
+        </div>
+
+
+        <div class="col col-2" style="height: fit-content;" style="width: 20%;" id="slideColumn">
+
+
+            <h5 style="margin-top: 1rem">Annotation list</h5>
+            <ul>
+                {% for box in boxes %}
+                    <li style="text-align: start;">
+                        <a id="boundingbox-listitem-{{ box.id }}"
+                           onclick="highlightAnnotation('boundingbox-listitem-{{ box.id }}')">
+                            {{ box.text }}
+                        </a>
+                    </li>
+                {% endfor %}
+                {% for pointer in pointers %}
+                    <li style="text-align: start;">
+                        <a id="arrow-listitem-{{ pointer.id }}"
+                           onclick="highlightAnnotation('arrow-listitem-{{ pointer.id }}')">
+                            {{ pointer.text }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
 </div>
 
-<script src="{% static 'slide/openseadragon.min.js' %}"></script>
-<script src="{% static 'slide/openseadragon-scalebar.js' %}"></script>
-<script type="text/javascript">
-    let buttonElement = document.createElement("button");
-    buttonElement.innerText = "Screenshot";
-    let screenshotButton = new OpenSeadragon.Button({
-        tooltip: 'Screenshot',
-        element: buttonElement,
-        //srcRest: `/images/Browser_Chrome.png`,
-        //srcGroup: `/images/Browser_Chrome.png`,
-        //srcHover: `/images/Browser_Chrome.png`,
-        //srcDown: `/images/Browser_Chrome.png`,
-        onClick: function () {
+
+
+<div id="toolbarDiv">
+    <!-- Custom buttons for Toolbar -->
+    <div class="button-group">
+    <button id="screenshotButton" class="custom-button btn btn-secondary"><div class="button-icon">
+        <span class="iconify" data-icon="fluent:camera-24-regular" data-width="24" data-height="24"></span>
+    </div></button>
+    <button class="custom-button btn btn-secondary"><div class="button-icon">
+        <span class="iconify" data-icon="fluent:zoom-in-24-regular" data-width="24" data-height="24"></span>
+    </div><div id="setZoomButton" class="button-text">
+
+    </div></button>
+
+    </div>
+    <div class="button-group">
+        <button id="zoomInButton" style="width: 46px; text-align: center" class="custom-button btn btn-secondary"><div class="button-icon">
+            <span class="iconify" data-icon="fluent:add-24-regular" data-width="24" data-height="24"></span>
+        </div></button>
+        <button id="zoomOutButton" style="width: 46px; text-align: center" class="custom-button btn btn-secondary"><div class="button-icon">
+            <span class="iconify" data-icon="fluent:subtract-24-regular" data-width="24" data-height="24"></span>
+        </div></button>
+        <button id="FullScreenButton" style="width: 46px; text-align: center" class="custom-button btn btn-secondary"><div class="button-icon">
+            <span class="iconify" data-icon="fluent:arrow-expand-24-regular" data-width="24" data-height="24"></span>
+        </div></button>
+        <button class="custom-button btn btn-secondary" style="width: 46px;" data-bs-toggle="modal" data-bs-target="#slideInfoModal"><div class="button-icon">
+            <span class="iconify" data-icon="fluent:info-24-regular" data-width="24" data-height="24"></span>
+        </div></button>
+    </div>
+
+    <div class="button-group">
+        {% if request.user.is_teacher or request.user.is_superuser %}
+        <a href="{% url 'slide:base_annotations' slide_id=slide.id %}" class="custom-button-link">
+            <button id="new_annotation" style="width: 200px;" class="custom-button btn btn-secondary"><div class="button-text">Edit/New Annotation</div></button>
+        </a>
+        {% endif %}
+    </div>
+    <div class="button-group">
+        <button id="annotationList" style="width: 200px;" class="custom-button btn btn-secondary"><div class="button-text">Toggle Annotation List</div></button>
+    </div>
+    <div class="button-group">
+        <button id="annotation" style="width: 200px;" class="custom-button btn btn-secondary"><div class="button-text">Toggle Annotations </div></button>
+    </div>
+    <div class="button-group">
+        <button id="annotationLabel" style="width: 200px;" class="custom-button btn btn-secondary"><div class="button-text">Toggle Labels </div></button>
+    </div>
+</div>
+
+
+    <!-- Slide Information CONTENT BEGIN -->
+    <div class="modal fade" id="slideInfoModal" tabindex="-1" aria-labelledby="slideInfoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="slideInfoModalLabel">Slide Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modal-table-content">
+                <div id="table-content" style="display: none;">
+                    <table class="table" style="font-size: 14px;">
+                        <thead class="thead-light">
+                        <tr>
+                            <th colspan="2">Core Information</th>
+                        </tr>
+                        </thead>
+                        <tr>
+                            <th>Slide name</th>
+                            <td>{{ slide.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Slide description</th>
+                            <td>{{ slide.description }}</td>
+                        </tr>
+
+                        <thead class="thead-light">
+                        <tr>
+                            <th colspan="2">Categorization</th>
+                        </tr>
+                        </thead>
+                        <tr>
+                            <th>Organ</th>
+                            <td>{{ slide.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Histology/pathology</th>
+                            {% if slide.pathology %}
+                                <td>Pathology</td>
+                            {% else %}
+                                <td>Histology</td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <th>Stain</th>
+                            <td>{{ stain_name }}</td>
+                        </tr>
+
+                        <thead class="thead-light">
+                        <tr>
+                            <th colspan="2">Supplementary information</th>
+                        </tr>
+                        </thead>
+                        <tr>
+                            <th>
+                                Long description
+                                {% if request.user.is_teacher or request.user.is_superuser %}
+
+                                    <a class="custom-button-link" href="{% url 'slide:edit_description' slide.id %}">
+                                        <button class="custom-button ">&#9998;
+                                        </button>
+                                    </a>
+
+                                {% endif %}
+                            </th>
+                            {% if slide.long_description %}
+                                <td>{{ slide.long_description }}</td>
+                            {% else %}
+                                <td>-</td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <th>
+                                General pathology tags
+                                {% if request.user.is_teacher or request.user.is_superuser %}
+
+                                    <a class="custom-button-link" href="{% url 'slide:edit_tags' slide.id %}">
+                                        <button class="custom-button ">&#9998;</button>
+                                    </a>
+                                {% endif %}
+                            </th>
+                            <td>
+                                {% if general_pathology_tags %}
+                                    {% for tag in general_pathology_tags %}
+                                        {{ tag.name }}<br>
+                                    {% endfor %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'slide/openseadragon.min.js' %}"></script>
+    <script src="{% static 'slide/openseadragon-scalebar.js' %}"></script>
+    <script type="text/javascript">
+
+        <!--WSI Viewer-->
+        var viewer = OpenSeadragon({
+            id: "wsi-canvas",
+            zoomPerScroll: 2, // Scroll speed
+            minScrollDeltaTime: 150, //	Number of milliseconds between canvas-scroll events.
+            showNavigator: true, // The navigation window top-right
+            prefixUrl: "{% static 'slide/images/' %}", // Where to find OpenSedragon button images
+            showHomeControl: false,     // Hide the home button
+            showFullPageControl: false, // Hide the full-page button
+            showZoomControl: false,     // Hide the zoom-in and zoom-out buttons
+            tileSources: {
+                width: {{ slide.width }},
+                height:  {{ slide.height }},
+                tileWidth: {{ slide.tile_width }},
+                tileHeight: {{ slide.tile_height }},
+                minLevel: 0,
+                maxLevel: {{ slide.osd_levels }}-1,
+                getTileUrl: function (level, x, y) {
+                    return "/viewer/tile/{{ slide.id }}/" + ({{ slide.osd_levels }} -1 - level) + "/" + x + "/" + y + "/";
+                },
+                overlays: [
+                    {{ annotated_slide.get_js | safe }}
+                ],
+            }
+        });
+
+        viewer.addControl(document.getElementById("toolbarDiv"), {anchor: OpenSeadragon.ControlAnchor.BOTTOM_LEFT});
+
+        <!--Scalebar-->
+        try {
+            let pixelsPerMeter = {{ slide|get_pixels_per_meter }};
+            viewer.scalebar({
+                type: OpenSeadragon.ScalebarType.MICROSCOPY,
+                pixelsPerMeter: pixelsPerMeter,
+                minWidth: "250px",
+                location: OpenSeadragon.ScalebarLocation.BOTTOM_RIGHT,
+                xOffset: 10,
+                yOffset: 20,
+                stayInsideImage: true,
+                color: "rgba(100,100,100,0.9)",
+                fontColor: "rgb(50,50,50)",
+                backgroundColor: "rgba(230, 230, 230, 0.5)",
+                fontSize: "large",
+                barThickness: 3
+            });
+        } catch (e) {
+            alert('Couldn\'t get scaling factor')
+        }
+
+        window.onLoad = toggleAnnotationOff();
+        window.onLoad = createClickReaction();
+        window.onLoad = toggleCardVisibility();
+
+         function createClickReaction() {
+            let current_overlays = viewer.currentOverlays;
+             console.log('Create Click reaction ')
+            for (let i = 0; i < current_overlays.length; i++) {
+
+                new OpenSeadragon.MouseTracker({
+                    element: current_overlays[i].element,
+                    clickHandler: function (event) {
+                        var list_id = current_overlays[i].element.id.split('-').at(-1);
+
+                        if (current_overlays[i].element.id.includes('boundingbox')) {
+                            var list_box = document.getElementById('boundingbox-listitem-' + list_id);
+                            console.log(list_box)
+                            list_box.style.color = "red";
+                            list_box.style.fontWeight = "900"
+
+                            timer = setTimeout(function () {
+                                list_box.style.color = "";
+                                list_box.style.fontWeight = ""
+                            }, 1000);
+                        }
+
+                        if (current_overlays[i].element.id.includes('arrow')) {
+                            var list_arrow = document.getElementById('arrow-listitem-' + list_id);
+                            console.log(list_arrow)
+
+                            list_arrow.style.color = "red";
+                            list_arrow.style.fontWeight = "900";
+
+                            timer = setTimeout(function () {
+                                list_arrow.style.color = "";
+                                list_arrow.style.fontWeight = "";
+                            }, 1000);
+                        }
+                    }
+                });
+
+            }
+        }
+
+
+        function toggleAnnotationOff() {
+            $(".overlay").toggle();
+            $(".textOverlay").toggle();
+        }
+
+        <!--Zoom Button Functionality-->
+        const zoomLevels = [0.25, 1, 10, 20, 40]; // Include 0.25x
+        let currentZoomIndex = 0;
+        const zoomButton = document.getElementById("setZoomButton");
+
+        function updateButtonLabel() {
+            if (currentZoomIndex < zoomLevels.length) {
+
+                zoomButton.textContent = `${zoomLevels[currentZoomIndex]}x`;
+
+            }
+        }
+
+        document.getElementById("setZoomButton").addEventListener("click", function () {
+            if (currentZoomIndex < zoomLevels.length) {
+                const targetZoom = zoomLevels[currentZoomIndex];
+                viewer.viewport.zoomTo(targetZoom);
+                currentZoomIndex = (currentZoomIndex + 1) % zoomLevels.length; // Loop back to 0 when reaching the end
+                updateButtonLabel();
+            }
+        });
+        updateButtonLabel();
+
+        <!--Screenshoot Button Functionality-->
+        document.getElementById("screenshotButton").addEventListener('click', function () {
             console.log('Click!');
             // Hide toolbar:
             let toolbar = document.getElementsByClassName("openseadragon-container")[0].childNodes[1];
@@ -61,254 +350,173 @@
                 // Display toolbar again
                 let toolbar = document.getElementsByClassName("openseadragon-container")[0].childNodes[1];
                 toolbar.style.display = "block";
-            })
-        }
-    });
-    let overlayElement = document.createElement("button");
-    overlayElement.innerText = "Toggle Annotations";
-    let overlayButton = new OpenSeadragon.Button({
-        tooltip: 'Toggle Annotations',
-        element: overlayElement,
-        //srcRest: `/images/Browser_Chrome.png`,
-        //srcGroup: `/images/Browser_Chrome.png`,
-        //srcHover: `/images/Browser_Chrome.png`,
-        //srcDown: `/images/Browser_Chrome.png`,
-        onClick: function () {
-            console.log('Click!');
-            $(".overlay").toggle();
-        }
-    });
-    var viewer = OpenSeadragon({
-        id: "wsi-canvas",
-        zoomPerScroll: 2, // Scroll speed
-        minScrollDeltaTime: 150, //	Number of milliseconds between canvas-scroll events.
-        showNavigator: true, // The navigation window top-right
-        prefixUrl: "{% static 'slide/images/' %}", // Where to find OpenSedragon button images
-        tileSources: {
-            width: {{ slide.width }},
-            height:  {{ slide.height }},
-            tileWidth: {{ slide.tile_width }},
-            tileHeight: {{ slide.tile_height }},
-            minLevel: 0,
-            maxLevel: {{ slide.osd_levels }}-1,
-            getTileUrl: function (level, x, y) {
-                return "/viewer/tile/{{ slide.id }}/" + ({{ slide.osd_levels }} -1 - level) + "/" + x + "/" + y + "/";
-            },
-            overlays: [
-                {{ annotated_slide.get_js | safe }}
-            ],
-        }
-    });
-
-    try {
-        let pixelsPerMeter = {{ slide|get_pixels_per_meter }};
-        viewer.scalebar({
-            type: OpenSeadragon.ScalebarType.MICROSCOPY,
-            pixelsPerMeter: pixelsPerMeter,
-            minWidth: "250px",
-            location: OpenSeadragon.ScalebarLocation.BOTTOM_LEFT,
-            xOffset: 10,
-            yOffset: 20,
-            stayInsideImage: true,
-            color: "rgba(100,100,100,0.9)",
-            fontColor: "rgb(50,50,50)",
-            backgroundColor: "rgba(230, 230, 230, 0.5)",
-            fontSize: "large",
-            barThickness: 3
-        });
-    } catch (e) {
-        alert('Couldn\'t get scaling factor')
-    }
-
-
-    viewer.addControl(screenshotButton.element, {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
-
-</script>
-<script>
-    window.onLoad = toggleAnnotationOff();
-    window.onLoad = toggleInfoCardVisibility();
-    window.onLoad = createClickReaction();
-
-    function createClickReaction() {
-        let current_overlays = viewer.currentOverlays;
-        for (let i = 0; i < current_overlays.length; i++) {
-
-            new OpenSeadragon.MouseTracker({
-                element: current_overlays[i].element,
-                clickHandler: function (event) {
-                    var list_id = current_overlays[i].element.id.split('-').at(-1);
-
-                    if (current_overlays[i].element.id.includes('boundingbox')) {
-                        var list_box = document.getElementById('boundingbox-listitem-' + list_id);
-                        console.log(list_box)
-                        list_box.style.color = "red";
-                        list_box.style.fontWeight = "900"
-
-                        timer = setTimeout(function () {
-                            list_box.style.color = "";
-                            list_box.style.fontWeight = ""
-                        }, 1000);
-                    }
-
-                    if (current_overlays[i].element.id.includes('arrow')) {
-                        var list_arrow = document.getElementById('arrow-listitem-' + list_id);
-                        console.log(list_arrow)
-
-                        list_arrow.style.color = "red";
-                        list_arrow.style.fontWeight = "900";
-
-                        timer = setTimeout(function () {
-                            list_arrow.style.color = "";
-                            list_arrow.style.fontWeight = "";
-                        }, 1000);
-                    }
-                }
             });
 
-        }
-    }
+        });
 
+        <!--Default Button Functionality-->
+        document.getElementById("zoomInButton").addEventListener('click', function () {
+            viewer.viewport.zoomBy(2);
+        });
 
-    function toggleAnnotationOff() {
-        $(".overlay").toggle();
-        $(".textOverlay").toggle();
-    }
+        document.getElementById("zoomOutButton").addEventListener('click', function () {
+            viewer.viewport.zoomBy((1 / 2));
 
-    function highlightAnnotation(annotationId) {
-        var list_item = document.getElementById(annotationId);
-        var list_id = annotationId.split('-').at(-1);
-        if (list_item.id.includes('boundingbox')) {
-            var box = document.getElementById('boundingbox-' + list_id);
-            var text = document.getElementById('boundingbox-text-overlay-' + list_id);
-            console.log(text)
-            box.style.borderColor = "red";
-            box.style.borderWidth = "5px";
+        });
 
-            text.style.color = "red";
-            text.style.fontWeight = "900";
-
-            timer = setTimeout(function () {
-                box.style.borderColor = "";
-                box.style.borderWidth = ""
-                text.style.color = "";
-                text.style.fontWeight = "";
-            }, 1000);
-        }
-
-        if (list_item.id.includes('arrow')) {
-            var arrow = document.getElementById('right-arrow-overlay-' + list_id);
-            var arrow_text = document.getElementById('arrow-text-overlay-' + list_id);
-            arrow.style.color = "red";
-            arrow.style.fontWeight = "900";
-
-            arrow_text.style.color = "red";
-            arrow_text.style.fontWeight = "900";
-
-            timer = setTimeout(function () {
-                arrow.style.color = "";
-                arrow.style.fontWeight = "";
-                arrow_text.style.color = "";
-                arrow_text.style.fontWeight = "";
-            }, 1000);
-        }
-    }
-
-    viewer.addHandler('viewport-change', updateTextLocation);
-    viewer.addHandler('tile-drawing', updateTextLocation);
-    addEventListener("resize", () => {});
-
-    onresize = () => {
-        timer = setTimeout(function () {
-            updateTextLocation();
-        }, 20);
-    };
-
-    function updateTextLocation(event) {
-        let slide_overlays = viewer.currentOverlays;
-
-        let arrow_overlays = $("[id^=right-arrow-overlay-]")
-        let text_overlays = $("[id^=arrow-text-overlay-]")
-
-        for (let i = 0; i < arrow_overlays.length; i++) {
-            let arrowElement = arrow_overlays[i];
-            let textElement = text_overlays[i];
-
-            let arrowX = parseFloat(arrowElement.style.left);
-            let arrowY = parseFloat(arrowElement.style.top);
-
-            let viewportPoint = viewer.viewport.pointFromPixel(new OpenSeadragon.Point(arrowX - 5, arrowY + 15));
-            viewer.updateOverlay(textElement, viewportPoint);
-        }
-    }
-
-    function toggleInfoCardVisibility() {
-        var x = document.getElementById("slideInfoCardContent");
-        var canvas_viewer = document.getElementById('imageViewer')
-        console.log("clicked button to toggle card visibility");
-        console.log(x);
-        if (x.style.display === "none") {
-            x.style.display = "block";
-            canvas_viewer.style.width = '';
-        } else {
-            x.style.display = "none";
-            canvas_viewer.style.width = '100%';
-        }
-        timer = setTimeout(function () {
-            updateTextLocation();
-        }, 20);
-    }
-
-    $(function () {
-        $('#toggle-annotation').bootstrapToggle({
-            on: ' Annotation',
-            off: ' Annotation'
-        })
-        $('#toggle-annotation').bootstrapToggle('off');
-    })
-    $(function () {
-        $('#toggle-text').bootstrapToggle({
-            on: ' Text',
-            off: ' Text'
-        })
-        $('#toggle-text').bootstrapToggle('off');
-    })
-
-    $(function () {
-        $('#toggle-annotation').change(function () {
-            $(".overlay").toggle();
-            if ($(this).is(':checked')) {
-
+        document.getElementById("FullScreenButton").addEventListener('click', function () {
+            if (OpenSeadragon.isFullScreen()) {
+                viewer.setFullScreen(false);
             } else {
-                if ($('#toggle-text').is(':checked')) {
-                    $('#toggle-text').bootstrapToggle('off');
+                viewer.setFullScreen(true);
+            }
+        });
+
+
+
+        <!-- Annotation List Functionality -->
+        function toggleCardVisibility() {
+            var x = document.getElementById("slideColumn");
+            var canvas_viewer = document.getElementById('imageViewer');
+
+            if (x.style.display === "none") {
+                x.style.display = "block";
+                canvas_viewer.style.width = '';
+            } else {
+                x.style.display = "none";
+                canvas_viewer.style.width = '100%';
+            }
+            timer = setTimeout(function () {
+                updateTextLocation();
+            }, 20);
+        }
+
+        document.getElementById("annotationList").addEventListener("click", toggleCardVisibility);
+
+
+        <!-- Info Button Functionality-->
+        $(document).ready(function () {
+            // Function to set the modal content
+            function setModalContent() {
+                var tableContent = $('#table-content').html();
+                $('#modal-table-content').html(tableContent);
+            }
+
+            // Initialize the modal
+            $('#slideInfoModal').modal({
+                show: false
+            });
+
+            // When the modal is shown, set its content
+            $('#slideInfoModal').on('show.bs.modal', function () {
+                setModalContent();
+            });
+        });
+
+        <!-- Annotation Button Functionality-->
+         document.getElementById("annotation").addEventListener('click', function () {
+            $(".overlay").toggle();
+            if ($(".overlay").is(':visible')) {
+                createClickReaction();
+            } else {
+                if ($(".textOverlay").is(':visible')) {
+                    $(".textOverlay").toggle();
                 }
             }
-        })
-    })
+        });
 
-    $(function () {
-        $('#toggle-text').on('change', function () {
+        <!--Label Button Functionality-->
+        document.getElementById("annotationLabel").addEventListener('click', function () {
             $(".textOverlay").toggle();
-            if ($(this).is(':checked')) {
-                if ($('#toggle-annotation').is(':checked')) {
-
-                } else {
-                    $('#toggle-annotation').bootstrapToggle('on');
+            if ($(".textOverlay").is(':visible')) {
+                if ($(".overlay").is(':hidden')) {
+                    $(".overlay").toggle();
+                    createClickReaction();
                 }
             }
-        })
-    })
+        });
 
 
-</script>
+
+
+        function highlightAnnotation(annotationId) {
+            var list_item = document.getElementById(annotationId);
+            var list_id = annotationId.split('-').at(-1);
+            if (list_item.id.includes('boundingbox')) {
+                var box = document.getElementById('boundingbox-' + list_id);
+                var text = document.getElementById('boundingbox-text-overlay-' + list_id);
+                console.log(text)
+                box.style.borderColor = "red";
+                box.style.borderWidth = "5px";
+
+                text.style.color = "red";
+                text.style.fontWeight = "900";
+
+                timer = setTimeout(function () {
+                    box.style.borderColor = "";
+                    box.style.borderWidth = ""
+                    text.style.color = "";
+                    text.style.fontWeight = "";
+                }, 1000);
+            }
+
+            if (list_item.id.includes('arrow')) {
+                var arrow = document.getElementById('right-arrow-overlay-' + list_id);
+                var arrow_text = document.getElementById('arrow-text-overlay-' + list_id);
+                arrow.style.color = "red";
+                arrow.style.fontWeight = "900";
+
+                arrow_text.style.color = "red";
+                arrow_text.style.fontWeight = "900";
+
+                timer = setTimeout(function () {
+                    arrow.style.color = "";
+                    arrow.style.fontWeight = "";
+                    arrow_text.style.color = "";
+                    arrow_text.style.fontWeight = "";
+                }, 1000);
+            }
+        }
+
+        viewer.addHandler('viewport-change', updateTextLocation);
+        viewer.addHandler('tile-drawing', updateTextLocation);
+
+        onresize = () => {
+            timer = setTimeout(function () {
+                updateTextLocation();
+            }, 20);
+        };
+
+        function updateTextLocation(event) {
+            let slide_overlays = viewer.currentOverlays;
+
+            let arrow_overlays = $("[id^=right-arrow-overlay-]")
+            let text_overlays = $("[id^=arrow-text-overlay-]")
+
+            for (let i = 0; i < arrow_overlays.length; i++) {
+                let arrowElement = arrow_overlays[i];
+                let textElement = text_overlays[i];
+
+                let arrowX = parseFloat(arrowElement.style.left);
+                let arrowY = parseFloat(arrowElement.style.top);
+
+                let viewportPoint = viewer.viewport.pointFromPixel(new OpenSeadragon.Point(arrowX - 5, arrowY + 15));
+                viewer.updateOverlay(textElement, viewportPoint);
+            }
+        }
+
+
+
+
+    </script>
 
 {% endblock content %}
 
 
 {% block javascript %}
 
-$(document).ready(function(){
+    $(document).ready(function(){
     collapseSidebar();
-});
+    });
 
 {% endblock javascript %}
