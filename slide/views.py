@@ -1,3 +1,4 @@
+import fast
 import os.path
 
 import django.urls
@@ -287,16 +288,15 @@ def tile(request, slide_id, osd_level, x, y):
     return HttpResponse(buffer.getvalue(), content_type='image/jpeg')
 
 
-def create_thumbnail(slide_id):
-    import fast
+def create_thumbnail(slide_id, thumbnails_dir):
     slide = slide_cache.load_slide_to_cache(slide_id)
     access = slide.image.getAccess(fast.ACCESS_READ)
-    image = access.getLevelAsImage(slide.image.getNrOfLevels()-1)
-    scale = float(image.getHeight())/image.getWidth()
-    resize = fast.ImageResizer.create(128, round(128*scale)).connect(image)
-    fast.ImageFileExporter\
-        .create(f'thumbnails/{slide_id}.jpg')\
-        .connect(resize)\
+    image = access.getLevelAsImage(level=slide.image.getNrOfLevels() - 1)
+    resize = fast.ImageResizer.create(width=512,
+                                      height=round(512 * float(image.getHeight()) / image.getWidth())) \
+        .connect(image)
+    fast.ImageExporter.create(os.path.join(thumbnails_dir, f'{slide_id}.jpg')) \
+        .connect(resize) \
         .run()
 
 
@@ -309,7 +309,7 @@ def add(request):
                 # Save form and create thumbnail
                 file_path = store_file_in_db(form.files['image_file'])
                 slide = form.save(file_path)
-                create_thumbnail(slide.id)
+                create_thumbnail(slide.id, 'thumbnails')
 
                 organ_tags = form.cleaned_data['organ_tags']
                 stain_tags = form.cleaned_data['stain_tags']
