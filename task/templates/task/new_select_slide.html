@@ -171,7 +171,7 @@ New task: Select task type and image
                 {% if course_id %}
                     {% if slide_id %}
                         <!-- TODO: List only slides in course, and highlight the slide with ID slide_id -->
-                        {% include 'task/slide_selection.html' with slides_in_course=slide_id %}
+                        {% include 'task/slide_selection.html' with slides_in_course=slide_id course_id=course.id %}
                     {% else %}
                         <!-- TODO: List only slides in course -->
                         {% include 'task/slide_selection.html' %}
@@ -179,7 +179,7 @@ New task: Select task type and image
                 {% else %}
                     {% if slide_id %}
                         <!-- TODO: List all slides, and highlight the slide with ID slide_id -->
-                        {% include 'task/slide_selection.html' with slides_in_course=slide_id %}
+                        {% include 'task/slide_selection.html' with slides_in_course=slide_id course_id=course.id %}
                     {% else %}
                         <!-- TODO: List all slides -->
                         {% include 'task/slide_selection.html' %}

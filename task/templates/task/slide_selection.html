@@ -94,7 +94,10 @@
             </div>
         {% else %}
             <div class="card" style="min-height: 200px; padding-top: 10px">
-                No slides available.
+            No slides available. Please select slides first.
+              <div class="LPButton">
+                <a href="{% url 'course:slide_selection' course_id %}">Click here to add or remove slides</a>
+            </div>
             </div>
         {% endif %}
     </div>
