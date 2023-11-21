@@ -243,3 +243,9 @@ def edit(request, task_id,course_id=None):
         'boxes': BoundingBox.objects.filter(annotated_slide=annotated_slide),
     }
     return render(request, 'one_to_one/edit.html', context)
+
+
+def get_sorting_pair_formset(num_extra_fields=5):
+    SortingPairFormSet = formset_factory(SortingPairForm, extra=num_extra_fields)
+    sorting_pair_formset = SortingPairFormSet()
+    return sorting_pair_formset

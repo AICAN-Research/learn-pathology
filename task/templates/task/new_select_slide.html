@@ -1,0 +1,292 @@
+{% extends 'task/new.html' %}
+
+
+{% block page_title %}
+New task: Select task type and image
+{% endblock page_title %}
+
+
+{% block content %}
+
+<div class="card w-100 mx-auto">
+<div class="card-body"> <!-- TODO: Instead of card-body, add same padding as on other pages (e.g. image browser) -->
+
+    <form class="form" id="selectTypeAndSlideForm" method="post">
+        {% csrf_token %}
+
+        <div style="overflow:auto;">
+            <div style="float:right;">
+                <button type="button" id="prevBtn" onclick="nextPrev(-1)">Previous</button>
+                <button type="button" id="nextBtn" onclick="nextPrev(1)">Next</button>
+                {% comment %}
+                <!-- TODO: Add as custom LearnPathology-style buttons -->
+                <button type="button" class="custom-button" id="nextBtn" onclick="nextPrev(-1)">
+                    <div style="display: inline-flex;">
+                        <div class="button-icon">
+                            <span class="iconify" data-icon="fluent:arrow-left-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
+                        </div>
+                        <div style="justify-content: flex-start; align-items: center; display: flex">
+                            <div class="button-text">Previous</div>
+                        </div>
+                    </div>
+                </button>
+                <button type="button" class="custom-button" id="nextBtn" onclick="nextPrev(1)">
+                    <div style="display: inline-flex;">
+                        <div class="button-icon">
+                            <span class="iconify" data-icon="fluent:arrow-right-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
+                        </div>
+                        <div style="justify-content: flex-start; align-items: center; display: flex">
+                            <div class="button-text">Next</div>
+                        </div>
+                    </div>
+                </button>
+                {% endcomment %}
+            </div>
+        </div>
+
+        <!-- Tab panes -->
+        <div class="tab-content" id="myPanes">
+
+            <div class="tab tab-pane active" id="step1">
+
+                <div class="w-100" style="padding-bottom: 12px;">
+                    <div class="progress " style="width: 25%; height: 32px; margin-left: auto;">
+                        <div class="progress-bar" role="progressbar" style="width: 25%; background-color: var(--color-blue-dark);">
+                            1/4
+                        </div>
+                    </div>
+                </div>
+
+                <div style="padding: 6px 24px 6px 24px;">
+                    <h2>
+                        Select the type of task
+                    </h2>
+                    <h3 style="color: var(--color-blue-dark);">
+                        Choose from the options presented below
+                    </h3>
+                </div>
+
+                <div class="card transparentBackground border-0 text-center">
+                <div class="card-text">
+                    <div class="row">
+                        <div class="column">
+                            <div class="column">
+                                <div class="radio-toolbar">
+                                    <!-- Task type selction -->
+                                    <div>
+                                        <input type="radio" name="task_type" id="multiple_choice" value="multiple_choice"> <!-- onchange="this.form.submit();"> -->
+                                        <label for="multiple_choice" class="body-text">Multiple choice</label>
+                                    </div>
+                                    <div>
+                                        <input type="radio" name="task_type" id="free_text" value="free_text"> <!-- onchange="this.form.submit();"> -->
+                                        <label for="free_text" class="body-text">Paragraph/short answer question</label>
+                                    </div>
+                                    <div>
+                                        <input type="radio" name="task_type" id="click_question" value="click_question"> <!-- onchange="this.form.submit();"> -->
+                                        <label for="click_question" class="body-text">Click question</label>
+                                    </div>
+                                    <div>
+                                        <input type="radio" name="task_type" id="one_to_one_sort" value="one_to_one_sort"> <!-- onchange="this.form.submit();"> -->
+                                        <label for="one_to_one_sort" class="body-text">One-to-one sorting task</label>
+                                    </div>
+                                    <div>
+                                        <input type="radio" name="task_type" id="many_to_one_sort" value="many_to_one_sort"> <!-- onchange="this.form.submit();"> -->
+                                        <label for="many_to_one_sort" class="body-text">Many-to-one sorting task</label>
+                                    </div>
+                                </div>
+                                {% comment %}
+                                <div class="LPButton" style="margin-top: 0; ">
+                                    {% if course_id %}
+                                        <a href="{% url 'multiple_choice:new' slide_id=slide_id course_id=course_id %}">Single/Multiple
+                                            Choice</a>
+                                    {% else %}
+                                        <a href="{% url 'multiple_choice:new' slide_id=slide_id %}">Single/Multiple
+                                            Choice</a>
+                                    {% endif %}
+                                </div>
+                                <br>
+                                <div class="LPButton" style="margin-top: 0; ">
+                                    {% if course_id %}
+                                        <a href="{% url 'free_text:new' slide_id=slide_id course_id=course_id %}">Free Text
+                                            Question</a>
+                                    {% else %}
+                                        <a href="{% url 'free_text:new' slide_id=slide_id %}">Free Text Question</a>
+                                    {% endif %}
+                                </div>
+                                <br>
+                                <div class="LPButton" style="margin-top: 0; ">
+                                    {% if course_id %}
+                                        <a href="{% url 'click_question:new' slide_id=slide_id course_id=course_id %}">Click
+                                            Question</a>
+                                    {% else %}
+                                        <a href="{% url 'click_question:new' slide_id=slide_id %}">Click Question</a>
+                                    {% endif %}
+                                </div>
+                                <br>
+                                <div class="LPButton" style="margin-top: 0; ">
+                                    {% if course_id %}
+                                        <a href="{% url 'one_to_one:new' slide_id=slide_id course_id=course_id %}">One-to-One
+                                            Sorting Task</a>
+                                    {% else %}
+                                        <a href="{% url 'one_to_one:new' slide_id=slide_id %}">One-to-One Sorting Task</a>
+                                    {% endif %}
+                                </div>
+                               <br>
+                                <div class="LPButton" style="margin-top: 0; ">
+                                    {% if course_id %}
+                                        <a href="{% url 'many_to_one:new' slide_id=slide_id course_id=course_id %}">Many-to-One
+                                            Sorting Task</a>
+                                    {% else %}
+                                        <a href="{% url 'many_to_one:new' slide_id=slide_id %}">Many-to-One Sorting Task</a>
+                                    {% endif %}
+                                </div>
+                                {% endcomment %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+
+            </div>
+
+            <div class="tab tab-pane" id="step2">
+
+                <div class="w-100" style="padding-bottom: 12px;">
+                    <div class="progress " style="width: 25%; height: 32px; margin-left: auto;">
+                        <div class="progress-bar" role="progressbar" style="width: 50%; background-color: var(--color-blue-dark);">
+                            2/4
+                        </div>
+                    </div>
+                </div>
+
+                <div style="padding: 6px 24px 6px 24px;">
+                    <h2>
+                        Select image for the task
+                    </h2>
+                    <h3 style="color: var(--color-blue-dark);">
+                        Check a slide or confirm that the one you chose is selected. Press Next.
+                    </h3>
+                </div>
+
+                {% if course_id %}
+                    {% if slide_id %}
+                        <!-- TODO: List only slides in course, and highlight the slide with ID slide_id -->
+                        {% include 'task/slide_selection.html' with slides_in_course=slide_id %}
+                    {% else %}
+                        <!-- TODO: List only slides in course -->
+                        {% include 'task/slide_selection.html' %}
+                    {% endif %}
+                {% else %}
+                    {% if slide_id %}
+                        <!-- TODO: List all slides, and highlight the slide with ID slide_id -->
+                        {% include 'task/slide_selection.html' with slides_in_course=slide_id %}
+                    {% else %}
+                        <!-- TODO: List all slides -->
+                        {% include 'task/slide_selection.html' %}
+                    {% endif %}
+                {% endif %}
+
+            </div>
+        </div>
+
+    </form>
+
+    <div style="overflow: auto;">
+        <div style="float: right;">
+            <button type="button" id="prevBtnBottom" onclick="nextPrev(-1)">Previous</button>
+            <button type="button" id="nextBtnBottom" onclick="nextPrev(1)">Next</button>
+        </div>
+    </div>
+
+</div>
+</div>
+
+
+<style>
+
+/* Hide all steps by default: */
+.tab {
+  display: none;
+}
+.tab-pane {
+  display: none;
+}
+
+</style>
+
+
+<script>
+
+    var currentTab = 0; // Current tab is set to be the first tab (0)
+    showTab(currentTab); // Display the current tab
+
+    function showTab(n) {
+        // This function will display the specified tab of the form ...
+        var x = document.getElementsByClassName("tab-pane");
+        x[n].style.display = "block";
+        // ... and fix the Previous/Next buttons:
+        if (n == 0) {
+            document.getElementById("prevBtn").style.display = "none";
+            document.getElementById("prevBtnBottom").style.display = "none";
+        } else {
+            document.getElementById("prevBtn").style.display = "inline";
+            document.getElementById("prevBtnBottom").style.display = "inline";
+        }
+    }
+
+    function nextPrev(n) {
+        // This function will figure out which tab to display
+        var x = document.getElementsByClassName("tab-pane");
+        // Exit the function if any field in the current tab is invalid:
+        if (n == 1 && !validateForm()) {
+            // TODO: Add alert that form is incorrectly filled
+            return false;
+        }
+        // Hide the current tab:
+        x[currentTab].style.display = "none";
+        // Increase or decrease the current tab by 1:
+        currentTab = currentTab + n;
+        // if you have reached the end of the form... :
+        if (currentTab >= x.length) {
+            //...the form gets submitted:
+            document.getElementById("selectTypeAndSlideForm").submit();
+            return false;
+        }
+        // Otherwise, display the correct tab:
+        showTab(currentTab);
+    }
+
+    function validateForm() {
+        // This function deals with validation of the form fields
+        var x, y, i, valid = true;
+        x = document.getElementsByClassName("tab-pane");
+        y = x[currentTab].getElementsByTagName("input");
+        // A loop that checks every input field in the current tab:
+        /*for (i = 0; i < y.length; i++) {
+        // If a field is empty...
+            if (y[i].value == "") {
+              // add an "invalid" class to the field:
+              y[i].className += " invalid";
+              // and set the current valid status to false:
+              valid = false;
+            }
+        }*/
+        // If the valid status is true, mark the step as finished and valid:
+        /*if (valid) {
+            document.getElementsByClassName("step")[currentTab].className += " finish";
+        }*/
+        return valid; // return the valid status
+    }
+
+</script>
+
+{% endblock content %}
+
+
+{% block javascript %}
+
+    $(document).ready(function(){
+        collapseSidebar();
+    });
+
+{% endblock javascript %}
