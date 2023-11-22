@@ -64,7 +64,7 @@ def do(request, task_id, course_id=None):
         mode = 'post'
 
     slide = slide_cache.load_slide_to_cache(this_task.annotated_slide.slide.id)
-    return render(request, 'one_to_one/do.html', {
+    context = {
         'task': this_task,
         'one_to_one': one_to_one,
         'slide': slide,
@@ -74,7 +74,10 @@ def do(request, task_id, course_id=None):
         'id_order': json.dumps(id_order),
         'next_task_id': next_task_id,
         'next_task': next_task,
-    })
+    }
+    if course_id:
+        context['course'] = course
+    return render(request, 'one_to_one/do.html', context)
 
 
 @teacher_required

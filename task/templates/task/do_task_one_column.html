@@ -12,8 +12,7 @@
 {% block breadcrumb_items %}
     {% if course_id %}
         <li class="breadcrumb-item"><a href="{% url 'course:index' %}">Courses</a></li>
-        {#<li class="breadcrumb-item"><a href="#">"Course name"</a></li> <!-- TODO: Use course name and add URL -->#}
-        <li class="breadcrumb-item">"Course name"</li>
+        <li class="breadcrumb-item"><a href="{% url 'course:view' course_id=course_id active_tab='tasks' %}">{{ course.title }}</a></li>
     {% else %}
         <li class="breadcrumb-item"><a href="{% url 'task:list' %}">Task list</a></li>
     {% endif %}
