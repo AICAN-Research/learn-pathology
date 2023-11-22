@@ -74,26 +74,34 @@ def do(request, task_id, course_id=None):
 def new(request, slide_id, course_id=None):
     """
     Teacher form for creating a one-to-one sorting task
+
+    Parameters
+    ----------
+    request : Http request
+
+    slide_id : int
+        ID of Slide instance
+    course_id : int
+        ID of Course instance
     """
 
     # Get slide
     slide = Slide.objects.get(pk=slide_id)
     slide_cache.load_slide_to_cache(slide.id)
 
-    # Process forms
     SortingPairFormSet = formset_factory(SortingPairForm, extra=5)
+
+    # Process forms
     if request.method == 'POST':  # Form was submitted
-        print("POST")
         task_form = TaskForm(request.POST)
         one_to_one_form = OneToOneForm(request.POST)
         sorting_pair_formset = SortingPairFormSet(request.POST)
 
         with transaction.atomic():
-         # Make save operation atomic
+            # Make save operation atomic
             if one_to_one_form.is_valid() and task_form.is_valid() and sorting_pair_formset.is_valid():
                 # Create annotated slide
-                annotated_slide = AnnotatedSlide()
-                annotated_slide.slide = slide
+                annotated_slide = AnnotatedSlide(slide=slide)
                 annotated_slide.save()
 
                 # Create task
@@ -110,13 +118,14 @@ def new(request, slide_id, course_id=None):
                 one_to_one_task.task = task
                 one_to_one_task.save()
 
+                # Create sorting pairs
                 for pairForm in sorting_pair_formset:
                     pair = pairForm.save(commit=False)
                     if len(pair.fixed) > 0 and len(pair.draggable) > 0:
                         pair.task = one_to_one_task
                         pair.save()
 
-                # Store annotations (pointers)
+                # Create annotations (pointers and bounding box)
                 for key in request.POST:
 
                     if key.startswith('right-arrow-overlay-') and key.endswith('-text'):
@@ -127,11 +136,14 @@ def new(request, slide_id, course_id=None):
 
                 # Give a message back to the user
                 messages.add_message(request, messages.SUCCESS, 'Task added successfully!')
+
                 if course_id is not None and course_id in Course.objects.values_list('id', flat=True):
                     course = Course.objects.get(id=course_id)
                     course.task.add(task)
                     return redirect('course:view', course_id=course_id, active_tab='tasks')
+
                 return redirect('task:list')
+
     else:
         task_form = TaskForm()
         one_to_one_form = OneToOneForm()
