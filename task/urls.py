@@ -4,6 +4,8 @@ from task import views
 
 app_name = 'task'
 urlpatterns = [
+    path('new/', views.new, name='new'),
+    path('new/<int:course_id>', views.new, name='new'),
     path('new/<int:slide_id>', views.new, name='new'),
     path('new/<int:slide_id>/<int:course_id>', views.new, name='new'),
     path('list/', views.list, name='list'),

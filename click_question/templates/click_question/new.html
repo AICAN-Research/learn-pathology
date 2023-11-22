@@ -1,74 +1,37 @@
-{% extends 'learnpathology/base.html' %}
-
-{% block content %}
-<div class="container">
-<h1>New click question</h1>
-</div>
-
-<div class="card mx-auto text-center" style="width: 90%">
-<div class="card-body">
-<div class="card-text">
-
-<p>
-    Enter the name and question for the task. Add tags (optional).<br>
-    Then mark where you want the active (correct region) of the slide to be.
-</p>
-
-<form class="form" method="post">
-    {% csrf_token %}
-    {{ taskForm.management_form }}
-
-    <table class="table" style="margin-left: auto; margin-right:auto; width: 80%;">
-
-        <thead class="thead-light">
-            <tr><th colspan="2">Task info</th></tr>
-        </thead>
-        <tr>
-            <th>{{ taskForm.name.label }} (short, descriptive)</th>
-            <td>{{ taskForm.name }}</td>
-        </tr>
-        <tr>
-            <th>{{ clickQuestionForm.question.label }}</th>
-            <td>{{ clickQuestionForm.question }}</td>
-        </tr>
-        <tr>
-            <th>{{ clickQuestionForm.instructions.label }}</th>
-            <td>{{ clickQuestionForm.instructions }}</td>
-
-        </tr>
-
-        <thead class="thead-light">
-            <tr><th colspan="2">Task metadata and tagging</th></tr>
-        </thead>
-        <tr>
-            <th>{{ taskForm.pathology.label }}</th>
-            <td>{{ taskForm.pathology }}</td>
-        </tr>
-        <tr>
-            <th>{{ taskForm.organ_tags.label }}</th>
-            <td>{{ taskForm.organ_tags }}</td>
-        </tr>
-        <tr>
-            <th>{{ taskForm.other_tags.label }}</th>
-            <td>{{ taskForm.other_tags }}</td>
-        </tr>
-
-        <thead class="thead-light">
-            <tr><th colspan="2">Annotate WSI</th></tr>
-        </thead>
-        <tr><td colspan="2">
-            {% include 'slide/click_question_annotate_wsi.html' with slide=slide %}
-
-            <br>
-            <input type="submit" value="Submit">
-        </td></tr>
-
-    </table>
-
-</form>
+{% extends 'task/new_info_and_annotation.html' %}
 
 
-</div>
-</div>
-</div>
-{% endblock content %}
+{% block task_type %}
+Click question
+{% endblock task_type %}
+
+
+{% block task_type_new_url %}
+{{ new_url }}
+{% endblock task_type_new_url %}
+
+
+{% block specific_task_type_form %}
+
+<table class="table">
+
+    <thead class="thead-light">
+        <tr><th colspan="2">Task info</th></tr>
+    </thead>
+    <tr>
+        <th>{{ taskForm.name.label }} (short, descriptive)</th>
+        <td>{{ taskForm.name }}</td>
+    </tr>
+    <tr>
+        <th>{{ clickQuestionForm.question.label }}</th>
+        <td>{{ clickQuestionForm.question }}</td>
+    </tr>
+    <tr>
+        <th>{{ clickQuestionForm.instructions.label }}</th>
+        <td>{{ clickQuestionForm.instructions }}</td>
+
+    </tr>
+
+</table>
+
+{% endblock specific_task_type_form %}

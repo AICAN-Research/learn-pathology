@@ -88,10 +88,9 @@ def do_random(request, slide_id=None):
     """
 
     if request.method == 'GET':  # If the request is GET
-        # make a random question
-        slides = Slide.objects.all()
-        num_images = len(slides)
-        slide_id = random.randrange(1, num_images + 1)
+        # Select a random slide
+        slide_ids = list(Slide.objects.all().values_list('id', flat=True))
+        slide_id = random.sample(slide_ids, k=1)[0]   # index since random.sample returns k-length list
 
     slide = Slide.objects.get(id=slide_id)
     slide_cache.load_slide_to_cache(slide_id)
@@ -343,3 +342,9 @@ def edit(request, task_id,course_id=None):
         'boxes': BoundingBox.objects.filter(annotated_slide=annotated_slide),
     }
     return render(request, 'multiple_choice/edit.html', context)
+
+
+def get_choice_formset(num_extra_fields=5):
+    ChoiceFormset = formset_factory(ChoiceForm, extra=num_extra_fields)
+    choice_formset = ChoiceFormset()
+    return choice_formset

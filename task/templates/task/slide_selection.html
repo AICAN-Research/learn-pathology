@@ -1,38 +1,9 @@
-{% extends 'learnpathology/single_content_layout.html' %}
-{% load to_class_name %}
-{% load static %}
-{% load slide_filters %}
 {% load bootstrap_icons %}
 
 
-{% block page_title %}
-Select slides for <span style="color: var(--color-blue-dark);">{{ course.title }}</span>
-{% endblock page_title %}
-
-
-{% block breadcrumb_items %}
-    <li class="breadcrumb-item"><a href="{% url 'course:index' %}">Courses</a></li>
-    <li class="breadcrumb-item"><a href="{% url 'course:view' course_id=course.id %}">{{ course.code }} - {{ course.title }}</a></li>
-    <li class="breadcrumb-item">Select images</li>
-{% endblock breadcrumb_items %}
-
-
-{% block search_bar %}
-{% endblock search_bar %}
-
-
-{% block content %}
-
-<div class="card w-100">
-<div class="card-body">
-<div class="card-text">
-
-<h3>
-    Click on a slide to add it to/remove it from the course <i>{{ course.code }} - {{ course.title }}</i>
-</h3>
-
 <div class="row" style="margin: 0 0 0 0;">
 
+    {% comment %}
     <!-- Menu/toolbar -->
     <div class="col" style="padding: 0 0 0 0;">
 
@@ -42,21 +13,15 @@ Select slides for <span style="color: var(--color-blue-dark);">{{ course.title }
             }
         </style>
 
-        <div class="LPButton">
-            <a class="noLinkStyling" href="{% url 'course:view' course_id=course.id active_tab='slides' %}">
-                Return to course page
-            </a>
-        </div>
-
         <div class="card">
             <div class="card border-0 w-100 text-start">
                 <div class="card-body" style="padding-bottom: 0;">
                     <div class="radio-toolbar" style="margin-top: 2px;">
-                        <a href="{% url 'course:slide_selection' course_id=course.id %}">
-                            <button class="wideLabel" style="text-align: center; border: 2px solid #c65127;">
-                                Clear selection {% bs_icon 'x-circle' %}
-                            </button>
-                        </a>
+{#                        <a href="{% url 'course:slide_selection' course_id=course.id %}">#}
+{#                            <button class="wideLabel" style="text-align: center; border: 2px solid #c65127;">#}
+{#                                Clear selection {% bs_icon 'x-circle' %}#}
+{#                            </button>#}
+{#                        </a>#}
                     </div>
                 </div>
             </div>
@@ -118,19 +83,20 @@ Select slides for <span style="color: var(--color-blue-dark);">{{ course.title }
             </form>
         </div>
     </div>
+    {% endcomment %}
 
     <!-- Slide grid/list -->
     <div class="col-md-10 col-xs-1">
     <div class="card border-0">
         {% if slides %}
             <div class="card border-0" style="min-height: 600px; padding-top: 10px">
-                {% include 'slide/slide_grid_selection.html' with slides=slides slides_in_course=slides_in_course course_id=course.id %}
+                {% include 'task/slide_grid_selection.html' with slides=slides slides_in_course=slides_in_course %}
             </div>
         {% else %}
             <div class="card" style="min-height: 200px; padding-top: 10px">
-                No slides available. Please select slides first.
+            No slides available. Please select slides first.
               <div class="LPButton">
-                <a href="{% url 'course:slide_selection' course.id %}">Click here to add or remove slides</a>
+                <a href="{% url 'course:slide_selection' course_id %}">Click here to add or remove slides</a>
             </div>
             </div>
         {% endif %}
@@ -138,17 +104,3 @@ Select slides for <span style="color: var(--color-blue-dark);">{{ course.title }
     </div>
 
 </div>
-
-</div>
-</div>
-</div>
-{% endblock content %}
-
-
-{% block javascript %}
-
-$(document).ready(function(){
-    collapseSidebar();
-});
-
-{% endblock javascript %}

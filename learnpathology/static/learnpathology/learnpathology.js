@@ -46,7 +46,8 @@ function highlightMenuItem() {
         menu_item = 'slide';
     } else if (location.href.includes('course')) {
         menu_item = 'course';
-    } else if (location.href.includes('task/list')) {
+    // } else if (location.href.includes('task/list')) {
+    } else if (location.href.includes('task')) {
         menu_item = 'task';
     } else if (location.href.includes('tag/')) {
         menu_item = 'tag';
