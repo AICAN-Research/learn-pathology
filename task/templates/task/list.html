@@ -101,8 +101,8 @@ Task list
                                 <td><a href="{% url task.do_url task_id=task.id course_id=0 %}">Do task</a></td>
                                 {% if request.user.is_teacher or request.user.is_superuser %}
                                     <td><a href="{% url task.edit_url task.id %}">Edit</a></td>
+                                    <td><a href="{% url 'task:task_delete' task.id %}">Delete</a></td>
                                 {% endif %}
-                                <td><a href="{% url 'task:task_delete' task.id %}">Delete</a></td>
                             </tr>
                         {% endfor %}
                     </table>
