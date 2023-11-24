@@ -12,6 +12,7 @@ Tags
 
 
 {% block button_row %}
+
 {% if user.is_superuser or user.is_teacher %}
     <div class="custom-button" style="">
         <a href="{% url 'tag:new' %}" style="display: inline-flex;">
@@ -24,6 +25,7 @@ Tags
         </a>
     </div>
 {% endif %}
+
 {% endblock button_row %}
 
 
