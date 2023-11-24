@@ -756,6 +756,7 @@ Sidebar
     color: #fff;
     transition: all 0.2s;
     position: fixed;
+    z-index: 999;
     /* Below from Figma */
     display: inline-flex;
     padding: 24px 40px 24px 24px;
