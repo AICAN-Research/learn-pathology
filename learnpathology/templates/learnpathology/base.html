@@ -49,25 +49,25 @@
                 </div>
                 <div class="sidebar-top-items">
                     <!-- TODO: Make active tab active, not just Home button -->
-                    <a class="sidebar-item noLinkStyling active" href="{% url 'frontpage' %}">
+                    <a class="sidebar-item noLinkStyling active" href="{% url 'frontpage' %}" title="Dashboard">
                         <div class="sidebar-item-icon">
                             <span class="iconify" data-icon="fluent:grid-28-regular" data-width="24" data-height="24"></span>
                         </div>
                         <span class="sidebar-item-text">Dashboard</span>
                     </a>
-                    <a class="sidebar-item noLinkStyling" href="{% url 'slide:browser' %}">
+                    <a class="sidebar-item noLinkStyling" href="{% url 'slide:browser' %}" title="Images">
                         <div class="sidebar-item-icon">
                             <span class="iconify" data-icon="fluent:image-28-regular" data-width="24" data-height="24"></span>
                         </div>
                         <span class="sidebar-item-text">Images</span>
                     </a>
-                    <a class="sidebar-item noLinkStyling" href="{% url 'course:index' %}">
+                    <a class="sidebar-item noLinkStyling" href="{% url 'course:index' %}" title="Courses">
                         <div class="sidebar-item-icon">
                             <span class="iconify" data-icon="fluent:hat-graduation-28-regular" data-width="24" data-height="24"></span>
                         </div>
                         <span class="sidebar-item-text">Courses</span>
                     </a>
-                    <a class="sidebar-item noLinkStyling" href="{% url 'task:list' %}">
+                    <a class="sidebar-item noLinkStyling" href="{% url 'task:list' %}" title="Tasks">
                         <div class="sidebar-item-icon">
                             <span class="iconify" data-icon="fluent:task-list-square-rtl-20-regular" data-width="24" data-height="24"></span>
                         </div>
@@ -75,7 +75,7 @@
                     </a>
                     {% if request.user.is_teacher or request.user.is_superuser %}
                         <!-- specific options for teachers or superuser -->
-                        <a class="sidebar-item noLinkStyling" href="{% url 'tag:index' %}">
+                        <a class="sidebar-item noLinkStyling" href="{% url 'tag:index' %}" title="Tags">
                             <div class="sidebar-item-icon">
                                 <span class="iconify" data-icon="fluent:tag-28-regular" data-width="24" data-height="24"></span>
                             </div>
@@ -93,7 +93,7 @@
 
                     {% if request.user.is_superuser %}
                         <!-- specific options for superuser-->
-                        <a class="sidebar-item noLinkStyling" href="/admin/">
+                        <a class="sidebar-item noLinkStyling" href="/admin/" title="Admin page">
                             <div class="sidebar-item-icon">
 {#                                <i class="bi-gear-fill"></i>#}
                                 <span class="iconify" data-icon="fluent:settings-28-regular" data-width="24" data-height="24"></span>
@@ -101,7 +101,7 @@
                             <span class="sidebar-item-text">Admin</span>
                         </a>
                     {% endif %}
-                    <a class="sidebar-item noLinkStyling dropdown-toggle" href="#" id="dropdownAbout" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="sidebar-item noLinkStyling dropdown-toggle" href="#" id="dropdownAbout" data-bs-toggle="dropdown" aria-expanded="false" title="Information about LearnPathology">
                         <div class="sidebar-item-icon">
                             <span class="iconify" data-icon="fluent:info-28-regular" data-width="24" data-height="24"></span>
                         </div>
@@ -113,16 +113,16 @@
                             <li><a class="dropdown-item" href="{{ page.url }}">{{ page.title }}</a></li>
                         {% endfor %}
                     </ul>
-                    <a class="sidebar-item noLinkStyling dropdown-toggle" href="#" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="sidebar-item noLinkStyling dropdown-toggle" href="#" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false" title="Profile and Logout">
                         <div class="sidebar-item-icon">
                             <span class="iconify" data-icon="fluent:person-28-regular" data-width="24" data-height="24"></span>
                         </div>
                         <span class="sidebar-item-text">{{ request.user.username }}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-                        <li><a class="dropdown-item" href="#">Profile</a></li>
-    {#                    <li><a class="dropdown-item" href="#">Settings</a></li>#}
-                        <li><a class="dropdown-item" href="#">Sign out</a></li>
+{#                        <li><a class="dropdown-item" href="#">Profile</a></li>#}
+{#                        <li><a class="dropdown-item" href="#">Settings</a></li>#}
+                        <li><a class="dropdown-item" href="{% url 'logout' %}">Sign out</a></li>
                     </ul>
                 </div>
             </div>

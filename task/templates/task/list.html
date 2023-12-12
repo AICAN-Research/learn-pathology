@@ -19,28 +19,32 @@ Task list
 
 
 {% block button_row %}
-<div class="custom-button" style="">
-    <!-- TODO: Update url to not include slide_id since slide is selected when making task -->
-    <a href="{% url 'task:new' %}" style="display: inline-flex;">
-        <div class="button-icon">
-            <span class="iconify" data-icon="fluent:add-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
-        </div>
-        <div style="justify-content: flex-start; align-items: center; display: flex">
-            <div class="button-text">New task</div>
-        </div>
-    </a>
-</div>
-{#<div class="custom-button" style="">#}
-{#    <!-- TODO: Update url to not include slide_id since slide is selected when making task -->#}
-{#    <a href="{% url 'multiple_choice:do_random' %}" style="display: inline-flex;">#}
-{#        <div class="button-icon">#}
-{#            <span class="iconify" data-icon="fluent:arrow-shuffle-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>#}
-{#        </div>#}
-{#        <div style="justify-content: flex-start; align-items: center; display: flex">#}
-{#            <div class="button-text">Random question</div>#}
-{#        </div>#}
-{#    </a>#}
-{#</div>#}
+
+{% if user.is_superuser or user.is_teacher %}
+    <div class="custom-button" style="">
+        <!-- TODO: Update url to not include slide_id since slide is selected when making task -->
+        <a href="{% url 'task:new' %}" style="display: inline-flex;">
+            <div class="button-icon">
+                <span class="iconify" data-icon="fluent:add-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
+            </div>
+            <div style="justify-content: flex-start; align-items: center; display: flex">
+                <div class="button-text">New task</div>
+            </div>
+        </a>
+    </div>
+    {#<div class="custom-button" style="">#}
+    {#    <!-- TODO: Update url to not include slide_id since slide is selected when making task -->#}
+    {#    <a href="{% url 'multiple_choice:do_random' %}" style="display: inline-flex;">#}
+    {#        <div class="button-icon">#}
+    {#            <span class="iconify" data-icon="fluent:arrow-shuffle-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>#}
+    {#        </div>#}
+    {#        <div style="justify-content: flex-start; align-items: center; display: flex">#}
+    {#            <div class="button-text">Random question</div>#}
+    {#        </div>#}
+    {#    </a>#}
+    {#</div>#}
+{% endif %}
+
 {% endblock button_row %}
 
 
@@ -97,8 +101,8 @@ Task list
                                 <td><a href="{% url task.do_url task_id=task.id course_id=0 %}">Do task</a></td>
                                 {% if request.user.is_teacher or request.user.is_superuser %}
                                     <td><a href="{% url task.edit_url task.id %}">Edit</a></td>
+                                    <td><a href="{% url 'task:task_delete' task.id %}">Delete</a></td>
                                 {% endif %}
-                                <td><a href="{% url 'task:task_delete' task.id %}">Delete</a></td>
                             </tr>
                         {% endfor %}
                     </table>

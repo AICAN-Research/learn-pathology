@@ -68,7 +68,7 @@ def do(request, task_id, course_id=None):
     counter_corr_answ = len(list(Choice.objects.filter(task=multiple_choice, correct=True)))
 
     slide = slide_cache.load_slide_to_cache(this_task.annotated_slide.slide.id)
-    return render(request, 'multiple_choice/do.html', {
+    context = {
         'task': this_task,
         'multiple_choice': multiple_choice,
         'slide': slide,
@@ -79,7 +79,10 @@ def do(request, task_id, course_id=None):
         'counter_corr_answ': counter_corr_answ,
         'next_task_id': next_task_id,
         'next_task': next_task,
-    })
+    }
+    if course_id:
+        context['course'] = course
+    return render(request, 'multiple_choice/do.html', context)
 
 
 def do_random(request, slide_id=None):

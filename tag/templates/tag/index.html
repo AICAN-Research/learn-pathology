@@ -1,17 +1,38 @@
-{% extends 'learnpathology/base.html' %}
+{% extends 'learnpathology/single_content_layout.html' %}
+
+
+{% block page_title %}
+Tags
+{% endblock page_title %}
+
+
+{% block breadcrumb_items %}
+    <li class="breadcrumb-item">Tags</li>
+{% endblock breadcrumb_items %}
+
+
+{% block button_row %}
+
+{% if user.is_superuser or user.is_teacher %}
+    <div class="custom-button" style="">
+        <a href="{% url 'tag:new' %}" style="display: inline-flex;">
+            <div class="button-icon">
+                <span class="iconify" data-icon="fluent:add-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
+            </div>
+            <div style="justify-content: flex-start; align-items: center; display: flex">
+                <div class="button-text">Add tag</div>
+            </div>
+        </a>
+    </div>
+{% endif %}
+
+{% endblock button_row %}
+
+
 {% block content %}
-<div class="container">
-<h1>Tags</h1>
-</div>
-<div class="card mx-auto text-center" style="width: 90%">
+<div class="card w-100 mx-auto text-center">
 <div class="card-body">
 <div class="card-text">
-
-    {% if user.is_superuser or user.is_teacher %}
-    <p>
-    <a href="{% url 'tag:new' %}">Add a new tag</a>
-    </p>
-    {% endif %}
 
     <p>
         <form class="form">

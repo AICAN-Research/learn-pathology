@@ -82,7 +82,7 @@ def do(request, task_id, course_id=None):
         mode = 'post'
 
     slide = slide_cache.load_slide_to_cache(this_task.annotated_slide.slide.id)
-    return render(request, 'many_to_one/do.html', {
+    context = {
         'task': this_task,
         'many_to_one': many_to_one,
         'slide': slide,
@@ -92,7 +92,10 @@ def do(request, task_id, course_id=None):
         'indices': json.dumps(indices),
         'next_task_id': next_task_id,
         'next_task': next_task,
-    })
+    }
+    if course_id:
+        context['course'] = course
+    return render(request, 'many_to_one/do.html', context)
 
 
 TableRowFormSet = inlineformset_factory(TableColumn, TableRow, fields=('answer',), extra=5, max_num=5)

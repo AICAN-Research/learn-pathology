@@ -55,7 +55,7 @@ def do(request, task_id, course_id=None):
             answered = 'no'
 
     slide = slide_cache.load_slide_to_cache(this_task.annotated_slide.slide.id)
-    return render(request, 'click_question/do.html', {
+    context = {
         'task': this_task,
         'click_question': click_question,
         'slide': slide,
@@ -64,7 +64,10 @@ def do(request, task_id, course_id=None):
         'student_selection': student_selection,
         'next_task_id': next_task_id,
         'next_task': next_task,
-    })
+    }
+    if course_id:
+        context['course'] = course
+    return render(request, 'click_question/do.html', context)
 
 
 @teacher_required
