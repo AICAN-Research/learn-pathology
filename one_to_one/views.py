@@ -1,18 +1,18 @@
 import json
 
-from django.contrib import messages
 from django.db import transaction
+from django.contrib import messages
 from django.forms import formset_factory, modelformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 
-from slide.models import Slide, Pointer, AnnotatedSlide, BoundingBox
-from slide.views import slide_cache, save_boundingbox_annotation, save_pointer_annotation
 from task.models import Task
 from task.forms import TaskForm
-from one_to_one.models import OneToOne, SortingPair
-from one_to_one.forms import OneToOneForm, SortingPairForm
 from course.models import Course
 from user.decorators import teacher_required
+from one_to_one.models import OneToOne, SortingPair
+from one_to_one.forms import OneToOneForm, SortingPairForm
+from slide.models import Slide, Pointer, AnnotatedSlide, BoundingBox
+from slide.views import slide_cache, save_boundingbox_annotation, save_pointer_annotation, delete_existing_annotations
 
 
 def do(request, task_id, course_id=None):
@@ -158,34 +158,37 @@ def new(request, slide_id, course_id=None):
 
 
 @teacher_required
-def edit(request, task_id,course_id=None):
+def edit(request, task_id, course_id=None):
     """
     Teacher form for editing a one-to-one sorting task
+
+    Parameters
+    ----------
+    request : Http request
+
+    task_id : int
+        ID of Task instance
+    course_id : int
+        ID of Course instance
     """
-
-    SortingPairFormSet = modelformset_factory(SortingPair, form=SortingPairForm, extra=5)
-
     # Get model instances from database
     task = get_object_or_404(Task, id=task_id)
     one_to_one = get_object_or_404(OneToOne, task=task)
     sorting_pair = SortingPair.objects.filter(task=one_to_one)
-
-    # Get slide and pointers
     annotated_slide = task.annotated_slide
-    slide = annotated_slide.slide
-    slide_cache.load_slide_to_cache(slide.id)
+
+    slide_cache.load_slide_to_cache(slide_id=annotated_slide.slide_id)
+
+    SortingPairFormSet = modelformset_factory(SortingPair, form=SortingPairForm, extra=5)
 
     # Process forms
-    if request.method == 'POST':  # Form was submitted
-
+    if request.method == 'POST':
         # Get submitted forms
         task_form = TaskForm(request.POST or None, instance=task)
         one_to_one_form = OneToOneForm(request.POST or None, instance=one_to_one)
-        sorting_pair_formset = SortingPairFormSet(request.POST)
+        sorting_pair_formset = SortingPairFormSet(request.POST, queryset=sorting_pair)
 
-        # pointers = Pointer.objects.filter(annotated_slide=task.annotated_slide)
-
-        with transaction.atomic():  # Make save operation atomic
+        with transaction.atomic():
             if task_form.is_valid() and one_to_one_form.is_valid():
 
                 # Save instance data to database
@@ -195,26 +198,21 @@ def edit(request, task_id,course_id=None):
                 other_tags = [tag for tag in task_form.cleaned_data['other_tags']]
                 task.tags.set([organ_tags] + other_tags)
 
-                one_to_one = one_to_one_form.save()
-                #one_to_one.sortingpair_set.all().delete()
-
+                one_to_one_form.save()
 
                 for pairForm in sorting_pair_formset:
-                    print(pairForm.errors)
-
-                    if pairForm.is_valid():
-
-                        pair = pairForm.save(commit=False)
-                        print(f'{pair.fixed} is valid ')
-                        if len(pair.fixed) > 0 and len(pair.draggable) > 0:
+                    if pairForm.has_changed():
+                        if pairForm.is_valid():
+                            pair = pairForm.save(commit=False)
                             pair.task = one_to_one
                             pair.save()
+                        else:
+                            pairForm.cleaned_data['id'].delete()
 
-                # Store annotations (pointers)
-                # Delete old pointers first
-                Pointer.objects.filter(annotated_slide=annotated_slide).delete()
-                BoundingBox.objects.filter(annotated_slide=annotated_slide).delete()
-                # Add all current pointers
+                # Delete all existing annotations
+                delete_existing_annotations(annotated_slide)
+
+                # Create new annotations (pointers and bounding box)
                 for key in request.POST:
 
                     if key.startswith('right-arrow-overlay-') and key.endswith('-text'):
@@ -223,24 +221,27 @@ def edit(request, task_id,course_id=None):
                     if key.startswith('boundingbox-') and key.endswith('-text'):
                         save_boundingbox_annotation(request, key, annotated_slide)
 
-                messages.add_message(request, messages.SUCCESS,
-                                     f'The task {task.name} was altered!')
+                # Give a message back to the user
+                messages.add_message(request, messages.SUCCESS, f'The task {task.name} was altered!')
+
                 if course_id is not None and course_id in Course.objects.values_list('id', flat=True):
                     return redirect('course:view', course_id=course_id, active_tab='tasks')
 
         return redirect('task:list')
 
-    else:  # GET
-        task_form = TaskForm(instance=task)  # , initial=task.tags.all())
-        task_form.fields['organ_tags'].initial = task.tags.filter(is_organ=True)
-        task_form.fields['other_tags'].initial = task.tags.filter(is_stain=False, is_organ=False)
+    else:
+        task_form = TaskForm(instance=task)
+        task_form.fields['other_tags'].initial = task.tags.filter(is_organ=False, is_stain=False)
+        try:
+            task_form.fields['organ_tags'].initial = task.tags.get(is_organ=True)
+        except:
+            pass
 
-        one_to_one_form = OneToOneForm(instance=task.onetoone)
+        one_to_one_form = OneToOneForm(instance=one_to_one)
         sorting_pair_formset = SortingPairFormSet(queryset=sorting_pair)
 
     context = {
-        'slide': slide,
-        'annotated_slide': annotated_slide,
+        'slide': annotated_slide.slide,
         'oneToOneForm': one_to_one_form,
         'taskForm': task_form,
         'sortingPairFormSet': sorting_pair_formset,
