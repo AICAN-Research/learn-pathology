@@ -1,9 +1,9 @@
 import random
 
-from django.contrib import messages
 from django.db import transaction
+from django.contrib import messages
 from django.forms import formset_factory, modelformset_factory
-from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 
 from slide.models import Slide, Pointer, AnnotatedSlide, BoundingBox
 from slide.views import slide_cache, save_boundingbox_annotation, save_pointer_annotation
@@ -31,8 +31,8 @@ def do(request, task_id, course_id=None):
     this_task = Task.objects.get(id=task_id)
     multiple_choice = this_task.multiplechoice
 
-    # get id of next task
-    if course_id:
+    # Get id of next task
+    if course_id and course_id in Course.objects.values_list('id', flat=True):
         course = Course.objects.get(id=course_id)
         all_tasks = Task.objects.filter(course=course)
     else:
@@ -50,7 +50,6 @@ def do(request, task_id, course_id=None):
     answered = []
     choice_text = []
     if request.method == 'POST':
-        print('POST')
         # Process form
         id_post_choice = request.POST.getlist('choice', None)
         if id_post_choice:
@@ -68,6 +67,7 @@ def do(request, task_id, course_id=None):
     counter_corr_answ = len(list(Choice.objects.filter(task=multiple_choice, correct=True)))
 
     slide = slide_cache.load_slide_to_cache(this_task.annotated_slide.slide.id)
+
     context = {
         'task': this_task,
         'multiple_choice': multiple_choice,
@@ -77,7 +77,6 @@ def do(request, task_id, course_id=None):
         'choice_text': choice_text,
         'course_id': course_id,
         'counter_corr_answ': counter_corr_answ,
-        'next_task_id': next_task_id,
         'next_task': next_task,
     }
     if course_id:
