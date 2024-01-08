@@ -87,8 +87,14 @@ def do(request, task_id, course_id=None):
 def do_random(request, slide_id=None):
     """
     Student form for answering/viewing a random multiple choice task
-    """
 
+    Parameters
+    ----------
+    request : Http request
+
+    slide_id : int
+        ID of Slide instance
+    """
     if request.method == 'GET':  # If the request is GET
         # Select a random slide
         slide_ids = list(Slide.objects.all().values_list('id', flat=True))
@@ -102,7 +108,6 @@ def do_random(request, slide_id=None):
     answered = 'no'
     choice_text = None
     if request.method == 'POST':
-        print('POST')
         # Process form
         choice_id = request.POST.get('choice', None)  # returns None if no choice was made
         if choice_id is not None:
