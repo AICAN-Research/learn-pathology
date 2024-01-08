@@ -132,16 +132,25 @@ def do_random(request, slide_id=None):
 def new(request, slide_id, course_id=None):
     """
     Teacher form for creating a multiple choice task
+
+    Parameters
+    ----------
+    request : Http request
+
+    slide_id : int
+        ID of Slide instance
+    course_id : int
+        ID of Course instance
     """
 
     # Get slide
     slide = Slide.objects.get(pk=slide_id)
     slide_cache.load_slide_to_cache(slide.id)
 
-    # Process forms
     ChoiceFormset = formset_factory(ChoiceForm, extra=5)
+
+    # Process forms
     if request.method == 'POST':  # Form was submitted
-        print("POST")
         task_form = TaskForm(request.POST)
         multiple_choice_form = MultipleChoiceForm(request.POST)
         choice_formset = ChoiceFormset(request.POST)
@@ -149,8 +158,7 @@ def new(request, slide_id, course_id=None):
         with transaction.atomic():  # Make save operation atomic
             if multiple_choice_form.is_valid() and task_form.is_valid() and choice_formset.is_valid():
                 # Create annotated slide
-                annotated_slide = AnnotatedSlide()
-                annotated_slide.slide = slide
+                annotated_slide = AnnotatedSlide(slide=slide)
                 annotated_slide.save()
 
                 # Create task
@@ -167,33 +175,30 @@ def new(request, slide_id, course_id=None):
                 multiple_choice.task = task
                 multiple_choice.save()
 
+                # Create choices
                 for choiceForm in choice_formset:
                     choice = choiceForm.save(commit=False)
                     if len(choice.text) > 0:
                         choice.task = multiple_choice
                         choice.save()
 
-                # Store annotations (pointers)
+                # Create annotations (pointers and bounding box)
                 for key in request.POST:
 
                     if key.startswith('right-arrow-overlay-') and key.endswith('-text'):
-                        prefix = key[:-len('text')]
-                        pointer = Pointer()
-                        pointer.text = request.POST[key]
-                        pointer.position_x = float(request.POST[prefix + 'x'])
-                        pointer.position_y = float(request.POST[prefix + 'y'])
-                        pointer.annotated_slide = annotated_slide
-                        pointer.save()
+                        save_pointer_annotation(request, key, annotated_slide)
 
                     if key.startswith('boundingbox-') and key.endswith('-text'):
                         save_boundingbox_annotation(request, key, annotated_slide)
 
                 # Give a message back to the user
                 messages.add_message(request, messages.SUCCESS, 'Task added successfully!')
+
                 if course_id is not None and course_id in Course.objects.values_list('id', flat=True):
                     course = Course.objects.get(id=course_id)
                     course.task.add(task)
                     return redirect('course:view', course_id=course_id, active_tab='tasks')
+
                 return redirect('task:list')
     else:
         task_form = TaskForm()
