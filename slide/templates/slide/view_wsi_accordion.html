@@ -34,7 +34,7 @@
         </div>
 
 
-        <div class="col col-2" style="height: fit-content;" style="width: 20%;" id="slideColumn">
+        <div class="col col-2" style="height: fit-content; width: 20%;" id="slideColumn">
 
 
             <h5 style="margin-top: 1rem">Annotation list</h5>
@@ -61,20 +61,22 @@
 </div>
 
 
-
 <div id="toolbarDiv">
     <!-- Custom buttons for Toolbar -->
     <div class="button-group">
-    <button id="screenshotButton" class="custom-button btn btn-secondary"><div class="button-icon">
-        <span class="iconify" data-icon="fluent:camera-24-regular" data-width="24" data-height="24"></span>
-    </div></button>
-    <button class="custom-button btn btn-secondary"><div class="button-icon">
-        <span class="iconify" data-icon="fluent:zoom-in-24-regular" data-width="24" data-height="24"></span>
-    </div><div id="setZoomButton" class="button-text">
-
-    </div></button>
-
+        <button id="screenshotButton" class="custom-button btn btn-secondary">
+            <div class="button-icon">
+                <span class="iconify" data-icon="fluent:camera-24-regular" data-width="24" data-height="24"></span>
+            </div>
+        </button>
+        <button class="custom-button btn btn-secondary">
+            <div class="button-icon">
+                <span class="iconify" data-icon="fluent:zoom-in-24-regular" data-width="24" data-height="24"></span>
+            </div>
+            <div id="setZoomButton" class="button-text"></div>
+        </button>
     </div>
+
     <div class="button-group">
         <button id="zoomInButton" style="width: 46px; text-align: center" class="custom-button btn btn-secondary"><div class="button-icon">
             <span class="iconify" data-icon="fluent:add-24-regular" data-width="24" data-height="24"></span>
@@ -88,6 +90,11 @@
         <button class="custom-button btn btn-secondary" style="width: 46px;" data-bs-toggle="modal" data-bs-target="#slideInfoModal"><div class="button-icon">
             <span class="iconify" data-icon="fluent:info-24-regular" data-width="24" data-height="24"></span>
         </div></button>
+    </div>
+
+    <!-- TODO: Only show annotation toolbar++ for teachers and admins -->
+    <div class="button-group">
+        <div id="my-toolbar-container"></div>
     </div>
 
     <div class="button-group">
@@ -205,6 +212,9 @@
 
     <script src="{% static 'slide/openseadragon.min.js' %}"></script>
     <script src="{% static 'slide/openseadragon-scalebar.js' %}"></script>
+    <script src="{% static 'slide/annotorious-openseadragon-2.7.16/openseadragon-annotorious.min.js' %}"></script>
+    <!-- TODO: Set fixed version for Annotorious-related plugins! -->
+    <script src="https://cdn.jsdelivr.net/npm/@recogito/annotorious-toolbar@latest/dist/annotorious-toolbar.min.js"></script>
     <script type="text/javascript">
 
         <!--WSI Viewer-->
@@ -233,6 +243,11 @@
             }
         });
 
+        // Initialize the Annotorious plugin
+        var anno = OpenSeadragon.Annotorious(viewer);
+        // TODO: Only show toolbar for teachers and admins!!!
+        Annotorious.Toolbar(anno, document.getElementById('my-toolbar-container'));
+
         viewer.addControl(document.getElementById("toolbarDiv"), {anchor: OpenSeadragon.ControlAnchor.BOTTOM_LEFT});
 
         <!--Scalebar-->
@@ -260,7 +275,7 @@
         window.onLoad = createClickReaction();
         window.onLoad = toggleCardVisibility();
 
-         function createClickReaction() {
+        function createClickReaction() {
             let current_overlays = viewer.currentOverlays;
              console.log('Create Click reaction ')
             for (let i = 0; i < current_overlays.length; i++) {
@@ -299,7 +314,6 @@
 
             }
         }
-
 
         function toggleAnnotationOff() {
             $(".overlay").toggle();
@@ -373,7 +387,6 @@
         });
 
 
-
         <!-- Annotation List Functionality -->
         function toggleCardVisibility() {
             var x = document.getElementById("slideColumn");
@@ -435,8 +448,6 @@
                 }
             }
         });
-
-
 
 
         function highlightAnnotation(annotationId) {
@@ -506,8 +517,6 @@
         }
 
 
-
-
     </script>
 
 {% endblock content %}
@@ -516,7 +525,7 @@
 {% block javascript %}
 
     $(document).ready(function(){
-    collapseSidebar();
+        collapseSidebar();
     });
 
 {% endblock javascript %}
