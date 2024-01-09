@@ -6,7 +6,7 @@ from django.forms import formset_factory, modelformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 
 from slide.models import Slide, Pointer, AnnotatedSlide, BoundingBox
-from slide.views import slide_cache, save_boundingbox_annotation, save_pointer_annotation
+from slide.views import slide_cache, save_boundingbox_annotation, save_pointer_annotation, delete_existing_annotations
 from task.models import Task
 from task.forms import TaskForm
 from multiple_choice.models import MultipleChoice, Choice, RandomMCChoice
@@ -259,9 +259,18 @@ def new_random(num_choices=5):
 
 
 @teacher_required
-def edit(request, task_id,course_id=None):
+def edit(request, task_id, course_id=None):
     """
     Teacher form for editing a multiple choice task
+
+        Parameters
+    ----------
+    request : Http request
+
+    task_id : int
+        ID of Task instance
+    course_id : int
+        ID of Course instance
     """
 
     ChoiceFormset = modelformset_factory(Choice, form=ChoiceForm, extra=5)
@@ -274,7 +283,7 @@ def edit(request, task_id,course_id=None):
     # Get slide and pointers
     annotated_slide = task.annotated_slide
     slide = annotated_slide.slide
-    slide_cache.load_slide_to_cache(slide.id)
+    slide_cache.load_slide_to_cache(slide_id=slide.id)
 
     # Process forms
     if request.method == 'POST':  # Form was submitted
@@ -283,8 +292,6 @@ def edit(request, task_id,course_id=None):
         task_form = TaskForm(request.POST or None, instance=task)
         multiple_choice_form = MultipleChoiceForm(request.POST or None, instance=multiple_choice)
         choice_formset = ChoiceFormset(request.POST)
-
-        # pointers = Pointer.objects.filter(annotated_slide=task.annotated_slide)
 
         with transaction.atomic():  # Make save operation atomic
             if task_form.is_valid() and multiple_choice_form.is_valid():
@@ -303,7 +310,6 @@ def edit(request, task_id,course_id=None):
                     choice = Choice()
                     text = request.POST.get(f"{choiceForm.prefix}-text")
                     correct = request.POST.get(f"{choiceForm.prefix}-correct")
-                    print(correct)
 
                     if len(text) > 0:
                         choice.task = multiple_choice
@@ -314,20 +320,20 @@ def edit(request, task_id,course_id=None):
                             choice.correct = False
                         choice.save()
 
-                # Store annotations (pointers)
-                # Delete old pointers first
-                Pointer.objects.filter(annotated_slide=annotated_slide).delete()
-                BoundingBox.objects.filter(annotated_slide=annotated_slide).delete()
-                # Add all current pointers
+                # Delete all existing annotations
+                delete_existing_annotations(annotated_slide)
+
+                # Create new annotations (pointers and bounding box)
                 for key in request.POST:
 
                     if key.startswith('right-arrow-overlay-') and key.endswith('-text'):
-                        save_pointer_annotation(request,key,annotated_slide)
+                        save_pointer_annotation(request, key, annotated_slide)
 
 
                     if key.startswith('boundingbox-') and key.endswith('-text'):
                         save_boundingbox_annotation(request, key, annotated_slide)
 
+                # Give a message back to the user
                 messages.add_message(request, messages.SUCCESS,
                                      f'The task {task.name} was altered!')
 
@@ -336,10 +342,13 @@ def edit(request, task_id,course_id=None):
 
         return redirect('task:list')
 
-    else:  # GET
-        task_form = TaskForm(instance=task)  # , initial=task.tags.all())
-        task_form.fields['organ_tags'].initial = task.tags.filter(is_organ=True)
+    else:
+        task_form = TaskForm(instance=task)
         task_form.fields['other_tags'].initial = task.tags.filter(is_stain=False, is_organ=False)
+        try:
+            task_form.fields['organ_tags'].initial = task.tags.get(is_organ=True)
+        except:
+            pass
 
         multiple_choice_form = MultipleChoiceForm(instance=task.multiplechoice)
         choice_formset = ChoiceFormset(queryset=choices)
