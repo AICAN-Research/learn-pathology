@@ -243,8 +243,18 @@
         }
     });
 
-    // Initialize the Annotorious plugin
-    var anno = OpenSeadragon.Annotorious(viewer);
+    /* Initialize the Annotorious plugin */
+    // Set up configuration of Annotorious
+    let config = {
+        allowEmpty: false,  // Set to true to allow empty annotations. Annotations without bodies are normally discarded.
+        fragmentUnit: 'percent',    // 'pixel' or 'percent'
+        readOnly: false,    // TODO: Set to true if user is student (not teacher/superuser)
+        widgets: [
+            'COMMENT',
+            //'TAG',  // Do we need tags for these annotations?
+        ],
+    };
+    let anno = OpenSeadragon.Annotorious(viewer, config);
     // TODO: Only show toolbar for teachers and admins!!!
     Annotorious.Toolbar(anno, document.getElementById('my-toolbar-container'));
 
@@ -516,6 +526,42 @@
         }
     }
 
+
+    // Annotorious + annotation storing
+    anno.on('createAnnotation', function(annotation, overrideId) {
+        console.log('Created annotation!');
+
+        // Store annotation?
+        console.log(annotation);
+        console.log('Annotation text:', annotation.body[0].value);
+        if (annotation.body.length > 1) {
+            console.log('Annotation stuff:', annotation.body[1])
+        }
+
+        console.log('Annotation location:', annotation.target.selector.value);
+        let xywh = annotation.target.selector.value;
+        let coords = xywh.replace('xywh=pixel:', '');
+        let [x, y, w, h] = coords.split(',');
+
+        console.log('x=', x);
+        console.log('y=', y);
+        console.log('w=', w);
+        console.log('h=', h);
+    });
+
+    anno.on('updateAnnotation', function(annotation, overrideId) {
+        console.log('Updated annotation!');
+
+        // Do some database actions
+
+    });
+
+    anno.on('deleteAnnotation', function (annotation, overrideId) {
+        console.log('Deleted annotation!');
+
+        // Do some database actions
+
+    });
 
 </script>
 
