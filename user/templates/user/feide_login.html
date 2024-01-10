@@ -1,0 +1,27 @@
+{% extends "learnpathology/base.html" %}
+
+{% load static %}
+{% block content %}
+
+    <div class="container text-center" style="margin-top: 2rem; margin-bottom: 2rem;">
+        <img src="{% static 'learnpathology/images/logo_v0.png' %}" alt="LearnPathology logo" style="max-width: 400px;align-self: center">
+    </div>
+
+    <h2 class="text-center" style="align-self: center;">Welcome to LearnPathology. The AICAN online learning platform</h2>
+    <div class="container text-center">
+        <p>
+             To use this system you have to login with the <a href="https://www.feide.no/">FEIDE</a> system.<br>
+        </p>
+          <p>
+            <strong>
+                By logging into this system, you accept that a user account is created with your name, email and username
+                in our database. This system uses cookies in your browser to keep you logged in.
+                If you wish to have your account deleted, please contact us.
+            </strong>
+        </p>
+        <a href="{% url 'dataporten_login' %}"><button class="imageBrowserSearchButtons" style="border: 1px solid black"><h3>Login with FEIDE</h3></button></a>
+
+    </div>
+
+{% endblock %}
+

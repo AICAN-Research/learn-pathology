@@ -117,7 +117,7 @@
                         <div class="sidebar-item-icon">
                             <span class="iconify" data-icon="fluent:person-28-regular" data-width="24" data-height="24"></span>
                         </div>
-                        <span class="sidebar-item-text">{{ request.user.username }}</span>
+                        <span class="sidebar-item-text">{% if request.user.first_name %}{{ request.user.first_name }} {{ request.user.last_name }}{% else %}{{ request.user.username }}{% endif %}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
 {#                        <li><a class="dropdown-item" href="#">Profile</a></li>#}

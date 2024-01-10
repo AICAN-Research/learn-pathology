@@ -44,6 +44,13 @@ urlpatterns = [
 
 ]
 
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.USE_FEIDE_LOGIN:
+    #urlpatterns += [path('feide/', include('feide.urls'))]
+    urlpatterns += [path('accounts/', include('allauth.urls')),]
+
 urlpatterns += [
     # Define specific paths (can be used with {% url %} tag
     # path('about/', views.flatpage, {'url': '/about/'}, name='about'),
@@ -52,6 +59,3 @@ urlpatterns += [
     # Or, use this 'catchall' pattern for all flatpages
     re_path(r'^(?P<url>.*/)$', views.flatpage),
 ]
-
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
