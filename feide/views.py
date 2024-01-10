@@ -1,13 +1,20 @@
 from datetime import datetime
 
 from allauth.socialaccount.adapter import get_adapter
-from allauth.socialaccount.providers.base import ProviderException
+from allauth.socialaccount.helpers import render_authentication_error, complete_social_login
+from allauth.socialaccount.models import SocialLogin
+from allauth.socialaccount.providers.base import ProviderException, AuthAction, AuthError
 from allauth.socialaccount.providers.oauth2.views import (
     OAuth2Adapter,
     OAuth2CallbackView,
-    OAuth2LoginView,
+    OAuth2LoginView, OAuth2View,
 )
-
+from allauth.utils import get_request_param
+from django.contrib import messages
+from django.core.exceptions import PermissionDenied
+from django.shortcuts import redirect
+from oauthlib.oauth2 import OAuth2Error
+from requests import RequestException
 from .provider import DataportenProvider
 import json
 
@@ -55,8 +62,7 @@ class DataportenAdapter(OAuth2Adapter):
             if username == 'ntnu.no':
                 ntnu_found = True
         if not ntnu_found:
-            # TODO make this more pretty: Show error message at login page
-            raise Exception('Only NTNU users allowed to login!')
+            raise ProviderException('Only NTNU users are allowed to login to LearnPathology.')
 
         #print(json.dumps(userinfo_response.json(), indent=2))
         userinfo2_response = (
@@ -67,7 +73,7 @@ class DataportenAdapter(OAuth2Adapter):
                 headers=headers,
             )
         )
-        print(json.dumps(userinfo2_response.json(), indent=2))
+        #print(json.dumps(userinfo2_response.json(), indent=2))
 
         # Get group info
         groupinfo_response = (
@@ -80,7 +86,7 @@ class DataportenAdapter(OAuth2Adapter):
         )
 
         # Check that user is either: employee at MH faculty or student at given courses
-        print(json.dumps(groupinfo_response.json(), indent=2))
+        #print(json.dumps(groupinfo_response.json(), indent=2))
         ntnu_found = False
         faculty = False
         student = False
@@ -107,13 +113,13 @@ class DataportenAdapter(OAuth2Adapter):
                             enrolled_in_relevant_course = True
 
         if not ntnu_found:
-            raise Exception('Only NTNU users allowed to login!')
+            raise ProviderException('Only NTNU users are allowed to login to LearnPathology.')
         if not faculty:
             if student:
                 if not enrolled_in_relevant_course:
-                    raise Exception('You are not enrolled to the correct courses to be allowed to login to LearnPathology.')
+                    raise ProviderException('You are not enrolled to the correct courses to be allowed to login to LearnPathology.')
             else:
-                raise Exception('You have to be employed at NTNU or be a medical student to login to LearnPathology.')
+                raise ProviderException('You have to be employed at NTNU or be a medical student to login to LearnPathology.')
 
         # The endpoint returns json-data and it needs to be decoded
         extra_data = userinfo_response.json()["user"]
@@ -134,5 +140,51 @@ class DataportenAdapter(OAuth2Adapter):
         )
 
 
+class FeideCallbackView(OAuth2View):
+    """
+    We override the OAuth2CallbackView to handle errors in authorization.
+    """
+
+    def dispatch(self, request, *args, **kwargs):
+        if "error" in request.GET or "code" not in request.GET:
+            # Distinguish cancel from error
+            auth_error = request.GET.get("error", None)
+            if auth_error == self.adapter.login_cancelled_error:
+                error = AuthError.CANCELLED
+            else:
+                error = AuthError.UNKNOWN
+            return render_authentication_error(
+                request, self.adapter.provider_id, error=error
+            )
+        app = self.adapter.get_provider().app
+        client = self.get_client(self.request, app)
+
+        try:
+            access_token = self.adapter.get_access_token_data(request, app, client)
+            token = self.adapter.parse_token(access_token)
+            if app.pk:
+                token.app = app
+            login = self.adapter.complete_login(
+                request, app, token, response=access_token
+            )
+            login.token = token
+            if self.adapter.supports_state:
+                login.state = SocialLogin.verify_and_unstash_state(
+                    request, get_request_param(request, "state")
+                )
+            else:
+                login.state = SocialLogin.unstash_state(request)
+
+            return complete_social_login(request, login)
+        except (
+            PermissionDenied,
+            OAuth2Error,
+            RequestException,
+            ProviderException,
+        ) as e:
+            messages.add_message(request, messages.ERROR, str(e))
+            return redirect('login_feide')
+
+
 oauth2_login = OAuth2LoginView.adapter_view(DataportenAdapter)
-oauth2_callback = OAuth2CallbackView.adapter_view(DataportenAdapter)
+oauth2_callback = FeideCallbackView.adapter_view(DataportenAdapter)

@@ -30,7 +30,6 @@ USE_FEIDE_LOGIN = True
 ALLOWED_HOSTS = []
 
 # For using flatpages, set to site corresponding to this settings.py file
-SITE_ID = 1
 APPEND_SLASH = True
 
 
@@ -234,6 +233,7 @@ CKEDITOR_CONFIGS = {
 
 }
 
+SITE_ID = 1
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'
 SOCIALACCOUNT_LOGIN_ON_GET = True
