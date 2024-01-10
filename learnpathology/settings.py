@@ -67,7 +67,8 @@ if USE_FEIDE_LOGIN:
         'allauth',
         'allauth.account',
         'allauth.socialaccount',
-        'allauth.socialaccount.providers.dataporten',
+        #'allauth.socialaccount.providers.dataporten',
+        'feide'
     ])
 
 

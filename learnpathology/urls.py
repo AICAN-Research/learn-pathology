@@ -48,8 +48,8 @@ if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.USE_FEIDE_LOGIN:
-    #urlpatterns += [path('feide/', include('feide.urls'))]
-    urlpatterns += [path('accounts/', include('allauth.urls')),]
+    urlpatterns += [path('accounts/', include('feide.urls')),]
+    #urlpatterns += [path('accounts/', include('allauth.urls')),]
 
 urlpatterns += [
     # Define specific paths (can be used with {% url %} tag
