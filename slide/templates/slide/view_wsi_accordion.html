@@ -255,16 +255,7 @@
     Annotorious.SelectorPack(anno); // [ 'rect', 'polygon', 'point', 'circle', 'ellipse', 'freehand' ]
 
     {% if request.user.is_teacher or request.user.is_superuser %}
-        const toolbar = new Annotorious.Toolbar(anno, document.getElementById('my-toolbar-container'), {
-            buttons: [
-                {'class': 'freehand', icon: 'path/to/freehand-icon.svg', labels: ['Freehand']},
-                {'class': 'ellipse', icon: 'path/to/ellipse-icon.svg', labels: ['Ellipse']},
-                {'class': 'circle', icon: 'path/to/circle-icon.svg', labels: ['Circle']},
-                {'class': 'point', icon: 'path/to/point-icon.svg', labels: ['Point']},
-                {'class': 'polygon', icon: 'path/to/polygon-icon.svg', labels: ['Polygon']},
-                {'class': 'rect', icon: 'path/to/rect-icon.svg', labels: ['Rect']},
-            ],
-        });
+        const toolbar = new Annotorious.Toolbar(anno, document.getElementById('my-toolbar-container'));
     {% endif %}
     {% if request.user.is_student  %}
         anno.readOnly = true

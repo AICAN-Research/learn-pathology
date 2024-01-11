@@ -48,22 +48,10 @@
     Annotorious.SelectorPack(anno); // [ 'rect', 'polygon', 'point', 'circle', 'ellipse', 'freehand' ]
 
 
-    const toolbar = new Annotorious.Toolbar(anno, document.getElementById('my-toolbar-container'), {
-        buttons: [
-            {'class': 'freehand', icon: 'path/to/freehand-icon.svg', labels: ['Freehand']},
-            {'class': 'ellipse', icon: 'path/to/ellipse-icon.svg', labels: ['Ellipse']},
-            {'class': 'circle', icon: 'path/to/circle-icon.svg', labels: ['Circle']},
-            {'class': 'point', icon: 'path/to/point-icon.svg', labels: ['Point']},
-            {'class': 'polygon', icon: 'path/to/polygon-icon.svg', labels: ['Polygon']},
-            {'class': 'rect', icon: 'path/to/rect-icon.svg', labels: ['Rect']},
-        ],
-    });
+    const toolbar = new Annotorious.Toolbar(anno, document.getElementById('my-toolbar-container'));
     viewer.addControl(document.getElementById("my-toolbar-container"), {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
 
     document.getElementById('my-toolbar-container').addEventListener('click', function(event) {
-    // Your annotation toolbar logic here
-
-    // Stop the event from propagating to the form
     event.preventDefault();
 });
 

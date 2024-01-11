@@ -30,6 +30,7 @@ class SlideCache:
     def __init__(self):
         # TODO load FAST once
         import fast
+        # fast.Reporter.setGlobalReportMethod(fast.Reporter.COUT)
         test = fast.WholeSlideImageImporter.New() # Just to initialize FAST..
         self.slides = {}
 
