@@ -76,12 +76,12 @@
                 <span class="iconify" data-icon="fluent:camera-24-regular" data-width="24" data-height="24"></span>
             </div>
         </button>
-        <button class="custom-button btn btn-secondary">
-            <div class="button-icon">
-                <span class="iconify" data-icon="fluent:zoom-in-24-regular" data-width="24" data-height="24"></span>
-            </div>
-            <div id="setZoomButton" class="button-text"></div>
-        </button>
+        <button id="zoomButton" class="custom-button btn btn-secondary">
+    <div class="button-icon">
+        <span class="iconify" data-icon="fluent:zoom-in-24-regular" data-width="24" data-height="24"></span>
+    </div>
+    <div id="setZoomButton" class="button-text"></div>
+</button>
     </div>
 
     <div class="button-group">
@@ -338,25 +338,28 @@
     <!--Zoom Button Functionality-->
     const zoomLevels = [0.25, 1, 10, 20, 40]; // Include 0.25x
     let currentZoomIndex = 0;
-    const zoomButton = document.getElementById("setZoomButton");
 
-    function updateButtonLabel() {
-        if (currentZoomIndex < zoomLevels.length) {
 
-            zoomButton.textContent = `${zoomLevels[currentZoomIndex]}x`;
+    const zoomButton = document.getElementById("zoomButton");
+    const setZoomButton = document.getElementById("setZoomButton");
 
-        }
-    }
-
-    document.getElementById("setZoomButton").addEventListener("click", function () {
+    zoomButton.addEventListener("click", function () {
         if (currentZoomIndex < zoomLevels.length) {
             const targetZoom = zoomLevels[currentZoomIndex];
             viewer.viewport.zoomTo(targetZoom);
-            currentZoomIndex = (currentZoomIndex + 1) % zoomLevels.length; // Loop back to 0 when reaching the end
+            currentZoomIndex = (currentZoomIndex + 1) % zoomLevels.length;
             updateButtonLabel();
         }
     });
+
+    function updateButtonLabel() {
+        if (currentZoomIndex < zoomLevels.length) {
+            setZoomButton.textContent = `${zoomLevels[currentZoomIndex]}x`;
+        }
+    }
+
     updateButtonLabel();
+
 
     <!--Screenshoot Button Functionality-->
     document.getElementById("screenshotButton").addEventListener('click', function () {
