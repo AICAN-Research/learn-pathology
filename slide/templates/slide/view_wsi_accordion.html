@@ -63,6 +63,12 @@
 
 <div id="toolbarDiv">
     <!-- Custom buttons for Toolbar -->
+    <!-- TODO: Only show annotation toolbar++ for teachers and admins -->
+    {% if request.user.is_teacher or  request.user.is_superuser %}
+    <div class="button-group">
+        <div id="my-toolbar-container"></div>
+    </div>
+{% endif %}
     <div class="button-group">
         <button id="screenshotButton" class="custom-button btn btn-secondary">
             <div class="button-icon">
@@ -92,18 +98,15 @@
         </div></button>
     </div>
 
-    <!-- TODO: Only show annotation toolbar++ for teachers and admins -->
-    <div class="button-group">
-        <div id="my-toolbar-container"></div>
-    </div>
 
+
+    {% if request.user.is_teacher or request.user.is_superuser %}
     <div class="button-group">
-        {% if request.user.is_teacher or request.user.is_superuser %}
         <a href="{% url 'slide:base_annotations' slide_id=slide.id %}" class="custom-button-link">
             <button id="new_annotation" style="width: 200px;" class="custom-button btn btn-secondary"><div class="button-text">Edit/New Annotation</div></button>
         </a>
-        {% endif %}
     </div>
+    {% endif %}
     <div class="button-group">
         <button id="annotationList" style="width: 200px;" class="custom-button btn btn-secondary"><div class="button-text">Toggle Annotation List</div></button>
     </div>
@@ -215,6 +218,9 @@
 <script src="{% static 'slide/annotorious-openseadragon-2.7.16/openseadragon-annotorious.min.js' %}"></script>
 <!-- TODO: Set fixed version for Annotorious-related plugins! -->
 <script src="https://cdn.jsdelivr.net/npm/@recogito/annotorious-toolbar@latest/dist/annotorious-toolbar.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@recogito/annotorious-selector-pack@latest/dist/annotorious-selector-pack.min.js"></script>
+  </head>
+    <script src="{% static 'slide/annotorious.min.js' %}"></script>
 <script type="text/javascript">
 
     <!--WSI Viewer-->
@@ -245,8 +251,20 @@
 
     // Initialize the Annotorious plugin
     var anno = OpenSeadragon.Annotorious(viewer);
-    // TODO: Only show toolbar for teachers and admins!!!
-    Annotorious.Toolbar(anno, document.getElementById('my-toolbar-container'));
+    Annotorious.SelectorPack(anno); // [ 'rect', 'polygon', 'point', 'circle', 'ellipse', 'freehand' ]
+    const toolbar = new Annotorious.Toolbar(anno, document.getElementById('my-toolbar-container'), {
+    buttons: [
+      { 'class': 'freehand', icon: 'path/to/freehand-icon.svg', labels: ['Freehand'] },
+      { 'class': 'ellipse', icon: 'path/to/ellipse-icon.svg', labels: ['Ellipse'] },
+      { 'class': 'circle', icon: 'path/to/circle-icon.svg', labels: ['Circle'] },
+      { 'class': 'point', icon: 'path/to/point-icon.svg', labels: ['Point'] },
+      { 'class': 'polygon', icon: 'path/to/polygon-icon.svg', labels: ['Polygon'] },
+      { 'class': 'rect', icon: 'path/to/rect-icon.svg', labels: ['Rect'] },
+    ],
+  });
+    {#anno.readOnly = true // TODO for students ;#}
+
+
 
     viewer.addControl(document.getElementById("toolbarDiv"), {anchor: OpenSeadragon.ControlAnchor.BOTTOM_LEFT});
 
