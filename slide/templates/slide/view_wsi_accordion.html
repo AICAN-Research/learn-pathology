@@ -245,18 +245,125 @@
 
     /* Initialize the Annotorious plugin */
     // Set up configuration of Annotorious
+    let formatter = function(annotation) {
+        let xywh = annotation.target.selector.value;
+        let coords = xywh.replace('xywh=pixel:', '');
+        coords = xywh.replace('xywh=percent:', '');
+        let [x, y, w, h] = coords.split(',');
+
+        return {
+            'data-boundingbox-x': x,
+            'data-boundingbox-y': y,
+            'data-boundingbox-width': w,
+            'data-boundingbox-height': h,
+            {#'style': 'stroke: blue'#}
+        }
+    }
+
     let config = {
         allowEmpty: false,  // Set to true to allow empty annotations. Annotations without bodies are normally discarded.
-        fragmentUnit: 'percent',    // 'pixel' or 'percent'
+        fragmentUnit: 'percent',    // defaults to 'pixel', can be set to 'percent'
         readOnly: false,    // TODO: Set to true if user is student (not teacher/superuser)
         widgets: [
             'COMMENT',
             //'TAG',  // Do we need tags for these annotations?
         ],
+        formatter: formatter,
     };
     let anno = OpenSeadragon.Annotorious(viewer, config);
     // TODO: Only show toolbar for teachers and admins!!!
     Annotorious.Toolbar(anno, document.getElementById('my-toolbar-container'));
+
+
+    // Annotorious + annotation storing
+    anno.on('createAnnotation', async (annotation, overrideId) => {
+        console.log('Created annotation!');
+
+        // POST to the server and receive a new ID
+        //const newId = await server.createAnnotation(annotation);
+
+        // Inject that ID into RecogitoJS
+        //overrideId(newId);
+
+        // Store annotation?
+        console.log(annotation);
+        console.log('Annotation text:', annotation.body[0].value);
+        if (annotation.body.length > 1) {
+            console.log('Annotation stuff:', annotation.body[1])
+        }
+
+        if (annotation.target.selector.type === 'FragmentSelector') {
+            /* Bounding box */
+            let xywh = annotation.target.selector.value;
+            let coords = xywh.replace('xywh=pixel:', '');
+            coords = coords.replace('xywh=percent:', '');
+            let [x, y, w, h] = coords.split(',');
+            x = parseFloat(x)/100.;
+            y = parseFloat(y)/100.;
+            w = parseFloat(w)/100.;
+            h = parseFloat(h)/100.;
+
+            console.log('x =', x);
+            console.log('y =', y);
+            console.log('w =', w);
+            console.log('h =', h);
+
+            /* Test location of box by using built-in OSD overlay
+            *
+            */
+            console.log('Annotorious (x, y) = (', x, ',', y, ')');
+            console.log('Annotorious (x+w, y+h) = (', x+w, ',', y+h, ')');
+
+            console.log('Viewport (x, y) =', viewer.viewport.pointFromPixel(new OpenSeadragon.Point(x, y)));
+            console.log('Viewport (x+w, y+h) =', viewer.viewport.pointFromPixel(new OpenSeadragon.Point(x+w, y+h)));
+
+            console.log('ImageCoord (x, y) =', viewer.viewport.viewportToImageCoordinates(new OpenSeadragon.Point(x, y)));
+            console.log('ImageCoord (x+w, y+h) =', viewer.viewport.viewportToImageCoordinates(new OpenSeadragon.Point(x+w, y+h)));
+
+            let tempElement = document.createElement('div');
+            viewer.addOverlay({     //box, startPoint, OpenSeadragon.Placement.BOTTOM_RIGHT);
+                element: tempElement,
+                location: new OpenSeadragon.Rect(x, y, w, h)
+            });
+            tempElement.className = 'overlay card LPBoundingBox';
+
+            // TODO: Do some database actions
+
+        } else if (annotation.target.selector.type === 'SvgSelector') {
+            /* Polygon */
+            let polygonElement = annotation.target.selector.value;
+            let pointsList = polygonElement.replace('<svg><polygon points="', '');
+            pointsList = pointsList.replace('"></polygon></svg>', '');
+            pointsList = pointsList.split(' ');
+            let xy_points = [];
+            for (let i = 0; i < pointsList.length; i++) {
+                let [x, y] = pointsList[i].split(',')
+                xy_points.push([parseFloat(x), parseFloat(y)]);
+            }
+            console.log('(X,Y) points:', xy_points);
+            // TODO: Do some database actions
+
+        } else {
+            // Other types?? Handle appropriately
+            console.log('Unexpected selector type for annotation:', annotation.target.selector.type);
+        }
+
+    });
+
+    anno.on('updateAnnotation', function(annotation, previous) {
+        console.log('Updated annotation!');
+
+        // Do some database actions
+
+    });
+
+    anno.on('deleteAnnotation', function (annotation) {
+        console.log('Deleted annotation!');
+
+        // Do some database actions
+
+    });
+
 
     viewer.addControl(document.getElementById("toolbarDiv"), {anchor: OpenSeadragon.ControlAnchor.BOTTOM_LEFT});
 
@@ -526,42 +633,6 @@
         }
     }
 
-
-    // Annotorious + annotation storing
-    anno.on('createAnnotation', function(annotation, overrideId) {
-        console.log('Created annotation!');
-
-        // Store annotation?
-        console.log(annotation);
-        console.log('Annotation text:', annotation.body[0].value);
-        if (annotation.body.length > 1) {
-            console.log('Annotation stuff:', annotation.body[1])
-        }
-
-        console.log('Annotation location:', annotation.target.selector.value);
-        let xywh = annotation.target.selector.value;
-        let coords = xywh.replace('xywh=pixel:', '');
-        let [x, y, w, h] = coords.split(',');
-
-        console.log('x=', x);
-        console.log('y=', y);
-        console.log('w=', w);
-        console.log('h=', h);
-    });
-
-    anno.on('updateAnnotation', function(annotation, overrideId) {
-        console.log('Updated annotation!');
-
-        // Do some database actions
-
-    });
-
-    anno.on('deleteAnnotation', function (annotation, overrideId) {
-        console.log('Deleted annotation!');
-
-        // Do some database actions
-
-    });
 
 </script>
 
