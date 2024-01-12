@@ -229,6 +229,7 @@
     // Initialize the Annotorious plugin
     var anno = OpenSeadragon.Annotorious(viewer);
     Annotorious.SelectorPack(anno); // [ 'rect', 'polygon', 'point', 'circle', 'ellipse', 'freehand' ]
+    anno.removeDrawingTool('freehand');
 
     {% if request.user.is_teacher or request.user.is_superuser %}
         const toolbar = new Annotorious.Toolbar(anno, document.getElementById('my-toolbar-container'));
@@ -365,6 +366,13 @@ document.getElementById("zoomOutButton").addEventListener('click', function () {
         annotationList.innerHTML = ''; // Clear previous list
 
         var annotations = anno.getAnnotations();
+
+        annotations.sort(function (a, b) {
+        var textA = a.body[0].value.toUpperCase();
+        var textB = b.body[0].value.toUpperCase();
+        return textA.localeCompare(textB);
+    });
+
         annotations.forEach(function (annotation) {
             var listItem = document.createElement('div');
 
@@ -376,6 +384,7 @@ document.getElementById("zoomOutButton").addEventListener('click', function () {
                 visible_annotorious = true;
                 console.log(visible_annotorious);
                 anno.selectAnnotation(annotation);
+                centerAnnotation(annotation);
             });
 
             listItem.appendChild(annotationButton);
@@ -395,6 +404,81 @@ document.getElementById("zoomOutButton").addEventListener('click', function () {
             annotationList.appendChild(listItem);
         });
     }
+
+    function centerAnnotation(annotation) {
+        const selectorType = annotation.target.selector.type;
+        let center;
+
+        switch (selectorType) {
+            case 'FragmentSelector':
+                center = getRectCenter(annotation);
+                break;
+            case 'SvgSelector':
+                const svgValue = annotation.target.selector.value;
+                if (svgValue.includes('polygon')) {
+                    center = getPolygonCenter(annotation);
+                } else if (svgValue.includes('circle') || svgValue.includes('ellipse')) {
+                    center = getCircleandEllipseCenter(annotation);
+                }
+                break;
+            default:
+                console.error("Invalid selector type");
+                return null;
+        }
+
+
+        let osdCoordinates = viewer.viewport.imageToViewportCoordinates(center.x, center.y);
+        viewer.viewport.panTo(osdCoordinates, true);
+
+    }
+
+    function getRectCenter(annotation) {
+        let selector = annotation.target.selector.value;
+        let valuesString = selector.split('pixel:')[1];
+        let xywh = valuesString.split(',').map(value => parseFloat(value));
+        let center_x = xywh[0] + xywh[2] / 2;
+        let center_y = xywh[1] + xywh[3] / 2;
+        return {x: center_x, y: center_y};
+    }
+
+    function getPolygonCenter(annotation) {
+        const svgSelector = annotation.target.selector.value;
+        const pointsMatch = svgSelector.match(/points="([^"]+)"/);
+        if (!pointsMatch || pointsMatch.length < 2) {
+            console.error("Invalid SVG polygon format");
+            return null;
+        }
+
+        const pointsString = pointsMatch[1];
+        const points = pointsString.split(" ").map(point => {
+            const [x, y] = point.split(",").map(coord => parseFloat(coord));
+            return {x, y};
+        });
+
+        // Calculate centroid
+        const numPoints = points.length;
+        const center_x = points.reduce((sum, point) => sum + point.x, 0) / numPoints;
+        const center_y = points.reduce((sum, point) => sum + point.y, 0) / numPoints;
+        return {x: center_x, y: center_y};
+    }
+
+    function getPointCenter(annotation) {
+        let selector = annotation.target.selector.value;
+        let valuesString = selector.split('pixel:')[1];
+        let xywh = valuesString.split(',').map(value => parseFloat(value));
+        let center_x = xywh[0];
+        let center_y = xywh[1];
+        return {x: center_x, y: center_y};
+    }
+
+    function getCircleandEllipseCenter(annotation) {
+        let selector = annotation.target.selector.value;
+        let cx = parseFloat(selector.split('cx="')[1].split('"')[0]);
+        let cy = parseFloat(selector.split('cy="')[1].split('"')[0]);
+        return {x: cx, y: cy};
+    }
+
+
 
 
     anno.on('createAnnotation', updateAnnotationList);

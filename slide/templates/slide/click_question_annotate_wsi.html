@@ -42,7 +42,9 @@
 
         var anno = OpenSeadragon.Annotorious(viewer);
     Annotorious.SelectorPack(anno); // [ 'rect', 'polygon', 'point', 'circle', 'ellipse', 'freehand' ]
-    anno.removeDrawingTool('point');
+    anno.removeDrawingTool('point' );
+    anno.removeDrawingTool('freehand');
+
 
 
     const toolbar = new Annotorious.Toolbar(anno, document.getElementById('my-toolbar-container'));
