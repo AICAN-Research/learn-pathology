@@ -1298,3 +1298,20 @@ Header of page main content
 .custom-button.button-light .button-text {
     color: var(--color-blue-dark);
 }
+
+.a9s-toolbar-btn {
+    background-color: var(--color-blue-dark) !important;
+    color: var(--color-white);
+}
+
+
+
+.a9s-toolbar-btn svg path,
+.a9s-toolbar-btn svg line,
+.a9s-toolbar-btn svg circle,
+.a9s-toolbar-btn svg rect,
+.a9s-toolbar-btn svg ellipse
+{    stroke: var(--color-white);
+}
+
+
