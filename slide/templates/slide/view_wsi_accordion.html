@@ -63,7 +63,6 @@
 
 <div id="toolbarDiv">
     <!-- Custom buttons for Toolbar -->
-    <!-- TODO: Only show annotation toolbar++ for teachers and admins -->
   {% if request.user.is_teacher or request.user.is_superuser %}
     <div class="button-group">
         <div id="my-toolbar-container"></div>
@@ -100,22 +99,12 @@
     </div>
 
 
-    {% if request.user.is_teacher or request.user.is_superuser %}
-        <div class="button-group">
-            <a href="{% url 'slide:base_annotations' slide_id=slide.id %}" class="custom-button-link">
-                <button id="new_annotation" style="width: 200px;" class="custom-button btn btn-secondary">
-                    <div class="button-text">Edit/New Annotation</div>
-                </button>
-            </a>
-        </div> {% endif %}
+
     <div class="button-group">
         <button id="annotationList" style="width: 200px;" class="custom-button btn btn-secondary"><div class="button-text">Toggle Annotation List</div></button>
     </div>
     <div class="button-group">
         <button id="annotation" style="width: 200px;" class="custom-button btn btn-secondary"><div class="button-text">Toggle Annotations </div></button>
-    </div>
-    <div class="button-group">
-        <button id="annotationLabel" style="width: 200px;" class="custom-button btn btn-secondary"><div class="button-text">Toggle Labels </div></button>
     </div>
 </div>
 
@@ -234,6 +223,8 @@
         showHomeControl: false,     // Hide the home button
         showFullPageControl: false, // Hide the full-page button
         showZoomControl: false,     // Hide the zoom-in and zoom-out buttons
+         minZoomLevel: 0.3, // Set your minimum zoom level
+    maxZoomLevel: 2.5,
         tileSources: {
             width: {{ slide.width }},
             height:  {{ slide.height }},
@@ -263,6 +254,8 @@
 
 
 
+
+
     viewer.addControl(document.getElementById("toolbarDiv"), {anchor: OpenSeadragon.ControlAnchor.BOTTOM_LEFT});
 
     <!--Scalebar-->
@@ -286,59 +279,15 @@
         alert('Couldn\'t get scaling factor')
     }
 
-    window.onLoad = toggleAnnotationOff();
-    window.onLoad = createClickReaction();
+
     window.onLoad = toggleCardVisibility();
 
-    function createClickReaction() {
-        let current_overlays = viewer.currentOverlays;
-         console.log('Create Click reaction ')
-        for (let i = 0; i < current_overlays.length; i++) {
 
-            new OpenSeadragon.MouseTracker({
-                element: current_overlays[i].element,
-                clickHandler: function (event) {
-                    var list_id = current_overlays[i].element.id.split('-').at(-1);
-
-                    if (current_overlays[i].element.id.includes('boundingbox')) {
-                        var list_box = document.getElementById('boundingbox-listitem-' + list_id);
-                        console.log(list_box)
-                        list_box.style.color = "red";
-                        list_box.style.fontWeight = "900"
-
-                        timer = setTimeout(function () {
-                            list_box.style.color = "";
-                            list_box.style.fontWeight = ""
-                        }, 1000);
-                    }
-
-                    if (current_overlays[i].element.id.includes('arrow')) {
-                        var list_arrow = document.getElementById('arrow-listitem-' + list_id);
-                        console.log(list_arrow)
-
-                        list_arrow.style.color = "red";
-                        list_arrow.style.fontWeight = "900";
-
-                        timer = setTimeout(function () {
-                            list_arrow.style.color = "";
-                            list_arrow.style.fontWeight = "";
-                        }, 1000);
-                    }
-                }
-            });
-
-        }
-    }
-
-    function toggleAnnotationOff() {
-        $(".overlay").toggle();
-        $(".textOverlay").toggle();
-    }
+    let visible = false;
 
     <!--Zoom Button Functionality-->
     const zoomLevels = [0.25, 1, 10, 20, 40]; // Include 0.25x
     let currentZoomIndex = 0;
-
 
     const zoomButton = document.getElementById("zoomButton");
     const setZoomButton = document.getElementById("setZoomButton");
@@ -388,13 +337,23 @@
 
     <!--Default Button Functionality-->
     document.getElementById("zoomInButton").addEventListener('click', function () {
-        viewer.viewport.zoomBy(2);
-    });
+    var currentZoom = viewer.viewport.getZoom();
+    var newZoom = currentZoom * 1.2; // Adjust the factor as needed
 
-    document.getElementById("zoomOutButton").addEventListener('click', function () {
-        viewer.viewport.zoomBy((1 / 2));
+    if (newZoom <= viewer.viewport.getMaxZoom()) {
+        viewer.viewport.zoomTo(newZoom);
+    }
+});
 
-    });
+// Zoom out button event listener
+document.getElementById("zoomOutButton").addEventListener('click', function () {
+    var currentZoom = viewer.viewport.getZoom();
+    var newZoom = currentZoom * 0.8; // Adjust the factor as needed
+
+    if (newZoom >= viewer.viewport.getMinZoom()) {
+        viewer.viewport.zoomTo(newZoom);
+    }
+});
 
     document.getElementById("FullScreenButton").addEventListener('click', function () {
         if (OpenSeadragon.isFullScreen()) {
@@ -433,106 +392,23 @@
             $('#modal-table-content').html(tableContent);
         }
 
-        // Initialize the modal
         $('#slideInfoModal').modal({
             show: false
         });
 
-        // When the modal is shown, set its content
         $('#slideInfoModal').on('show.bs.modal', function () {
             setModalContent();
         });
     });
 
     <!-- Annotation Button Functionality-->
+    var visible_annotorious = false;
      document.getElementById("annotation").addEventListener('click', function () {
-        $(".overlay").toggle();
-        if ($(".overlay").is(':visible')) {
-            createClickReaction();
-        } else {
-            if ($(".textOverlay").is(':visible')) {
-                $(".textOverlay").toggle();
-            }
-        }
-    });
-
-    <!--Label Button Functionality-->
-    document.getElementById("annotationLabel").addEventListener('click', function () {
-        $(".textOverlay").toggle();
-        if ($(".textOverlay").is(':visible')) {
-            if ($(".overlay").is(':hidden')) {
-                $(".overlay").toggle();
-                createClickReaction();
-            }
-        }
+        visible_annotorious = !visible_annotorious;
+         anno.setVisible(!visible_annotorious);
     });
 
 
-    function highlightAnnotation(annotationId) {
-        var list_item = document.getElementById(annotationId);
-        var list_id = annotationId.split('-').at(-1);
-        if (list_item.id.includes('boundingbox')) {
-            var box = document.getElementById('boundingbox-' + list_id);
-            var text = document.getElementById('boundingbox-text-overlay-' + list_id);
-            console.log(text)
-            box.style.borderColor = "red";
-            box.style.borderWidth = "5px";
-
-            text.style.color = "red";
-            text.style.fontWeight = "900";
-
-            timer = setTimeout(function () {
-                box.style.borderColor = "";
-                box.style.borderWidth = ""
-                text.style.color = "";
-                text.style.fontWeight = "";
-            }, 1000);
-        }
-
-        if (list_item.id.includes('arrow')) {
-            var arrow = document.getElementById('right-arrow-overlay-' + list_id);
-            var arrow_text = document.getElementById('arrow-text-overlay-' + list_id);
-            arrow.style.color = "red";
-            arrow.style.fontWeight = "900";
-
-            arrow_text.style.color = "red";
-            arrow_text.style.fontWeight = "900";
-
-            timer = setTimeout(function () {
-                arrow.style.color = "";
-                arrow.style.fontWeight = "";
-                arrow_text.style.color = "";
-                arrow_text.style.fontWeight = "";
-            }, 1000);
-        }
-    }
-
-    viewer.addHandler('viewport-change', updateTextLocation);
-    viewer.addHandler('tile-drawing', updateTextLocation);
-
-    onresize = () => {
-        timer = setTimeout(function () {
-            updateTextLocation();
-        }, 20);
-    };
-
-    function updateTextLocation(event) {
-        let slide_overlays = viewer.currentOverlays;
-
-        let arrow_overlays = $("[id^=right-arrow-overlay-]")
-        let text_overlays = $("[id^=arrow-text-overlay-]")
-
-        for (let i = 0; i < arrow_overlays.length; i++) {
-            let arrowElement = arrow_overlays[i];
-            let textElement = text_overlays[i];
-
-            let arrowX = parseFloat(arrowElement.style.left);
-            let arrowY = parseFloat(arrowElement.style.top);
-
-            let viewportPoint = viewer.viewport.pointFromPixel(new OpenSeadragon.Point(arrowX - 5, arrowY + 15));
-            viewer.updateOverlay(textElement, viewportPoint);
-        }
-    }
 
 
 </script>
