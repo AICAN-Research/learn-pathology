@@ -1,6 +1,7 @@
 {% extends 'learnpathology/single_content_layout.html' %}
 {% load slide_filters %}
 {% load static %}
+{% load bootstrap_icons %}
 
 
 {% block breadcrumb_items %}
@@ -38,24 +39,8 @@
 
 
             <h5 style="margin-top: 1rem">Annotation list</h5>
-            <ul>
-                {% for box in boxes %}
-                    <li style="text-align: start;">
-                        <a id="boundingbox-listitem-{{ box.id }}"
-                           onclick="highlightAnnotation('boundingbox-listitem-{{ box.id }}')">
-                            {{ box.text }}
-                        </a>
-                    </li>
-                {% endfor %}
-                {% for pointer in pointers %}
-                    <li style="text-align: start;">
-                        <a id="arrow-listitem-{{ pointer.id }}"
-                           onclick="highlightAnnotation('arrow-listitem-{{ pointer.id }}')">
-                            {{ pointer.text }}
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
+            <div id="annotationList"></div>
+
         </div>
     </div>
 </div>
@@ -101,10 +86,10 @@
 
 
     <div class="button-group">
-        <button id="annotationList" style="width: 200px;" class="custom-button btn btn-secondary"><div class="button-text">Toggle Annotation List</div></button>
+        <button id="annotationListButton" style="width: 200px;" class="custom-button btn btn-secondary"><div class="button-text">Annotation List on/off</div></button>
     </div>
     <div class="button-group">
-        <button id="annotation" style="width: 200px;" class="custom-button btn btn-secondary"><div class="button-text">Toggle Annotations </div></button>
+        <button id="annotation" style="width: 200px;" class="custom-button btn btn-secondary"><div class="button-text">Annotations on/off </div></button>
     </div>
 </div>
 
@@ -224,7 +209,7 @@
         showFullPageControl: false, // Hide the full-page button
         showZoomControl: false,     // Hide the zoom-in and zoom-out buttons
          minZoomLevel: 0.3, // Set your minimum zoom level
-    maxZoomLevel: 2.5,
+        maxZoomLevel: 40,
         tileSources: {
             width: {{ slide.width }},
             height:  {{ slide.height }},
@@ -252,10 +237,6 @@
         anno.readOnly = true
     {% endif %}
 
-
-
-
-
     viewer.addControl(document.getElementById("toolbarDiv"), {anchor: OpenSeadragon.ControlAnchor.BOTTOM_LEFT});
 
     <!--Scalebar-->
@@ -282,8 +263,6 @@
 
     window.onLoad = toggleCardVisibility();
 
-
-    let visible = false;
 
     <!--Zoom Button Functionality-->
     const zoomLevels = [0.25, 1, 10, 20, 40]; // Include 0.25x
@@ -376,13 +355,64 @@ document.getElementById("zoomOutButton").addEventListener('click', function () {
             x.style.display = "none";
             canvas_viewer.style.width = '100%';
         }
-        timer = setTimeout(function () {
-            updateTextLocation();
-        }, 20);
     }
 
-    document.getElementById("annotationList").addEventListener("click", toggleCardVisibility);
+    document.getElementById("annotationListButton").addEventListener("click", toggleCardVisibility);
 
+     var annotationList = document.getElementById('annotationList');
+
+    function updateAnnotationList() {
+        annotationList.innerHTML = ''; // Clear previous list
+
+        var annotations = anno.getAnnotations();
+        annotations.forEach(function (annotation) {
+            var listItem = document.createElement('div');
+
+            var annotationButton = document.createElement('button');
+            annotationButton.textContent = annotation.body[0].value;
+            annotationButton.classList.add('annotationListButton');
+            annotationButton.addEventListener('click', function () {
+                anno.setVisible(true);
+                visible_annotorious = true;
+                console.log(visible_annotorious);
+                anno.selectAnnotation(annotation);
+            });
+
+            listItem.appendChild(annotationButton);
+            {% if request.user.is_teacher or request.user.is_superuser %}
+                var deleteButton = document.createElement('button');
+                deleteButton.innerHTML = 'X';
+                deleteButton.classList.add('btn', 'btn-danger');
+
+                deleteButton.addEventListener('click', function () {
+                    anno.removeAnnotation(annotation);
+                    anno.cancelSelected();
+                    updateAnnotationList();
+                });
+                listItem.appendChild(deleteButton);
+            {% endif %}
+
+            annotationList.appendChild(listItem);
+        });
+    }
+
+
+    anno.on('createAnnotation', updateAnnotationList);
+    anno.on('createAnnotation', function () {
+        visible_annotorious = true;
+        anno.setVisible(visible_annotorious);
+    });
+    anno.on('updateAnnotation', updateAnnotationList);
+    anno.on('deleteAnnotation', updateAnnotationList);
+
+    <!-- Annotation Button Functionality-->
+    var visible_annotorious = false;
+    console.log(visible_annotorious);
+     document.getElementById("annotation").addEventListener('click', function () {
+        visible_annotorious = !visible_annotorious;
+         anno.setVisible(visible_annotorious);
+         console.log(visible_annotorious);
+    });
 
     <!-- Info Button Functionality-->
     $(document).ready(function () {
@@ -401,12 +431,7 @@ document.getElementById("zoomOutButton").addEventListener('click', function () {
         });
     });
 
-    <!-- Annotation Button Functionality-->
-    var visible_annotorious = false;
-     document.getElementById("annotation").addEventListener('click', function () {
-        visible_annotorious = !visible_annotorious;
-         anno.setVisible(!visible_annotorious);
-    });
+
 
 
 
