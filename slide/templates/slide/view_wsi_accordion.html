@@ -394,7 +394,6 @@
 
     window.onLoad = toggleCardVisibility();
 
-
     <!--Zoom Button Functionality-->
     const zoomLevels = [0.25, 1, 10, 20, 40]; // Include 0.25x
     let currentZoomIndex = 0;
@@ -447,23 +446,23 @@
 
     <!--Default Button Functionality-->
     document.getElementById("zoomInButton").addEventListener('click', function () {
-    var currentZoom = viewer.viewport.getZoom();
-    var newZoom = currentZoom * 1.2; // Adjust the factor as needed
+        var currentZoom = viewer.viewport.getZoom();
+        var newZoom = currentZoom * 1.2; // Adjust the factor as needed
 
-    if (newZoom <= viewer.viewport.getMaxZoom()) {
-        viewer.viewport.zoomTo(newZoom);
-    }
-});
+        if (newZoom <= viewer.viewport.getMaxZoom()) {
+            viewer.viewport.zoomTo(newZoom);
+        }
+    });
 
-// Zoom out button event listener
-document.getElementById("zoomOutButton").addEventListener('click', function () {
-    var currentZoom = viewer.viewport.getZoom();
-    var newZoom = currentZoom * 0.8; // Adjust the factor as needed
+    // Zoom out button event listener
+    document.getElementById("zoomOutButton").addEventListener('click', function () {
+        var currentZoom = viewer.viewport.getZoom();
+        var newZoom = currentZoom * 0.8; // Adjust the factor as needed
 
-    if (newZoom >= viewer.viewport.getMinZoom()) {
-        viewer.viewport.zoomTo(newZoom);
-    }
-});
+        if (newZoom >= viewer.viewport.getMinZoom()) {
+            viewer.viewport.zoomTo(newZoom);
+        }
+    });
 
     document.getElementById("FullScreenButton").addEventListener('click', function () {
         if (OpenSeadragon.isFullScreen()) {
@@ -490,7 +489,7 @@ document.getElementById("zoomOutButton").addEventListener('click', function () {
 
     document.getElementById("annotationListButton").addEventListener("click", toggleCardVisibility);
 
-     var annotationList = document.getElementById('annotationList');
+    var annotationList = document.getElementById('annotationList');
 
     function updateAnnotationList() {
         annotationList.innerHTML = ''; // Clear previous list
@@ -498,10 +497,10 @@ document.getElementById("zoomOutButton").addEventListener('click', function () {
         var annotations = anno.getAnnotations();
 
         annotations.sort(function (a, b) {
-        var textA = a.body[0].value.toUpperCase();
-        var textB = b.body[0].value.toUpperCase();
-        return textA.localeCompare(textB);
-    });
+            var textA = a.body[0].value.toUpperCase();
+            var textB = b.body[0].value.toUpperCase();
+            return textA.localeCompare(textB);
+        });
 
         annotations.forEach(function (annotation) {
             var listItem = document.createElement('div');
@@ -556,7 +555,6 @@ document.getElementById("zoomOutButton").addEventListener('click', function () {
                 return null;
         }
 
-
         let osdCoordinates = viewer.viewport.imageToViewportCoordinates(center.x, center.y);
         viewer.viewport.panTo(osdCoordinates, true);
 
@@ -609,8 +607,6 @@ document.getElementById("zoomOutButton").addEventListener('click', function () {
     }
 
 
-
-
     anno.on('createAnnotation', updateAnnotationList);
     anno.on('createAnnotation', function () {
         visible_annotorious = true;
@@ -644,10 +640,6 @@ document.getElementById("zoomOutButton").addEventListener('click', function () {
             setModalContent();
         });
     });
-
-
-
-
 
 
 </script>
