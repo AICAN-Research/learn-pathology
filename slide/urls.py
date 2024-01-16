@@ -19,5 +19,8 @@ urlpatterns = [
     path('add-tag/', views.add_tag, name='add_tag'),
     path('remove-tag/', views.remove_tag, name='remove_tag'),
     path('base-annotations/<int:slide_id>/', views.add_or_edit_descriptive_annotation, name='base_annotations'),
+    # Annotation stuff
+    path('annotation/create/', views.create_annotorious_annotation, name='create_annotation'),
+
 ] + static('thumbnails/', document_root=os.path.join(settings.BASE_DIR, 'thumbnails'))
 

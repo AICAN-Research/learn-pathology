@@ -328,6 +328,20 @@
             tempElement.className = 'overlay card LPBoundingBox';
 
             // TODO: Do some database actions
+            $.ajax({
+                url: "/slide/annotation/create",
+                type: "GET",
+                data: {
+                    'slide_id': {{ slide.id }},
+                    'annotation': annotation,
+                },
+                success: function (xml) {
+                    //location.reload();  // Using .reload() method
+                },
+                error: function (result) {
+                    alert('Error occurred when attempting to store annotation.');
+                }
+            });
 
         } else if (annotation.target.selector.type === 'SvgSelector') {
             /* Polygon */

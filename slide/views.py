@@ -477,6 +477,28 @@ def add_or_edit_descriptive_annotation(request, slide_id):
     return render(request, 'slide/add_edit_descriptive_annotations.html', context)
 
 
+def create_annotorious_annotation(request):
+    """
+    Async saving of annotorious annotations
+    """
+    print('Storing annotation')
+
+    slide_id = int(request.GET.get('slide_id'))
+    slide = Slide.objects.get(id=slide_id)
+
+    annotation = {}
+    for k in request.GET:
+        if k.startswith('annotation'):
+            annotation[k] = request.GET.get(k)
+    print(annotation)
+
+    # TODO: Store annotation in DB
+    #   Not sure if existing AnnotatedSlide and annotation models can be used
+    #   or whether we should have a new setup
+
+    return JsonResponse(data={})
+
+
 def delete_existing_annotations(annotated_slide):
     """
     Before saving new annotations, delete all existing to prevent duplicates
