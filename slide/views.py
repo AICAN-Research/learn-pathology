@@ -13,7 +13,7 @@ from django.core.files.uploadedfile import UploadedFile
 from tag.models import Tag
 from task.models import Task
 from user.decorators import student_required, teacher_required
-from slide.models import Slide, AnnotatedSlide, Pointer, BoundingBox
+from slide.models import Slide, AnnotatedSlide, Pointer, BoundingBox, Annotation
 from slide.forms import SlideForm, SlideDescriptionForm
 
 
@@ -487,15 +487,22 @@ def create_annotorious_annotation(request):
     slide_id = int(request.GET.get('slide_id'))
     slide = Slide.objects.get(id=slide_id)
 
-    annotation = {}
-    for k in request.GET:
-        if k.startswith('annotation'):
-            annotation[k] = request.GET.get(k)
-    print(annotation)
+    # Get descriptive AnnotatedSlide
+    try:
+        annotated_slide = AnnotatedSlide.objects.get(slide=slide, task__isnull=True)
+    except ObjectDoesNotExist as err:
+        annotated_slide = AnnotatedSlide(slide=slide)
+        annotated_slide.save()
+    except MultipleObjectsReturned as err:
+        print("Multiple descriptive AnnotatedSlide objects found. Clean up DB!")  # Using last slide for now")
+        raise MultipleObjectsReturned(err)
 
-    # TODO: Store annotation in DB
-    #   Not sure if existing AnnotatedSlide and annotation models can be used
-    #   or whether we should have a new setup
+    # Create annotation
+    annotation = Annotation(annotated_slide=annotated_slide,
+                            json_string=request.GET.get('annotation')
+                            )
+    annotation.save()
+
 
     return JsonResponse(data={})
 

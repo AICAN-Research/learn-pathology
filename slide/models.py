@@ -271,6 +271,25 @@ class AnnotatedSlide(models.Model):
         return js
 
 
+class Annotation(models.Model):
+    annotated_slide = models.ForeignKey(AnnotatedSlide, on_delete=models.CASCADE)
+    json_string = models.TextField(blank=False, help_text='The annotation in W3C format (JSON) stored as a string')
+
+    @property
+    def text(self):
+        """
+        The text/comment of the annotation
+        """
+        raise NotImplementedError('Annotation property "text" has not been implemented yet')
+
+    @property
+    def type(self):
+        """
+        Human-readable annotation type (point, box, ellipse, ...)
+        """
+        raise NotImplementedError('Annotation property "type" has not been implemented yet')
+
+
 class Pointer(models.Model):
     """
     A pointer on a slide consisting of a position (x,y) and a text

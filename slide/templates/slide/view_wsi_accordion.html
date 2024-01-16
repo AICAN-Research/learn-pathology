@@ -269,7 +269,7 @@
 
 
     // Annotorious + annotation storing
-    anno.on('createAnnotation', async (annotation, overrideId) => {
+    anno.on('createAnnotation', function(annotation) {
         console.log('Created annotation!');
 
         // POST to the server and receive a new ID
@@ -326,7 +326,7 @@
                 type: "GET",
                 data: {
                     'slide_id': {{ slide.id }},
-                    'annotation': annotation,
+                    'annotation': JSON.stringify(annotation),
                 },
                 success: function (xml) {
                     //location.reload();  // Using .reload() method
