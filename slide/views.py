@@ -1,4 +1,5 @@
 import os.path
+import json
 
 import django.urls
 from django.contrib import messages
@@ -261,6 +262,11 @@ def whole_slide_view_full(request, slide_id):
     context['pointers'] = Pointer.objects.filter(annotated_slide=annotated_slide)
     context['boxes'] = BoundingBox.objects.filter(annotated_slide=annotated_slide)
 
+    annotations = Annotation.objects.filter(annotated_slide=annotated_slide)
+    context['annotations'] = []
+    for ann in annotations:
+        context['annotations'].append(ann.deserialize())
+
     return render(request, 'slide/view_wsi_accordion.html', context)
 
 
@@ -478,11 +484,11 @@ def add_or_edit_descriptive_annotation(request, slide_id):
     return render(request, 'slide/add_edit_descriptive_annotations.html', context)
 
 
-def create_annotorious_annotation(request):
+def create_annotation(request):
     """
     Async saving of annotorious annotations
     """
-    print('Storing annotation')
+    print('Creating new annotation')
 
     slide_id = int(request.GET.get('slide_id'))
     slide = Slide.objects.get(id=slide_id)
@@ -499,10 +505,66 @@ def create_annotorious_annotation(request):
 
     # Create annotation
     annotation = Annotation(annotated_slide=annotated_slide,
-                            json_string=request.GET.get('annotation')
-                            )
+                            json_string=request.GET.get('annotation'))
     annotation.save()
 
+    return JsonResponse(data={})
+
+
+def update_annotation(request):
+    """
+    Async updating of annotorious annotations
+    """
+    print('Updating annotation')
+
+    slide_id = int(request.GET.get('slide_id'))
+    slide = Slide.objects.get(id=slide_id)
+
+    # Get descriptive AnnotatedSlide
+    annotated_slide = AnnotatedSlide.objects.get(slide=slide, task__isnull=True)
+
+    # Get correct annotation (matching Annotorious/W3C id)
+    annotations_this_slide = Annotation.objects.filter(annotated_slide=annotated_slide)
+    annotation_json_old = request.GET.get('previous_annotation')
+    annotation_id = json.loads(annotation_json_old)['id']
+
+    # Find the corresponding annotation using the ID given by Annotorious
+    annotation = None
+    for annotation in annotations_this_slide:
+        if annotation_id in annotation.deserialize()['id']:
+            break
+
+    # Replace old JSON with new
+    annotation.json_string = request.GET.get('annotation')
+    annotation.save()
+
+    return JsonResponse(data={})
+
+
+def delete_annotation(request):
+    """
+    Async deleting of annotorious annotations
+    """
+    print('Deleting annotation')
+
+    slide_id = int(request.GET.get('slide_id'))
+    slide = Slide.objects.get(id=slide_id)
+
+    # Get descriptive AnnotatedSlide
+    annotated_slide = AnnotatedSlide.objects.get(slide=slide, task__isnull=True)
+
+    # Get correct annotation (matching Annotorious/W3C id)
+    annotations_this_slide = Annotation.objects.filter(annotated_slide=annotated_slide)
+    annotation_json = request.GET.get('annotation')
+    annotation_id = json.loads(annotation_json)['id']
+
+    # Find the corresponding annotation using the ID given by Annotorious
+    annotation = None
+    for annotation in annotations_this_slide:
+        if annotation_id in annotation.deserialize()['id']:
+            break
+
+    annotation.delete()
 
     return JsonResponse(data={})
 

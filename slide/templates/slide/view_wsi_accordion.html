@@ -267,107 +267,69 @@
         anno.readOnly = true
     {% endif %}
 
+    {% for a in annotations %}
+        anno.addAnnotation({{ a|safe }});
+    {% endfor %}
+
 
     // Annotorious + annotation storing
     anno.on('createAnnotation', function(annotation) {
-        console.log('Created annotation!');
+        console.log('Creating annotation');
 
-        // POST to the server and receive a new ID
-        //const newId = await server.createAnnotation(annotation);
-
-        // Inject that ID into RecogitoJS
-        //overrideId(newId);
-
-        // Store annotation?
-        console.log(annotation);
-        console.log('Annotation text:', annotation.body[0].value);
-        if (annotation.body.length > 1) {
-            console.log('Annotation stuff:', annotation.body[1])
-        }
-
-        if (annotation.target.selector.type === 'FragmentSelector') {
-            /* Bounding box */
-            let xywh = annotation.target.selector.value;
-            let coords = xywh.replace('xywh=pixel:', '');
-            coords = coords.replace('xywh=percent:', '');
-            let [x, y, w, h] = coords.split(',');
-            x = parseFloat(x)/100.;
-            y = parseFloat(y)/100.;
-            w = parseFloat(w)/100.;
-            h = parseFloat(h)/100.;
-
-            console.log('x =', x);
-            console.log('y =', y);
-            console.log('w =', w);
-            console.log('h =', h);
-
-            /* Test location of box by using built-in OSD overlay
-            *
-            */
-            console.log('Annotorious (x, y) = (', x, ',', y, ')');
-            console.log('Annotorious (x+w, y+h) = (', x+w, ',', y+h, ')');
-
-            console.log('Viewport (x, y) =', viewer.viewport.pointFromPixel(new OpenSeadragon.Point(x, y)));
-            console.log('Viewport (x+w, y+h) =', viewer.viewport.pointFromPixel(new OpenSeadragon.Point(x+w, y+h)));
-
-            console.log('ImageCoord (x, y) =', viewer.viewport.viewportToImageCoordinates(new OpenSeadragon.Point(x, y)));
-            console.log('ImageCoord (x+w, y+h) =', viewer.viewport.viewportToImageCoordinates(new OpenSeadragon.Point(x+w, y+h)));
-
-            let tempElement = document.createElement('div');
-            viewer.addOverlay({     //box, startPoint, OpenSeadragon.Placement.BOTTOM_RIGHT);
-                element: tempElement,
-                location: new OpenSeadragon.Rect(x, y, w, h)
-            });
-            tempElement.className = 'overlay card LPBoundingBox';
-
-            // TODO: Do some database actions
-            $.ajax({
-                url: "/slide/annotation/create",
-                type: "GET",
-                data: {
-                    'slide_id': {{ slide.id }},
-                    'annotation': JSON.stringify(annotation),
-                },
-                success: function (xml) {
-                    //location.reload();  // Using .reload() method
-                },
-                error: function (result) {
-                    alert('Error occurred when attempting to store annotation.');
-                }
-            });
-
-        } else if (annotation.target.selector.type === 'SvgSelector') {
-            /* Polygon */
-            let polygonElement = annotation.target.selector.value;
-            let pointsList = polygonElement.replace('<svg><polygon points="', '');
-            pointsList = pointsList.replace('"></polygon></svg>', '');
-            pointsList = pointsList.split(' ');
-            let xy_points = [];
-            for (let i = 0; i < pointsList.length; i++) {
-                let [x, y] = pointsList[i].split(',')
-                xy_points.push([parseFloat(x), parseFloat(y)]);
+        $.ajax({
+            url: "/slide/annotation/create",
+            type: "GET",
+            data: {
+                'slide_id': {{ slide.id }},
+                'annotation': JSON.stringify(annotation),
+            },
+            success: function (xml) {
+                // No actions required
+            },
+            error: function (result) {
+                alert('Error occurred when attempting to store annotation.');
             }
-            console.log('(X,Y) points:', xy_points);
-            // TODO: Do some database actions
-
-        } else {
-            // Other types?? Handle appropriately
-            console.log('Unexpected selector type for annotation:', annotation.target.selector.type);
-        }
-
+        });
     });
 
     anno.on('updateAnnotation', function(annotation, previous) {
-        console.log('Updated annotation!');
+        console.log('Updating annotation');
 
-        // Do some database actions
+        $.ajax({
+            url: "/slide/annotation/update",
+            type: "GET",
+            data: {
+                'slide_id': {{ slide.id }},
+                'previous_annotation': JSON.stringify(previous),
+                'annotation': JSON.stringify(annotation),
+            },
+            success: function (xml) {
+                // No actions required
+            },
+            error: function (result) {
+                alert('Error occurred when attempting to update annotation.');
+            }
+        });
 
     });
 
     anno.on('deleteAnnotation', function (annotation) {
-        console.log('Deleted annotation!');
+        console.log('Deleting annotation');
 
-        // Do some database actions
+        $.ajax({
+            url: "/slide/annotation/delete",
+            type: "GET",
+            data: {
+                'slide_id': {{ slide.id }},
+                'annotation': JSON.stringify(annotation),
+            },
+            success: function (xml) {
+                // No actions required
+            },
+            error: function (result) {
+                alert('Error occurred when attempting to delete annotation.');
+            }
+        });
 
     });
 
