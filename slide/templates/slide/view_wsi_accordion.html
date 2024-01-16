@@ -241,26 +241,30 @@
         }
     }
 
-    let config = {
+    /*let config = {
         allowEmpty: false,  // Set to true to allow empty annotations. Annotations without bodies are normally discarded.
         fragmentUnit: 'percent',    // defaults to 'pixel', can be set to 'percent'
-        readOnly: false,    // TODO: Set to true if user is student (not teacher/superuser)
+        //readOnly: false,    // TODO: Set to true if user is student (not teacher/superuser)
         widgets: [
             'COMMENT',
             //'TAG',  // Do we need tags for these annotations?
         ],
         formatter: formatter,
-    };
-    {% if request.user.is_student  %}
-        config.readOnly = true
-    {% endif %}
+    };*/
+    {#{% if request.user.is_student  %}#}
+    {#    config.readOnly = true#}
+    {#{% endif %}#}
+    {#var anno = OpenSeadragon.Annotorious(viewer, config);#}
 
-    var anno = OpenSeadragon.Annotorious(viewer, config);
+    var anno = OpenSeadragon.Annotorious(viewer);
 
     Annotorious.SelectorPack(anno); // [ 'rect', 'polygon', 'point', 'circle', 'ellipse', 'freehand' ]
     anno.removeDrawingTool('freehand');
     {% if request.user.is_teacher or request.user.is_superuser %}
         const toolbar = new Annotorious.Toolbar(anno, document.getElementById('my-toolbar-container'));
+    {% endif %}
+    {% if request.user.is_student  %}
+        anno.readOnly = true
     {% endif %}
 
 
