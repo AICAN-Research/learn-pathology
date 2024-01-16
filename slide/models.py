@@ -2,6 +2,7 @@ import os
 import time
 import threading
 from io import BytesIO
+import json
 
 import fast
 import numpy as np
@@ -274,6 +275,9 @@ class AnnotatedSlide(models.Model):
 class Annotation(models.Model):
     annotated_slide = models.ForeignKey(AnnotatedSlide, on_delete=models.CASCADE)
     json_string = models.TextField(blank=False, help_text='The annotation in W3C format (JSON) stored as a string')
+
+    def deserialize(self):
+        return json.loads(self.json_string)
 
     @property
     def text(self):
