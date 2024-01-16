@@ -1,6 +1,7 @@
 {% extends 'learnpathology/single_content_layout.html' %}
 {% load slide_filters %}
 {% load static %}
+{% load bootstrap_icons %}
 
 
 {% block breadcrumb_items %}
@@ -38,24 +39,8 @@
 
 
             <h5 style="margin-top: 1rem">Annotation list</h5>
-            <ul>
-                {% for box in boxes %}
-                    <li style="text-align: start;">
-                        <a id="boundingbox-listitem-{{ box.id }}"
-                           onclick="highlightAnnotation('boundingbox-listitem-{{ box.id }}')">
-                            {{ box.text }}
-                        </a>
-                    </li>
-                {% endfor %}
-                {% for pointer in pointers %}
-                    <li style="text-align: start;">
-                        <a id="arrow-listitem-{{ pointer.id }}"
-                           onclick="highlightAnnotation('arrow-listitem-{{ pointer.id }}')">
-                            {{ pointer.text }}
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
+            <div id="annotationList"></div>
+
         </div>
     </div>
 </div>
@@ -63,18 +48,24 @@
 
 <div id="toolbarDiv">
     <!-- Custom buttons for Toolbar -->
+  {% if request.user.is_teacher or request.user.is_superuser %}
+    <div class="button-group">
+        <div id="my-toolbar-container"></div>
+    </div>
+    {% endif %}
+
     <div class="button-group">
         <button id="screenshotButton" class="custom-button btn btn-secondary">
             <div class="button-icon">
                 <span class="iconify" data-icon="fluent:camera-24-regular" data-width="24" data-height="24"></span>
             </div>
         </button>
-        <button class="custom-button btn btn-secondary">
-            <div class="button-icon">
-                <span class="iconify" data-icon="fluent:zoom-in-24-regular" data-width="24" data-height="24"></span>
-            </div>
-            <div id="setZoomButton" class="button-text"></div>
-        </button>
+        <button id="zoomButton" class="custom-button btn btn-secondary">
+    <div class="button-icon">
+        <span class="iconify" data-icon="fluent:zoom-in-24-regular" data-width="24" data-height="24"></span>
+    </div>
+    <div id="setZoomButton" class="button-text"></div>
+</button>
     </div>
 
     <div class="button-group">
@@ -92,26 +83,11 @@
         </div></button>
     </div>
 
-    <!-- TODO: Only show annotation toolbar++ for teachers and admins -->
     <div class="button-group">
-        <div id="my-toolbar-container"></div>
-    </div>
-
-    <div class="button-group">
-        {% if request.user.is_teacher or request.user.is_superuser %}
-        <a href="{% url 'slide:base_annotations' slide_id=slide.id %}" class="custom-button-link">
-            <button id="new_annotation" style="width: 200px;" class="custom-button btn btn-secondary"><div class="button-text">Edit/New Annotation</div></button>
-        </a>
-        {% endif %}
+        <button id="annotationListButton" style="width: 200px;" class="custom-button btn btn-secondary"><div class="button-text">Annotation List on/off</div></button>
     </div>
     <div class="button-group">
-        <button id="annotationList" style="width: 200px;" class="custom-button btn btn-secondary"><div class="button-text">Toggle Annotation List</div></button>
-    </div>
-    <div class="button-group">
-        <button id="annotation" style="width: 200px;" class="custom-button btn btn-secondary"><div class="button-text">Toggle Annotations </div></button>
-    </div>
-    <div class="button-group">
-        <button id="annotationLabel" style="width: 200px;" class="custom-button btn btn-secondary"><div class="button-text">Toggle Labels </div></button>
+        <button id="annotation" style="width: 200px;" class="custom-button btn btn-secondary"><div class="button-text">Annotations on/off </div></button>
     </div>
 </div>
 
@@ -215,6 +191,9 @@
 <script src="{% static 'slide/annotorious-openseadragon-2.7.16/openseadragon-annotorious.min.js' %}"></script>
 <!-- TODO: Set fixed version for Annotorious-related plugins! -->
 <script src="https://cdn.jsdelivr.net/npm/@recogito/annotorious-toolbar@latest/dist/annotorious-toolbar.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@recogito/annotorious-selector-pack@latest/dist/annotorious-selector-pack.min.js"></script>
+<script src="{% static 'slide/annotorious.min.js' %}"></script>
+
 <script type="text/javascript">
 
     <!--WSI Viewer-->
@@ -227,6 +206,8 @@
         showHomeControl: false,     // Hide the home button
         showFullPageControl: false, // Hide the full-page button
         showZoomControl: false,     // Hide the zoom-in and zoom-out buttons
+        minZoomLevel: 0.3, // Set your minimum zoom level
+        maxZoomLevel: 40,
         tileSources: {
             width: {{ slide.width }},
             height:  {{ slide.height }},
@@ -243,7 +224,7 @@
         }
     });
 
-    /* Initialize the Annotorious plugin */
+    // Initialize the Annotorious plugin
     // Set up configuration of Annotorious
     let formatter = function(annotation) {
         let xywh = annotation.target.selector.value;
@@ -270,9 +251,17 @@
         ],
         formatter: formatter,
     };
-    let anno = OpenSeadragon.Annotorious(viewer, config);
-    // TODO: Only show toolbar for teachers and admins!!!
-    Annotorious.Toolbar(anno, document.getElementById('my-toolbar-container'));
+    {% if request.user.is_student  %}
+        config.readOnly = true
+    {% endif %}
+
+    var anno = OpenSeadragon.Annotorious(viewer, config);
+
+    Annotorious.SelectorPack(anno); // [ 'rect', 'polygon', 'point', 'circle', 'ellipse', 'freehand' ]
+    anno.removeDrawingTool('freehand');
+    {% if request.user.is_teacher or request.user.is_superuser %}
+        const toolbar = new Annotorious.Toolbar(anno, document.getElementById('my-toolbar-container'));
+    {% endif %}
 
 
     // Annotorious + annotation storing
@@ -402,77 +391,34 @@
         alert('Couldn\'t get scaling factor')
     }
 
-    window.onLoad = toggleAnnotationOff();
-    window.onLoad = createClickReaction();
+
     window.onLoad = toggleCardVisibility();
 
-    function createClickReaction() {
-        let current_overlays = viewer.currentOverlays;
-         console.log('Create Click reaction ')
-        for (let i = 0; i < current_overlays.length; i++) {
-
-            new OpenSeadragon.MouseTracker({
-                element: current_overlays[i].element,
-                clickHandler: function (event) {
-                    var list_id = current_overlays[i].element.id.split('-').at(-1);
-
-                    if (current_overlays[i].element.id.includes('boundingbox')) {
-                        var list_box = document.getElementById('boundingbox-listitem-' + list_id);
-                        console.log(list_box)
-                        list_box.style.color = "red";
-                        list_box.style.fontWeight = "900"
-
-                        timer = setTimeout(function () {
-                            list_box.style.color = "";
-                            list_box.style.fontWeight = ""
-                        }, 1000);
-                    }
-
-                    if (current_overlays[i].element.id.includes('arrow')) {
-                        var list_arrow = document.getElementById('arrow-listitem-' + list_id);
-                        console.log(list_arrow)
-
-                        list_arrow.style.color = "red";
-                        list_arrow.style.fontWeight = "900";
-
-                        timer = setTimeout(function () {
-                            list_arrow.style.color = "";
-                            list_arrow.style.fontWeight = "";
-                        }, 1000);
-                    }
-                }
-            });
-
-        }
-    }
-
-    function toggleAnnotationOff() {
-        $(".overlay").toggle();
-        $(".textOverlay").toggle();
-    }
 
     <!--Zoom Button Functionality-->
     const zoomLevels = [0.25, 1, 10, 20, 40]; // Include 0.25x
     let currentZoomIndex = 0;
-    const zoomButton = document.getElementById("setZoomButton");
 
-    function updateButtonLabel() {
-        if (currentZoomIndex < zoomLevels.length) {
+    const zoomButton = document.getElementById("zoomButton");
+    const setZoomButton = document.getElementById("setZoomButton");
 
-            zoomButton.textContent = `${zoomLevels[currentZoomIndex]}x`;
-
-        }
-    }
-
-    document.getElementById("setZoomButton").addEventListener("click", function () {
+    zoomButton.addEventListener("click", function () {
         if (currentZoomIndex < zoomLevels.length) {
             const targetZoom = zoomLevels[currentZoomIndex];
             viewer.viewport.zoomTo(targetZoom);
-            currentZoomIndex = (currentZoomIndex + 1) % zoomLevels.length; // Loop back to 0 when reaching the end
+            currentZoomIndex = (currentZoomIndex + 1) % zoomLevels.length;
             updateButtonLabel();
         }
     });
+
+    function updateButtonLabel() {
+        if (currentZoomIndex < zoomLevels.length) {
+            setZoomButton.textContent = `${zoomLevels[currentZoomIndex]}x`;
+        }
+    }
+
     updateButtonLabel();
+
 
     <!--Screenshoot Button Functionality-->
     document.getElementById("screenshotButton").addEventListener('click', function () {
@@ -501,13 +447,23 @@
 
     <!--Default Button Functionality-->
     document.getElementById("zoomInButton").addEventListener('click', function () {
-        viewer.viewport.zoomBy(2);
-    });
+    var currentZoom = viewer.viewport.getZoom();
+    var newZoom = currentZoom * 1.2; // Adjust the factor as needed
 
-    document.getElementById("zoomOutButton").addEventListener('click', function () {
-        viewer.viewport.zoomBy((1 / 2));
+    if (newZoom <= viewer.viewport.getMaxZoom()) {
+        viewer.viewport.zoomTo(newZoom);
+    }
+});
 
-    });
+// Zoom out button event listener
+document.getElementById("zoomOutButton").addEventListener('click', function () {
+    var currentZoom = viewer.viewport.getZoom();
+    var newZoom = currentZoom * 0.8; // Adjust the factor as needed
+
+    if (newZoom >= viewer.viewport.getMinZoom()) {
+        viewer.viewport.zoomTo(newZoom);
+    }
+});
 
     document.getElementById("FullScreenButton").addEventListener('click', function () {
         if (OpenSeadragon.isFullScreen()) {
@@ -530,13 +486,147 @@
             x.style.display = "none";
             canvas_viewer.style.width = '100%';
         }
-        timer = setTimeout(function () {
-            updateTextLocation();
-        }, 20);
     }
 
-    document.getElementById("annotationList").addEventListener("click", toggleCardVisibility);
+    document.getElementById("annotationListButton").addEventListener("click", toggleCardVisibility);
 
+     var annotationList = document.getElementById('annotationList');
+
+    function updateAnnotationList() {
+        annotationList.innerHTML = ''; // Clear previous list
+
+        var annotations = anno.getAnnotations();
+
+        annotations.sort(function (a, b) {
+        var textA = a.body[0].value.toUpperCase();
+        var textB = b.body[0].value.toUpperCase();
+        return textA.localeCompare(textB);
+    });
+
+        annotations.forEach(function (annotation) {
+            var listItem = document.createElement('div');
+
+            var annotationButton = document.createElement('button');
+            annotationButton.textContent = annotation.body[0].value;
+            annotationButton.classList.add('annotationListButton');
+            annotationButton.addEventListener('click', function () {
+                anno.setVisible(true);
+                visible_annotorious = true;
+                console.log(visible_annotorious);
+                anno.selectAnnotation(annotation);
+                centerAnnotation(annotation);
+            });
+
+            listItem.appendChild(annotationButton);
+            {% if request.user.is_teacher or request.user.is_superuser %}
+                var deleteButton = document.createElement('button');
+                deleteButton.innerHTML = 'X';
+                deleteButton.classList.add('btn', 'btn-danger');
+
+                deleteButton.addEventListener('click', function () {
+                    anno.removeAnnotation(annotation);
+                    anno.cancelSelected();
+                    updateAnnotationList();
+                });
+                listItem.appendChild(deleteButton);
+            {% endif %}
+
+            annotationList.appendChild(listItem);
+        });
+    }
+
+    function centerAnnotation(annotation) {
+        const selectorType = annotation.target.selector.type;
+        let center;
+
+        switch (selectorType) {
+            case 'FragmentSelector':
+                center = getRectCenter(annotation);
+                break;
+            case 'SvgSelector':
+                const svgValue = annotation.target.selector.value;
+                if (svgValue.includes('polygon')) {
+                    center = getPolygonCenter(annotation);
+                } else if (svgValue.includes('circle') || svgValue.includes('ellipse')) {
+                    center = getCircleandEllipseCenter(annotation);
+                }
+                break;
+            default:
+                console.error("Invalid selector type");
+                return null;
+        }
+
+
+        let osdCoordinates = viewer.viewport.imageToViewportCoordinates(center.x, center.y);
+        viewer.viewport.panTo(osdCoordinates, true);
+
+    }
+
+    function getRectCenter(annotation) {
+        let selector = annotation.target.selector.value;
+        let valuesString = selector.split('pixel:')[1];
+        let xywh = valuesString.split(',').map(value => parseFloat(value));
+        let center_x = xywh[0] + xywh[2] / 2;
+        let center_y = xywh[1] + xywh[3] / 2;
+        return {x: center_x, y: center_y};
+    }
+
+    function getPolygonCenter(annotation) {
+        const svgSelector = annotation.target.selector.value;
+        const pointsMatch = svgSelector.match(/points="([^"]+)"/);
+        if (!pointsMatch || pointsMatch.length < 2) {
+            console.error("Invalid SVG polygon format");
+            return null;
+        }
+
+        const pointsString = pointsMatch[1];
+        const points = pointsString.split(" ").map(point => {
+            const [x, y] = point.split(",").map(coord => parseFloat(coord));
+            return {x, y};
+        });
+
+        // Calculate centroid
+        const numPoints = points.length;
+        const center_x = points.reduce((sum, point) => sum + point.x, 0) / numPoints;
+        const center_y = points.reduce((sum, point) => sum + point.y, 0) / numPoints;
+        return {x: center_x, y: center_y};
+    }
+
+    function getPointCenter(annotation) {
+        let selector = annotation.target.selector.value;
+        let valuesString = selector.split('pixel:')[1];
+        let xywh = valuesString.split(',').map(value => parseFloat(value));
+        let center_x = xywh[0];
+        let center_y = xywh[1];
+        return {x: center_x, y: center_y};
+    }
+
+    function getCircleandEllipseCenter(annotation) {
+        let selector = annotation.target.selector.value;
+        let cx = parseFloat(selector.split('cx="')[1].split('"')[0]);
+        let cy = parseFloat(selector.split('cy="')[1].split('"')[0]);
+        return {x: cx, y: cy};
+    }
+
+
+
+
+    anno.on('createAnnotation', updateAnnotationList);
+    anno.on('createAnnotation', function () {
+        visible_annotorious = true;
+        anno.setVisible(visible_annotorious);
+    });
+    anno.on('updateAnnotation', updateAnnotationList);
+    anno.on('deleteAnnotation', updateAnnotationList);
+
+    <!-- Annotation Button Functionality-->
+    var visible_annotorious = false;
+    console.log(visible_annotorious);
+     document.getElementById("annotation").addEventListener('click', function () {
+        visible_annotorious = !visible_annotorious;
+         anno.setVisible(visible_annotorious);
+         console.log(visible_annotorious);
+    });
 
     <!-- Info Button Functionality-->
     $(document).ready(function () {
@@ -546,106 +636,18 @@
             $('#modal-table-content').html(tableContent);
         }
 
-        // Initialize the modal
         $('#slideInfoModal').modal({
             show: false
         });
 
-        // When the modal is shown, set its content
         $('#slideInfoModal').on('show.bs.modal', function () {
             setModalContent();
         });
     });
 
-    <!-- Annotation Button Functionality-->
-     document.getElementById("annotation").addEventListener('click', function () {
-        $(".overlay").toggle();
-        if ($(".overlay").is(':visible')) {
-            createClickReaction();
-        } else {
-            if ($(".textOverlay").is(':visible')) {
-                $(".textOverlay").toggle();
-            }
-        }
-    });
-
-    <!--Label Button Functionality-->
-    document.getElementById("annotationLabel").addEventListener('click', function () {
-        $(".textOverlay").toggle();
-        if ($(".textOverlay").is(':visible')) {
-            if ($(".overlay").is(':hidden')) {
-                $(".overlay").toggle();
-                createClickReaction();
-            }
-        }
-    });
 
 
-    function highlightAnnotation(annotationId) {
-        var list_item = document.getElementById(annotationId);
-        var list_id = annotationId.split('-').at(-1);
-        if (list_item.id.includes('boundingbox')) {
-            var box = document.getElementById('boundingbox-' + list_id);
-            var text = document.getElementById('boundingbox-text-overlay-' + list_id);
-            console.log(text)
-            box.style.borderColor = "red";
-            box.style.borderWidth = "5px";
 
-            text.style.color = "red";
-            text.style.fontWeight = "900";
-
-            timer = setTimeout(function () {
-                box.style.borderColor = "";
-                box.style.borderWidth = ""
-                text.style.color = "";
-                text.style.fontWeight = "";
-            }, 1000);
-        }
-
-        if (list_item.id.includes('arrow')) {
-            var arrow = document.getElementById('right-arrow-overlay-' + list_id);
-            var arrow_text = document.getElementById('arrow-text-overlay-' + list_id);
-            arrow.style.color = "red";
-            arrow.style.fontWeight = "900";
-
-            arrow_text.style.color = "red";
-            arrow_text.style.fontWeight = "900";
-
-            timer = setTimeout(function () {
-                arrow.style.color = "";
-                arrow.style.fontWeight = "";
-                arrow_text.style.color = "";
-                arrow_text.style.fontWeight = "";
-            }, 1000);
-        }
-    }
-
-    viewer.addHandler('viewport-change', updateTextLocation);
-    viewer.addHandler('tile-drawing', updateTextLocation);
-
-    onresize = () => {
-        timer = setTimeout(function () {
-            updateTextLocation();
-        }, 20);
-    };
-
-    function updateTextLocation(event) {
-        let slide_overlays = viewer.currentOverlays;
-
-        let arrow_overlays = $("[id^=right-arrow-overlay-]")
-        let text_overlays = $("[id^=arrow-text-overlay-]")
-
-        for (let i = 0; i < arrow_overlays.length; i++) {
-            let arrowElement = arrow_overlays[i];
-            let textElement = text_overlays[i];
-
-            let arrowX = parseFloat(arrowElement.style.left);
-            let arrowY = parseFloat(arrowElement.style.top);
-
-            let viewportPoint = viewer.viewport.pointFromPixel(new OpenSeadragon.Point(arrowX - 5, arrowY + 15));
-            viewer.updateOverlay(textElement, viewportPoint);
-        }
-    }
 
 
 </script>
