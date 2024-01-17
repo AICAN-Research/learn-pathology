@@ -94,98 +94,99 @@
 
 <!-- Slide Information CONTENT BEGIN -->
 <div class="modal fade" id="slideInfoModal" tabindex="-1" aria-labelledby="slideInfoModalLabel" aria-hidden="true">
-<div class="modal-dialog">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title" id="slideInfoModalLabel">Slide Information</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body" id="modal-table-content">
-            <div id="table-content" style="display: none;">
-                <table class="table" style="font-size: 14px;">
-                    <thead class="thead-light">
-                    <tr>
-                        <th colspan="2">Core Information</th>
-                    </tr>
-                    </thead>
-                    <tr>
-                        <th>Slide name</th>
-                        <td>{{ slide.name }}</td>
-                    </tr>
-                    <tr>
-                        <th>Slide description</th>
-                        <td>{{ slide.description }}</td>
-                    </tr>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="slideInfoModalLabel">Slide Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modal-table-content">
+                <div id="table-content" style="display: none;">
+                    <table class="table" style="font-size: 14px;">
+                        <thead class="thead-light">
+                        <tr>
+                            <th colspan="2">Core Information</th>
+                        </tr>
+                        </thead>
+                        <tr>
+                            <th>Slide name</th>
+                            <td>{{ slide.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Slide description</th>
+                            <td>{{ slide.description }}</td>
+                        </tr>
 
-                    <thead class="thead-light">
-                    <tr>
-                        <th colspan="2">Categorization</th>
-                    </tr>
-                    </thead>
-                    <tr>
-                        <th>Organ</th>
-                        <td>{{ slide.name }}</td>
-                    </tr>
-                    <tr>
-                        <th>Histology/pathology</th>
-                        {% if slide.pathology %}
-                            <td>Pathology</td>
-                        {% else %}
-                            <td>Histology</td>
-                        {% endif %}
-                    </tr>
-                    <tr>
-                        <th>Stain</th>
-                        <td>{{ stain_name }}</td>
-                    </tr>
-
-                    <thead class="thead-light">
-                    <tr>
-                        <th colspan="2">Supplementary information</th>
-                    </tr>
-                    </thead>
-                    <tr>
-                        <th>
-                            Long description
-                            {% if request.user.is_teacher or request.user.is_superuser %}
-
-                                <a class="custom-button-link" href="{% url 'slide:edit_description' slide.id %}">
-                                    <button class="custom-button ">&#9998;
-                                    </button>
-                                </a>
-
+                        <thead class="thead-light">
+                        <tr>
+                            <th colspan="2">Categorization</th>
+                        </tr>
+                        </thead>
+                        <tr>
+                            <th>Organ</th>
+                            <td>{{ slide.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Histology/pathology</th>
+                            {% if slide.pathology %}
+                                <td>Pathology</td>
+                            {% else %}
+                                <td>Histology</td>
                             {% endif %}
-                        </th>
-                        {% if slide.long_description %}
-                            <td>{{ slide.long_description }}</td>
-                        {% else %}
-                            <td>-</td>
-                        {% endif %}
-                    </tr>
-                    <tr>
-                        <th>
-                            General pathology tags
-                            {% if request.user.is_teacher or request.user.is_superuser %}
+                        </tr>
+                        <tr>
+                            <th>Stain</th>
+                            <td>{{ stain_name }}</td>
+                        </tr>
 
-                                <a class="custom-button-link" href="{% url 'slide:edit_tags' slide.id %}">
-                                    <button class="custom-button ">&#9998;</button>
-                                </a>
+                        <thead class="thead-light">
+                        <tr>
+                            <th colspan="2">Supplementary information</th>
+                        </tr>
+                        </thead>
+                        <tr>
+                            <th>
+                                Long description
+                                {% if request.user.is_teacher or request.user.is_superuser %}
+
+                                    <a class="custom-button-link" href="{% url 'slide:edit_description' slide.id %}">
+                                        <button class="custom-button ">&#9998;
+                                        </button>
+                                    </a>
+
+                                {% endif %}
+                            </th>
+                            {% if slide.long_description %}
+                                <td>{{ slide.long_description }}</td>
+                            {% else %}
+                                <td>-</td>
                             {% endif %}
-                        </th>
-                        <td>
-                            {% if general_pathology_tags %}
-                                {% for tag in general_pathology_tags %}
-                                    {{ tag.name }}<br>
-                                {% endfor %}
-                            {% endif %}
-                        </td>
-                    </tr>
-                </table>
+                        </tr>
+                        <tr>
+                            <th>
+                                General pathology tags
+                                {% if request.user.is_teacher or request.user.is_superuser %}
+
+                                    <a class="custom-button-link" href="{% url 'slide:edit_tags' slide.id %}">
+                                        <button class="custom-button ">&#9998;</button>
+                                    </a>
+                                {% endif %}
+                            </th>
+                            <td>
+                                {% if general_pathology_tags %}
+                                    {% for tag in general_pathology_tags %}
+                                        {{ tag.name }}<br>
+                                    {% endfor %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 </div>
-</div>
+
 
 <!-- Packages and Javascript stuff -->
 <script src="{% static 'slide/openseadragon.min.js' %}"></script>
