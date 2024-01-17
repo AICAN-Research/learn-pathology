@@ -185,7 +185,9 @@
         </div>
     </div>
 </div>
+</div>
 
+<!-- Packages and Javascript stuff -->
 <script src="{% static 'slide/openseadragon.min.js' %}"></script>
 <script src="{% static 'slide/openseadragon-scalebar.js' %}"></script>
 <script src="{% static 'slide/annotorious-openseadragon-2.7.16/openseadragon-annotorious.min.js' %}"></script>
@@ -382,7 +384,6 @@
         }
     }
 
-    updateButtonLabel();
 
 
     <!--Screenshoot Button Functionality-->
@@ -590,8 +591,11 @@
         console.log(visible_annotorious);
     });
 
-    <!-- Info Button Functionality-->
     $(document).ready(function () {
+        updateButtonLabel();
+        updateAnnotationList();
+
+        /* Info button functionality */
         // Function to set the modal content
         function setModalContent() {
             var tableContent = $('#table-content').html();
