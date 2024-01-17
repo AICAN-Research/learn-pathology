@@ -48,10 +48,10 @@
 
 <div id="toolbarDiv">
     <!-- Custom buttons for Toolbar -->
-  {% if request.user.is_teacher or request.user.is_superuser %}
-    <div class="button-group">
-        <div id="my-toolbar-container"></div>
-    </div>
+    {% if request.user.is_teacher or request.user.is_superuser %}
+        <div class="button-group">
+            <div id="my-toolbar-container"></div>
+        </div>
     {% endif %}
 
     <div class="button-group">
@@ -584,10 +584,10 @@
     <!-- Annotation Button Functionality-->
     var visible_annotorious = false;
     console.log(visible_annotorious);
-     document.getElementById("annotation").addEventListener('click', function () {
+    document.getElementById("annotation").addEventListener('click', function () {
         visible_annotorious = !visible_annotorious;
-         anno.setVisible(visible_annotorious);
-         console.log(visible_annotorious);
+        anno.setVisible(visible_annotorious);
+        console.log(visible_annotorious);
     });
 
     <!-- Info Button Functionality-->
