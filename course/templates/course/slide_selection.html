@@ -52,11 +52,12 @@ Select slides for <span style="color: var(--color-blue-dark);">{{ course.title }
             <div class="card border-0 w-100 text-start">
                 <div class="card-body" style="padding-bottom: 0;">
                     <div class="radio-toolbar" style="margin-top: 2px;">
-                        <a href="{% url 'course:slide_selection' course_id=course.id %}">
-                            <button class="wideLabel" style="text-align: center; border: 2px solid #c65127;">
+                        <form class="form">
+                            <button class="wideLabel" type="submit" name="clear_all"
+                                    style="text-align: center; border: 2px solid #c65127;">
                                 Clear selection {% bs_icon 'x-circle' %}
                             </button>
-                        </a>
+                        </form>
                     </div>
                 </div>
             </div>
