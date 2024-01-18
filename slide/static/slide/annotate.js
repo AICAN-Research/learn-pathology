@@ -102,7 +102,7 @@ function centerAnnotation(annotation) {
             if (svgValue.includes('polygon')) {
                 center = getPolygonCenter(annotation);
             } else if (svgValue.includes('circle') || svgValue.includes('ellipse')) {
-                center = getCircleandEllipseCenter(annotation);
+                center = getCircleAndEllipseCenter(annotation);
             }
             break;
         default:
@@ -154,7 +154,7 @@ function getPointCenter(annotation) {
     return {x: center_x, y: center_y};
 }
 
-function getCircleandEllipseCenter(annotation) {
+function getCircleAndEllipseCenter(annotation) {
     let selector = annotation.target.selector.value;
     let cx = parseFloat(selector.split('cx="')[1].split('"')[0]);
     let cy = parseFloat(selector.split('cy="')[1].split('"')[0]);
