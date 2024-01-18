@@ -452,7 +452,6 @@ Radio button toolbar used with slide filters
     /*display: block;*/
     /*display: inline-flex;*/
     color: var(--text-colour-dark);
-    display:none;
 }
 
 .radio-toolbar label {
@@ -517,72 +516,6 @@ Radio button toolbar used with slide filters
     background-color: var(--color-blue-light);
 }
 .radio-toolbar label.active {
-    background-color: var(--color-blue);
-}
-
-/* =============================================
-Radio button toolbar used with slide selection filters
-============================================= */
-.radio-toolbar_slide {
-  margin: 0;
-}
-
-.radio-toolbar_slide input[type="radio"] {
-    /*display: block;*/
-    /*display: inline-flex;*/
-    color: var(--text-colour-dark);
-    display: none;
-}
-
-.radio-toolbar_slide label {
-    /*display: inline-block;*/
-    /*display: inline-block;*/
-    /*width: auto;*/
-    /*background-color: var(--color-blue-light);*/
-    /*padding: 10px 20px;*/
-    /*font-family: sans-serif, Arial;*/
-    /*font-size: 1rem;*/
-    /*font-weight: 400;*/
-    /*border: 1px solid var(--color-blue);*/
-    /*border-radius: 4px;*/
-}
-
-.radio-toolbar_slide label.wideLabel {
-    display: inline-block;
-    background-color: var(--color-blue-light);
-    font-family: sans-serif, Arial;
-    font-size: 1rem;
-    font-weight: 400;
-    border: 0 solid var(--color-blue);
-    border-radius: 4px;
-    padding: 5px 5px;
-    margin-top: 1px;
-    margin-bottom: 1px;
-    /*width: 100%;*/
-}
-
-.radio-toolbar_slide button.wideLabel {
-    display: inline-block;
-    background-color: var(--color-blue-light);
-    font-family: sans-serif, Arial;
-    font-size: 1rem;
-    font-weight: 400;
-    border: 0 solid var(--color-blue);
-    border-radius: 4px;
-    padding: 4px 4px;
-    margin-top: 1px;
-    margin-bottom: 1px;
-    width: 100%;
-    text-align: left;
-}
-.radio-toolbar_slide button.wideLabel.active {
-    background-color: var(--color-blue);
-}
-
-.radio-toolbar_slide label:hover {
-    background-color: var(--color-blue-light);
-}
-.radio-toolbar_slide label.active {
     background-color: var(--color-blue);
 }
 
