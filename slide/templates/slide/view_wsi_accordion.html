@@ -397,7 +397,9 @@
                 visible_annotorious = true;
                 console.log(visible_annotorious);
                 anno.selectAnnotation(annotation);
-                centerAnnotation(annotation);
+                anno.fitBoundsWithConstraints(annotation, {
+                    'padding': 200
+                });
             });
 
             listItem.appendChild(annotationButton);
