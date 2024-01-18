@@ -50,7 +50,7 @@
     <!-- Custom buttons for Toolbar -->
     {% if request.user.is_teacher or request.user.is_superuser %}
         <div class="button-group">
-            <div id="my-toolbar-container"></div>
+            <div id="annotorious-toolbar-container"></div>
         </div>
     {% endif %}
 
@@ -264,7 +264,7 @@
     Annotorious.SelectorPack(anno); // [ 'rect', 'polygon', 'point', 'circle', 'ellipse', 'freehand' ]
     anno.removeDrawingTool('freehand');
     {% if request.user.is_teacher or request.user.is_superuser %}
-        const toolbar = new Annotorious.Toolbar(anno, document.getElementById('my-toolbar-container'));
+        const toolbar = new Annotorious.Toolbar(anno, document.getElementById('annotorious-toolbar-container'));
     {% endif %}
     {% if request.user.is_student  %}
         anno.readOnly = true
