@@ -409,6 +409,7 @@
                 deleteButton.classList.add('btn', 'btn-danger');
 
                 deleteButton.addEventListener('click', function () {
+                    deleteAnnotation(annotation, {{ slide.id }});
                     anno.removeAnnotation(annotation);
                     anno.cancelSelected();
                     updateAnnotationList();
