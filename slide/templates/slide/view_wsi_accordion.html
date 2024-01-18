@@ -380,7 +380,7 @@
     <!--Default Button Functionality-->
     document.getElementById("zoomInButton").addEventListener('click', function () {
         var currentZoom = viewer.viewport.getZoom();
-        var newZoom = currentZoom * 1.2; // Adjust the factor as needed
+        var newZoom = currentZoom * viewer.zoomPerScroll; // Adjust the factor as needed
 
         if (newZoom <= viewer.viewport.getMaxZoom()) {
             viewer.viewport.zoomTo(newZoom);
@@ -390,7 +390,7 @@
     // Zoom out button event listener
     document.getElementById("zoomOutButton").addEventListener('click', function () {
         var currentZoom = viewer.viewport.getZoom();
-        var newZoom = currentZoom * 0.8; // Adjust the factor as needed
+        var newZoom = currentZoom / viewer.zoomPerScroll; // Adjust the factor as needed
 
         if (newZoom >= viewer.viewport.getMinZoom()) {
             viewer.viewport.zoomTo(newZoom);
