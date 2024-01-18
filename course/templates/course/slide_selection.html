@@ -79,7 +79,7 @@ Select slides for <span style="color: var(--color-blue-dark);">{{ course.title }
                 <h4 style="margin: 0;">Histology or pathology?</h4>
                 <div class="card border-0 w-100 text-start">
                     <div class="card-body">
-                        <div class="radio-toolbar">
+                        <div class="radio-toolbar_slide">
                             <input type="radio" name="histology-pathology" id="hist-path-btn" value="both" onchange="this.form.submit();">
                             <label for="hist-path-btn" class="wideLabel{% if selected_both %} active{% endif %}">Both</label>
 
@@ -103,7 +103,7 @@ Select slides for <span style="color: var(--color-blue-dark);">{{ course.title }
                 <h4 style="margin: 0;">Organ system</h4>
                 <div class="card border-0 w-100 text-start">
                     <div class="card-body container-fluid">
-                        <div class="radio-toolbar">
+                        <div class="radio-toolbar_slide">
                             <!-- Show 'All' button -->
                             <input type="radio" name="organ-system" id="organ-all" value="all" onchange="this.form.submit();">
                             <label for="organ-all" class="wideLabel {% if 'all' in selected_organ_tag %}active{% endif %}">All</label>
