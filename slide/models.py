@@ -233,8 +233,7 @@ class Slide(models.Model):
             cdvec2_elem = property_elem.find('CdVec2')
             scale_xy = [float(d.text) for d in cdvec2_elem.findall('double')]
 
-            print('Scale factor (um/px):', scale_xy)
-            self._scale_factor = scale_xy
+            self._scale_factor = scale_xy   # scale factor in um/px
 
         except Exception as err:
             print(f"An error occurred: The requested metadata.xml file for {self.path} was not found. Setting scale factor None")
