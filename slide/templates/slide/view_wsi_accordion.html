@@ -34,13 +34,9 @@
             </div>
         </div>
 
-
         <div class="col col-2" style="height: fit-content; width: 20%;" id="slideColumn">
-
-
             <h5 style="margin-top: 1rem">Annotation list</h5>
             <div id="annotationList"></div>
-
         </div>
     </div>
 </div>
@@ -228,37 +224,6 @@
     });
 
     // Initialize the Annotorious plugin
-    // Set up configuration of Annotorious
-    let formatter = function(annotation) {
-        let xywh = annotation.target.selector.value;
-        let coords = xywh.replace('xywh=pixel:', '');
-        coords = xywh.replace('xywh=percent:', '');
-        let [x, y, w, h] = coords.split(',');
-
-        return {
-            'data-boundingbox-x': x,
-            'data-boundingbox-y': y,
-            'data-boundingbox-width': w,
-            'data-boundingbox-height': h,
-            {#'style': 'stroke: blue'#}
-        }
-    }
-
-    /*let config = {
-        allowEmpty: false,  // Set to true to allow empty annotations. Annotations without bodies are normally discarded.
-        fragmentUnit: 'percent',    // defaults to 'pixel', can be set to 'percent'
-        //readOnly: false,    // TODO: Set to true if user is student (not teacher/superuser)
-        widgets: [
-            'COMMENT',
-            //'TAG',  // Do we need tags for these annotations?
-        ],
-        formatter: formatter,
-    };*/
-    {#{% if request.user.is_student  %}#}
-    {#    config.readOnly = true#}
-    {#{% endif %}#}
-    {#var anno = OpenSeadragon.Annotorious(viewer, config);#}
-
     var anno = OpenSeadragon.Annotorious(viewer);
 
     Annotorious.SelectorPack(anno); // [ 'rect', 'polygon', 'point', 'circle', 'ellipse', 'freehand' ]
