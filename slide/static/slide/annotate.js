@@ -1,412 +1,162 @@
-let counter = 0;
-let g_lastBoundingBoxStartX = -1;
-let g_lastBoundingBoxStartY = -1;
-let g_lastBoundingBoxId = null;
-let g_lastDrawnBoundingBoxId = null;
-
-
 /*
-    POINTER ANNOTATIONS
- */
-function activatePointerAnnotation() {
-    console.log('Activating Pointer annotation');
+* This file contains helper functions for handling annotations that are created
+* using Annotorious with OpenSeadragon, annotorious-toolbar and the
+* annotorious-selector-pack.
+*/
 
-    deactivateAnnotationMode();
 
-    $('#pointer-annotation-btn').addClass('active');
-        //.disable();
-    $('#annotation-instructions').text(
-        'Double click the canvas where you want to make a pointer'
-    );
-    addPointerHandlers();
-}
+/************************************************
+Creating, saving, and deleting annotations
+************************************************/
 
-function addPointer(viewportPoint, text) {
-   // Create overlay
-   let textDiv = document.createElement("div");
-   textDiv.className = "overlay";
-   let strCounter = counter.toString();
-   textDiv.id = "right-arrow-overlay-" + strCounter;
-   textDiv.innerHTML = '<a>X</a> ' +
-       '<input type="hidden" name="right-arrow-overlay-' + strCounter + '-x" value="' + viewportPoint.x.toString() + '"> ' +
-       '<input type="hidden" name="right-arrow-overlay-' + strCounter + '-y" value="' + viewportPoint.y.toString() + '"> ' +
-       '<input type="text" name="right-arrow-overlay-' + strCounter + '-text" value="' + text + '"> &#8594;';
-   counter += 1;
-
-   viewer.addOverlay(textDiv, viewportPoint, OpenSeadragon.Placement.RIGHT);
-
-    // MouseTracker is required for links to function in overlays
-    let asd = new OpenSeadragon.MouseTracker({
-        element: textDiv.id,
-        clickHandler: function(event) {
-            let target = event.originalEvent.target;
-            if(target.matches('input')) {
-                target.focus();
-            } else if(target.matches('a')) {
-                // Event handler for deleting:
-                viewer.removeOverlay(textDiv.id);
-            }
-        }
-    });
-
-    deactivateAnnotationMode();
-    return textDiv;
-}
-
-/*
-    POINTER EVENT HANDLERS
- */
-function onDoubleClickPointer(event) {
-    let webPoint = event.position;
-    let viewportPoint = viewer.viewport.pointFromPixel(webPoint);
-
-    let textDiv = addPointer(viewportPoint, '');
-    $("#" + textDiv.id + " input[type=text]").focus();
-}
-
-function addPointerHandlers() {
-    viewer.addHandler('canvas-double-click', onDoubleClickPointer);
-}
-
-function removePointerHandlers() {
-    viewer.removeHandler('canvas-double-click', onDoubleClickPointer);
-}
-
-/*
-    BOUNDING BOX ANNOTATIONS
- */
-function activateBoxAnnotation() {
-    console.log('Activating BoundingBox annotation. counter = ', counter);
-
-    deactivateAnnotationMode();
-    disablePanAndZoom();
-
-    $('#box-annotation-btn').addClass('active');
-        //.disable();
-    $('#annotation-instructions').text(
-        'Click and drag to make a bounding box'
-    );
-    addBoundingBoxHandlers();
-}
-
-function addBoundingBox(x1, y1, x2, y2, text='') {
-    console.log("In function addBoundingBox()");
-
-    let divElement = document.createElement('div');
-    viewer.addOverlay(divElement);
-    divElement.id = 'boundingbox-' + counter.toString();
-    divElement = drawBoundingBox(divElement.id, x1, y1, x2, y2, text);
-    divElement.innerHTML = boundingBoxInnerHTML(x1, y1, x2, y2, text);
-
-    // MouseTracker is required for links to function in overlays
-    let tracker = mouseTrackerRemoveBoundingBox(divElement);
-
-    counter += 1;
-    return divElement.id;
-}
-
-function newBoundingBox(x1, y1, x2, y2, text='') {
-    console.log("In function newBoundingBox()");
-
-    viewer.removeOverlay(g_lastDrawnBoundingBoxId);
-
-    let divElement = document.createElement('div');
-    viewer.addOverlay(divElement);
-    divElement.id = 'boundingbox-' + counter.toString();
-    console.log(divElement.id);
-
-    // TODO: Must we draw the box again??
-    divElement = drawBoundingBox(divElement.id, x1, y1, x2, y2, text);
-    divElement.innerHTML = boundingBoxInnerHTML(x1, y1, x2, y2, text);
-
-    // MouseTracker is required for links to function in overlays
-    let tracker = mouseTrackerRemoveBoundingBox(divElement);
-
-    counter += 1;
-    return divElement.id;
-}
-
-function drawBoundingBox(elementId, x1, y1, x2, y2, text='') {
-
-    let tempElement = document.getElementById(elementId);
-
-    let x0 = Math.min(x1, x2);
-    let y0 = Math.min(y1, y2);
-    let width = Math.abs(x1-x2);
-    let height = Math.abs(y1-y2);
-    console.log(x0, y0, width, height);
-
-    viewer.removeOverlay(tempElement);
-    viewer.addOverlay({     //box, startPoint, OpenSeadragon.Placement.BOTTOM_RIGHT);
-        element: tempElement,
-        location: new OpenSeadragon.Rect(x0, y0, width, height)
-    });
-    tempElement.className = 'overlay card LPBoundingBox';
-    tempElement.innerHTML = boundingBoxInnerHTML(x1, y1, x2, y2, text);
-    console.log('Drew bounding box nr ' + counter);
-    return tempElement;
-}
-
-function boundingBoxInnerHTML(x1, y1, x2, y2, text='') {
-    let x0 = Math.min(x1, x2);
-    let y0 = Math.min(y1, y2);
-    let width = Math.abs(x1-x2);
-    let height = Math.abs(y1-y2);
-    return '<div class="row" style="margin: 0;">' +
-        '<div class="col" style="padding: 0; margin-right: auto;">' +
-        '   <input type="text" name="boundingbox-' + counter + '-text" value="' + text + '">' +
-        '</div>' +
-        '<div class="col-2" style="padding: 0;">' +
-        '   <div class="LPButton removeBoundingBox" style="padding: 5px; width: 30px; height: 30px; text-align: center;">' +
-        '       <a>X</a>' +
-        '   </div> ' +
-        '</div>' +
-        '</div>' +
-        '<input type="hidden" name="boundingbox-' + counter + '-x" value="' + x0.toString() + '">' +
-        '<input type="hidden" name="boundingbox-' + counter + '-y" value="' + y0.toString() + '">' +
-        '<input type="hidden" name="boundingbox-' + counter + '-width" value="' + width.toString() + '">' +
-        '<input type="hidden" name="boundingbox-' + counter + '-height" value="' + height.toString() + '">'
-}
-
-function mouseTrackerRemoveBoundingBox(divElement) {
-    return new OpenSeadragon.MouseTracker({
-        element: divElement.id,
-        clickHandler: function (event) {
-            let target = event.originalEvent.target;
-            if (target.matches('input')) {
-                target.focus();
-            } else if (target.matches('.removeBoundingBox')) {
-                // Event handler for deleting:
-                viewer.removeOverlay(divElement.id);
-            } else if (target.matches('a')) {
-                // Event handler for deleting:
-                viewer.removeOverlay(divElement.id);
-            }
+function createAnnotation(annotation, slide_id) {
+    $.ajax({
+        url: "/slide/annotation/create",
+        type: "GET",
+        data: {
+            'slide_id': slide_id,
+            'annotation': JSON.stringify(annotation),
+        },
+        success: function (xml) {
+            // No actions required
+        },
+        error: function (result) {
+            alert('Error occurred when attempting to store annotation.');
         }
     });
 }
 
-/*
-    BOUNDING BOX EVENT HANDLERS
- */
-function onPressBoundingBox(event) {
-    let webPoint = event.position;
-    let startViewportPoint = viewer.viewport.pointFromPixel(webPoint);
-    g_lastBoundingBoxStartX = startViewportPoint.x;
-    g_lastBoundingBoxStartY = startViewportPoint.y;
-
-    console.log('Canvas press at (' + g_lastBoundingBoxStartX.toString() + ', ' + g_lastBoundingBoxStartY.toString() + ')');
-}
-
-function onDragBoundingBox(event) {
-    let webPoint = event.position;
-    let viewportPoint = viewer.viewport.pointFromPixel(webPoint);
-
-    // Create bounding box start point
-    let divElement = document.getElementById(g_lastDrawnBoundingBoxId);
-    g_lastDrawnBoundingBoxId = drawBoundingBox(
-        divElement.id,
-        g_lastBoundingBoxStartX, g_lastBoundingBoxStartY,
-        viewportPoint.x, viewportPoint.y,
-    );
-    // TODO: Fix Uncaught TypeError: Cannot set properties of null --> some MouseTracker error
-    /*let ms_tracker = new OpenSeadragon.MouseTracker({
-        element: document.getElementById(g_lastElementId),
-        dragHandler: drawBoundingBox(
-            g_lastElementId,
-            g_lastBoundingBoxStartX, g_lastBoundingBoxStartY,
-            viewportPoint.x, viewportPoint.y,
-            'bounding box'
-        )
-    });*/
-}
-
-function onReleaseBoundingBox(event) {
-    let webPoint = event.position;
-    let endViewportPoint = viewer.viewport.pointFromPixel(webPoint);
-    console.log('Canvas release at (' + endViewportPoint.x.toString() + ', ' + endViewportPoint.x.toString() + ')');
-
-    // Remove the last drawn bounding box
-    viewer.removeOverlay(document.getElementById(g_lastDrawnBoundingBoxId));
-    g_lastDrawnBoundingBoxId = null;
-
-    // Create bounding box
-    g_lastBoundingBoxId = newBoundingBox(
-        g_lastBoundingBoxStartX, g_lastBoundingBoxStartY,
-        endViewportPoint.x, endViewportPoint.y,
-        ''
-    );
-    g_lastBoundingBoxStartX = -1;
-    g_lastBoundingBoxStartY = -1;
-
-    // Re-enable pan/zoom and remove canvas actions for bounding box
-    deactivateAnnotationMode();
-}
-
-function addBoundingBoxHandlers() {
-    viewer.addHandler('canvas-press', onPressBoundingBox);
-    viewer.addHandler('canvas-drag', onDragBoundingBox);
-    viewer.addHandler('canvas-release', onReleaseBoundingBox);
-}
-
-function removeBoundingBoxHandlers() {
-    viewer.removeHandler('canvas-press', onPressBoundingBox);
-    viewer.removeHandler('canvas-drag', onDragBoundingBox);
-    viewer.removeHandler('canvas-release', onReleaseBoundingBox);
-}
-
-/*
-    BOUNDING BOX WITHOUT TEXT INPUT (used for click question)
- */
-function activateBoxAnnotationNoTextInput() {
-    console.log('Activating BoundingBox annotation. counter = ', counter);
-
-    deactivateAnnotationMode();
-    disablePanAndZoom();
-
-    $('#box-annotation-btn').addClass('active');
-        //.disable();
-    $('#annotation-instructions').text(
-        'Click and drag to make a bounding box'
-    );
-    addBoundingBoxHandlersNoTextInput();
-}
-
-function addBoundingBoxNoTextInput(x1, y1, x2, y2) {
-    console.log("In function addBoundingBoxWithoutTextInput()");
-
-    let divElement = document.createElement('div');
-    viewer.addOverlay(divElement);
-    divElement.id = 'boundingbox-' + counter.toString();
-    divElement = drawBoundingBox(divElement.id, x1, y1, x2, y2, '');
-    divElement.innerHTML = boundingBoxNoTextInputInnerHTML(x1, y1, x2, y2);
-
-    // MouseTracker is required for links to function in overlays
-    let tracker = mouseTrackerRemoveBoundingBox(divElement);
-
-    counter += 1;
-    return divElement.id;
-}
-
-function newBoundingBoxNoTextInput(x1, y1, x2, y2) {
-    console.log("In function newBoundingBoxNoTextInput()");
-
-    viewer.removeOverlay(g_lastDrawnBoundingBoxId);
-
-    let divElement = document.createElement('div');
-    viewer.addOverlay(divElement);
-    divElement.id = 'boundingbox-' + counter.toString();
-    console.log(divElement.id);
-
-    divElement = drawBoundingBoxNoTextInput(divElement.id, x1, y1, x2, y2);
-    divElement.innerHTML = boundingBoxNoTextInputInnerHTML(x1, y1, x2, y2);
-
-    // MouseTracker is required for links to function in overlays
-    let tracker = mouseTrackerRemoveBoundingBox(divElement);
-
-    counter += 1;
-    return divElement.id;
-}
-
-function drawBoundingBoxNoTextInput(elementId, x1, y1, x2, y2) {
-
-    let tempElement = document.getElementById(elementId);
-
-    let x0 = Math.min(x1, x2);
-    let y0 = Math.min(y1, y2);
-    let width = Math.abs(x1-x2);
-    let height = Math.abs(y1-y2);
-    console.log(x0, y0, width, height);
-
-    viewer.removeOverlay(tempElement);
-    viewer.addOverlay({     //box, startPoint, OpenSeadragon.Placement.BOTTOM_RIGHT);
-        element: tempElement,
-        location: new OpenSeadragon.Rect(x0, y0, width, height)
+function updateAnnotation(annotation, previous, slide_id) {
+    $.ajax({
+        url: "/slide/annotation/update",
+        type: "GET",
+        data: {
+            'slide_id': slide_id,
+            'previous_annotation': JSON.stringify(previous),
+            'annotation': JSON.stringify(annotation),
+        },
+        success: function (xml) {
+            // No actions required
+        },
+        error: function (result) {
+            alert('Error occurred when attempting to update annotation.');
+        }
     });
-    tempElement.className = 'overlay card LPBoundingBox';
-    tempElement.innerHTML = boundingBoxNoTextInputInnerHTML(x1, y1, x2, y2);
-    console.log('Drew bounding box nr ' + counter);
-    return tempElement;
 }
 
-function boundingBoxNoTextInputInnerHTML(x1, y1, x2, y2) {
-    let x0 = Math.min(x1, x2);
-    let y0 = Math.min(y1, y2);
-    let width = Math.abs(x1-x2);
-    let height = Math.abs(y1-y2);
-    return '<a style="margin: 3px;">X</a>' +
-        '<input type="hidden" name="boundingbox-' + counter + '-text" value="">' +
-        '<input type="hidden" name="boundingbox-' + counter + '-x" value="' + x0.toString() + '">' +
-        '<input type="hidden" name="boundingbox-' + counter + '-y" value="' + y0.toString() + '">' +
-        '<input type="hidden" name="boundingbox-' + counter + '-width" value="' + width.toString() + '">' +
-        '<input type="hidden" name="boundingbox-' + counter + '-height" value="' + height.toString() + '">'
+function deleteAnnotation(annotation, slide_id) {
+    $.ajax({
+        url: "/slide/annotation/delete",
+        type: "GET",
+        data: {
+            'slide_id': slide_id,
+            'annotation': JSON.stringify(annotation),
+        },
+        success: function (xml) {
+            // No actions required
+        },
+        error: function (result) {
+            alert('Error occurred when attempting to delete annotation.');
+        }
+    });
 }
 
-function onReleaseBoundingBoxNoTextInput(event) {
-    let webPoint = event.position;
-    let endViewportPoint = viewer.viewport.pointFromPixel(webPoint);
-    console.log('Canvas release at (' + endViewportPoint.x.toString() + ', ' + endViewportPoint.x.toString() + ')');
 
-    // Remove the last drawn bounding box
-    viewer.removeOverlay(document.getElementById(g_lastDrawnBoundingBoxId));
-    g_lastDrawnBoundingBoxId = null;
+/************************************************
+Annotation interaction, clicking, highlighting
+************************************************/
 
-    // Create bounding box
-    g_lastBoundingBoxId = newBoundingBoxNoTextInput(
-        g_lastBoundingBoxStartX, g_lastBoundingBoxStartY,
-        endViewportPoint.x, endViewportPoint.y,
-    );
-    g_lastBoundingBoxStartX = -1;
-    g_lastBoundingBoxStartY = -1;
+function toggleCardVisibility() {
+    var x = document.getElementById("slideColumn");
+    var canvas_viewer = document.getElementById('imageViewer');
 
-    // Re-enable pan/zoom and remove canvas actions for bounding box
-    deactivateAnnotationMode();
-    removeBoundingBoxHandlersNoTextInput();
+    if (x.style.display === "none") {
+        x.style.display = "block";
+        canvas_viewer.style.width = '';
+    } else {
+        x.style.display = "none";
+        canvas_viewer.style.width = '100%';
+    }
 }
 
-function addBoundingBoxHandlersNoTextInput() {
-    viewer.addHandler('canvas-press', onPressBoundingBox);
-    viewer.addHandler('canvas-drag', onDragBoundingBox);
-    viewer.addHandler('canvas-release', onReleaseBoundingBoxNoTextInput);
+function centerAnnotation(annotation) {
+    /*
+
+    TODO
+      - If you click an annotation that's much larger than the current zoom
+        area, the annotation will cover all/most of the viewer. If the
+        annotation is larger than the area (or at least covers all of it), we
+        should change the zoom level when focusing on the annotation.
+      - For teachers, the annotation also becomes active, meaning that any
+        click and drag will drag the annotation, not pan and zoom.
+     */
+    const selectorType = annotation.target.selector.type;
+    let center;
+
+    switch (selectorType) {
+        case 'FragmentSelector':
+            center = getRectCenter(annotation);
+            break;
+        case 'SvgSelector':
+            const svgValue = annotation.target.selector.value;
+            if (svgValue.includes('polygon')) {
+                center = getPolygonCenter(annotation);
+            } else if (svgValue.includes('circle') || svgValue.includes('ellipse')) {
+                center = getCircleandEllipseCenter(annotation);
+            }
+            break;
+        default:
+            console.error("Invalid selector type");
+            return null;
+    }
+
+    let osdCoordinates = viewer.viewport.imageToViewportCoordinates(center.x, center.y);
+    viewer.viewport.panTo(osdCoordinates, true);
+
 }
 
-function removeBoundingBoxHandlersNoTextInput() {
-    viewer.removeHandler('canvas-press', onPressBoundingBox);
-    viewer.removeHandler('canvas-drag', onDragBoundingBox);
-    viewer.removeHandler('canvas-release', onReleaseBoundingBoxNoTextInput);
+function getRectCenter(annotation) {
+    let selector = annotation.target.selector.value;
+    let valuesString = selector.split('pixel:')[1];
+    let xywh = valuesString.split(',').map(value => parseFloat(value));
+    let center_x = xywh[0] + xywh[2] / 2;
+    let center_y = xywh[1] + xywh[3] / 2;
+    return {x: center_x, y: center_y};
 }
 
-/*
-    HELPER FUNCTIONS
- */
-function disablePanAndZoom() {
-    viewer.panHorizontal = false;
-    viewer.panVertical = false;
-    viewer.zooming = false;
-    console.log('Disabled pan and zoom');
+function getPolygonCenter(annotation) {
+    const svgSelector = annotation.target.selector.value;
+    const pointsMatch = svgSelector.match(/points="([^"]+)"/);
+    if (!pointsMatch || pointsMatch.length < 2) {
+        console.error("Invalid SVG polygon format");
+        return null;
+    }
+
+    const pointsString = pointsMatch[1];
+    const points = pointsString.split(" ").map(point => {
+        const [x, y] = point.split(",").map(coord => parseFloat(coord));
+        return {x, y};
+    });
+
+    // Calculate centroid
+    const numPoints = points.length;
+    const center_x = points.reduce((sum, point) => sum + point.x, 0) / numPoints;
+    const center_y = points.reduce((sum, point) => sum + point.y, 0) / numPoints;
+    return {x: center_x, y: center_y};
 }
 
-function enablePanAndZoom() {
-    viewer.panHorizontal = true;
-    viewer.panVertical = true;
-    viewer.zooming = true;
-    console.log('Enabled pan and zoom');
+function getPointCenter(annotation) {
+    let selector = annotation.target.selector.value;
+    let valuesString = selector.split('pixel:')[1];
+    let xywh = valuesString.split(',').map(value => parseFloat(value));
+    let center_x = xywh[0];
+    let center_y = xywh[1];
+    return {x: center_x, y: center_y};
 }
 
-function deactivateAnnotationMode() {
-    // Deactivate (remove highlighting) of annotation type selector buttons
-    $('#pointer-annotation-btn').removeClass('active');
-    $('#box-annotation-btn').removeClass('active');
-    /*$('#pointer-annotation-btn').removeClass('active')
-        .enable();
-    $('#box-annotation-btn').removeClass('active')
-        .enable();*/
-
-    $('#annotation-instructions').text('Select annotation type above');
-
-    // Remove annotation handlers from canvas
-    removePointerHandlers();
-    removeBoundingBoxHandlers();
-
-    enablePanAndZoom();
+function getCircleandEllipseCenter(annotation) {
+    let selector = annotation.target.selector.value;
+    let cx = parseFloat(selector.split('cx="')[1].split('"')[0]);
+    let cy = parseFloat(selector.split('cy="')[1].split('"')[0]);
+    return {x: cx, y: cy};
 }
