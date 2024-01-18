@@ -235,9 +235,11 @@
         anno.readOnly = true
     {% endif %}
 
+    {% if annotations %}
     {% for a in annotations %}
         anno.addAnnotation({{ a|safe }});
     {% endfor %}
+    {% endif %}
 
 
     // Annotorious + annotation storing
