@@ -5,6 +5,7 @@ from django.db import transaction
 from django.forms import inlineformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 
+from common.task import setup_common_task_context
 from slide.models import Slide, Pointer, AnnotatedSlide, BoundingBox
 from slide.views import slide_cache, save_boundingbox_annotation, save_pointer_annotation
 from task.models import Task
@@ -28,32 +29,18 @@ def do(request, task_id, course_id=None):
     course_id : int
         ID of Course instance
     """
-    this_task = Task.objects.get(id=task_id)
-    many_to_one = ManyToOne.objects.get(task_id=task_id)
 
-    # get next task
-    if course_id:
-        course = Course.objects.get(id=course_id)
-        all_tasks = Task.objects.filter(course=course)
-    else:
-        all_tasks = Task.objects.all()
+    context = setup_common_task_context(task_id, course_id)
+    slide_cache.load_slide_to_cache(context['slide'].id)
 
-    # Get the task ID of the next object in the queryset
-    this_task_index = list(all_tasks).index(this_task)
-    if this_task_index < len(all_tasks) - 1:
-        next_task_id = all_tasks[this_task_index + 1].id
-    else:
-        next_task_id = all_tasks[0].id
-
-    next_task = Task.objects.get(id=next_task_id)
+    # ======== Many-to-one specific ========
+    many_to_one = context['task'].manytoone
 
     mode = 'get'
     indices = [1, 2, 3]
     answer_order = []
     if request.method == 'POST':
-        print('POST')
         # Process form
-
         indices = {k: v for k, v in request.POST.items() if 'indices-sortable-list-' in k}
         for column_string, index_string in indices.items():
             answer_list = []
@@ -81,20 +68,10 @@ def do(request, task_id, course_id=None):
 
         mode = 'post'
 
-    slide = slide_cache.load_slide_to_cache(this_task.annotated_slide.slide.id)
-    context = {
-        'task': this_task,
-        'many_to_one': many_to_one,
-        'slide': slide,
-        'answer_order': json.dumps(answer_order),
-        'course_id': course_id,
-        'mode': mode,
-        'indices': json.dumps(indices),
-        'next_task_id': next_task_id,
-        'next_task': next_task,
-    }
-    if course_id:
-        context['course'] = course
+    context['many_to_one'] = many_to_one
+    context['answer_order'] = json.dumps(answer_order)
+    context['mode'] = mode
+    context['indices'] = json.dumps(indices)
     return render(request, 'many_to_one/do.html', context)
 
 

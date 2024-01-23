@@ -6,6 +6,7 @@ from django.db import transaction
 from django.forms import formset_factory, modelformset_factory
 from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 
+from common.task import setup_common_task_context
 from slide.models import Slide, AnnotatedSlide, Annotation, Pointer, BoundingBox
 from slide.views import slide_cache, save_boundingbox_annotation, save_pointer_annotation
 from task.models import Task
@@ -29,29 +30,16 @@ def do(request, task_id, course_id=None):
     course_id : int
         ID of Course instance
     """
-    this_task = Task.objects.get(id=task_id)
-    multiple_choice = this_task.multiplechoice
 
-    # get id of next task
-    if course_id:
-        course = Course.objects.get(id=course_id)
-        all_tasks = Task.objects.filter(course=course)
-    else:
-        all_tasks = Task.objects.all()
+    context = setup_common_task_context(task_id, course_id)
+    slide_cache.load_slide_to_cache(context['slide'].id)
 
-    # Get the task ID of the next object in the queryset
-    this_task_index = list(all_tasks).index(this_task)
-    if this_task_index < len(all_tasks) - 1:
-        next_task_id = all_tasks[this_task_index + 1].id
-    else:
-        next_task_id = all_tasks[0].id
-
-    next_task = Task.objects.get(id=next_task_id)
+    # ======== Multiple choice specific ========
+    multiple_choice = context['task'].multiplechoice
 
     answered = []
     choice_text = []
     if request.method == 'POST':
-        print('POST')
         # Process form
         id_post_choice = request.POST.getlist('choice', None)
         if id_post_choice:
@@ -68,27 +56,11 @@ def do(request, task_id, course_id=None):
     # Determine if question is single or multiple choice
     counter_corr_answ = len(list(Choice.objects.filter(task=multiple_choice, correct=True)))
 
-    slide = slide_cache.load_slide_to_cache(this_task.annotated_slide.slide.id)
-    context = {
-        'task': this_task,
-        'multiple_choice': multiple_choice,
-        'slide': slide,
-        'answered': answered,
-        'len_answered': len(answered),
-        'choice_text': choice_text,
-        'course_id': course_id,
-        'counter_corr_answ': counter_corr_answ,
-        'next_task_id': next_task_id,
-        'next_task': next_task,
-    }
-
-    annotations = Annotation.objects.filter(annotated_slide=this_task.annotated_slide)
-    context['annotations'] = []
-    for a in annotations:
-        context['annotations'].append(a.deserialize())
-
-    if course_id:
-        context['course'] = course
+    context['multiple_choice'] = multiple_choice
+    context['answered'] = answered
+    context['len_answered'] = len(answered)
+    context['choice_text'] = choice_text
+    context['counter_corr_answ'] = counter_corr_answ
     return render(request, 'multiple_choice/do.html', context)
 
 
