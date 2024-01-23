@@ -1,5 +1,6 @@
 import random
 import json
+import html
 
 from django.contrib import messages
 from django.db import transaction
@@ -7,8 +8,8 @@ from django.forms import formset_factory, modelformset_factory
 from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 
 from common.task import setup_common_task_context
-from slide.models import Slide, Pointer, AnnotatedSlide, BoundingBox
-from slide.views import slide_cache, save_boundingbox_annotation, save_pointer_annotation
+from slide.models import Slide, AnnotatedSlide, Annotation
+from slide.views import slide_cache
 from task.models import Task
 from task.forms import TaskForm
 from one_to_one.models import OneToOne, SortingPair
@@ -104,14 +105,13 @@ def new(request, slide_id, course_id=None):
                         pair.task = one_to_one_task
                         pair.save()
 
-                # Store annotations (pointers)
-                for key in request.POST:
-
-                    if key.startswith('right-arrow-overlay-') and key.endswith('-text'):
-                        save_pointer_annotation(request, key, annotated_slide)
-
-                    if key.startswith('boundingbox-') and key.endswith('-text'):
-                        save_boundingbox_annotation(request, key, annotated_slide)
+                        # Store annotations
+                        for key in request.POST:
+                            if key.startswith('annotation-'):
+                                annotation_string = html.unescape(request.POST.get(key))
+                                annotation = Annotation(annotated_slide=annotated_slide,
+                                                        json_string=annotation_string)
+                                annotation.save()
 
                 # Give a message back to the user
                 messages.add_message(request, messages.SUCCESS, 'Task added successfully!')
