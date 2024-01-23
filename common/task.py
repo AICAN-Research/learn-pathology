@@ -1,4 +1,6 @@
+import html
 
+from task.forms import TaskForm
 from task.models import Task
 from slide.models import Slide, AnnotatedSlide, Annotation
 from slide.views import slide_cache
@@ -39,3 +41,36 @@ def setup_common_task_context(task_id, course_id=None):
     context['next_task'] = next_task
 
     return context
+
+
+def process_new_task_request(request, slide_id, course_id=None):
+
+    # Get slide
+    slide = Slide.objects.get(pk=slide_id)
+
+    # Create annotated slide
+    annotated_slide = AnnotatedSlide(slide=slide)
+    annotated_slide.save()
+
+    # Create task
+    task_form = TaskForm(request.POST)
+    task = task_form.save(commit=False)
+    task.annotated_slide = annotated_slide
+    task.save()
+
+    organ_tags = task_form.cleaned_data['organ_tags']
+    other_tags = [tag for tag in task_form.cleaned_data['other_tags']]
+    task.tags.set([organ_tags] + other_tags)
+
+    for key in request.POST:
+        if key.startswith('annotation-'):
+            annotation_string = html.unescape(request.POST.get(key))
+            annotation = Annotation(annotated_slide=annotated_slide,
+                                    json_string=annotation_string)
+            annotation.save()
+
+    if course_id is not None and course_id in Course.objects.values_list('id', flat=True):
+        course = Course.objects.get(id=course_id)
+        course.task.add(task)
+
+    return task
