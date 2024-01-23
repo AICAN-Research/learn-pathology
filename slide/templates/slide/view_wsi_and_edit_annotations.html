@@ -1,14 +1,10 @@
 {% load static %}
 {% load slide_filters %}
 
+
 <div class="fill" style="min-height: 600px">
-
-
-
-<div id="wsi-canvas" class="wsi_canvas" style="height: 600px;"></div>
+    <div id="wsi-canvas" class="wsi_canvas" style="height: 600px;"></div>
     <div id="my-toolbar-container"></div>
-
-
 </div>
 
 <script src="{% static 'slide/openseadragon.min.js' %}"></script>
@@ -41,30 +37,20 @@
         overlays: [
             ],
     }
-    });
-    viewer.innerTracker.keyHandler = null;
+});
+viewer.innerTracker.keyHandler = null;
 
-    var anno = OpenSeadragon.Annotorious(viewer);
-    Annotorious.SelectorPack(anno); // [ 'rect', 'polygon', 'point', 'circle', 'ellipse', 'freehand' ]
-    anno.removeDrawingTool('freehand');
+var anno = OpenSeadragon.Annotorious(viewer);
+Annotorious.SelectorPack(anno); // [ 'rect', 'polygon', 'point', 'circle', 'ellipse', 'freehand' ]
+anno.removeDrawingTool('freehand');
 
-    const toolbar = new Annotorious.Toolbar(anno, document.getElementById('my-toolbar-container'));
-    viewer.addControl(document.getElementById("my-toolbar-container"), {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
+const toolbar = new Annotorious.Toolbar(anno, document.getElementById('my-toolbar-container'));
+viewer.addControl(document.getElementById("my-toolbar-container"), {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
 
-    document.getElementById('my-toolbar-container').addEventListener('click', function(event) {
+document.getElementById('my-toolbar-container').addEventListener('click', function(event) {
     event.preventDefault();
 });
 
-
-    {% for pointer in pointers %}
-       addPointer(new OpenSeadragon.Point({{pointer.position_x}}, {{ pointer.position_y }}), '{{ pointer.text }}');
-    {% endfor %}
-    {% for box in boxes %}
-        addBoundingBox(
-            {{box.position_x}}, {{ box.position_y }},
-            {{box.position_x}} + {{box.width}}, {{box.position_y}} + {{ box.height }},
-            '{{ box.text }}');
-    {% endfor %}
 
 
 </script>
