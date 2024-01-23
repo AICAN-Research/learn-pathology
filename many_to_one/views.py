@@ -1,12 +1,11 @@
 import json
-import html
 
 from django.contrib import messages
 from django.db import transaction
 from django.forms import inlineformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 
-from common.task import setup_common_task_context
+from common.task import setup_common_task_context, process_new_task_request
 from slide.models import Slide, AnnotatedSlide, Annotation
 from slide.views import slide_cache
 from task.models import Task
@@ -91,31 +90,22 @@ def new(request, slide_id, course_id=None):
     """
 
     # Get slide
-
-    slide = Slide.objects.get(pk=slide_id)
-    slide_cache.load_slide_to_cache(slide.id)
+    slide = slide_cache.load_slide_to_cache(slide_id)
 
     if request.method == 'POST':
+
         task_form = TaskForm(request.POST)
         many_to_one_form = ManyToOneForm(request.POST)
         column_formset = TableColumnFormSet(request.POST or None, prefix='column')
+
         with transaction.atomic():  # Make save operation atomic
             if many_to_one_form.is_valid() and task_form.is_valid() and column_formset.is_valid():
 
-                annotated_slide = AnnotatedSlide(slide=slide)
-                annotated_slide.save()
-
-                task = task_form.save(commit=False)
-                task.annotated_slide = annotated_slide
-                task.save()
+                task = process_new_task_request(request, slide_id, course_id)
 
                 many_to_one_task = many_to_one_form.save(commit=False)
                 many_to_one_task.task = task
                 many_to_one_task.save()
-
-                organ_tags = task_form.cleaned_data['organ_tags']
-                other_tags = [tag for tag in task_form.cleaned_data['other_tags']]
-                task.tags.set([organ_tags] + other_tags)
 
                 for column_form in column_formset:
                     column = column_form.save(commit=False)
@@ -132,19 +122,9 @@ def new(request, slide_id, course_id=None):
                                 row.answer = answer
                                 row.save()
 
-                # Store annotations
-                for key in request.POST:
-                    if key.startswith('annotation-'):
-                        annotation_string = html.unescape(request.POST.get(key))
-                        annotation = Annotation(annotated_slide=annotated_slide,
-                                                json_string=annotation_string)
-                        annotation.save()
-
-                    # Give a message back to the user
+                # Give a message back to the user
                 messages.add_message(request, messages.SUCCESS, 'Task added successfully!')
                 if course_id is not None and course_id in Course.objects.values_list('id', flat=True):
-                    course = Course.objects.get(id=course_id)
-                    course.task.add(task)
                     return redirect('course:view', course_id=course_id, active_tab='tasks')
                 return redirect('task:list')
 
@@ -153,13 +133,12 @@ def new(request, slide_id, course_id=None):
         column_formset = TableColumnFormSet(instance=ManyToOne(), prefix='column')
         task_form = TaskForm()
 
-        context = {
-            'manyToOneForm': many_to_one_form,
-            'column_formset': column_formset,
-            'slide': slide,
-            'taskForm': task_form,
-        }
-    return render(request, 'many_to_one/new.html', context)
+    return render(request, 'many_to_one/new.html', {
+        'manyToOneForm': many_to_one_form,
+        'column_formset': column_formset,
+        'slide': slide,
+        'taskForm': task_form,
+    })
 
 
 @teacher_required

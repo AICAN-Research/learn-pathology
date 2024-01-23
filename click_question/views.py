@@ -1,10 +1,8 @@
-import html
-
 from django.contrib import messages
 from django.db import transaction
 from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 
-from common.task import setup_common_task_context
+from common.task import setup_common_task_context, process_new_task_request
 from slide.models import Slide, AnnotatedSlide, Annotation
 from slide.views import slide_cache
 from task.models import Task
@@ -59,49 +57,27 @@ def new(request, slide_id, course_id=None):
     """
 
     # Get slide
-    slide = Slide.objects.get(pk=slide_id)
-    slide_cache.load_slide_to_cache(slide.id)
+    slide = slide_cache.load_slide_to_cache(slide_id)
 
     # Process forms
-
     if request.method == 'POST':  # Form was submitted
-        print("POST")
+
         task_form = TaskForm(request.POST)
         click_question_form = ClickQuestionForm(request.POST)
 
         with transaction.atomic():  # Make save operation atomic
             if click_question_form.is_valid() and task_form.is_valid():
-                # Create annotated slide
-                annotated_slide = AnnotatedSlide(slide=slide)
-                annotated_slide.save()
 
-                # Create task
-                task = task_form.save(commit=False)
-                task.annotated_slide = annotated_slide
-                task.save()
+                task = process_new_task_request(request, slide_id, course_id)
 
-                organ_tags = task_form.cleaned_data['organ_tags']
-                other_tags = [tag for tag in task_form.cleaned_data['other_tags']]
-                task.tags.set([organ_tags] + other_tags)
-
-                # Create multiple choice
+                # Create click question
                 click_question = click_question_form.save(commit=False)
                 click_question.task = task
                 click_question.save()
 
-                # Store annotations
-                for key in request.POST:
-                    if key.startswith('annotation-'):
-                        annotation_string = html.unescape(request.POST.get(key))
-                        annotation = Annotation(annotated_slide=annotated_slide,
-                                                json_string=annotation_string)
-                        annotation.save()
-
                 # Give a message back to the user
                 messages.add_message(request, messages.SUCCESS, 'Task added successfully!')
                 if course_id is not None and course_id in Course.objects.values_list('id', flat=True):
-                    course = Course.objects.get(id=course_id)
-                    course.task.add(task)
                     return redirect('course:view', course_id=course_id, active_tab='tasks')
                 return redirect('task:list')
     else:
@@ -110,8 +86,8 @@ def new(request, slide_id, course_id=None):
 
     return render(request, 'click_question/new.html', {
         'slide': slide,
-        'clickQuestionForm': click_question_form,
         'taskForm': task_form,
+        'clickQuestionForm': click_question_form,
     })
 
 

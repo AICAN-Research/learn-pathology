@@ -1,5 +1,4 @@
 import random
-import html
 
 from django.contrib import messages
 from django.db import transaction
@@ -115,7 +114,7 @@ def new(request, slide_id, course_id=None):
     # Process forms
     ChoiceFormset = formset_factory(ChoiceForm, extra=5)
     if request.method == 'POST':  # Form was submitted
-        print("POST")
+
         task_form = TaskForm(request.POST)
         multiple_choice_form = MultipleChoiceForm(request.POST)
         choice_formset = ChoiceFormset(request.POST)
