@@ -124,8 +124,7 @@ def new(request, slide_id, course_id=None):
         with transaction.atomic():  # Make save operation atomic
             if many_to_one_form.is_valid() and task_form.is_valid() and column_formset.is_valid():
 
-                annotated_slide = AnnotatedSlide()
-                annotated_slide.slide = slide
+                annotated_slide = AnnotatedSlide(slide=slide)
                 annotated_slide.save()
 
                 task = task_form.save(commit=False)

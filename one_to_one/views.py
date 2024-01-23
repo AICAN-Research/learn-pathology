@@ -102,8 +102,7 @@ def new(request, slide_id, course_id=None):
          # Make save operation atomic
             if one_to_one_form.is_valid() and task_form.is_valid() and sorting_pair_formset.is_valid():
                 # Create annotated slide
-                annotated_slide = AnnotatedSlide()
-                annotated_slide.slide = slide
+                annotated_slide = AnnotatedSlide(slide=slide)
                 annotated_slide.save()
 
                 # Create task

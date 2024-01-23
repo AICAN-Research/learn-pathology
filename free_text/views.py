@@ -90,8 +90,7 @@ def new(request, slide_id, course_id=None):
         with transaction.atomic():  # Make save operation atomic
             if free_text_form.is_valid() and task_form.is_valid():
                 # Create annotated slide
-                annotated_slide = AnnotatedSlide()
-                annotated_slide.slide = slide
+                annotated_slide = AnnotatedSlide(slide=slide)
                 annotated_slide.save()
 
                 # Create task
