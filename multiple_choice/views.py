@@ -1,13 +1,13 @@
 import random
-import html
 
 from django.contrib import messages
 from django.db import transaction
 from django.forms import formset_factory, modelformset_factory
 from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 
-from slide.models import Slide, AnnotatedSlide, Annotation, Pointer, BoundingBox
-from slide.views import slide_cache, save_boundingbox_annotation, save_pointer_annotation
+from common.task import setup_common_task_context, process_new_task_request
+from slide.models import Slide, AnnotatedSlide, Annotation
+from slide.views import slide_cache
 from task.models import Task
 from task.forms import TaskForm
 from multiple_choice.models import MultipleChoice, Choice, RandomMCChoice
@@ -29,29 +29,16 @@ def do(request, task_id, course_id=None):
     course_id : int
         ID of Course instance
     """
-    this_task = Task.objects.get(id=task_id)
-    multiple_choice = this_task.multiplechoice
 
-    # get id of next task
-    if course_id:
-        course = Course.objects.get(id=course_id)
-        all_tasks = Task.objects.filter(course=course)
-    else:
-        all_tasks = Task.objects.all()
+    context = setup_common_task_context(task_id, course_id)
+    slide_cache.load_slide_to_cache(context['slide'].id)
 
-    # Get the task ID of the next object in the queryset
-    this_task_index = list(all_tasks).index(this_task)
-    if this_task_index < len(all_tasks) - 1:
-        next_task_id = all_tasks[this_task_index + 1].id
-    else:
-        next_task_id = all_tasks[0].id
-
-    next_task = Task.objects.get(id=next_task_id)
+    # ======== Multiple choice specific ========
+    multiple_choice = context['task'].multiplechoice
 
     answered = []
     choice_text = []
     if request.method == 'POST':
-        print('POST')
         # Process form
         id_post_choice = request.POST.getlist('choice', None)
         if id_post_choice:
@@ -68,27 +55,11 @@ def do(request, task_id, course_id=None):
     # Determine if question is single or multiple choice
     counter_corr_answ = len(list(Choice.objects.filter(task=multiple_choice, correct=True)))
 
-    slide = slide_cache.load_slide_to_cache(this_task.annotated_slide.slide.id)
-    context = {
-        'task': this_task,
-        'multiple_choice': multiple_choice,
-        'slide': slide,
-        'answered': answered,
-        'len_answered': len(answered),
-        'choice_text': choice_text,
-        'course_id': course_id,
-        'counter_corr_answ': counter_corr_answ,
-        'next_task_id': next_task_id,
-        'next_task': next_task,
-    }
-
-    annotations = Annotation.objects.filter(annotated_slide=this_task.annotated_slide)
-    context['annotations'] = []
-    for a in annotations:
-        context['annotations'].append(a.deserialize())
-
-    if course_id:
-        context['course'] = course
+    context['multiple_choice'] = multiple_choice
+    context['answered'] = answered
+    context['len_answered'] = len(answered)
+    context['choice_text'] = choice_text
+    context['counter_corr_answ'] = counter_corr_answ
     return render(request, 'multiple_choice/do.html', context)
 
 
@@ -138,31 +109,20 @@ def new(request, slide_id, course_id=None):
     """
 
     # Get slide
-    slide = Slide.objects.get(pk=slide_id)
-    slide_cache.load_slide_to_cache(slide.id)
+    slide = slide_cache.load_slide_to_cache(slide_id)
 
     # Process forms
     ChoiceFormset = formset_factory(ChoiceForm, extra=5)
     if request.method == 'POST':  # Form was submitted
-        print("POST")
+
         task_form = TaskForm(request.POST)
         multiple_choice_form = MultipleChoiceForm(request.POST)
         choice_formset = ChoiceFormset(request.POST)
 
         with transaction.atomic():  # Make save operation atomic
             if multiple_choice_form.is_valid() and task_form.is_valid() and choice_formset.is_valid():
-                # Create annotated slide
-                annotated_slide = AnnotatedSlide(slide=slide)
-                annotated_slide.save()
 
-                # Create task
-                task = task_form.save(commit=False)
-                task.annotated_slide = annotated_slide
-                task.save()
-
-                organ_tags = task_form.cleaned_data['organ_tags']
-                other_tags = [tag for tag in task_form.cleaned_data['other_tags']]
-                task.tags.set([organ_tags] + other_tags)
+                task = process_new_task_request(request, slide_id, course_id)
 
                 # Create multiple choice
                 multiple_choice = multiple_choice_form.save(commit=False)
@@ -175,31 +135,9 @@ def new(request, slide_id, course_id=None):
                         choice.task = multiple_choice
                         choice.save()
 
-                # Store annotations (pointers)
-                for key in request.POST:
-                    if key.startswith('annotation-'):
-                        annotation_string = html.unescape(request.POST.get(key))
-                        annotation = Annotation(annotated_slide=annotated_slide,
-                                                json_string=annotation_string)
-                        annotation.save()
-
-                    # if key.startswith('right-arrow-overlay-') and key.endswith('-text'):
-                    #     prefix = key[:-len('text')]
-                    #     pointer = Pointer()
-                    #     pointer.text = request.POST[key]
-                    #     pointer.position_x = float(request.POST[prefix + 'x'])
-                    #     pointer.position_y = float(request.POST[prefix + 'y'])
-                    #     pointer.annotated_slide = annotated_slide
-                    #     pointer.save()
-                    #
-                    # if key.startswith('boundingbox-') and key.endswith('-text'):
-                    #     save_boundingbox_annotation(request, key, annotated_slide)
-
                 # Give a message back to the user
                 messages.add_message(request, messages.SUCCESS, 'Task added successfully!')
                 if course_id is not None and course_id in Course.objects.values_list('id', flat=True):
-                    course = Course.objects.get(id=course_id)
-                    course.task.add(task)
                     return redirect('course:view', course_id=course_id, active_tab='tasks')
                 return redirect('task:list')
     else:
@@ -209,8 +147,8 @@ def new(request, slide_id, course_id=None):
 
     return render(request, 'multiple_choice/new.html', {
         'slide': slide,
-        'multipleChoiceForm': multiple_choice_form,
         'taskForm': task_form,
+        'multipleChoiceForm': multiple_choice_form,
         'choiceFormset': choice_formset,
     })
 
