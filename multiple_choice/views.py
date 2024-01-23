@@ -1,11 +1,12 @@
 import random
+import html
 
 from django.contrib import messages
 from django.db import transaction
 from django.forms import formset_factory, modelformset_factory
 from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 
-from slide.models import Slide, Pointer, AnnotatedSlide, BoundingBox
+from slide.models import Slide, AnnotatedSlide, Annotation, Pointer, BoundingBox
 from slide.views import slide_cache, save_boundingbox_annotation, save_pointer_annotation
 from task.models import Task
 from task.forms import TaskForm
@@ -80,6 +81,12 @@ def do(request, task_id, course_id=None):
         'next_task_id': next_task_id,
         'next_task': next_task,
     }
+
+    annotations = Annotation.objects.filter(annotated_slide=this_task.annotated_slide)
+    context['annotations'] = []
+    for a in annotations:
+        context['annotations'].append(a.deserialize())
+
     if course_id:
         context['course'] = course
     return render(request, 'multiple_choice/do.html', context)
@@ -170,18 +177,23 @@ def new(request, slide_id, course_id=None):
 
                 # Store annotations (pointers)
                 for key in request.POST:
+                    if key.startswith('annotation-'):
+                        annotation_string = html.unescape(request.POST.get(key))
+                        annotation = Annotation(annotated_slide=annotated_slide,
+                                                json_string=annotation_string)
+                        annotation.save()
 
-                    if key.startswith('right-arrow-overlay-') and key.endswith('-text'):
-                        prefix = key[:-len('text')]
-                        pointer = Pointer()
-                        pointer.text = request.POST[key]
-                        pointer.position_x = float(request.POST[prefix + 'x'])
-                        pointer.position_y = float(request.POST[prefix + 'y'])
-                        pointer.annotated_slide = annotated_slide
-                        pointer.save()
-
-                    if key.startswith('boundingbox-') and key.endswith('-text'):
-                        save_boundingbox_annotation(request, key, annotated_slide)
+                    # if key.startswith('right-arrow-overlay-') and key.endswith('-text'):
+                    #     prefix = key[:-len('text')]
+                    #     pointer = Pointer()
+                    #     pointer.text = request.POST[key]
+                    #     pointer.position_x = float(request.POST[prefix + 'x'])
+                    #     pointer.position_y = float(request.POST[prefix + 'y'])
+                    #     pointer.annotated_slide = annotated_slide
+                    #     pointer.save()
+                    #
+                    # if key.startswith('boundingbox-') and key.endswith('-text'):
+                    #     save_boundingbox_annotation(request, key, annotated_slide)
 
                 # Give a message back to the user
                 messages.add_message(request, messages.SUCCESS, 'Task added successfully!')

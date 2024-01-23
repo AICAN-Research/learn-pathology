@@ -10,12 +10,22 @@
 
 <script src="{% static 'slide/openseadragon.min.js' %}"></script>
 <script src="{% static 'slide/openseadragon-scalebar.js' %}"></script>
+<script src="{% static 'slide/annotorious-openseadragon-2.7.16/openseadragon-annotorious.min.js' %}"></script>
+<!-- TODO: Set fixed version for Annotorious-related plugins! -->
+<script src="https://cdn.jsdelivr.net/npm/@recogito/annotorious-toolbar@latest/dist/annotorious-toolbar.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@recogito/annotorious-selector-pack@latest/dist/annotorious-selector-pack.min.js"></script>
+<script src="{% static 'slide/annotorious.min.js' %}"></script>
+
 <script type="text/javascript">
     var viewer = OpenSeadragon({
         id: "wsi-canvas",
         zoomPerScroll: 2,// Scroll speed
         minScrollDeltaTime: 150, //	Number of milliseconds between canvas-scroll events.
         showNavigator: true, // The navigation window top-right
+        // TODO: Remove default buttons by uncommenting next 3 lines, then add custom styled buttons
+        //showHomeControl: false,     // Hide the home button
+        //showFullPageControl: false, // Hide the full-page button
+        //showZoomControl: false,     // Hide the zoom-in and zoom-out buttons
         prefixUrl: "{% static 'slide/images/' %}",
         // Where to find OpenSeadragon button images
         tileSources: {
@@ -33,4 +43,16 @@
             ],
         }
     });
+
+    // Initialize the Annotorious plugin
+    let anno = OpenSeadragon.Annotorious(viewer);
+    anno.readOnly = true;
+
+    {% if annotations %}
+    {% for a in annotations %}
+        console.log('anno');
+        anno.addAnnotation({{ a|safe }});
+    {% endfor %}
+    {% endif %}
+
 </script>
