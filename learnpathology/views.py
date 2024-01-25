@@ -20,3 +20,7 @@ def test_one_column(request):
 
 def test_two_column(request):
     return render(request, 'learnpathology/two_column_layout.html')
+
+
+def privacy_info(request):
+    return render(request, 'learnpathology/privacy_info.html')

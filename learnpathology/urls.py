@@ -24,6 +24,7 @@ import slide.views
 
 urlpatterns = [
     path('', learnpathology.views.index, name='frontpage'),
+    path('privacy/', learnpathology.views.privacy_info, name='privacy'),
     path('viewer/<int:slide_id>/', slide.views.whole_slide_viewer, name="view_wsi"),
     path('viewer/tile/<int:slide_id>/<int:osd_level>/<int:x>/<int:y>/', slide.views.tile, name="tile"),
     path('admin/', admin.site.urls),

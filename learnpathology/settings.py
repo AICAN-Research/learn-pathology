@@ -240,5 +240,5 @@ SOCIALACCOUNT_LOGIN_ON_GET = True
 if USE_FEIDE_LOGIN:
     # TODO don't use hard coded urls
     LOGIN_URL = '/user/login/feide/'
-    LOGIN_EXEMPT_URLS = ['accounts/dataporten/login/']
+    LOGIN_EXEMPT_URLS = ['accounts/dataporten/login/', 'privacy/']
 
