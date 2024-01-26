@@ -200,13 +200,14 @@
         id: "wsi-canvas",
         zoomPerScroll: 2, // Scroll speed
         minScrollDeltaTime: 150, //	Number of milliseconds between canvas-scroll events.
-        showNavigator: true, // The navigation window top-right
         prefixUrl: "{% static 'slide/images/' %}", // Where to find OpenSedragon button images
+        showNavigator: true, // The navigation window top-right
         showHomeControl: false,     // Hide the home button
         showFullPageControl: false, // Hide the full-page button
         showZoomControl: false,     // Hide the zoom-in and zoom-out buttons
         minZoomLevel: 0.25, // Set your minimum zoom level
         maxZoomLevel: 40,
+        rotationIncrement: 0,
         tileSources: {
             width: {{ slide.width }},
             height:  {{ slide.height }},

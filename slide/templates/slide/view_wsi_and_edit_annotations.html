@@ -1,34 +1,38 @@
 {% load static %}
 {% load slide_filters %}
 
+
 <div class="fill" style="min-height: 600px">
-
-
-
-<div id="wsi-canvas" class="wsi_canvas" style="height: 600px;"></div>
+    <div id="wsi-canvas" class="wsi_canvas" style="height: 600px;"></div>
     <div id="my-toolbar-container"></div>
-
-
 </div>
+
+<div id="annotation_list" style="display: none;"></div>
+
 
 <script src="{% static 'slide/openseadragon.min.js' %}"></script>
 <script src="{% static 'slide/annotorious-openseadragon-2.7.16/openseadragon-annotorious.min.js' %}"></script>
 <!-- TODO: Set fixed version for Annotorious-related plugins! -->
 <script src="https://cdn.jsdelivr.net/npm/@recogito/annotorious-toolbar@latest/dist/annotorious-toolbar.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@recogito/annotorious-selector-pack@latest/dist/annotorious-selector-pack.min.js"></script>
-    <script src="{% static 'slide/annotorious.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/@recogito/annotorious-selector-pack@latest/dist/annotorious-selector-pack.min.js"></script>
+<script src="{% static 'slide/annotorious.min.js' %}"></script>
 
 <script type="text/javascript">
-    var viewer = OpenSeadragon({
+
+var viewer = OpenSeadragon({
     id: "wsi-canvas",
     zoomPerScroll: 2, // Scroll speed
     minScrollDeltaTime: 150, //	Number of milliseconds between canvas-scroll events.
     zoomPerClick: 1, // disable click to zoom
-    showNavigator: true, // The navigation window top-right
-         showHomeControl: false,     // Hide the home button
-        showZoomControl: false,     // Hide the zoom-in and zoom-out buttons
     prefixUrl: "{% static 'slide/images/' %}", // Where to find OpenSedragon button images
-        tileSources:   {
+    showNavigator: true, // The navigation window top-right
+    showHomeControl: false,     // Hide the home button
+    showFullPageControl: false, // Hide the full-page button
+    showZoomControl: false,     // Hide the zoom-in and zoom-out buttons
+    minZoomLevel: 0.25, // Set your minimum zoom level
+    maxZoomLevel: 40,
+    rotationIncrement: 0,
+    tileSources: {
         width: {{ slide.width }},
         height:  {{ slide.height }},
         tileWidth: {{ slide.tile_width }},
@@ -41,30 +45,51 @@
         overlays: [
             ],
     }
-    });
-    viewer.innerTracker.keyHandler = null;
+});
+viewer.innerTracker.keyHandler = null;
 
-    var anno = OpenSeadragon.Annotorious(viewer);
-    Annotorious.SelectorPack(anno); // [ 'rect', 'polygon', 'point', 'circle', 'ellipse', 'freehand' ]
+var anno = OpenSeadragon.Annotorious(viewer);
+Annotorious.SelectorPack(anno); // [ 'rect', 'polygon', 'point', 'circle', 'ellipse', 'freehand' ]
+anno.removeDrawingTool('freehand');
 
+const toolbar = new Annotorious.Toolbar(anno, document.getElementById('my-toolbar-container'));
+viewer.addControl(document.getElementById("my-toolbar-container"), {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
 
-    const toolbar = new Annotorious.Toolbar(anno, document.getElementById('my-toolbar-container'));
-    viewer.addControl(document.getElementById("my-toolbar-container"), {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
-
-    document.getElementById('my-toolbar-container').addEventListener('click', function(event) {
+document.getElementById('my-toolbar-container').addEventListener('click', function(event) {
     event.preventDefault();
 });
 
+{% if annotations %}
+{% for a in annotations %}
+    anno.addAnnotation({{ a|safe }});
+{% endfor %}
+{% endif %}
 
-    {% for pointer in pointers %}
-       addPointer(new OpenSeadragon.Point({{pointer.position_x}}, {{ pointer.position_y }}), '{{ pointer.text }}');
-    {% endfor %}
-    {% for box in boxes %}
-        addBoundingBox(
-            {{box.position_x}}, {{ box.position_y }},
-            {{box.position_x}} + {{box.width}}, {{box.position_y}} + {{ box.height }},
-            '{{ box.text }}');
-    {% endfor %}
+
+// Annotorious + annotation storing
+let annotations = anno.getAnnotations();
+let annotationList = document.getElementById('annotation_list');
+let annotation_counter = 0;
+
+anno.on('createAnnotation', function(annotation) {
+    // Add annotation to list
+    annotationList.innerHTML = annotationList.innerHTML
+        + "<input "
+        + "type='hidden' "
+        + "id='annotation-" + annotation_counter + "' "
+        + "name='annotation-" + annotation_counter + "' "
+        + "value='" + JSON.stringify(annotation) + "'"
+        + ">"
+    annotation_counter++;
+});
+
+anno.on('updateAnnotation', function(annotation, previous) {
+    // Remove previously stored annotation from list, and add updated one
+});
+
+anno.on('deleteAnnotation', function(annotation) {
+    // Delete annotation from list
+});
 
 
 </script>

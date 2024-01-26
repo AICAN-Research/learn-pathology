@@ -5,8 +5,9 @@ from django.db import transaction
 from django.forms import inlineformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 
-from slide.models import Slide, Pointer, AnnotatedSlide, BoundingBox
-from slide.views import slide_cache, save_boundingbox_annotation, save_pointer_annotation
+from common.task import setup_common_task_context, process_new_task_request
+from slide.models import Slide, AnnotatedSlide, Annotation
+from slide.views import slide_cache
 from task.models import Task
 from task.forms import TaskForm
 from many_to_one.models import ManyToOne, TableColumn, TableRow
@@ -28,32 +29,18 @@ def do(request, task_id, course_id=None):
     course_id : int
         ID of Course instance
     """
-    this_task = Task.objects.get(id=task_id)
-    many_to_one = ManyToOne.objects.get(task_id=task_id)
 
-    # get next task
-    if course_id:
-        course = Course.objects.get(id=course_id)
-        all_tasks = Task.objects.filter(course=course)
-    else:
-        all_tasks = Task.objects.all()
+    context = setup_common_task_context(task_id, course_id)
+    slide_cache.load_slide_to_cache(context['slide'].id)
 
-    # Get the task ID of the next object in the queryset
-    this_task_index = list(all_tasks).index(this_task)
-    if this_task_index < len(all_tasks) - 1:
-        next_task_id = all_tasks[this_task_index + 1].id
-    else:
-        next_task_id = all_tasks[0].id
-
-    next_task = Task.objects.get(id=next_task_id)
+    # ======== Many-to-one specific ========
+    many_to_one = context['task'].manytoone
 
     mode = 'get'
     indices = [1, 2, 3]
     answer_order = []
     if request.method == 'POST':
-        print('POST')
         # Process form
-
         indices = {k: v for k, v in request.POST.items() if 'indices-sortable-list-' in k}
         for column_string, index_string in indices.items():
             answer_list = []
@@ -81,20 +68,10 @@ def do(request, task_id, course_id=None):
 
         mode = 'post'
 
-    slide = slide_cache.load_slide_to_cache(this_task.annotated_slide.slide.id)
-    context = {
-        'task': this_task,
-        'many_to_one': many_to_one,
-        'slide': slide,
-        'answer_order': json.dumps(answer_order),
-        'course_id': course_id,
-        'mode': mode,
-        'indices': json.dumps(indices),
-        'next_task_id': next_task_id,
-        'next_task': next_task,
-    }
-    if course_id:
-        context['course'] = course
+    context['many_to_one'] = many_to_one
+    context['answer_order'] = json.dumps(answer_order)
+    context['mode'] = mode
+    context['indices'] = json.dumps(indices)
     return render(request, 'many_to_one/do.html', context)
 
 
@@ -113,32 +90,22 @@ def new(request, slide_id, course_id=None):
     """
 
     # Get slide
-
-    slide = Slide.objects.get(pk=slide_id)
-    slide_cache.load_slide_to_cache(slide.id)
+    slide = slide_cache.load_slide_to_cache(slide_id)
 
     if request.method == 'POST':
+
         task_form = TaskForm(request.POST)
         many_to_one_form = ManyToOneForm(request.POST)
         column_formset = TableColumnFormSet(request.POST or None, prefix='column')
+
         with transaction.atomic():  # Make save operation atomic
             if many_to_one_form.is_valid() and task_form.is_valid() and column_formset.is_valid():
 
-                annotated_slide = AnnotatedSlide()
-                annotated_slide.slide = slide
-                annotated_slide.save()
-
-                task = task_form.save(commit=False)
-                task.annotated_slide = annotated_slide
-                task.save()
+                task = process_new_task_request(request, slide_id, course_id)
 
                 many_to_one_task = many_to_one_form.save(commit=False)
                 many_to_one_task.task = task
                 many_to_one_task.save()
-
-                organ_tags = task_form.cleaned_data['organ_tags']
-                other_tags = [tag for tag in task_form.cleaned_data['other_tags']]
-                task.tags.set([organ_tags] + other_tags)
 
                 for column_form in column_formset:
                     column = column_form.save(commit=False)
@@ -155,19 +122,9 @@ def new(request, slide_id, course_id=None):
                                 row.answer = answer
                                 row.save()
 
-                for key in request.POST:
-
-                    if key.startswith('right-arrow-overlay-') and key.endswith('-text'):
-                        save_pointer_annotation(request, key, annotated_slide)
-
-                    if key.startswith('boundingbox-') and key.endswith('-text'):
-                        save_boundingbox_annotation(request, key, annotated_slide)
-
-                    # Give a message back to the user
+                # Give a message back to the user
                 messages.add_message(request, messages.SUCCESS, 'Task added successfully!')
                 if course_id is not None and course_id in Course.objects.values_list('id', flat=True):
-                    course = Course.objects.get(id=course_id)
-                    course.task.add(task)
                     return redirect('course:view', course_id=course_id, active_tab='tasks')
                 return redirect('task:list')
 
@@ -176,13 +133,12 @@ def new(request, slide_id, course_id=None):
         column_formset = TableColumnFormSet(instance=ManyToOne(), prefix='column')
         task_form = TaskForm()
 
-        context = {
-            'manyToOneForm': many_to_one_form,
-            'column_formset': column_formset,
-            'slide': slide,
-            'taskForm': task_form,
-        }
-    return render(request, 'many_to_one/new.html', context)
+    return render(request, 'many_to_one/new.html', {
+        'manyToOneForm': many_to_one_form,
+        'column_formset': column_formset,
+        'slide': slide,
+        'taskForm': task_form,
+    })
 
 
 @teacher_required
