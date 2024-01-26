@@ -2,7 +2,7 @@
 
 
 {% block page_title %}
-New task: Second step
+    {% if task %}Edit task{% else %}New task: Second step{% endif %}
 {% endblock page_title %}
 
 
@@ -10,8 +10,12 @@ New task: Second step
 
 <div class="card w-100 mx-auto">
 <div class="card-body"> <!-- TODO: Instead of card-body, add same padding as on other pages (e.g. image browser) -->
+    {% if task %}
+        <form class="form" method="post" id="newTaskForm" action="{% url 'multiple_choice:edit' task.id %}">
+    {% else %}
+        <form class="form" method="post" id="newTaskForm" action="{% block task_type_new_url %}{% endblock task_type_new_url %}/{{ slide.id }}/{% if course_id %}{{ course_id }}{% endif %}">
+    {% endif %}
 
-    <form class="form" method="post" id="newTaskForm" action="{% block task_type_new_url %}{% endblock task_type_new_url %}/{{ slide.id }}/{% if course_id %}{{ course_id }}{% endif %}">
         {% csrf_token %}
         {{ taskForm.management_form }}
 
@@ -24,14 +28,19 @@ New task: Second step
 
         <!-- Tab panes -->
         <div class="tab-content">
-
-            <div class="tab tab-pane active" id="step3">
-
+            {% if task %}
+                <div class="tab tab-pane active" id="step1">
+            {% else %}
+                <div class="tab tab-pane active" id="step3">
+            {% endif %}
                 <div class="w-100" style="padding-bottom: 12px;">
                     <div class="progress " style="width: 25%; height: 32px; margin-left: auto;">
-                        <div class="progress-bar" role="progressbar" style="width: 75%; background-color: var(--color-blue-dark);">
-                            3/4
-                        </div>
+                        {% if task %}
+                            <div class="progress-bar" role="progressbar" style="width: 75%; background-color: var(--color-blue-dark);">
+                                3/4
+                            </div>
+                        {% else %}
+                        {% endif %}
                     </div>
                 </div>
 
