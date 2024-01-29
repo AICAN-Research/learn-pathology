@@ -10,9 +10,9 @@
 
 <div class="card w-100 mx-auto">
 <div class="card-body"> <!-- TODO: Instead of card-body, add same padding as on other pages (e.g. image browser) -->
-    {% if task %}
-        <form class="form" method="post" id="newTaskForm" action="{% url 'multiple_choice:edit' task.id %}">
-    {% else %}
+    {% if task %}   <!-- If task is passed, task is being edited -->
+        <form class="form" method="post" id="newTaskForm" action="/{{ task.type }}/edit/{{ task.id }}/{% if course_id %}{{ course_id }}{% endif %}">
+    {% else %}  <!-- If task is not passed, task is being created -->
         <form class="form" method="post" id="newTaskForm" action="{% block task_type_new_url %}{% endblock task_type_new_url %}/{{ slide.id }}/{% if course_id %}{{ course_id }}{% endif %}">
     {% endif %}
 
@@ -36,10 +36,13 @@
                 <div class="w-100" style="padding-bottom: 12px;">
                     <div class="progress " style="width: 25%; height: 32px; margin-left: auto;">
                         {% if task %}
+                            <div class="progress-bar" role="progressbar" style="width: 50%; background-color: var(--color-blue-dark);">
+                                1/2
+                            </div>
+                        {% else %}
                             <div class="progress-bar" role="progressbar" style="width: 75%; background-color: var(--color-blue-dark);">
                                 3/4
                             </div>
-                        {% else %}
                         {% endif %}
                     </div>
                 </div>
@@ -81,13 +84,23 @@
 
             </div>
 
-            <div class="tab tab-pane" id="step4">
+            {% if task %}
+                <div class="tab tab-pane" id="step2">
+            {% else %}
+                <div class="tab tab-pane" id="step4">
+            {% endif %}
 
                 <div class="w-100" style="padding-bottom: 12px;">
                     <div class="progress " style="width: 25%; height: 32px; margin-left: auto;">
-                        <div class="progress-bar" role="progressbar" style="width: 99%; background-color: var(--color-blue-dark);">
-                            4/4
-                        </div>
+                        {% if task %}
+                            <div class="progress-bar" role="progressbar" style="width: 100%; background-color: var(--color-blue-dark);">
+                                2/2
+                            </div>
+                        {% else %}
+                            <div class="progress-bar" role="progressbar" style="width: 100%; background-color: var(--color-blue-dark);">
+                                4/4
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
 
