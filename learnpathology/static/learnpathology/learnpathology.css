@@ -452,7 +452,6 @@ Radio button toolbar used with slide filters
     /*display: block;*/
     /*display: inline-flex;*/
     color: var(--text-colour-dark);
-    display:none;
 }
 
 .radio-toolbar label {
