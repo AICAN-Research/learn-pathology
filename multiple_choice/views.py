@@ -256,17 +256,17 @@ def edit(request, task_id,course_id=None):
 
                 # Store annotations (pointers)
                 # Delete old pointers first
-                Pointer.objects.filter(annotated_slide=annotated_slide).delete()
-                BoundingBox.objects.filter(annotated_slide=annotated_slide).delete()
+                # Pointer.objects.filter(annotated_slide=annotated_slide).delete()
+                # BoundingBox.objects.filter(annotated_slide=annotated_slide).delete()
                 # Add all current pointers
-                for key in request.POST:
-
-                    if key.startswith('right-arrow-overlay-') and key.endswith('-text'):
-                        save_pointer_annotation(request,key,annotated_slide)
-
-
-                    if key.startswith('boundingbox-') and key.endswith('-text'):
-                        save_boundingbox_annotation(request, key, annotated_slide)
+                # for key in request.POST:
+                #
+                #     if key.startswith('right-arrow-overlay-') and key.endswith('-text'):
+                #         save_pointer_annotation(request,key,annotated_slide)
+                #
+                #
+                #     if key.startswith('boundingbox-') and key.endswith('-text'):
+                #         save_boundingbox_annotation(request, key, annotated_slide)
 
                 messages.add_message(request, messages.SUCCESS,
                                      f'The task {task.name} was altered!')
@@ -290,10 +290,15 @@ def edit(request, task_id,course_id=None):
         'taskForm': task_form,
         'multipleChoiceForm': multiple_choice_form,
         'choiceFormset': choice_formset,
-        'pointers': Pointer.objects.filter(annotated_slide=annotated_slide),
-        'boxes': BoundingBox.objects.filter(annotated_slide=annotated_slide),
+        'task': task,
+        # 'pointers': Pointer.objects.filter(annotated_slide=annotated_slide),
+        # 'boxes': BoundingBox.objects.filter(annotated_slide=annotated_slide),
     }
-    return render(request, 'multiple_choice/edit.html', context)
+
+    if course_id is not None:
+        context['course_id'] = course_id
+
+    return render(request, 'multiple_choice/new.html', context)
 
 
 def get_choice_formset(num_extra_fields=5):
