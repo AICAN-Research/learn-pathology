@@ -28,7 +28,11 @@
             <span class="iconify" data-icon="fluent:bin-recycle-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
         </div>
         <div style="justify-content: flex-start; align-items: center; display: flex">
-            <div class="button-text">Exit & discard task</div>
+            {% if task %}
+                <div class="button-text">Cancel & Exit</div>
+            {% else %}
+                <div class="button-text">Exit & discard task</div>
+            {% endif %}
         </div>
     </a>
 </div>
