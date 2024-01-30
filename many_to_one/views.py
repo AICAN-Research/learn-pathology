@@ -5,8 +5,7 @@ from django.db import transaction
 from django.forms import inlineformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 
-from common.task import setup_common_task_context, process_new_task_request
-from slide.models import Slide, AnnotatedSlide, Annotation
+from task.common import setup_common_task_context, process_new_task_request
 from slide.views import slide_cache
 from task.models import Task
 from task.forms import TaskForm

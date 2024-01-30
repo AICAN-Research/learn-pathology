@@ -3,7 +3,6 @@ import html
 from task.forms import TaskForm
 from task.models import Task
 from slide.models import Slide, AnnotatedSlide, Annotation
-from slide.views import slide_cache
 from course.models import Course
 
 
