@@ -11,9 +11,9 @@
 <div class="card w-100 mx-auto">
 <div class="card-body"> <!-- TODO: Instead of card-body, add same padding as on other pages (e.g. image browser) -->
     {% if task %}   <!-- If task is passed, task is being edited -->
-        <form class="form" method="post" id="newTaskForm" action="/{{ task.type }}/edit/{{ task.id }}/{% if course_id %}{{ course_id }}{% endif %}">
+    <form class="form" method="post" id="taskForm" action="/{{ task.type }}/edit/{{ task.id }}/{% if course_id %}{{ course_id }}{% endif %}">
     {% else %}  <!-- If task is not passed, task is being created -->
-        <form class="form" method="post" id="newTaskForm" action="{% block task_type_new_url %}{% endblock task_type_new_url %}/{{ slide.id }}/{% if course_id %}{{ course_id }}{% endif %}">
+    <form class="form" method="post" id="taskForm" action="{% block task_type_new_url %}{% endblock task_type_new_url %}/{{ slide.id }}/{% if course_id %}{{ course_id }}{% endif %}">
     {% endif %}
 
         {% csrf_token %}
@@ -21,8 +21,26 @@
 
         <div style="overflow:auto;">
             <div style="float:right;">
-                <button type="button" id="prevBtn" onclick="nextPrev(-1)">Previous</button>
-                <button type="button" id="nextBtn" onclick="nextPrev(1)">Next</button>
+                <button type="button" class="custom-button" id="prevBtn" onclick="nextPrev(-1)">
+                    <div style="display: inline-flex;">
+                        <div class="button-icon">
+                            <span class="iconify" data-icon="fluent:arrow-left-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
+                        </div>
+                        <div style="justify-content: flex-start; align-items: center; display: flex">
+                            <div class="button-text">Previous</div>
+                        </div>
+                    </div>
+                </button>
+                <button type="button" class="custom-button" id="nextBtn" onclick="nextPrev(1)">
+                    <div style="display: inline-flex;">
+                        <div class="button-icon">
+                            <span class="iconify" data-icon="fluent:arrow-right-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
+                        </div>
+                        <div style="justify-content: flex-start; align-items: center; display: flex">
+                            <div class="button-text">Next</div>
+                        </div>
+                    </div>
+                </button>
             </div>
         </div>
 
@@ -120,8 +138,26 @@
 
     <div style="overflow:auto;">
         <div style="float:right;">
-            <button type="button" id="prevBtnBottom" onclick="nextPrev(-1)">Previous</button>
-            <button type="button" id="nextBtnBottom" onclick="nextPrev(1)">Next</button>
+            <button type="button" class="custom-button" id="prevBtnBottom" onclick="nextPrev(-1)">
+                <div style="display: inline-flex;">
+                    <div class="button-icon">
+                        <span class="iconify" data-icon="fluent:arrow-left-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
+                    </div>
+                    <div style="justify-content: flex-start; align-items: center; display: flex">
+                        <div class="button-text">Previous</div>
+                    </div>
+                </div>
+            </button>
+            <button type="button" class="custom-button" id="nextBtnBottom" onclick="nextPrev(1)">
+                <div style="display: inline-flex;">
+                    <div class="button-icon">
+                        <span class="iconify" data-icon="fluent:arrow-right-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
+                    </div>
+                    <div style="justify-content: flex-start; align-items: center; display: flex">
+                        <div class="button-text">Next</div>
+                    </div>
+                </div>
+            </button>
         </div>
     </div>
 
@@ -160,11 +196,11 @@
             document.getElementById("prevBtnBottom").style.display = "inline";
         }
         if (n == (x.length - 1)) {
-            document.getElementById("nextBtn").innerHTML = "Submit";
-            document.getElementById("nextBtnBottom").innerHTML = "Submit";
+            document.getElementById("nextBtn").children[0].children[1].children[0].innerHTML = "Submit";
+            document.getElementById("nextBtnBottom").children[0].children[1].children[0].innerHTML = "Submit";
         } else {
-            document.getElementById("nextBtn").innerHTML = "Next";
-            document.getElementById("nextBtnBottom").innerHTML = "Next";
+            document.getElementById("nextBtn").children[0].children[1].children[0].innerHTML = "Next";
+            document.getElementById("nextBtnBottom").children[0].children[1].children[0].innerHTML = "Next";
         }
     }
 
@@ -172,16 +208,19 @@
         // This function will figure out which tab to display
         var x = document.getElementsByClassName("tab-pane");
         // Exit the function if any field in the current tab is invalid:
-        if (n == 1 && !validateForm()) return false;
+        if (n == 1 && !validateForm()) {
+            // TODO: Add alert that form is incorrectly filled
+            return false;
+        }
         // Hide the current tab:
         x[currentTab].style.display = "none";
         // Increase or decrease the current tab by 1:
         currentTab = currentTab + n;
         // if you have reached the end of the form... :
         if (currentTab >= x.length) {
-        //...the form gets submitted:
-        document.getElementById("newTaskForm").submit();
-        return false;
+            //...the form gets submitted:
+            document.getElementById("taskForm").submit();
+            return false;
         }
         // Otherwise, display the correct tab:
         showTab(currentTab);
