@@ -199,7 +199,7 @@ def new_random(num_choices=5):
 
 
 @teacher_required
-def edit(request, task_id,course_id=None):
+def edit(request, task_id, course_id=None):
     """
     Teacher form for editing a multiple choice task
     """
