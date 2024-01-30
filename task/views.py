@@ -153,8 +153,8 @@ def new(request, slide_id=None, course_id=None):
             context['slides'] = Slide.objects.all()
 
     # if slide_id is not None:
-    #     return render(request, 'task/new_info_and_annotation.html', context)
-    return render(request, "task/new_select_slide.html", context)
+    #     return render(request, 'task/new_or_edit_step2_add_info_and_annotate.html', context)
+    return render(request, "task/new_or_edit_step1_select_type_and_slide.html", context)
 
 
 @teacher_required
