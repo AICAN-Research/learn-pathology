@@ -506,12 +506,10 @@ Radio button toolbar used with slide filters
     width: 49%;
 }
 
-.radio-toolbar label:hover {
-    background-color: var(--color-blue-light);
-}
 
 .radio-toolbar input[type="radio"]:checked+label{
-    background-color: var(--color-blue-light);
+    font-weight: bold;
+    color: #3092f6;
 }
 
 /* =============================================
