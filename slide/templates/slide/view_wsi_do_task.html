@@ -2,10 +2,7 @@
 {% load slide_filters %}
 
 <div class="container" style="height:{% if two_column %}100%{% else %}85%{% endif %}; background-color: #dcdcdc; padding: 0;">
-<div id="wsi-canvas" class="wsi_canvas" style="height: 600px;"></div>
-{% if annotated_slide %}
-    {{ annotated_slide.get_html | safe }}
-{% endif %}
+    <div id="wsi-canvas" class="wsi_canvas" style="height: 600px;"></div>
 </div>
 
 <script src="{% static 'slide/openseadragon.min.js' %}"></script>
@@ -38,9 +35,6 @@
             getTileUrl: function (level, x, y) {
                 return "/viewer/tile/{{ slide.id }}/" + ({{ slide.osd_levels }} -1 - level) + "/" + x + "/" + y + "/";
             },
-            overlays: [
-                {{ annotated_slide.get_js | safe }}
-            ],
         }
     });
 

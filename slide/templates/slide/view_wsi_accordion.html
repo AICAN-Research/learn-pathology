@@ -28,9 +28,6 @@
         <div class="col " id="imageViewer" style="height: 95%; width: auto">
             <div class="card slideViewerCard transparentBackground">
                 <div id="wsi-canvas" class="wsi_canvas" style="height: 100%;"></div>
-                {% if annotated_slide %}
-                    {{ annotated_slide.get_html | safe }}
-                {% endif %}
             </div>
         </div>
 
@@ -218,9 +215,6 @@
             getTileUrl: function (level, x, y) {
                 return "/viewer/tile/{{ slide.id }}/" + ({{ slide.osd_levels }} -1 - level) + "/" + x + "/" + y + "/";
             },
-            overlays: [
-                {{ annotated_slide.get_js | safe }}
-            ],
         }
     });
 
