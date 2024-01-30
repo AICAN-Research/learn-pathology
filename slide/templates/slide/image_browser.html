@@ -4,13 +4,13 @@
 
 
 {% block page_title %}
-Image browser
+Slides browser
 {% endblock page_title %}
 
 
 {% block breadcrumb_items %}
 {#<li class="breadcrumb-item"><a href="{% url 'slide:browser' %}">Image browser</a></li>#}
-<li class="breadcrumb-item active" aria-current="page">Image browser</li>
+<li class="breadcrumb-item active" aria-current="page">Slides</li>
 {#<li class="breadcrumb-item">List of images</li>#}
 {% endblock breadcrumb_items %}
 
@@ -68,7 +68,7 @@ Image browser
 
 
         <!-- HISTOLOGY/PATHOLOGY selection -->
-        <h3>Types</h3>
+        <h6>Typology</h6>
         <div class="card border-0 w-100 text-start">
             <div class="card-body">
                 <div class="radio-toolbar">
@@ -107,7 +107,7 @@ Image browser
             </div>
         </div>
         <!-- ORGAN SYSTEM selection -->
-        <h3>Organ system</h3>
+        <h6>Organ systems</h6>
         <div class="card border-0 w-100 text-start">
             <div class="card-body container-fluid">
                 <div class="radio-toolbar">

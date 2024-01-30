@@ -1121,8 +1121,9 @@ Fonts
 }
 
 
-#slideDisplayForm h4 {
-    margin: 10px 24px 0 24px;
+#slideDisplayForm h6 {
+    margin: 20px 24px 0 16px;
+    font-weight: bold;
 }
 
 /* ===========================================
