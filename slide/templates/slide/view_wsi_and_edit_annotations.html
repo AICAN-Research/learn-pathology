@@ -59,36 +59,59 @@ document.getElementById('my-toolbar-container').addEventListener('click', functi
     event.preventDefault();
 });
 
-{% if annotations %}
-{% for a in annotations %}
-    anno.addAnnotation({{ a|safe }});
-{% endfor %}
-{% endif %}
-
 
 // Annotorious + annotation storing
 let annotations = anno.getAnnotations();
 let annotationList = document.getElementById('annotation_list');
 let annotation_counter = 0;
 
-anno.on('createAnnotation', function(annotation) {
-    // Add annotation to list
+function addAnnotationToList(annotation) {
     annotationList.innerHTML = annotationList.innerHTML
         + "<input "
         + "type='hidden' "
         + "id='annotation-" + annotation_counter + "' "
         + "name='annotation-" + annotation_counter + "' "
+        + "data-annotorious-id='" + annotation.id + "'"
         + "value='" + JSON.stringify(annotation) + "'"
         + ">"
     annotation_counter++;
+}
+
+function deleteAnnotationFromList(annotation) {
+    /*
+    Iterate through annotation list to find element with ('data-annotorious-id' === annotation.id) then delete it.
+    */
+    const annotations = document.getElementById('annotation_list').children;
+    for (let i = 0; i < annotations.length; i++) {
+        if (annotations[i].getAttribute('data-annotorious-id') === annotation.id) {
+            document.getElementById(annotations[i].id).remove();    // Remove annotation
+            return annotation.id;
+        }
+    }
+}
+
+
+{% if annotations %}
+{% for a in annotations %}
+    anno.addAnnotation({{ a|safe }});
+    addAnnotationToList({{ a|safe }});
+{% endfor %}
+{% endif %}
+
+anno.on('createAnnotation', function(annotation) {
+    // Add annotation to list
+    addAnnotationToList(annotation);
 });
 
 anno.on('updateAnnotation', function(annotation, previous) {
-    // Remove previously stored annotation from list, and add updated one
+    /* Remove previously stored annotation from list, and add updated one */
+    deleteAnnotationFromList(previous);
+    addAnnotationToList(annotation);
 });
 
 anno.on('deleteAnnotation', function(annotation) {
     // Delete annotation from list
+    deleteAnnotationFromList(annotation);
 });
 
 

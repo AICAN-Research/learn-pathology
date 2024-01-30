@@ -207,7 +207,6 @@ def edit(request, task_id, course_id=None):
 
     context = setup_common_edit_task_context(task_id, course_id)
 
-    # Multiple choice specific
     ChoiceFormset = modelformset_factory(Choice, form=ChoiceForm, extra=5)
     multiple_choice = get_object_or_404(MultipleChoice, task=context['task'])
     choices = Choice.objects.filter(task=multiple_choice)
