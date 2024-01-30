@@ -1,12 +1,14 @@
 import html
 
+from django.shortcuts import get_object_or_404
+
 from task.forms import TaskForm
 from task.models import Task
 from slide.models import Slide, AnnotatedSlide, Annotation
 from course.models import Course
 
 
-def setup_common_task_context(task_id, course_id=None):
+def setup_common_new_task_context(task_id, course_id=None):
 
     task = Task.objects.get(id=task_id)
     slide = task.annotated_slide.slide
@@ -42,6 +44,25 @@ def setup_common_task_context(task_id, course_id=None):
     return context
 
 
+def setup_common_edit_task_context(task_id, course_id=None):
+    task = get_object_or_404(Task, id=task_id)
+    annotated_slide = task.annotated_slide
+    slide = annotated_slide.slide
+    context = {
+        'task': task,
+        'slide': slide,
+        'course_id': course_id
+    }
+
+    # Add annotations from AnnotatedSlide object
+    annotations = Annotation.objects.filter(annotated_slide=task.annotated_slide)
+    context['annotations'] = []
+    for a in annotations:
+        context['annotations'].append(a.deserialize())
+
+    return context
+
+
 def process_new_task_request(request, slide_id, course_id=None):
 
     # Get slide
@@ -61,6 +82,32 @@ def process_new_task_request(request, slide_id, course_id=None):
     other_tags = [tag for tag in task_form.cleaned_data['other_tags']]
     task.tags.set([organ_tags] + other_tags)
 
+    save_annotations(request, annotated_slide)
+
+    if course_id is not None and course_id in Course.objects.values_list('id', flat=True):
+        course = Course.objects.get(id=course_id)
+        course.task.add(task)
+
+    return task
+
+
+def process_edit_task_request(request, task, task_form):
+    # Update annotations
+    annotated_slide = task.annotated_slide
+    delete_annotations(annotated_slide)         # Delete current annotations first
+    save_annotations(request, annotated_slide)  # Add all current annotations
+
+    # Process tags
+    organ_tags = task_form.cleaned_data['organ_tags']
+    other_tags = [tag for tag in task_form.cleaned_data['other_tags']]
+    task.tags.set([organ_tags] + other_tags)
+
+
+def save_annotations(request, annotated_slide):
+    """
+    Saves annotations that have been added to a slide in a task.
+    These annotations are added as hidden <input> fields with name="annotation-**".
+    """
     for key in request.POST:
         if key.startswith('annotation-'):
             annotation_string = html.unescape(request.POST.get(key))
@@ -68,8 +115,7 @@ def process_new_task_request(request, slide_id, course_id=None):
                                     json_string=annotation_string)
             annotation.save()
 
-    if course_id is not None and course_id in Course.objects.values_list('id', flat=True):
-        course = Course.objects.get(id=course_id)
-        course.task.add(task)
 
-    return task
+def delete_annotations(annotated_slide):
+    """ Deletes all annotations connected to the AnnotatedSlide """
+    Annotation.objects.filter(annotated_slide=annotated_slide).delete()
