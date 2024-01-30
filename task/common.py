@@ -79,6 +79,9 @@ def process_new_task_request(request, slide_id, course_id=None):
     task.save()
 
     organ_tags = task_form.cleaned_data['organ_tags']
+    if organ_tags is None:
+        # If no organ tag selected, use same organ as the slide
+        organ_tags = slide.tags.get(is_organ=True)
     other_tags = [tag for tag in task_form.cleaned_data['other_tags']]
     task.tags.set([organ_tags] + other_tags)
 
