@@ -51,6 +51,7 @@ Image browser
 
     <form class="form" id="slideDisplayForm" onsubmit="{% url 'slide:browser' %}">
     <div class="image-browser-side-panel">
+        {% comment %}
         <!-- SEARCH feature -->
         <h4 style="margin: 14px 24px 0 24px;"><label for="search_input">Search</label></h4>
         <div class="card border-0 w-100 text-start">
@@ -63,10 +64,11 @@ Image browser
                 </div>
             </div>
         </div>
+        {% endcomment %}
 
 
         <!-- HISTOLOGY/PATHOLOGY selection -->
-        <h4>Types</h4>
+        <h3>Types</h3>
         <div class="card border-0 w-100 text-start">
             <div class="card-body">
                 <div class="radio-toolbar">
@@ -105,7 +107,7 @@ Image browser
             </div>
         </div>
         <!-- ORGAN SYSTEM selection -->
-        <h4>Organ system</h4>
+        <h3>Organ system</h3>
         <div class="card border-0 w-100 text-start">
             <div class="card-body container-fluid">
                 <div class="radio-toolbar">
