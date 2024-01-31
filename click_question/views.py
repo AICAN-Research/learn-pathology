@@ -88,6 +88,10 @@ def new(request, slide_id, course_id=None):
         'slide': slide,
         'taskForm': task_form,
         'clickQuestionForm': click_question_form,
+        'clickQuestion' : True,
+
+
+
     })
 
 

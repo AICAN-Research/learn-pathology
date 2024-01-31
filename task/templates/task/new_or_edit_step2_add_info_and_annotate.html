@@ -130,7 +130,11 @@
                         Fill in the descriptive fields of the task
                     </h3>
                 </div>
+        {% if clickQuestionForm %}
+            {% include 'slide/view_wsi_and_edit_annotations.html' with slide=slide annotations=annotations tasktype='click_question' %}
+        {% else %}
                 {% include 'slide/view_wsi_and_edit_annotations.html' with slide=slide annotations=annotations tasktype=task.type %}
+        {% endif %}
             </div>
         </div>
 
