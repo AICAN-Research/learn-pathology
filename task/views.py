@@ -41,7 +41,7 @@ def list(request):
         tasks = tasks.filter(tags__in=stains)
     tags = request.GET.getlist('tag[]')
     if len(tags) > 0:
-        tasks = tasks.filter(tags__in=tags)
+        tasks = tasks.filter(tags__in=tags).distinct()
 
     selected_pathology = request.GET.get('pathology', False)
     selected_histology = request.GET.get('histology', False)

@@ -3,8 +3,10 @@ import random
 from django.contrib import messages
 from django.db import transaction
 from django.forms import formset_factory, modelformset_factory
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 
+from slide.models import Slide, Pointer, AnnotatedSlide, BoundingBox
+from slide.views import slide_cache, save_boundingbox_annotation, save_pointer_annotation, delete_existing_annotations
 from task.common import process_new_task_request, process_edit_task_request, \
     setup_common_new_task_context, setup_common_edit_task_context
 from slide.models import Slide
@@ -40,6 +42,7 @@ def do(request, task_id, course_id=None):
     answered = []
     choice_text = []
     if request.method == 'POST':
+        print('POST')
         # Process form
         id_post_choice = request.POST.getlist('choice', None)
         if id_post_choice:
@@ -67,6 +70,13 @@ def do(request, task_id, course_id=None):
 def do_random(request, slide_id=None):
     """
     Student form for answering/viewing a random multiple choice task
+
+    Parameters
+    ----------
+    request : Http request
+
+    slide_id : int
+        ID of Slide instance
     """
 
     if request.method == 'GET':  # If the request is GET
@@ -107,6 +117,15 @@ def do_random(request, slide_id=None):
 def new(request, slide_id, course_id=None):
     """
     Teacher form for creating a multiple choice task
+
+    Parameters
+    ----------
+    request : Http request
+
+    slide_id : int
+        ID of Slide instance
+    course_id : int
+        ID of Course instance
     """
 
     # Get slide
@@ -115,13 +134,16 @@ def new(request, slide_id, course_id=None):
     # Process forms
     ChoiceFormset = formset_factory(ChoiceForm, extra=5)
     if request.method == 'POST':  # Form was submitted
-
         task_form = TaskForm(request.POST)
         multiple_choice_form = MultipleChoiceForm(request.POST)
         choice_formset = ChoiceFormset(request.POST)
 
         with transaction.atomic():  # Make save operation atomic
             if multiple_choice_form.is_valid() and task_form.is_valid() and choice_formset.is_valid():
+                # Create annotated slide
+                annotated_slide = AnnotatedSlide()
+                annotated_slide.slide = slide
+                annotated_slide.save()
 
                 task = process_new_task_request(request, slide_id, course_id)
 
@@ -130,6 +152,7 @@ def new(request, slide_id, course_id=None):
                 multiple_choice.task = task
                 multiple_choice.save()
 
+                # Create choices
                 for choiceForm in choice_formset:
                     choice = choiceForm.save(commit=False)
                     if len(choice.text) > 0:
@@ -203,6 +226,15 @@ def new_random(num_choices=5):
 def edit(request, task_id, course_id=None):
     """
     Teacher form for editing a multiple choice task
+
+        Parameters
+    ----------
+    request : Http request
+
+    task_id : int
+        ID of Task instance
+    course_id : int
+        ID of Course instance
     """
 
     context = setup_common_edit_task_context(task_id, course_id)
@@ -231,7 +263,6 @@ def edit(request, task_id, course_id=None):
                     choice = Choice()
                     text = request.POST.get(f"{choiceForm.prefix}-text")
                     correct = request.POST.get(f"{choiceForm.prefix}-correct")
-                    print(correct)
 
                     if len(text) > 0:
                         choice.task = multiple_choice
@@ -250,11 +281,20 @@ def edit(request, task_id, course_id=None):
 
         return redirect('task:list')
 
-    else:  # GET
-        task_form = TaskForm(instance=context['task'],
-                             initial={'organ_tags': context['task'].tags.get(is_organ=True),
-                                      'other_tags': context['task'].tags.filter(is_stain=False, is_organ=False)},
-                             )
+
+    else:
+
+        task_form = TaskForm(instance=context['task'])
+
+        task_form.fields['other_tags'].initial = context['task'].tags.filter(is_stain=False, is_organ=False)
+
+        try:
+
+            task_form.fields['organ_tags'].initial = context['task'].tags.get(is_organ=True)
+
+        except:
+
+            pass
         multiple_choice_form = MultipleChoiceForm(instance=context['task'].multiplechoice)
         choice_formset = ChoiceFormset(queryset=choices)
 
