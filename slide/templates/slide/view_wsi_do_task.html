@@ -44,9 +44,12 @@
 
     {% if annotations %}
     {% for a in annotations %}
-        console.log('anno');
         anno.addAnnotation({{ a|safe }});
     {% endfor %}
     {% endif %}
+
+if ("{{ tasktype }}" === 'click_question') {
+    anno.setVisible(false);
+}
 
 </script>

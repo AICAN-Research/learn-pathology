@@ -130,7 +130,7 @@
                         Fill in the descriptive fields of the task
                     </h3>
                 </div>
-                {% include 'slide/view_wsi_and_edit_annotations.html' with slide=slide annotations=annotations %}
+                {% include 'slide/view_wsi_and_edit_annotations.html' with slide=slide annotations=annotations tasktype=task.type %}
             </div>
         </div>
 
@@ -182,6 +182,7 @@
 
     var currentTab = 0; // Current tab is set to be the first tab (0)
     showTab(currentTab); // Display the current tab
+
 
     function showTab(n) {
         // This function will display the specified tab of the form ...

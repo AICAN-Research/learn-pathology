@@ -52,8 +52,15 @@ var anno = OpenSeadragon.Annotorious(viewer);
 Annotorious.SelectorPack(anno); // [ 'rect', 'polygon', 'point', 'circle', 'ellipse', 'freehand' ]
 anno.removeDrawingTool('freehand');
 
+if ("{{ tasktype }}" === 'click_question') {
+    console.log('inside the if')
+    anno.removeDrawingTool('point');
+}
 const toolbar = new Annotorious.Toolbar(anno, document.getElementById('my-toolbar-container'));
 viewer.addControl(document.getElementById("my-toolbar-container"), {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
+
+
+
 
 document.getElementById('my-toolbar-container').addEventListener('click', function(event) {
     event.preventDefault();
