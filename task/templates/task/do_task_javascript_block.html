@@ -1,0 +1,102 @@
+{% load slide_filters %}
+
+<script type="text/javascript">
+    try {
+        let pixelsPerMeter = {{ slide|get_pixels_per_meter }};
+        viewer.scalebar({
+            type: OpenSeadragon.ScalebarType.MICROSCOPY,
+            pixelsPerMeter: pixelsPerMeter,
+            minWidth: "250px",
+            location: OpenSeadragon.ScalebarLocation.BOTTOM_LEFT,
+            xOffset: 10,
+            yOffset: 20,
+            stayInsideImage: true,
+            color: "rgba(100,100,100,0.9)",
+            fontColor: "rgb(50,50,50)",
+            backgroundColor: "rgba(230, 230, 230, 0.5)",
+            fontSize: "large",
+            barThickness: 3
+        });
+    } catch (e) {
+        alert('Couldn\'t get scaling factor');
+    }
+
+    let buttonElement = document.createElement("button");
+    buttonElement.innerText = "Screenshot";
+    let screenshotButton = new OpenSeadragon.Button({
+        tooltip: 'Screenshot',
+        element: buttonElement,
+        //srcRest: `/images/Browser_Chrome.png`,
+        //srcGroup: `/images/Browser_Chrome.png`,
+        //srcHover: `/images/Browser_Chrome.png`,
+        //srcDown: `/images/Browser_Chrome.png`,
+        onClick: function () {
+            console.log('Click!');
+            // Hide toolbar:
+            let toolbar = document.getElementsByClassName("openseadragon-container")[0].childNodes[1];
+            toolbar.style.display = "none";
+            html2canvas($("#wsi-canvas")[0]).then(canvas => {
+                var now = new Date();
+                var formattedDate = now.format("yyyy-MM-dd hh-mm-ss");
+                console.log(now);
+                // Trigger download
+                var link = document.createElement('a');
+                link.href = canvas.toDataURL("image/jpeg");
+                link.download = 'LearnPathology Screenshot ' + formattedDate + '.jpg';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }).then(x => {
+                // Display toolbar again
+                let toolbar = document.getElementsByClassName("openseadragon-container")[0].childNodes[1];
+                toolbar.style.display = "block";
+            })
+        }
+    });
+    let overlayElement = document.createElement("button");
+    overlayElement.innerText = "Toggle Annotations";
+    let overlayButton = new OpenSeadragon.Button({
+        tooltip: 'Toggle Annotations',
+        element: overlayElement,
+        //srcRest: `/images/Browser_Chrome.png`,
+        //srcGroup: `/images/Browser_Chrome.png`,
+        //srcHover: `/images/Browser_Chrome.png`,
+        //srcDown: `/images/Browser_Chrome.png`,
+        onClick: function () {
+            console.log('Click!');
+            $(".overlay").toggle();
+            $(".textOverlay").toggle();
+        }
+    });
+    viewer.addControl(screenshotButton.element, {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
+    viewer.addControl(overlayButton.element, {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
+
+    viewer.addHandler('viewport-change', updateTextLocation);
+    viewer.addHandler('tile-drawing', updateTextLocation);
+
+    addEventListener("resize", () => {});
+    onresize = () => {
+        timer = setTimeout(function () {
+            updateTextLocation();
+        }, 20);
+    };
+
+    function updateTextLocation(event) {
+        let slide_overlays = viewer.currentOverlays;
+
+        let arrow_overlays = $("[id^=right-arrow-overlay-]")
+        let text_overlays = $("[id^=arrow-text-overlay-]")
+
+        for (let i = 0; i < arrow_overlays.length; i++) {
+            let arrowElement = arrow_overlays[i];
+            let textElement = text_overlays[i];
+
+            let arrowX = parseFloat(arrowElement.style.left);
+            let arrowY = parseFloat(arrowElement.style.top);
+
+            let viewportPoint = viewer.viewport.pointFromPixel(new OpenSeadragon.Point(arrowX - 5, arrowY + 15));
+            viewer.updateOverlay(textElement, viewportPoint);
+        }
+    }
+
+</script>

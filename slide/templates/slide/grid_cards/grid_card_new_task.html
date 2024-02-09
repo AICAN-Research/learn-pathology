@@ -4,9 +4,9 @@
 
     {% if request.user.is_teacher or request.user.is_superuser %}
         {% if course_id %}
-            <div class="card-content" style="padding-top: 5px"><a class="LPButton btn" href="{% url 'task:new' slide_id=slide.id course_id=course_id %}" style="margin: 0;">Create new task</a></div>
+            <a class="LPButton btn" href="{% url 'task:new' slide_id=slide.id course_id=course_id %}" style="margin-top: auto;">Create new task</a>
         {% else %}
-            <div class="card-content" style="padding-top: 5px"><a class="LPButton btn" href="{% url 'task:new' slide_id=slide.id %}" style="margin: 0;">Create new task</a></div>
+            <a class="LPButton btn" href="{% url 'task:new' slide_id=slide.id %}" style="margin-top: auto;">Create new task</a>
         {% endif %}
     {% endif %}
 

@@ -4,10 +4,10 @@
 
 {% block image_viewer %}
 
-{% if request.user.is_teacher or request.user.is_superuser %}
-    {% include 'slide/slide_grid.html' with slides=slides grid_card_url='slide/grid_cards/grid_card_new_task.html' %}
-{% else %}
+{#{% if request.user.is_teacher or request.user.is_superuser %}#}
+{#    {% include 'slide/slide_grid.html' with slides=slides grid_card_url='slide/grid_cards/grid_card_new_task.html' %}#}
+{#{% else %}#}
     {% include 'slide/slide_grid.html' with slides=slides grid_card_url='slide/grid_cards/grid_card_minimal.html' %}
-{% endif %}
+{#{% endif %}#}
 
 {% endblock image_viewer %}

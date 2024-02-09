@@ -1,79 +1,152 @@
-{% extends 'learnpathology/base.html' %}
+{% extends 'learnpathology/single_content_layout.html' %}
 {% load to_class_name %}
 {% load static %}
 {% load slide_filters %}
+{% load bootstrap_icons %}
+
+
+{% block page_title %}
+Select slides for <span style="color: var(--color-blue-dark);">{{ course.title }}</span>
+{% endblock page_title %}
+
+
+{% block breadcrumb_items %}
+    <li class="breadcrumb-item"><a href="{% url 'course:index' %}">Courses</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'course:view' course_id=course.id %}">{{ course.code }} - {{ course.title }}</a></li>
+    <li class="breadcrumb-item">Select images</li>
+{% endblock breadcrumb_items %}
+
+
+{% block search_bar %}
+{% endblock search_bar %}
+
 
 {% block content %}
 
-<div class="container">
-<h1>Add slides to course</h1>
-
-<p>
-    Select slide(s) to add to the course {{ course.code }} - {{ course.title }}
-</p>
-</div>
-<div class="card mx-auto text-center" style="width: 90%">
+<div class="card w-100">
 <div class="card-body">
 <div class="card-text">
-<p>
-    <a href="{% url 'course:view' course_id=course.id active_tab='slides' %}">
-        <input type="button" value="Return to course page">
-    </a>
-</p>
 
+<h3>
+    Click on a slide to add it to/remove it from the course <i>{{ course.code }} - {{ course.title }}</i>
+</h3>
 
-<table class="table">
-<tr>
-    <th>Available slides</th>
-    <td>
-    <form class="form">
-        <p>
-            <b>Filter:</b>
-            Organ:
-            <select name="organ[]" multiple class="filter" style="width:20%">
-                {% for tag in organ_tags %}
-                    <option value="{{ tag.id }}"{% if tag.id|slugify in selected_organ_tags %} selected="selected"{% endif %}>{{ tag.name }}</option>
-                {% endfor %}
-            </select>
-            Stain:
-            <select name="stain[]" multiple class="filter">
-                {% for tag in stain_tags %}
-                    <option value="{{ tag.id }}"{% if tag.id|slugify in selected_stain_tags %} selected="selected"{% endif %}>{{ tag.name }}</option>
-                {% endfor %}
-            </select>
-            Tag:
-            <select name="tag[]" multiple class="filter">
-                {% for tag in other_tags %}
-                    <option value="{{ tag.id }}"{% if tag.id|slugify in selected_other_tags %} selected="selected"{% endif %}>{{ tag.name }}</option>
-                {% endfor %}
-            </select>
-        </p>
-    </form>
+<div class="row" style="margin: 0 0 0 0;">
 
-    {% if filtered_slides %}
-        {% include 'slide/slide_grid.html' with slides=filtered_slides grid_card_url='slide/grid_cards/slide_selection_add.html' %}
-    {% else %}
-        <p>
-            No slides found with current filter.
-        </p>
-    {% endif %}
-    </td>
-</tr>
+    <!-- Menu/toolbar -->
+    <div class="col" style="padding: 0 0 0 0;">
 
-<tr>
-    <th>Slides in course</th>
-    <td>
-        {% if slides_in_course %}
-            {% include 'slide/slide_grid.html' with slides=slides_in_course grid_card_url='slide/grid_cards/slide_selection_remove.html' %}
+        <style>
+            label::first-letter {
+                text-transform:capitalize;
+            }
+        </style>
+
+        <div class="LPButton">
+            <a class="noLinkStyling" href="{% url 'course:view' course_id=course.id active_tab='slides' %}">
+                Return to course page
+            </a>
+        </div>
+
+        <div class="card">
+            <div class="card border-0 w-100 text-start">
+                <div class="card-body" style="padding-bottom: 0;">
+                    <div class="radio-toolbar" style="margin-top: 2px;">
+                        <form class="form">
+                            <button class="wideLabel" type="submit" name="clear_all"
+                                    style="text-align: center; border: 2px solid #c65127;">
+                                Clear selection {% bs_icon 'x-circle' %}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <form class="form" id="slideDisplayForm" onsubmit="{% url 'slide:browser' %}">
+                <!-- SEARCH feature -->
+                <h4 style="margin: 14px 0 0 0;"><label for="search_input">Search</label></h4>
+                <div class="card border-0 w-100 text-start">
+                    <div class="card-body">
+                        <input type="text" name="search" placeholder="Search names, descriptions..." id="search_input"
+                               {% if search_query %}value="{{ search_query }}"{% endif %} style="width: 100%;">
+                        <div style="margin-top: 2px;">
+                            <button class="imageBrowserSearchButtons" type="submit" name="submit_button">Search</button>
+                            <button class="imageBrowserSearchButtons" type="submit" name="clear_button">Clear search</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- HISTOLOGY/PATHOLOGY selection -->
+                <h4 style="margin: 0;">Histology or pathology?</h4>
+                <div class="card border-0 w-100 text-start">
+                    <div class="card-body">
+                        <div class="radio-toolbar">
+                            <input type="radio" name="histology-pathology" id="hist-path-btn" value="both" onchange="this.form.submit();">
+                            <label for="hist-path-btn" class="wideLabel{% if selected_both %} active{% endif %}">Both</label>
+
+                            <input type="radio" name="histology-pathology" id="histology-btn" value="histology" onchange="this.form.submit();">
+                            <label for="histology-btn" class="wideLabel{% if selected_histology %} active{% endif %}">Histology</label>
+
+                            <input type="radio" name="histology-pathology" id="pathology-btn" value="pathology" onchange="this.form.submit();">
+                            <label for="pathology-btn" class="wideLabel{% if selected_pathology %} active{% endif %}">Pathology</label>
+                            {% if selected_pathology %}
+                                <ul class="" style="list-style: none;">
+                                    {% for tag in general_pathology_tags %}
+                                        <input type="radio" name="general_pathology_button" id="general_pathology-id-{{ tag.id }}" value="general_pathology_tag-id-{{ tag.id }}" onchange="this.form.submit();">
+                                        <label for="general_pathology-id-{{ tag.id }}" class="wideLabel{% if tag == selected_general_pathology %} active{% endif %}">{{ tag.name }}</label>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <!-- ORGAN SYSTEM selection -->
+                <h4 style="margin: 0;">Organ system</h4>
+                <div class="card border-0 w-100 text-start">
+                    <div class="card-body container-fluid">
+                        <div class="radio-toolbar">
+                            <!-- Show 'All' button -->
+                            <input type="radio" name="organ-system" id="organ-all" value="all" onchange="this.form.submit();">
+                            <label for="organ-all" class="wideLabel {% if 'all' in selected_organ_tag %}active{% endif %}">All</label>
+
+                            <!-- Other organ buttons -->
+                            {% for organ in organ_tags %}
+                                <input type="radio" name="organ-system" id="{{ organ.id }}" value="{{ organ.id }}" onchange="this.form.submit();">
+                                <label for="{{ organ.id }}" class="wideLabel{% if organ in selected_organ_tag %} active{% endif %}">{{ organ.name }}</label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Slide grid/list -->
+    <div class="col-md-10 col-xs-1">
+    <div class="card border-0">
+        {% if slides %}
+            <div class="card border-0" style="min-height: 600px; padding-top: 10px">
+                {% include 'slide/slide_grid_selection.html' with slides=slides slides_in_course=slides_in_course course_id=course.id %}
+            </div>
         {% else %}
-            <p>
-                No slides have been added to the course.
-            </p>
+            <div class="card" style="min-height: 200px; padding-top: 10px">
+                No slides available.
+            </div>
         {% endif %}
-    </td>
-</tr>
-</table>
+    </div>
+    </div>
+
+</div>
+
 </div>
 </div>
 </div>
 {% endblock content %}
+
+
+{% block javascript %}
+
+$(document).ready(function(){
+    collapseSidebar();
+});
+
+{% endblock javascript %}

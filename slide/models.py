@@ -2,6 +2,7 @@ import os
 import time
 import threading
 from io import BytesIO
+import json
 
 import fast
 import numpy as np
@@ -232,8 +233,7 @@ class Slide(models.Model):
             cdvec2_elem = property_elem.find('CdVec2')
             scale_xy = [float(d.text) for d in cdvec2_elem.findall('double')]
 
-            print('Scale factor (um/px):', scale_xy)
-            self._scale_factor = scale_xy
+            self._scale_factor = scale_xy   # scale factor in um/px
 
         except Exception as err:
             print(f"An error occurred: The requested metadata.xml file for {self.path} was not found. Setting scale factor None")
@@ -269,6 +269,28 @@ class AnnotatedSlide(models.Model):
         for bb in BoundingBox.objects.filter(annotated_slide=self):
             js += bb.get_js()
         return js
+
+
+class Annotation(models.Model):
+    annotated_slide = models.ForeignKey(AnnotatedSlide, on_delete=models.CASCADE)
+    json_string = models.TextField(blank=False, help_text='The annotation in W3C format (JSON) stored as a string')
+
+    def deserialize(self):
+        return json.loads(self.json_string)
+
+    @property
+    def text(self):
+        """
+        The text/comment of the annotation
+        """
+        raise NotImplementedError('Annotation property "text" has not been implemented yet')
+
+    @property
+    def type(self):
+        """
+        Human-readable annotation type (point, box, ellipse, ...)
+        """
+        raise NotImplementedError('Annotation property "type" has not been implemented yet')
 
 
 class Pointer(models.Model):
@@ -321,8 +343,6 @@ class BoundingBox(models.Model):
     A bounding box annotation on a slide consisting of a top/bottom left
     position (x,y), width and height, and a text.
     """
-
-
     annotated_slide = models.ForeignKey(AnnotatedSlide, on_delete=models.CASCADE)
     position_x = models.FloatField()
     position_y = models.FloatField()
@@ -336,12 +356,14 @@ class BoundingBox(models.Model):
         ]
 
     def get_html(self):
-        html=''
-        html += f'<div id="boundingbox-{self.id}" class="overlay"><div </div>'
+        html = f'<div id="boundingbox-{self.id}" class="overlay"></div>'
         print('Got BoundingBox html')
 
-        html += f'<div id="boundingbox-text-overlay-{self.id}" ><div class="textOverlay"' \
-                f'>{self.text}</div></div>'
+        html += f'<div id="boundingbox-text-overlay-{self.id}">' \
+                f'    <div class="textOverlay" style="padding-top: 5px; padding-left: 5px;">' \
+                f'        {self.text}' \
+                f'    </div>' \
+                f'</div>'
         print('Got BoundingBox Text html')
         return html
 

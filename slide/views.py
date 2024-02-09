@@ -1,4 +1,5 @@
 import os.path
+import json
 
 import django.urls
 from django.contrib import messages
@@ -13,7 +14,7 @@ from django.core.files.uploadedfile import UploadedFile
 from tag.models import Tag
 from task.models import Task
 from user.decorators import student_required, teacher_required
-from slide.models import Slide, AnnotatedSlide, Pointer, BoundingBox
+from slide.models import Slide, AnnotatedSlide, Pointer, BoundingBox, Annotation
 from slide.forms import SlideForm, SlideDescriptionForm
 
 
@@ -30,6 +31,7 @@ class SlideCache:
     def __init__(self):
         # TODO load FAST once
         import fast
+        # fast.Reporter.setGlobalReportMethod(fast.Reporter.COUT)
         test = fast.WholeSlideImageImporter.New() # Just to initialize FAST..
         self.slides = {}
 
@@ -99,89 +101,125 @@ def index(request):
 
 def image_browser(request):
     """
-    TODO:   - CLEAN UP FUNCTION
+    Set up the context for the image browser.
+
+    The logic here is to find the relevant slides based on the currently active filters,
+    and if search has been applied to search only among those relevant slides.
     """
 
-    prev_context = request.session.get('image_browser_context', None)
-    if prev_context is None:
-        # First entry to image browser? Initialize new empty dictionary
-        request.session['image_browser_context'] = {}
-
-    organ_changed = ('organ-system' in request.GET)
-    hist_path_changed = ('histology-pathology' in request.GET)
+    last_url = request.META.get('HTTP_REFERER', '')
+    prev_context = {} if ('slide/browser/' not in last_url) else request.session.get('image_browser_context', {})
+    request.session['image_browser_context'] = {}
+    # Initialize empty context dictionary
     context = {}
 
+    # ==================================================================
+    # Set up variables for which filtering options have been applied
+    # ==================================================================
+    organ_changed = ('organ-system' in request.GET)                     # Organ selection changed
+    general_path_changed = ('general_pathology_button' in request.GET)  # General pathology changed
+    hist_path_changed = (general_path_changed or ('histology-pathology' in request.GET))   # Hist/path changed
+    search_button_clicked = ('submit_button' in request.GET)            # Search query entered
+    clear_search_clicked = ('clear_button' in request.GET)              # Search cleared
+
+    # ==================================================================
+    # Find selections for filtering options
+    # ==================================================================
+    # ORGAN FILTER
     if organ_changed:
-        selected_organ = request.GET.get('organ-system')
-        if selected_organ == 'all':
-            slides = Slide.objects.all()
-            selected_organ_tag = ['all']
-            # Store changes in session
-            request.session['image_browser_context']['selected_organ_tag_ids'] = selected_organ_tag
-        else:
-            selected_organ_tag = Tag.objects.filter(id=selected_organ)
-            slides = Slide.objects.filter(tags__in=selected_organ_tag)
-            # Store changes in session
-            request.session['image_browser_context']['selected_organ_tag_ids'] = queryset_to_id_list(selected_organ_tag)
-
-        # Add to context
-        context['slides'] = slides
-        context['selected_organ_tag'] = selected_organ_tag
-
-    elif hist_path_changed:
-        # Use previously selected organ slides
-        selected_organ_tag = organ_tag_id_list_to_queryset(
-            prev_context['selected_organ_tag_ids']
-        )
-        if 'all' in selected_organ_tag:
-            slides = Slide.objects.all()
-        else:
-            slides = Slide.objects.filter(tags__in=selected_organ_tag)
-
-        histology_pathology = request.GET.get('histology-pathology')
-        if histology_pathology == 'histology':
-            selected_both = False
-            selected_histology = True
-            selected_pathology = False
-            slides = slides.filter(pathology=False)
-        elif histology_pathology == 'pathology':
-            selected_both = False
-            selected_histology = False
-            selected_pathology = True
-            slides = slides.filter(pathology=True)
-        else:
-            selected_both = True
-            selected_histology = False
-            selected_pathology = False
-            # do not filter slides
-
-        # Add to context
-        context['slides'] = slides
-        context['selected_organ_tag'] = selected_organ_tag
-        context['selected_both'] = selected_both
-        context['selected_histology'] = selected_histology
-        context['selected_pathology'] = selected_pathology
-
+        selected_organ_tag_id = [request.GET.get('organ-system')]
     else:
-        slides = Slide.objects.all()
-        selected_organ_tag = ['all']
-        # Store changes in session
-        request.session['image_browser_context']['selected_organ_tag_ids'] = queryset_to_id_list(selected_organ_tag)
-        request.session['image_browser_context']['selected_both'] = True
-        request.session['image_browser_context']['selected_histology'] = False
-        request.session['image_browser_context']['selected_pathology'] = False
-        # Add to context
-        context['slides'] = slides
-        context['selected_organ_tag'] = selected_organ_tag
+        selected_organ_tag_id = prev_context['selected_organ_tag_ids'] if ('selected_organ_tag_ids' in prev_context) else ['all']
+    if 'all' in selected_organ_tag_id:
+        organ_tags = Tag.objects.filter(is_organ=True)
+    else:
+        organ_tags = Tag.objects.filter(is_organ=True, id__in=selected_organ_tag_id)
 
-    # Final updates to context
+    # HISTOLOGY/PATHOLOGY FILTER
+    if hist_path_changed:
+        if general_path_changed:
+            histology_pathology = 'pathology'
+            general_path_selected = True
+        else:
+            histology_pathology = request.GET.get('histology-pathology')
+            general_path_selected = False
+
+        selected_histology = (histology_pathology == 'histology')
+        selected_pathology = (histology_pathology == 'pathology')
+        selected_both = (not selected_histology and not selected_pathology)
+    else:
+        selected_both = prev_context['selected_both'] if 'selected_both' in prev_context else True
+        selected_histology = prev_context['selected_histology'] if 'selected_histology' in prev_context else False
+        selected_pathology = prev_context['selected_pathology'] if 'selected_pathology' in prev_context else False
+
+        general_path_selected = ('selected_general_pathology_ids' in prev_context)
+
+    # SEARCH
+    if search_button_clicked:
+        search_query = request.GET.get('search')
+        if search_query is None or len(search_query) == 0:
+            search_query = None
+    elif clear_search_clicked:
+        search_query = None
+    else:
+        try:
+            search_query = prev_context['search_query']
+        except KeyError as err:
+            search_query = None
+
+    # ==================================================================
+    # Filter slides, and apply search if the search button was clicked
+    # ==================================================================
+    slides = Slide.objects.all()
+    slides = slides.filter(tags__in=organ_tags)
+    if not selected_both:
+        slides = slides.filter(pathology=selected_pathology)
+    if general_path_selected:
+        if general_path_changed:
+            gen_path_tag_id = int(request.GET.get('general_pathology_button').split('-')[-1])
+        elif 'selected_general_pathology_ids' in prev_context:
+            gen_path_tag_id = prev_context['selected_general_pathology_ids'][0]
+        gen_path_tag = Tag.objects.get(id=gen_path_tag_id)
+        slides = slides.filter(tags__in=[gen_path_tag])
+        context['selected_general_pathology'] = gen_path_tag
+        request.session['image_browser_context']['selected_general_pathology_ids'] = queryset_to_id_list(Tag.objects.filter(id=gen_path_tag_id))  # function takes queryset
+    if search_query is not None:    # If search was updated, search among applicable_slides
+        slides = slides.filter(Q(name__contains=search_query) | Q(description__contains=search_query))
+
+    # ==================================================================
+    # Update context
+    # ==================================================================
+    context['slides'] = sorted(slides, key=lambda s: s.name)
+    context['selected_organ_tag'] = ['all'] if 'all' in selected_organ_tag_id else Tag.objects.filter(id__in=selected_organ_tag_id)
+    context['selected_both'] = selected_both
+    context['selected_histology'] = selected_histology
+    context['selected_pathology'] = selected_pathology
+    context['search_query'] = search_query
     context['organ_tags'] = Tag.objects.filter(is_organ=True).order_by('name')
-    for key, val in request.session['image_browser_context'].items():
-        if key not in context and key not in ('slide_ids', 'selected_organ_tag_ids'):
-            context[key] = request.session['image_browser_context'][key]
+    general_pathology_tags = [tag for tag in Tag.objects.filter(is_organ=False, is_stain=False) if tag.name.lower() in GENERAL_PATHOLOGY_TAGS]
+    context['general_pathology_tags'] = sorted(general_pathology_tags, key=lambda tag: tag.name)
 
+    for key, val in prev_context.items():
+        if key not in context and key not in ('selected_organ_tag_ids', 'selected_general_pathology_ids'):
+            context[key] = prev_context[key]
+
+    # ==================================================================
+    # Update session variable to store selection
+    # ==================================================================
+    keys_that_contain_querysets = ('slides', 'selected_organ_tag', 'organ_tags', 'general_pathology_tags', 'selected_general_pathology', 'selected_general_pathology_ids')
+    for key, val in context.items():
+        if key not in request.session['image_browser_context'] and key not in keys_that_contain_querysets:
+            request.session['image_browser_context'][key] = context[key]
+    request.session['image_browser_context']['selected_organ_tag_ids'] = queryset_to_id_list(context['selected_organ_tag'])
     request.session.modified = True
+
     return render(request, 'slide/image_browser.html', context)
+
+
+def reset_image_browser(request):
+    if 'image_browser_context' in request.session:
+        del request.session['image_browser_context']
+    return redirect('slide:browser')
 
 
 def queryset_to_id_list(queryset):
@@ -223,6 +261,11 @@ def whole_slide_view_full(request, slide_id):
     # Add annotations to context
     context['pointers'] = Pointer.objects.filter(annotated_slide=annotated_slide)
     context['boxes'] = BoundingBox.objects.filter(annotated_slide=annotated_slide)
+
+    annotations = Annotation.objects.filter(annotated_slide=annotated_slide)
+    context['annotations'] = []
+    for ann in annotations:
+        context['annotations'].append(ann.deserialize())
 
     return render(request, 'slide/view_wsi_accordion.html', context)
 
@@ -331,6 +374,10 @@ def edit_general_pathology_tags(request, slide_id):
 
     slide = slide_cache.load_slide_to_cache(slide_id)
 
+    if not slide.pathology:
+        messages.add_message(request, messages.ERROR, 'This slide is not a pathology slide. Cannot add general pathology tags.')
+        return redirect('slide:view_full', slide_id=slide.id)
+
     other_tags = Tag.objects.filter(is_organ=False, is_stain=False)
     general_pathology_tags = []
     for tag in other_tags:
@@ -435,6 +482,91 @@ def add_or_edit_descriptive_annotation(request, slide_id):
         Pointer, BoundingBox
     ]
     return render(request, 'slide/add_edit_descriptive_annotations.html', context)
+
+
+def create_annotation(request):
+    """
+    Async saving of annotorious annotations
+    """
+    print('Creating new annotation')
+
+    slide_id = int(request.GET.get('slide_id'))
+    slide = Slide.objects.get(id=slide_id)
+
+    # Get descriptive AnnotatedSlide
+    try:
+        annotated_slide = AnnotatedSlide.objects.get(slide=slide, task__isnull=True)
+    except ObjectDoesNotExist as err:
+        annotated_slide = AnnotatedSlide(slide=slide)
+        annotated_slide.save()
+    except MultipleObjectsReturned as err:
+        print("Multiple descriptive AnnotatedSlide objects found. Clean up DB!")  # Using last slide for now")
+        raise MultipleObjectsReturned(err)
+
+    # Create annotation
+    annotation = Annotation(annotated_slide=annotated_slide,
+                            json_string=request.GET.get('annotation'))
+    annotation.save()
+
+    return JsonResponse(data={})
+
+
+def update_annotation(request):
+    """
+    Async updating of annotorious annotations
+    """
+    print('Updating annotation')
+
+    slide_id = int(request.GET.get('slide_id'))
+    slide = Slide.objects.get(id=slide_id)
+
+    # Get descriptive AnnotatedSlide
+    annotated_slide = AnnotatedSlide.objects.get(slide=slide, task__isnull=True)
+
+    # Get correct annotation (matching Annotorious/W3C id)
+    annotations_this_slide = Annotation.objects.filter(annotated_slide=annotated_slide)
+    annotation_json_old = request.GET.get('previous_annotation')
+    annotation_id = json.loads(annotation_json_old)['id']
+
+    # Find the corresponding annotation using the ID given by Annotorious
+    annotation = None
+    for annotation in annotations_this_slide:
+        if annotation_id in annotation.deserialize()['id']:
+            break
+
+    # Replace old JSON with new
+    annotation.json_string = request.GET.get('annotation')
+    annotation.save()
+
+    return JsonResponse(data={})
+
+
+def delete_annotation(request):
+    """
+    Async deleting of annotorious annotations
+    """
+    print('Deleting annotation')
+
+    slide_id = int(request.GET.get('slide_id'))
+    slide = Slide.objects.get(id=slide_id)
+
+    # Get descriptive AnnotatedSlide
+    annotated_slide = AnnotatedSlide.objects.get(slide=slide, task__isnull=True)
+
+    # Get correct annotation (matching Annotorious/W3C id)
+    annotations_this_slide = Annotation.objects.filter(annotated_slide=annotated_slide)
+    annotation_json = request.GET.get('annotation')
+    annotation_id = json.loads(annotation_json)['id']
+
+    # Find the corresponding annotation using the ID given by Annotorious
+    annotation = None
+    for annotation in annotations_this_slide:
+        if annotation_id in annotation.deserialize()['id']:
+            break
+
+    annotation.delete()
+
+    return JsonResponse(data={})
 
 
 def delete_existing_annotations(annotated_slide):

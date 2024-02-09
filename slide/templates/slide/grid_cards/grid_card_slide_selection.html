@@ -1,0 +1,38 @@
+{% load bootstrap_icons %}
+{% load to_class_name %}
+
+
+<div class="slideGridViewCard card {% if slide_selected == 'true' %}remove_button border-success{% else %}add_button{% endif %}"
+     style="max-height: 300px;{% if slide_selected == 'true' %} border-width: 3px;{% endif %}"
+     data-course_id={{ course.id }} data-model_name={{ slide | to_class_name }} data-instance_id={{ slide.id }}>
+
+    {# Image display #}
+    <a class="cardImageHeader card border-0">
+        <div class="card transparentBackground border-0 w-100 h-100" style="float: left;">
+            <div class="headerImageContainer card">
+                <img class="headerImage" src="/slide/thumbnails/{{ slide.id }}.jpg" alt="WSI thumbnail for {{ slide.name }}">
+                <!-- Use below line to crop image to fit the header container -->
+{#                 <img class="headerImage croppedImage" src="/slide/thumbnails/{{ slide.id }}.jpg" alt="WSI thumbnail"> #}
+            </div>
+        </div>
+
+        {% if slide_selected == 'true' %}
+            <div style="float: right; position: absolute; top: 5px; right: 5px;">
+                <svg class="bi text-success" width="32px" height="32px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                    {% bs_icon 'check-circle' %}
+                </svg>
+            </div>
+        {% endif %}
+    </a>
+
+    {# Card content (slide name, description, buttons, ...) #}
+    <div class="gridCardContent">
+        <a class="card noLinkStyling border-0">
+            <h5 class="card-title">{{ slide.name }}</h5>
+            <p class="card-subtitle" style="font-size: medium;">{{ slide.description }}</p>
+{#            {% block gridCardQuestions %}#}
+{#            {% endblock gridCardQuestions %}#}
+        </a>
+    </div>
+
+</div>

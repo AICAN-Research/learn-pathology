@@ -1,0 +1,64 @@
+{% load slide_filters %}
+
+{% block grid_loop %}
+
+<div class="container-fluid" style="width: 100%">
+    {% for chunk in slides|as_chunks:12 %}
+        <div class="row">
+            {% for slide in chunk %}
+                <div class="column col-xs-6 col-sm-6 col-md-4 col-lg-3 col-xl-3">
+                    <input type="radio" name="selected_slide_id" id="{{ slide.id }}" value="{{ slide.id }}">
+                    <label for="{{ slide.id }}" class="checkSlide">
+                        {% include 'task/slide_selection_grid_card.html' with slide=slide slide_selected='false' %}
+                    </label>
+                    {% comment %}
+                    {% if slide in slides_in_course %}
+                        <input type="radio" name="selected_slide_id" id="{{ slide.id }}" value="{{ slide.id }}">
+                        <label for="{{ slide.id }}">
+                            {% include 'task/slide_selection_grid_card.html' with slide=slide slide_selected='true' %}
+                        </label>
+                    {% else %}
+                        <input type="radio" name="selected_slide_id" id="{{ slide.id }}" value="{{ slide.id }}">
+                        <label for="{{ slide.id }}">
+                            {% include 'task/slide_selection_grid_card.html' with slide=slide slide_selected='false' %}
+                        </label>
+                    {% endif %}
+                    {% endcomment %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+</div>
+
+
+<script>
+
+$('.checkSlide').click(function() {
+    let slide_id = $(this).data('slide_id');
+    let slide_checkmark_id = 'slide_' + slide_id + '_checkmark';
+    console.log("Checkmark element ID is " + slide_checkmark_id);
+    let elem = $('#' + slide_checkmark_id);   //document.getElementById(slide_checkmark_id);
+    console.log(elem);
+    elem.style.display = 'block';
+    elem.classList.remove('checkSlide');
+    elem.classList.add('uncheckSlide');
+    elem.classList.add('border-success');
+    console.log(elem);
+});
+
+$('.uncheckSlide').click(function() {
+    let slide_id = $(this).data('slide_id');
+    let slide_checkmark_id = 'slide_' + slide_id + '_checkmark';
+    console.log("Checkmark element ID is " + slide_checkmark_id);
+    let elem = document.getElementById(slide_checkmark_id);
+    elem.style.display = 'none';
+    elem.classList.remove('uncheckSlide');
+    elem.classList.remove('border-success');
+    elem.classList.add('checkSlide');
+});
+
+
+</script>
+
+
+{% endblock grid_loop %}
