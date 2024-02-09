@@ -772,7 +772,6 @@ Sidebar
     justify-content: flex-start;
     align-items: center;
     align-self: stretch;
-    gap: 200px;
 }
 
 /* Header and top items */
