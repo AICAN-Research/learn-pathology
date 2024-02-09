@@ -1,4 +1,4 @@
-{% extends 'task/new_info_and_annotation.html' %}
+{% extends 'task/new_or_edit_step2_add_info_and_annotate.html' %}
 
 
 {% block task_type %}
@@ -13,14 +13,14 @@ Multiple choice
 
 {% block specific_task_type_form %}
 
-{# The tag <form class="form" method="post"> is in 'task/new_info_and_annotation.html' #}
+{# The tag <form class="form" method="post"> is in 'task/new_or_edit_step2_add_info_and_annotate.html' #}
 <table class="table">
 
     <thead class="thead-light">
         <tr><th colspan="2">Multiple choice info</th></tr>
     </thead>
     <tr>
-        <th>{{ taskForm.name.label }} (short, decriptive)</th>
+        <th>{{ taskForm.name.label }} (short, descriptive)</th>
         <td>{{ taskForm.name }}</td>
     </tr>
     <tr>
