@@ -25,7 +25,8 @@ SECRET_KEY = 'django-insecure-c#865-)ef-&rz)&*26c!!bj473_2npi7$^hzgr_cueydwr6(+6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-USE_FEIDE_LOGIN = True
+# To enable FEIDE login you also have to add a social applications object with the client id and secret key to the database
+USE_FEIDE_LOGIN = False
 
 ALLOWED_HOSTS = []
 
