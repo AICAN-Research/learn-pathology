@@ -1,58 +1,37 @@
 {% load static %}
 {% load slide_filters %}
 
+
 <div class="fill" style="min-height: 600px">
-
-<div class="card border-0">
-
-    <div class="row no-gutters w-100 align-items-center">
-        <div class="col-sm-5 col-md-3">
-            <div class="card border-0 h-100" style="margin-top: auto; margin-bottom: auto">
-            <div class="card-body" style="padding: 0;">
-                <h5 class="card-title" style="margin-bottom: 0;">Annotation type</h5>
-            </div>
-            </div>
-        </div> <!-- end col 1 -->
-        <div class="col">
-            <div class="card border-0 text-start">
-            <div class="card-body" style="padding: 0;">
-            <div class="radio-toolbar">
-                <!-- Pointer annotation -->
-                <label class="LPButton" id="pointer-annotation-btn"
-                       onclick="activatePointerAnnotation();" style="padding: 6px 10px 6px 10px; margin: 0;">
-                    Pointer
-                </label>
-                <!-- Bounding box annotation -->
-                <label class="LPButton" id="box-annotation-btn"
-                       onclick="activateBoxAnnotation();" style="padding: 6px 10px 6px 10px; margin: 0;">
-                    Box
-                </label>
-            </div>
-            </div>
-            </div>
-        </div> <!-- end col 2 -->
-    </div> <!-- end row -->
-
-</div>
-<div style="margin-top: 5px;">
-    <div id="annotation-instructions">Annotation instructions will be given here for each annotation type</div>
+    <div id="wsi-canvas" class="wsi_canvas" style="height: 600px;"></div>
+    <div id="my-toolbar-container"></div>
 </div>
 
+<div id="annotation_list" style="display: none;"></div>
 
-<div id="wsi-canvas" class="wsi_canvas" style="height: 600px;"></div>
-
-</div>
 
 <script src="{% static 'slide/openseadragon.min.js' %}"></script>
+<script src="{% static 'slide/annotorious-openseadragon-2.7.16/openseadragon-annotorious.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/@recogito/annotorious-toolbar@1.1.0/dist/annotorious-toolbar.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@recogito/annotorious-selector-pack@0.6.0/dist/annotorious-selector-pack.min.js"></script>
+<script src="{% static 'slide/annotorious.min.js' %}"></script>
+
 <script type="text/javascript">
-    var viewer = OpenSeadragon({
+
+var viewer = OpenSeadragon({
     id: "wsi-canvas",
     zoomPerScroll: 2, // Scroll speed
     minScrollDeltaTime: 150, //	Number of milliseconds between canvas-scroll events.
     zoomPerClick: 1, // disable click to zoom
-    showNavigator: true, // The navigation window top-right
     prefixUrl: "{% static 'slide/images/' %}", // Where to find OpenSedragon button images
-    tileSources:   {
+    showNavigator: true, // The navigation window top-right
+    showHomeControl: false,     // Hide the home button
+    showFullPageControl: false, // Hide the full-page button
+    showZoomControl: false,     // Hide the zoom-in and zoom-out buttons
+    minZoomLevel: 0.25, // Set your minimum zoom level
+    maxZoomLevel: 40,
+    rotationIncrement: 0,
+    tileSources: {
         width: {{ slide.width }},
         height:  {{ slide.height }},
         tileWidth: {{ slide.tile_width }},
@@ -65,19 +44,81 @@
         overlays: [
             ],
     }
-    });
-    viewer.innerTracker.keyHandler = null;
+});
+viewer.innerTracker.keyHandler = null;
+
+var anno = OpenSeadragon.Annotorious(viewer);
+Annotorious.SelectorPack(anno); // [ 'rect', 'polygon', 'point', 'circle', 'ellipse', 'freehand' ]
+anno.removeDrawingTool('freehand');
+
+if ("{{ tasktype }}" === 'click_question') {
+    console.log('inside the if')
+    anno.removeDrawingTool('point');
+}
+const toolbar = new Annotorious.Toolbar(anno, document.getElementById('my-toolbar-container'));
+viewer.addControl(document.getElementById("my-toolbar-container"), {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
 
 
-    {% for pointer in pointers %}
-       addPointer(new OpenSeadragon.Point({{pointer.position_x}}, {{ pointer.position_y }}), '{{ pointer.text }}');
-    {% endfor %}
-    {% for box in boxes %}
-        addBoundingBox(
-            {{box.position_x}}, {{ box.position_y }},
-            {{box.position_x}} + {{box.width}}, {{box.position_y}} + {{ box.height }},
-            '{{ box.text }}');
-    {% endfor %}
+
+
+document.getElementById('my-toolbar-container').addEventListener('click', function(event) {
+    event.preventDefault();
+});
+
+
+// Annotorious + annotation storing
+let annotations = anno.getAnnotations();
+let annotationList = document.getElementById('annotation_list');
+let annotation_counter = 0;
+
+function addAnnotationToList(annotation) {
+    annotationList.innerHTML = annotationList.innerHTML
+        + "<input "
+        + "type='hidden' "
+        + "id='annotation-" + annotation_counter + "' "
+        + "name='annotation-" + annotation_counter + "' "
+        + "data-annotorious-id='" + annotation.id + "'"
+        + "value='" + JSON.stringify(annotation) + "'"
+        + ">"
+    annotation_counter++;
+}
+
+function deleteAnnotationFromList(annotation) {
+    /*
+    Iterate through annotation list to find element with ('data-annotorious-id' === annotation.id) then delete it.
+    */
+    const annotations = document.getElementById('annotation_list').children;
+    for (let i = 0; i < annotations.length; i++) {
+        if (annotations[i].getAttribute('data-annotorious-id') === annotation.id) {
+            document.getElementById(annotations[i].id).remove();    // Remove annotation
+            return annotation.id;
+        }
+    }
+}
+
+
+{% if annotations %}
+{% for a in annotations %}
+    anno.addAnnotation({{ a|safe }});
+    addAnnotationToList({{ a|safe }});
+{% endfor %}
+{% endif %}
+
+anno.on('createAnnotation', function(annotation) {
+    // Add annotation to list
+    addAnnotationToList(annotation);
+});
+
+anno.on('updateAnnotation', function(annotation, previous) {
+    /* Remove previously stored annotation from list, and add updated one */
+    deleteAnnotationFromList(previous);
+    addAnnotationToList(annotation);
+});
+
+anno.on('deleteAnnotation', function(annotation) {
+    // Delete annotation from list
+    deleteAnnotationFromList(annotation);
+});
 
 
 </script>

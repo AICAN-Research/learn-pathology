@@ -2,6 +2,7 @@ import os
 import time
 import threading
 from io import BytesIO
+import json
 
 import fast
 import numpy as np
@@ -232,8 +233,7 @@ class Slide(models.Model):
             cdvec2_elem = property_elem.find('CdVec2')
             scale_xy = [float(d.text) for d in cdvec2_elem.findall('double')]
 
-            print('Scale factor (um/px):', scale_xy)
-            self._scale_factor = scale_xy
+            self._scale_factor = scale_xy   # scale factor in um/px
 
         except Exception as err:
             print(f"An error occurred: The requested metadata.xml file for {self.path} was not found. Setting scale factor None")
@@ -269,6 +269,28 @@ class AnnotatedSlide(models.Model):
         for bb in BoundingBox.objects.filter(annotated_slide=self):
             js += bb.get_js()
         return js
+
+
+class Annotation(models.Model):
+    annotated_slide = models.ForeignKey(AnnotatedSlide, on_delete=models.CASCADE)
+    json_string = models.TextField(blank=False, help_text='The annotation in W3C format (JSON) stored as a string')
+
+    def deserialize(self):
+        return json.loads(self.json_string)
+
+    @property
+    def text(self):
+        """
+        The text/comment of the annotation
+        """
+        raise NotImplementedError('Annotation property "text" has not been implemented yet')
+
+    @property
+    def type(self):
+        """
+        Human-readable annotation type (point, box, ellipse, ...)
+        """
+        raise NotImplementedError('Annotation property "type" has not been implemented yet')
 
 
 class Pointer(models.Model):

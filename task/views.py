@@ -41,7 +41,7 @@ def list(request):
         tasks = tasks.filter(tags__in=stains)
     tags = request.GET.getlist('tag[]')
     if len(tags) > 0:
-        tasks = tasks.filter(tags__in=tags)
+        tasks = tasks.filter(tags__in=tags).distinct()
 
     selected_pathology = request.GET.get('pathology', False)
     selected_histology = request.GET.get('histology', False)
@@ -84,6 +84,7 @@ def new(request, slide_id=None, course_id=None):
 
             context['slide_id'] = slide_id
             context['slide'] = slide
+            context['taskForm'] = TaskForm()
 
             if course_id is not None:
                 context['course_id'] = course_id
@@ -94,29 +95,24 @@ def new(request, slide_id=None, course_id=None):
             # Get empty forms and display page depending on which task type was selected
             if task_type == 'multiple_choice':
                 context['new_url'] = '/multiple_choice/new'
-                context['taskForm'] = TaskForm()
                 context['multipleChoiceForm'] = MultipleChoiceForm()
                 context['choiceFormset'] = get_choice_formset()
                 return render(request, 'multiple_choice/new.html', context)
             elif task_type == 'free_text':
                 context['new_url'] = '/free_text/new'
-                context['taskForm'] = TaskForm()
                 context['freeTextForm'] = FreeTextForm()
                 return render(request, 'free_text/new.html', context)
             elif task_type == 'click_question':
                 context['new_url'] = '/click_question/new'
-                context['taskForm'] = TaskForm()
                 context['clickQuestionForm'] = ClickQuestionForm()
                 return render(request, 'click_question/new.html', context)
             elif task_type == 'one_to_one_sort':
                 context['new_url'] = '/one_to_one/new'
-                context['taskForm'] = TaskForm()
                 context['oneToOneForm'] = OneToOneForm()
                 context['sortingPairFormSet'] = get_sorting_pair_formset()
                 return render(request, 'one_to_one/new.html', context)
             elif task_type == 'many_to_one_sort':
                 context['new_url'] = '/many_to_one/new'
-                context['taskForm'] = TaskForm()
                 context['manyToOneForm'] = ManyToOneForm()
                 context['column_formset'] = TableColumnFormSet(instance=ManyToOne(), prefix='column')
                 return render(request, 'many_to_one/new.html', context)
@@ -125,7 +121,6 @@ def new(request, slide_id=None, course_id=None):
 
         # Or, the form with question information and annotations is submitted
         # TODO: Handle this directly using <form action="specific/task/url/" ...>
-
 
         if slide_id is not None:
             # Get slide
@@ -158,8 +153,8 @@ def new(request, slide_id=None, course_id=None):
             context['slides'] = Slide.objects.all()
 
     # if slide_id is not None:
-    #     return render(request, 'task/new_info_and_annotation.html', context)
-    return render(request, "task/new_select_slide.html", context)
+    #     return render(request, 'task/new_or_edit_step2_add_info_and_annotate.html', context)
+    return render(request, "task/new_or_edit_step1_select_type_and_slide.html", context)
 
 
 @teacher_required
