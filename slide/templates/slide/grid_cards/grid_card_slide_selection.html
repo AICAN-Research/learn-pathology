@@ -1,5 +1,6 @@
 {% load bootstrap_icons %}
 {% load to_class_name %}
+{% load static %}
 
 
 <div class="slideGridViewCard card {% if slide_selected == 'true' %}remove_button border-success{% else %}add_button{% endif %}"
@@ -19,7 +20,7 @@
         {% if slide_selected == 'true' %}
             <div style="float: right; position: absolute; top: 5px; right: 5px;">
                 <svg class="bi text-success" width="32px" height="32px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-                    {% bs_icon 'check-circle' %}
+                    {% include 'svg_icons/check-circle.svg' %}">
                 </svg>
             </div>
         {% endif %}
