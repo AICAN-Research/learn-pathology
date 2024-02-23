@@ -1,4 +1,3 @@
-{% load bootstrap_icons %}
 {% load to_class_name %}
 {% load static %}
 
@@ -18,10 +17,8 @@
         </div>
 
         {% if slide_selected == 'true' %}
-            <div style="float: right; position: absolute; top: 5px; right: 5px;">
-                <svg class="bi text-success" width="32px" height="32px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-                    {% include 'svg_icons/check-circle.svg' %}">
-                </svg>
+            <div style="display: block; float: right; position: absolute; top: 5px; right: 5px; font-size: 32px;">
+                <i class="icon-ic_fluent_checkmark_circle_24_filled text-success"></i>
             </div>
         {% endif %}
     </a>
