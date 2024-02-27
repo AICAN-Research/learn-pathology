@@ -547,7 +547,7 @@ Course navigation tabs
 }
 
 .courseNavTabs .nav-link {
-    background-color: var(--color-white);
+    background-color: var(--color-gray);
     color: var(--text-colour);
     border-style: solid;
     border-width: 1px  1px 0 1px;
@@ -562,7 +562,7 @@ Course navigation tabs
 }
 
 .courseNavTabs .nav-link.active {
-    background-color: var(--background);
+    background-color: var(--color-white);
     font-weight: bold;
     border-color: var(--color-blue);
     border-bottom-color: var(--color-white);
