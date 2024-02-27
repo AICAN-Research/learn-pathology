@@ -829,6 +829,7 @@ Sidebar
     display: inline-flex;
     width: 40px;
     height: 40px;
+    font-size: 24px;
     padding: 8px;
     justify-content: center;
     align-items: center;
