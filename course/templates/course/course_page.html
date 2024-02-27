@@ -47,40 +47,40 @@
 
 {# Place nav-tabs on top #}
 <ul class="nav nav-tabs courseNavTabs" id="myTab" role="tablist" style="width: 100%; gap: 8px;">
+    <!-- TODO: All the course page icons need to be correctly vertically aligned with the text -->
     <li class="nav-item" role="presentation">
-        <button class="nav-link{% if active_tab == 'course-description' or active_tab == None %} active{% endif %}" data-bs-toggle="pill"
-                data-bs-target="#course-description"
-                type="button" role="tab" aria-controls="course-description"
-                aria-controls="course-description" aria-selected="true"
-        >{% bs_icon 'body-text' %} Course description
+        <button class="nav-link{% if active_tab == 'course-description' or active_tab == None %} active{% endif %}"
+                data-bs-toggle="pill" data-bs-target="#course-description"
+                type="button" role="tab" aria-controls="course-description" aria-selected="true">
+            <i class="icon-ic_fluent_book_information_24_regular"></i> Course description
         </button>
     </li>
     <li class="nav-item" role="presentation">
-        <button class="nav-link {% if active_tab == 'learning-outcomes' %} active{% endif %}" data-bs-toggle="pill" data-bs-target="#learning-outcomes"
-                type="button"
-                role="tab" aria-controls="learning-outcomes"
-                aria-selected="true">{% bs_icon 'flag' %}
-            Learning outcomes
+        <button class="nav-link {% if active_tab == 'learning-outcomes' %} active{% endif %}"
+                data-bs-toggle="pill" data-bs-target="#learning-outcomes"
+                type="button" role="tab" aria-controls="learning-outcomes" aria-selected="true">
+            <i class="icon-ic_fluent_folder_open_24_regular"></i> Learning outcomes
         </button>
     </li>
     <li class="nav-item" role="presentation">
-        <button class="nav-link {% if active_tab == 'slides' %} active{% endif %}" data-bs-toggle="pill" data-bs-target="#slides" type="button"
-                role="tab" aria-controls="slides"
-                aria-selected="false">{% bs_icon 'image' %}
-            Slides
+        <button class="nav-link {% if active_tab == 'slides' %} active{% endif %}"
+                data-bs-toggle="pill" data-bs-target="#slides"
+                type="button" role="tab" aria-controls="slides" aria-selected="false">
+            <i class="icon-ic_fluent_image_24_regular"></i> Slides
         </button>
     </li>
     <li class="nav-item" role="presentation">
-        <button class="nav-link {% if active_tab == 'tasks' %} active{% endif %}" data-bs-toggle="pill" data-bs-target="#tasks" type="button"
-                role="tab" aria-controls="tasks"
-                aria-selected="false">{% bs_icon 'question-square' %} Tasks/quizzes
+        <button class="nav-link {% if active_tab == 'tasks' %} active{% endif %}"
+                data-bs-toggle="pill" data-bs-target="#tasks"
+                type="button" role="tab" aria-controls="tasks" aria-selected="false">
+            <i class="icon-ic_fluent_flag_24_regular"></i> Tasks
         </button>
     </li>
     <li class="nav-item" role="presentation">
-        <button class="nav-link {% if active_tab == 'course-material' %} active{% endif %}" data-bs-toggle="pill" data-bs-target="#course-material"
-                type="button"
-                role="tab" aria-controls="course-material"
-                aria-selected="false">{% bs_icon 'stack' %}Learning materials
+        <button class="nav-link {% if active_tab == 'course-material' %} active{% endif %}"
+                data-bs-toggle="pill" data-bs-target="#course-material"
+                type="button" role="tab" aria-controls="course-material" aria-selected="false">
+            <i class="icon-ic_fluent_document_bullet_list_24_regular"></i> Learning materials
         </button>
     </li>
 </ul>
