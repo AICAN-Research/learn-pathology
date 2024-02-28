@@ -81,7 +81,8 @@ Slides browser
                         <label for="histology-btn" class="body-text">Histology</label>
                     </div>
                     <div>
-                        <input type="radio" name="histology-pathology" id="pathology-btn" value="pathology" {% if selected_pathology %}checked="checked"{% endif %} onchange="this.form.submit();">
+                        <input type="radio" name="histology-pathology" id="pathology-btn" value="pathology"
+                               {% if selected_pathology and not selected_general_pathology %}checked="checked"{% endif %} onchange="this.form.submit();">
                         <label for="pathology-btn" class="body-text">Pathology</label>
                     </div>
 
@@ -98,8 +99,10 @@ Slides browser
                     {% if selected_pathology %}
                         <ul class="" style="list-style: none;">
                             {% for tag in general_pathology_tags %}
-                                <input type="radio" name="general_pathology_button" id="general_pathology-id-{{ tag.id }}" value="general_pathology_tag-id-{{ tag.id }}" onchange="this.form.submit();">
-                                <label for="general_pathology-id-{{ tag.id }}" class="wideLabel{% if tag == selected_general_pathology %} active{% endif %}">{{ tag.name }}</label>
+                                <input type="radio" name="general_pathology_button" id="general_pathology-id-{{ tag.id }}" value="general_pathology_tag-id-{{ tag.id }}"
+                                       {% if tag == selected_general_pathology %}checked="checked"{% endif %}
+                                       onchange="this.form.submit();">
+                                <label for="general_pathology-id-{{ tag.id }}" class="body-text">{{ tag.name }}</label>
                             {% endfor %}
                         </ul>
                     {% endif %}
