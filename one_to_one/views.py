@@ -1,19 +1,21 @@
 import json
 
-from django.contrib import messages
 from django.db import transaction
+from django.contrib import messages
 from django.forms import formset_factory, modelformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 
-from task.common import process_new_task_request, process_edit_task_request, \
-    setup_common_new_task_context, setup_common_edit_task_context
+
 from slide.views import slide_cache
 from task.models import Task
 from task.forms import TaskForm
-from one_to_one.models import OneToOne, SortingPair
-from one_to_one.forms import OneToOneForm, SortingPairForm
 from course.models import Course
 from user.decorators import teacher_required
+from one_to_one.models import OneToOne, SortingPair
+from one_to_one.forms import OneToOneForm, SortingPairForm
+from slide.models import AnnotatedSlide
+from task.common import process_new_task_request, process_edit_task_request, \
+    setup_common_new_task_context, setup_common_edit_task_context
 
 
 def do(request, task_id, course_id=None):
@@ -32,22 +34,19 @@ def do(request, task_id, course_id=None):
 
     context = setup_common_new_task_context(task_id, course_id)
     slide_cache.load_slide_to_cache(context['slide'].id)
+    
 
     # ======== Multiple choice specific ========
     one_to_one = context['task'].onetoone
 
     mode = 'get'
-    id_order = [1, 2, 3]
+    id_order = []
     answer_order = []
     if request.method == 'POST':
         # Process form
         id_order = request.POST.get('item_ids', None).split(',')
-        id_order =[int(x) for x in id_order]
-        for i, item in enumerate(id_order):
-            if item == i + 1:
-                answer_order.append(True)
-            else:
-                answer_order.append(False)
+        id_order = list(map(int, id_order))
+        answer_order = [True if item == i + 1 else False for i, item in enumerate(id_order)]
 
         mode = 'post'
 
@@ -62,23 +61,31 @@ def do(request, task_id, course_id=None):
 def new(request, slide_id, course_id=None):
     """
     Teacher form for creating a one-to-one sorting task
+
+    Parameters
+    ----------
+    request : Http request
+
+    slide_id : int
+        ID of Slide instance
+    course_id : int
+        ID of Course instance
     """
 
     # Get slide
     slide = slide_cache.load_slide_to_cache(slide_id)
 
-    # Process forms
     SortingPairFormSet = formset_factory(SortingPairForm, extra=5)
-    if request.method == 'POST':  # Form was submitted
 
+    # Process forms
+    if request.method == 'POST':  # Form was submitted
         task_form = TaskForm(request.POST)
         one_to_one_form = OneToOneForm(request.POST)
         sorting_pair_formset = SortingPairFormSet(request.POST)
 
         with transaction.atomic():
-         # Make save operation atomic
+            # Make save operation atomic
             if one_to_one_form.is_valid() and task_form.is_valid() and sorting_pair_formset.is_valid():
-
                 task = process_new_task_request(request, slide_id, course_id)
 
                 # Create one to one sorting task
@@ -86,6 +93,7 @@ def new(request, slide_id, course_id=None):
                 one_to_one_task.task = task
                 one_to_one_task.save()
 
+                # Create sorting pairs
                 for pairForm in sorting_pair_formset:
                     pair = pairForm.save(commit=False)
                     if len(pair.fixed) > 0 and len(pair.draggable) > 0:
@@ -94,9 +102,12 @@ def new(request, slide_id, course_id=None):
 
                 # Give a message back to the user
                 messages.add_message(request, messages.SUCCESS, 'Task added successfully!')
+
                 if course_id is not None and course_id in Course.objects.values_list('id', flat=True):
                     return redirect('course:view', course_id=course_id, active_tab='tasks')
+
                 return redirect('task:list')
+
     else:
         task_form = TaskForm()
         one_to_one_form = OneToOneForm()
@@ -111,9 +122,19 @@ def new(request, slide_id, course_id=None):
 
 
 @teacher_required
-def edit(request, task_id,course_id=None):
+def edit(request, task_id, course_id=None):
     """
     Teacher form for editing a one-to-one sorting task
+
+
+    Parameters
+    ----------
+    request : Http request
+
+    task_id : int
+        ID of Task instance
+    course_id : int
+        ID of Course instance
     """
 
     context = setup_common_edit_task_context(task_id, course_id)
@@ -127,7 +148,7 @@ def edit(request, task_id,course_id=None):
 
         task_form = TaskForm(request.POST or None, instance=context['task'])
         one_to_one_form = OneToOneForm(request.POST or None, instance=one_to_one)
-        sorting_pair_formset = SortingPairFormSet(request.POST)
+        sorting_pair_formset = SortingPairFormSet(request.POST, queryset=sorting_pair)
 
         with transaction.atomic():  # Make save operation atomic
             if task_form.is_valid() and one_to_one_form.is_valid():
@@ -136,18 +157,15 @@ def edit(request, task_id,course_id=None):
                 task = task_form.save()
                 process_edit_task_request(request, task, task_form)
                 one_to_one = one_to_one_form.save()
-                #one_to_one.sortingpair_set.all().delete()
 
                 for pairForm in sorting_pair_formset:
-                    print(pairForm.errors)
-
-                    if pairForm.is_valid():
-
-                        pair = pairForm.save(commit=False)
-                        print(f'{pair.fixed} is valid ')
-                        if len(pair.fixed) > 0 and len(pair.draggable) > 0:
+                    if pairForm.has_changed():
+                        if pairForm.is_valid():
+                            pair = pairForm.save(commit=False)
                             pair.task = one_to_one
                             pair.save()
+                        else:
+                            pairForm.cleaned_data['id'].delete()
 
                 messages.add_message(request, messages.SUCCESS,
                                      f'The task {task.name} was altered!')
