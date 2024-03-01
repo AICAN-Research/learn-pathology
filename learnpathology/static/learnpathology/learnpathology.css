@@ -451,13 +451,13 @@ Radio button toolbar used with slide filters
 .radio-toolbar input[type="radio"] {
     color: var(--text-colour-dark);
     position: absolute;
-    margin-top: 8px;
+    margin-top:0.4em;
     width: 0.75em;
     height: 0.75em;
 }
 
 .radio-toolbar label{
-    margin-bottom: 5px;
+    margin-bottom:0.2em;
     margin-left:2.5ch;
 }
 
