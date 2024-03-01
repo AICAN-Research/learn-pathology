@@ -772,7 +772,6 @@ Sidebar
     justify-content: flex-start;
     align-items: center;
     align-self: stretch;
-    gap: 200px;
 }
 
 /* Header and top items */
@@ -1298,3 +1297,31 @@ Header of page main content
 .custom-button.button-light .button-text {
     color: var(--color-blue-dark);
 }
+
+.a9s-toolbar-btn {
+    background-color: var(--color-blue-dark) !important;
+    color: var(--color-white);
+}
+
+.a9s-toolbar-btn svg path,
+.a9s-toolbar-btn svg line,
+.a9s-toolbar-btn svg circle,
+.a9s-toolbar-btn svg rect,
+.a9s-toolbar-btn svg ellipse
+{    stroke: var(--color-white);
+}
+
+.annotationListButton {
+    display: inline-block;
+    background-color: var(--color-blue-light);
+    font-family: sans-serif, Arial;
+    font-size: 1rem;
+    font-weight: 400;
+    border: 0 solid var(--color-blue);
+    border-radius: 4px;
+    padding: 5px 5px;
+    margin: 1px 0 1px 0;
+    width: 70%;
+}
+
+

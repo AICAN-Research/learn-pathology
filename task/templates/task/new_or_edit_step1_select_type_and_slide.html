@@ -16,11 +16,7 @@ New task: Select task type and image
 
         <div style="overflow:auto;">
             <div style="float:right;">
-                <button type="button" id="prevBtn" onclick="nextPrev(-1)">Previous</button>
-                <button type="button" id="nextBtn" onclick="nextPrev(1)">Next</button>
-                {% comment %}
-                <!-- TODO: Add as custom LearnPathology-style buttons -->
-                <button type="button" class="custom-button" id="nextBtn" onclick="nextPrev(-1)">
+                <button type="button" class="custom-button" id="prevBtn" onclick="nextPrev(-1)">
                     <div style="display: inline-flex;">
                         <div class="button-icon">
                             <span class="iconify" data-icon="fluent:arrow-left-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
@@ -40,7 +36,6 @@ New task: Select task type and image
                         </div>
                     </div>
                 </button>
-                {% endcomment %}
             </div>
         </div>
 
@@ -72,7 +67,7 @@ New task: Select task type and image
                         <div class="column">
                             <div class="column">
                                 <div class="radio-toolbar">
-                                    <!-- Task type selction -->
+                                    <!-- Task type selection -->
                                     <div>
                                         <input type="radio" name="task_type" id="multiple_choice" value="multiple_choice"> <!-- onchange="this.form.submit();"> -->
                                         <label for="multiple_choice" class="body-text">Multiple choice</label>
@@ -94,53 +89,6 @@ New task: Select task type and image
                                         <label for="many_to_one_sort" class="body-text">Many-to-one sorting task</label>
                                     </div>
                                 </div>
-                                {% comment %}
-                                <div class="LPButton" style="margin-top: 0; ">
-                                    {% if course_id %}
-                                        <a href="{% url 'multiple_choice:new' slide_id=slide_id course_id=course_id %}">Single/Multiple
-                                            Choice</a>
-                                    {% else %}
-                                        <a href="{% url 'multiple_choice:new' slide_id=slide_id %}">Single/Multiple
-                                            Choice</a>
-                                    {% endif %}
-                                </div>
-                                <br>
-                                <div class="LPButton" style="margin-top: 0; ">
-                                    {% if course_id %}
-                                        <a href="{% url 'free_text:new' slide_id=slide_id course_id=course_id %}">Free Text
-                                            Question</a>
-                                    {% else %}
-                                        <a href="{% url 'free_text:new' slide_id=slide_id %}">Free Text Question</a>
-                                    {% endif %}
-                                </div>
-                                <br>
-                                <div class="LPButton" style="margin-top: 0; ">
-                                    {% if course_id %}
-                                        <a href="{% url 'click_question:new' slide_id=slide_id course_id=course_id %}">Click
-                                            Question</a>
-                                    {% else %}
-                                        <a href="{% url 'click_question:new' slide_id=slide_id %}">Click Question</a>
-                                    {% endif %}
-                                </div>
-                                <br>
-                                <div class="LPButton" style="margin-top: 0; ">
-                                    {% if course_id %}
-                                        <a href="{% url 'one_to_one:new' slide_id=slide_id course_id=course_id %}">One-to-One
-                                            Sorting Task</a>
-                                    {% else %}
-                                        <a href="{% url 'one_to_one:new' slide_id=slide_id %}">One-to-One Sorting Task</a>
-                                    {% endif %}
-                                </div>
-                               <br>
-                                <div class="LPButton" style="margin-top: 0; ">
-                                    {% if course_id %}
-                                        <a href="{% url 'many_to_one:new' slide_id=slide_id course_id=course_id %}">Many-to-One
-                                            Sorting Task</a>
-                                    {% else %}
-                                        <a href="{% url 'many_to_one:new' slide_id=slide_id %}">Many-to-One Sorting Task</a>
-                                    {% endif %}
-                                </div>
-                                {% endcomment %}
                             </div>
                         </div>
                     </div>
@@ -193,8 +141,26 @@ New task: Select task type and image
 
     <div style="overflow: auto;">
         <div style="float: right;">
-            <button type="button" id="prevBtnBottom" onclick="nextPrev(-1)">Previous</button>
-            <button type="button" id="nextBtnBottom" onclick="nextPrev(1)">Next</button>
+            <button type="button" class="custom-button" id="prevBtnBottom" onclick="nextPrev(-1)">
+                <div style="display: inline-flex;">
+                    <div class="button-icon">
+                        <span class="iconify" data-icon="fluent:arrow-left-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
+                    </div>
+                    <div style="justify-content: flex-start; align-items: center; display: flex">
+                        <div class="button-text">Previous</div>
+                    </div>
+                </div>
+            </button>
+            <button type="button" class="custom-button" id="nextBtnBottom" onclick="nextPrev(1)">
+                <div style="display: inline-flex;">
+                    <div class="button-icon">
+                        <span class="iconify" data-icon="fluent:arrow-right-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
+                    </div>
+                    <div style="justify-content: flex-start; align-items: center; display: flex">
+                        <div class="button-text">Next</div>
+                    </div>
+                </div>
+            </button>
         </div>
     </div>
 

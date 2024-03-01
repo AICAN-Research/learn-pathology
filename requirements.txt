@@ -5,3 +5,4 @@ pyyaml==5.*
 
 numpy~=1.23.5
 django-ckeditor~=6.5.1
+django-allauth==0.59.*
