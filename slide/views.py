@@ -1,4 +1,3 @@
-import fast
 import os.path
 import json
 
@@ -296,6 +295,7 @@ def tile(request, slide_id, osd_level, x, y):
 
 
 def create_thumbnail(slide_id):
+    import fast
     slide = slide_cache.load_slide_to_cache(slide_id)
     access = slide.image.getAccess(fast.ACCESS_READ)
     image = access.getLevelAsImage(slide.image.getNrOfLevels()-1)
