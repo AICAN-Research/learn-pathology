@@ -1,0 +1,267 @@
+{% extends 'task/new.html' %}
+
+
+{% block page_title %}
+    {% if task %}Edit task{% else %}New task: Second step{% endif %}
+{% endblock page_title %}
+
+
+{% block content %}
+
+<div class="card w-100 mx-auto">
+<div class="card-body"> <!-- TODO: Instead of card-body, add same padding as on other pages (e.g. image browser) -->
+    {% if task %}   <!-- If task is passed, task is being edited -->
+    <form class="form" method="post" id="taskForm" action="/{{ task.type }}/edit/{{ task.id }}/{% if course_id %}{{ course_id }}{% endif %}">
+    {% else %}  <!-- If task is not passed, task is being created -->
+    <form class="form" method="post" id="taskForm" action="{% block task_type_new_url %}{% endblock task_type_new_url %}/{{ slide.id }}/{% if course_id %}{{ course_id }}{% endif %}">
+    {% endif %}
+
+        {% csrf_token %}
+        {{ taskForm.management_form }}
+
+        <div style="overflow:auto;">
+            <div style="float:right;">
+                <button type="button" class="custom-button" id="prevBtn" onclick="nextPrev(-1)">
+                    <div style="display: inline-flex;">
+                        <div class="button-icon">
+                            <span class="iconify" data-icon="fluent:arrow-left-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
+                        </div>
+                        <div style="justify-content: flex-start; align-items: center; display: flex">
+                            <div class="button-text">Previous</div>
+                        </div>
+                    </div>
+                </button>
+                <button type="button" class="custom-button" id="nextBtn" onclick="nextPrev(1)">
+                    <div style="display: inline-flex;">
+                        <div class="button-icon">
+                            <span class="iconify" data-icon="fluent:arrow-right-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
+                        </div>
+                        <div style="justify-content: flex-start; align-items: center; display: flex">
+                            <div class="button-text">Next</div>
+                        </div>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+            {% if task %}
+                <div class="tab tab-pane active" id="step1">
+            {% else %}
+                <div class="tab tab-pane active" id="step3">
+            {% endif %}
+                <div class="w-100" style="padding-bottom: 12px;">
+                    <div class="progress " style="width: 25%; height: 32px; margin-left: auto;">
+                        {% if task %}
+                            <div class="progress-bar" role="progressbar" style="width: 50%; background-color: var(--color-blue-dark);">
+                                1/2
+                            </div>
+                        {% else %}
+                            <div class="progress-bar" role="progressbar" style="width: 75%; background-color: var(--color-blue-dark);">
+                                3/4
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div style="padding: 6px 24px 6px 24px;">
+                    <h2>
+                        {% block task_type %}{% endblock task_type %}: Task information
+                    </h2>
+                    <h3 style="color: var(--color-blue-dark);">
+                        Fill in the descriptive fields of the task
+                    </h3>
+                </div>
+
+                <div class="card transparentBackground w-100 border-0 text-center">
+                <div class="card-body">
+                <div class="card-text">
+                    {% block specific_task_type_form %}
+                    {% endblock specific_task_type_form %}
+                    <table class="table">
+                        <thead class="thead-light">
+                            <tr><th colspan="2">Task metadata and tagging</th></tr>
+                        </thead>
+                        <tr>
+                            <th>{{ taskForm.pathology.label }}</th>
+                            <td>{{ taskForm.pathology }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ taskForm.organ_tags.label }}</th>
+                            <td>{{ taskForm.organ_tags }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ taskForm.other_tags.label }}</th>
+                            <td>{{ taskForm.other_tags }}</td>
+                        </tr>
+                    </table>
+                </div>
+                </div>
+                </div>
+
+            </div>
+
+            {% if task %}
+                <div class="tab tab-pane" id="step2">
+            {% else %}
+                <div class="tab tab-pane" id="step4">
+            {% endif %}
+
+                <div class="w-100" style="padding-bottom: 12px;">
+                    <div class="progress " style="width: 25%; height: 32px; margin-left: auto;">
+                        {% if task %}
+                            <div class="progress-bar" role="progressbar" style="width: 100%; background-color: var(--color-blue-dark);">
+                                2/2
+                            </div>
+                        {% else %}
+                            <div class="progress-bar" role="progressbar" style="width: 100%; background-color: var(--color-blue-dark);">
+                                4/4
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div style="padding: 6px 24px 6px 24px;">
+                    <h2>
+                        New task: Annotate WSI
+                    </h2>
+                    <h3 style="color: var(--color-blue-dark);">
+                        Fill in the descriptive fields of the task
+                    </h3>
+                </div>
+        {% if clickQuestionForm %}
+            {% include 'slide/view_wsi_and_edit_annotations.html' with slide=slide annotations=annotations tasktype='click_question' %}
+        {% else %}
+                {% include 'slide/view_wsi_and_edit_annotations.html' with slide=slide annotations=annotations tasktype=task.type %}
+        {% endif %}
+            </div>
+        </div>
+
+    </form>
+
+    <div style="overflow:auto;">
+        <div style="float:right;">
+            <button type="button" class="custom-button" id="prevBtnBottom" onclick="nextPrev(-1)">
+                <div style="display: inline-flex;">
+                    <div class="button-icon">
+                        <span class="iconify" data-icon="fluent:arrow-left-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
+                    </div>
+                    <div style="justify-content: flex-start; align-items: center; display: flex">
+                        <div class="button-text">Previous</div>
+                    </div>
+                </div>
+            </button>
+            <button type="button" class="custom-button" id="nextBtnBottom" onclick="nextPrev(1)">
+                <div style="display: inline-flex;">
+                    <div class="button-icon">
+                        <span class="iconify" data-icon="fluent:arrow-right-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
+                    </div>
+                    <div style="justify-content: flex-start; align-items: center; display: flex">
+                        <div class="button-text">Next</div>
+                    </div>
+                </div>
+            </button>
+        </div>
+    </div>
+
+</div>
+</div>
+
+
+<style>
+
+/* Hide all steps by default: */
+.tab {
+  display: none;
+}
+.tab-pane {
+  display: none;
+}
+
+</style>
+
+
+<script>
+
+    var currentTab = 0; // Current tab is set to be the first tab (0)
+    showTab(currentTab); // Display the current tab
+
+
+    function showTab(n) {
+        // This function will display the specified tab of the form ...
+        var x = document.getElementsByClassName("tab-pane");
+        x[n].style.display = "block";
+        // ... and fix the Previous/Next buttons:
+        if (n == 0) {
+            document.getElementById("prevBtn").style.display = "none";
+            document.getElementById("prevBtnBottom").style.display = "none";
+        } else {
+            document.getElementById("prevBtn").style.display = "inline";
+            document.getElementById("prevBtnBottom").style.display = "inline";
+        }
+        if (n == (x.length - 1)) {
+            document.getElementById("nextBtn").children[0].children[1].children[0].innerHTML = "Submit";
+            document.getElementById("nextBtnBottom").children[0].children[1].children[0].innerHTML = "Submit";
+        } else {
+            document.getElementById("nextBtn").children[0].children[1].children[0].innerHTML = "Next";
+            document.getElementById("nextBtnBottom").children[0].children[1].children[0].innerHTML = "Next";
+        }
+    }
+
+    function nextPrev(n) {
+        // This function will figure out which tab to display
+        var x = document.getElementsByClassName("tab-pane");
+        // Exit the function if any field in the current tab is invalid:
+        if (n == 1 && !validateForm()) {
+            // TODO: Add alert that form is incorrectly filled
+            return false;
+        }
+        // Hide the current tab:
+        x[currentTab].style.display = "none";
+        // Increase or decrease the current tab by 1:
+        currentTab = currentTab + n;
+        // if you have reached the end of the form... :
+        if (currentTab >= x.length) {
+            //...the form gets submitted:
+            document.getElementById("taskForm").submit();
+            return false;
+        }
+        // Otherwise, display the correct tab:
+        showTab(currentTab);
+    }
+
+    function validateForm() {
+        // This function deals with validation of the form fields
+        var x, y, i, valid = true;
+        x = document.getElementsByClassName("tab-pane");
+        y = x[currentTab].getElementsByTagName("input");
+        // A loop that checks every input field in the current tab:
+        /*for (i = 0; i < y.length; i++) {
+        // If a field is empty...
+            if (y[i].value == "") {
+              // add an "invalid" class to the field:
+              y[i].className += " invalid";
+              // and set the current valid status to false:
+              valid = false;
+            }
+        }*/
+        // If the valid status is true, mark the step as finished and valid:
+        /*if (valid) {
+            document.getElementsByClassName("step")[currentTab].className += " finish";
+        }*/
+        return valid; // return the valid status
+    }
+
+</script>
+
+{% endblock content %}
+
+
+{% block javascript %}
+
+$(document).ready(function(){
+    collapseSidebar();
+});
+
+{% endblock javascript %}

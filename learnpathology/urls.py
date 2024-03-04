@@ -24,6 +24,7 @@ import slide.views
 
 urlpatterns = [
     path('', learnpathology.views.index, name='frontpage'),
+    path('privacy/', learnpathology.views.privacy_info, name='privacy'),
     path('viewer/<int:slide_id>/', slide.views.whole_slide_viewer, name="view_wsi"),
     path('viewer/tile/<int:slide_id>/<int:osd_level>/<int:x>/<int:y>/', slide.views.tile, name="tile"),
     path('admin/', admin.site.urls),
@@ -39,7 +40,16 @@ urlpatterns = [
     path('one_to_one/', include('one_to_one.urls')),
     path('many_to_one/', include('many_to_one.urls')),
     path('sorting/', include('sorting.urls'))
+    path('one_column/', learnpathology.views.test_one_column),
+    path('two_column/', learnpathology.views.test_two_column),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.USE_FEIDE_LOGIN:
+    urlpatterns += [path('accounts/', include('feide.urls')),]
+    #urlpatterns += [path('accounts/', include('allauth.urls')),]
 
 urlpatterns += [
     # Define specific paths (can be used with {% url %} tag
@@ -49,6 +59,3 @@ urlpatterns += [
     # Or, use this 'catchall' pattern for all flatpages
     re_path(r'^(?P<url>.*/)$', views.flatpage),
 ]
-
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -178,29 +178,9 @@ class Command(BaseCommand):
                         pathology=is_pathology,
                     )
                     slide.save()
-
-                    if path_to_slide.endswith('.vsi'):
-                        try:
-                            create_thumbnail(slide.id, thumbnails_dir)
-                        except Exception as exc:
-                            print(exc)
+                    create_thumbnail(slide.id)
 
                     new_paths.append(path_to_slide)  # to ensure duplicates aren't added
-
-            else:  # Path already exists, retrieve existing entry
-                #try:
-                slide = Slide.objects.get(path=path_to_slide)
-                # Copy thumbnail.jpg file from data source to project files
-                if str(slide.id) + '.jpg' not in os.listdir(thumbnails_dir) \
-                        and path_to_slide.endswith('.vsi'):
-                    try:
-                        create_thumbnail(slide.id, thumbnails_dir)
-                    except Exception as exc:
-                        print(exc)
-
-                #except Exception as exc:
-                #    # TODO: Catch exception if > 1 entry with same path exists
-                #    pass
 
             # ==== Add tags to slide (and to DB where missing) ====
             organ = slide_data['organ']

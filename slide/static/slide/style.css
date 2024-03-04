@@ -1,6 +1,11 @@
 /** {*/
 /*    font-family: Arial, Verdana, sans-serif;*/
 /*}*/
+/** Hack to fix annotorius firefox issue: https://github.com/annotorious/annotorious-openseadragon/issues/78 */
+svg {
+    min-width:10px;
+    min-height:10px;
+}
 .success {
     color: green;
     background-color: rgb(200, 255, 200);
@@ -35,3 +40,4 @@ main {
 td {
     padding: 6px 10px 6px 10px;
 }
+

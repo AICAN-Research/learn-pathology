@@ -1,13 +1,8 @@
 {% load static %}
 
 <div class="container fill" style="min-height: 600px">
-<p>Double click where you want to add annotations</p>
-
-<div id="wsi-canvas" class="wsi_canvas" style="height: 600px;"></div>
-
-{% if annotated_slide %}
-    {{ annotated_slide.get_html | safe }}
-{% endif %}
+    <p>Double click where you want to add annotations</p>
+    <div id="wsi-canvas" class="wsi_canvas" style="height: 600px;"></div>
 </div>
 
 <script src="{% static 'slide/openseadragon.min.js' %}"></script>
@@ -29,16 +24,6 @@
            getTileUrl: function( level, x, y ) {
                return "/viewer/tile/{{ slide.id }}/" + ({{ slide.osd_levels }} - 1 - level) + "/" + x + "/" + y + "/";
                },
-           overlays: [
-                   {
-                    id: 'right-arrow-overlay-no-rotate', // Arrow pointing to the tip of the hair
-                    x: 0.492,
-                    y: 0.496,
-                    placement: OpenSeadragon.Placement.RIGHT,
-                    rotationMode: OpenSeadragon.OverlayRotationMode.NO_ROTATION
-                },
-               {{ annotated_slide.get_js | safe }}
-           ],
         }
     });
     viewer.innerTracker.keyHandler = null;

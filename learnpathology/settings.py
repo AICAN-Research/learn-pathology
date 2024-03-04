@@ -25,10 +25,12 @@ SECRET_KEY = 'django-insecure-c#865-)ef-&rz)&*26c!!bj473_2npi7$^hzgr_cueydwr6(+6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# To enable FEIDE login you also have to add a social applications object with the client id and secret key to the database
+USE_FEIDE_LOGIN = False
+
 ALLOWED_HOSTS = []
 
 # For using flatpages, set to site corresponding to this settings.py file
-SITE_ID = 1
 APPEND_SLASH = True
 
 
@@ -58,7 +60,18 @@ INSTALLED_APPS = [
     'sorting',
     'course',
     'tag',
+
 ]
+
+if USE_FEIDE_LOGIN:
+    INSTALLED_APPS.extend([
+        'allauth',
+        'allauth.account',
+        'allauth.socialaccount',
+        #'allauth.socialaccount.providers.dataporten',
+        'feide'
+    ])
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -70,6 +83,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'learnpathology.middleware.LoginRequiredMiddleware',
 ]
+
+if USE_FEIDE_LOGIN:
+    MIDDLEWARE.append('allauth.account.middleware.AccountMiddleware')
 
 ROOT_URLCONF = 'learnpathology.urls'
 
@@ -218,4 +234,13 @@ CKEDITOR_CONFIGS = {
     },
 
 }
+
+SITE_ID = 1
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'
+SOCIALACCOUNT_LOGIN_ON_GET = True
+if USE_FEIDE_LOGIN:
+    # TODO don't use hard coded urls
+    LOGIN_URL = '/user/login/feide/'
+    LOGIN_EXEMPT_URLS = ['accounts/dataporten/login/', 'privacy/']
 

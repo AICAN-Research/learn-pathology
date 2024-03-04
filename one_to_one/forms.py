@@ -1,11 +1,11 @@
-from django.forms import ModelForm,  Textarea
+from django.forms import ModelForm, Textarea
 from one_to_one.models import OneToOne, SortingPair
-from task.models import Task
 
 
 class OneToOneForm(ModelForm):
     class Meta:
         model = OneToOne
+
         fields = ['question', 'instructions']
         labels = {
             'question': 'Question',
@@ -23,8 +23,8 @@ class SortingPairForm(ModelForm):
 
         fields = ['fixed', 'draggable']
         labels = {
-            'fixed': ('Entry for fixed table'),
-            'draggable': ('Entry for draggable table'),
+            'fixed': 'Entry for fixed table',
+            'draggable': 'Entry for draggable table',
         }
         widgets = {
             'fixed': Textarea(attrs={'rows': 1, 'cols': 67, 'resize': 'none'}),

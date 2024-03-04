@@ -3,18 +3,19 @@
 {% block content %}
 
     <div class="container text-center" style="margin-top: 2rem; margin-bottom: 2rem;">
-    <img src="{% static 'learnpathology/images/logo_v0.png' %}" alt="FastPathology logo" style="max-width: 400px;align-self: center">
+        <img src="{% static 'learnpathology/images/logo_v0.png' %}" alt="LearnPathology logo" style="max-width: 400px;align-self: center">
     </div>
 
-    <div class="card mx-auto text-center transparentBackground" style="width: 80%; min-height: 200px;">
-    <div class="card-body">
-    <div class="card-text text-center">
+    <h2 class="text-center" style="align-self: center;">Welcome to LearnPathology. The AICAN online learning platform</h2>
 
-        <p class="text-center" style="align-self: center;">Welcome to LearnPathology. The AICAN online learning platform</p>
-
-        <h2>Here we can put whatever you want</h2>
-
-    </div>
-    </div>
-    </div>
 {% endblock %}
+
+{% block javascript %}
+
+    // Ensure sidebar is expanded correctly
+$(document).ready(function(){
+    collapseSidebar();
+    toggleSidebar();
+});
+
+{% endblock javascript %}

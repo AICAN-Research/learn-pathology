@@ -1,9 +1,10 @@
 from django.contrib import messages
 from django.db import transaction
-from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 
-from slide.models import Slide, Pointer, AnnotatedSlide, BoundingBox
-from slide.views import slide_cache, save_boundingbox_annotation, save_pointer_annotation
+from task.common import process_new_task_request, process_edit_task_request, \
+    setup_common_new_task_context, setup_common_edit_task_context
+from slide.views import slide_cache
 from task.models import Task
 from task.forms import TaskForm
 from free_text.forms import FreeTextForm
@@ -25,28 +26,16 @@ def do(request, task_id, course_id=None):
     course_id : int
         ID of Course instance
     """
-    this_task = Task.objects.get(id=task_id)
-    free_text = FreeText.objects.get(task_id=task_id)
 
-    if course_id:
-        course = Course.objects.get(id=course_id)
-        all_tasks = Task.objects.filter(course=course)
-    else:
-        all_tasks = Task.objects.all()
+    context = setup_common_new_task_context(task_id, course_id)
+    slide_cache.load_slide_to_cache(context['slide'].id)
 
-    # Get the task ID of the next object in the queryset
-    this_task_index = list(all_tasks).index(this_task)
-    if this_task_index < len(all_tasks) - 1:
-        next_task_id = all_tasks[this_task_index + 1].id
-    else:
-        next_task_id = all_tasks[0].id
-
-    next_task = Task.objects.get(id=next_task_id)
+    # ======== Free text specific ========
+    free_text = context['task'].freetext
 
     answered = None
     student_text = None
     if request.method == 'POST':
-        print('POST')
         # Process form
         student_text = request.POST.get('studentText',None)
         if student_text:
@@ -54,17 +43,10 @@ def do(request, task_id, course_id=None):
         else:
             answered = 'no'
 
-    slide = slide_cache.load_slide_to_cache(this_task.annotated_slide.slide.id)
-    return render(request, 'free_text/do.html', {
-        'task': this_task,
-        'free_text': free_text,
-        'slide': slide,
-        'answered': answered,
-        'course_id': course_id,
-        'student_text': student_text,
-        'next_task_id': next_task_id,
-        'next_task': next_task,
-    })
+    context['free_text'] = free_text
+    context['answered'] = answered
+    context['student_text'] = student_text
+    return render(request, 'free_text/do.html', context)
 
 
 @teacher_required
@@ -74,51 +56,27 @@ def new(request, slide_id, course_id=None):
     """
 
     # Get slide
-    slide = Slide.objects.get(pk=slide_id)
-    slide_cache.load_slide_to_cache(slide.id)
+    slide = slide_cache.load_slide_to_cache(slide_id)
 
     # Process forms
-
     if request.method == 'POST':  # Form was submitted
-        print("POST")
+
         task_form = TaskForm(request.POST)
         free_text_form = FreeTextForm(request.POST)
 
         with transaction.atomic():  # Make save operation atomic
             if free_text_form.is_valid() and task_form.is_valid():
-                # Create annotated slide
-                annotated_slide = AnnotatedSlide()
-                annotated_slide.slide = slide
-                annotated_slide.save()
 
-                # Create task
-                task = task_form.save(commit=False)
-                task.annotated_slide = annotated_slide
-                task.save()
+                task = process_new_task_request(request, slide_id, course_id)
 
-                organ_tags = task_form.cleaned_data['organ_tags']
-                other_tags = [tag for tag in task_form.cleaned_data['other_tags']]
-                task.tags.set([organ_tags] + other_tags)
-
-                # Create multiple choice
+                # Create free text
                 free_text = free_text_form.save(commit=False)
                 free_text.task = task
                 free_text.save()
 
-                # Store annotations (pointers)
-                for key in request.POST:
-
-                    if key.startswith('right-arrow-overlay-') and key.endswith('-text'):
-                        save_pointer_annotation(request, key, annotated_slide)
-
-                    if key.startswith('boundingbox-') and key.endswith('-text'):
-                        save_boundingbox_annotation(request, key, annotated_slide)
-
                 # Give a message back to the user
                 messages.add_message(request, messages.SUCCESS, 'Task added successfully!')
                 if course_id is not None and course_id in Course.objects.values_list('id', flat=True):
-                    course = Course.objects.get(id=course_id)
-                    course.task.add(task)
                     return redirect('course:view', course_id=course_id, active_tab='tasks')
                 return redirect('task:list')
     else:
@@ -127,8 +85,8 @@ def new(request, slide_id, course_id=None):
 
     return render(request, 'free_text/new.html', {
         'slide': slide,
-        'freeTextForm': free_text_form,
         'taskForm': task_form,
+        'freeTextForm': free_text_form,
     })
 
 
@@ -138,48 +96,22 @@ def edit(request, task_id,course_id = None):
     Teacher form for editing a free text task
     """
 
-    # Get model instances from database
-    task = get_object_or_404(Task, id=task_id)
+    context = setup_common_edit_task_context(task_id, course_id)
     free_text = get_object_or_404(FreeText, task_id=task_id)
-
-    # Get slide and pointers
-    annotated_slide = task.annotated_slide
-    slide = annotated_slide.slide
-    slide_cache.load_slide_to_cache(slide.id)
 
     # Process forms
     if request.method == 'POST':  # Form was submitted
 
-        # Get submitted forms
-        task_form = TaskForm(request.POST or None, instance=task)
+        task_form = TaskForm(request.POST or None, instance=context['task'])
         free_text_form = FreeTextForm(request.POST or None, instance=free_text)
-
-        # pointers = Pointer.objects.filter(annotated_slide=task.annotated_slide)
 
         with transaction.atomic():  # Make save operation atomic
             if free_text_form.is_valid() and task_form.is_valid():
 
                 # Save instance data to database
                 task = task_form.save()
-
-                organ_tags = task_form.cleaned_data['organ_tags']
-                other_tags = [tag for tag in task_form.cleaned_data['other_tags']]
-                task.tags.set([organ_tags] + other_tags)
-
+                process_edit_task_request(request, task, task_form)
                 free_text = free_text_form.save()
-
-                # Store annotations (pointers)
-                # Delete old pointers first
-                Pointer.objects.filter(annotated_slide=annotated_slide).delete()
-                BoundingBox.objects.filter(annotated_slide=annotated_slide).delete()
-                # Add all current pointers
-                for key in request.POST:
-
-                    if key.startswith('right-arrow-overlay-') and key.endswith('-text'):
-                        save_pointer_annotation(request, key, annotated_slide)
-
-                    if key.startswith('boundingbox-') and key.endswith('-text'):
-                        save_boundingbox_annotation(request, key, annotated_slide)
 
                 messages.add_message(request, messages.SUCCESS,
                                      f'The task {task.name} was altered!')
@@ -189,19 +121,13 @@ def edit(request, task_id,course_id = None):
         return redirect('task:list')
 
     else:  # GET
-        task_form = TaskForm(instance=task)  # , initial=task.tags.all())
-        task_form.fields['organ_tags'].initial = task.tags.filter(is_organ=True)
-        task_form.fields['other_tags'].initial = task.tags.filter(is_stain=False, is_organ=False)
+        task_form = TaskForm(instance=context['task'],
+                             initial={'organ_tags': context['task'].tags.get(is_organ=True),
+                                      'other_tags': context['task'].tags.filter(is_stain=False, is_organ=False)},
+                             )
+        free_text_form = FreeTextForm(instance=context['task'].freetext)
 
-        free_text_form = FreeTextForm(instance=task.freetext)
+        context['taskForm'] = task_form
+        context['freeTextForm'] = free_text_form
 
-    context = {
-        'slide': slide,
-        'annotated_slide': annotated_slide,
-        'taskForm': task_form,
-        'freeTextForm': free_text_form,
-        'pointers': Pointer.objects.filter(annotated_slide=annotated_slide),
-        'boxes': BoundingBox.objects.filter(annotated_slide=annotated_slide),
-
-    }
-    return render(request, 'free_text/edit.html', context)
+    return render(request, 'free_text/new.html', context)

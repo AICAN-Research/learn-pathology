@@ -1,11 +1,25 @@
-{% extends 'learnpathology/base.html' %}
+{% extends 'learnpathology/single_content_layout.html' %}
+
+
+{% block page_title %}
+Upload course material
+{% endblock page_title %}
+
+
+{% block breadcrumb_items %}
+    <li class="breadcrumb-item"><a href="{% url 'course:index' %}">Courses</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'course:view' course_id=course.id active_tab='course-material' %}">{{ course.code }} - {{ course.title }}</a></li>
+    <li class="breadcrumb-item">Upload materials</li>
+{% endblock breadcrumb_items %}
+
+
+{% block search_bar %}
+{% endblock search_bar %}
+
 
 {% block content %}
-<div class="container">
-    <h1>Upload course material</h1>
-</div>
 
-<div class="card mx-auto text-center" style="width: 90%">
+<div class="card w-100">
 <div class="card-body">
 <div class="card-text">
 
@@ -27,7 +41,17 @@
 
         </table>
 
-        <input type="submit" value="Upload">
+{#        <input class="custom-button" type="submit" value="Upload">#}
+        <button class="custom-button" type="submit" style="">
+            <span style="display: inline-flex;">
+                <span class="button-icon">
+                    <span class="iconify" data-icon="fluent:upload-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
+                </span>
+                <span style="justify-content: flex-start; align-items: center; display: flex">
+                    <span class="button-text">Upload</span>
+                </span>
+            </span>
+        </button>
     </form>
 
 </div>
@@ -35,3 +59,12 @@
 </div>
 
 {% endblock %}
+
+
+{% block javascript %}
+
+$(document).ready(function(){
+    collapseSidebar();
+});
+
+{% endblock javascript %}

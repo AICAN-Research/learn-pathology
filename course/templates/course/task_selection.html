@@ -1,16 +1,34 @@
-{% extends 'learnpathology/base.html' %}
+{% extends 'learnpathology/single_content_layout.html' %}
 {% load to_class_name %}
 
+
+{% block page_title %}
+Select tasks for <span style="color: var(--color-blue-dark);">{{ course.title }}</span>
+{% endblock page_title %}
+
+
+{% block breadcrumb_items %}
+    <li class="breadcrumb-item"><a href="{% url 'course:index' %}">Courses</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'course:view' course_id=course.id %}">{{ course.code }} - {{ course.title }}</a></li>
+    <li class="breadcrumb-item">Select tasks</li>
+{% endblock breadcrumb_items %}
+
+
+{% block search_bar %}
+{% endblock search_bar %}
+
+
 {% block content %}
-<div class="container">
-<h1>Add tasks to course</h1>
-<p>
-    Select task(s) to add to the course {{ course.code }} - {{ course.title }}
-</p>
-</div>
-<div class="card mx-auto text-center" style="width: 90%">
+
+<div class="card w-100">
 <div class="card-body">
 <div class="card-text">
+
+<h3>
+    Click on a task to add it to/remove it from the course
+    <span style="color: var(--color-blue-dark);">{{ course.code }} - {{ course.title }}</span>
+</h3>
+
 <p>
     <a href="{% url 'course:view' course_id=course.id active_tab='tasks' %}">
         <input type="button" value="Return to course page">
@@ -129,3 +147,12 @@
 </div>
 </div>
 {% endblock content %}
+
+
+{% block javascript %}
+
+$(document).ready(function(){
+    collapseSidebar();
+});
+
+{% endblock javascript %}

@@ -1,79 +1,137 @@
-{% extends 'learnpathology/base.html' %}
+{% extends 'learnpathology/single_content_layout.html' %}
 {% load bootstrap_icons %}
 {% load static %}
 
+
+{% block breadcrumb_items %}
+    {% if course_id %}
+        <li class="breadcrumb-item"><a href="{% url 'course:index' %}">Courses</a></li>
+        <li class="breadcrumb-item"><a href="#">"Course name"</a></li> <!-- TODO: Use course name -->
+        {#        <li class="breadcrumb-item"><a href="#">{{ course.code }} - {{ course.name }}</a></li>#}
+        <li class="breadcrumb-item">New task: {{ slide.name }}</li>
+    {% else %}
+        <li class="breadcrumb-item"><a href="{% url 'task:list' %}">Task list</a></li>
+        <li class="breadcrumb-item">New task: {{ slide.name }}</li>
+    {% endif %}
+
+{% endblock breadcrumb_items %}
+
+
+{% block search_bar %}
+{% endblock search_bar %}
+
+
+{% block button_row %}
+<div class="custom-button" style="">
+    {% if course_id %}
+        <a href="{% url 'course:view' course_id=course_id %}" style="display: inline-flex;">
+    {% else %}
+        <a href="{% url 'task:list' %}" style="display: inline-flex;">
+    {% endif %}
+        <div class="button-icon">
+            <span class="iconify" data-icon="fluent:bin-recycle-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
+        </div>
+        <div style="justify-content: flex-start; align-items: center; display: flex">
+            {% if task %}
+                <div class="button-text">Cancel & Exit</div>
+            {% else %}
+                <div class="button-text">Exit & discard task</div>
+            {% endif %}
+        </div>
+    </a>
+
+
+</div>
+{% endblock button_row %}
+
+
 {% block content %}
 
+<div class="card w-100 mx-auto">
+<div class="card-body"> <!-- TODO: Instead of card-body, add same padding as on other pages (e.g. image browser) -->
 
-    <div class="container">
-        <h1>New Task</h1>
+    <div class="w-100" style="padding-bottom: 12px;">
+        <div class="progress " style="width: 25%; height: 32px; margin-left: auto;">
+            <div class="progress-bar" role="progressbar" style="width: 33%; background-color: var(--color-blue-dark);">
+                1/3 <!-- TODO: Update with current value for each step -->
+            </div>
+        </div>
     </div>
 
-    <div class="card mx-auto text-center" style="width: 90%">
-        <div class="card-body">
-            <div class="card-text">
-                Select the type of task ypu want to create
-                <div class="row">
-                    <div class="column">
-                        <div class="column">
-                            <div class="LPButton" style="margin-top: 0; ">
-                                {% if course_id %}
-                                    <a href="{% url 'multiple_choice:new' slide_id=slide_id course_id=course_id %}">Single/Multiple
-                                        Choice</a>
-                                {% else %}
-                                    <a href="{% url 'multiple_choice:new' slide_id=slide_id %}">Single/Multiple
-                                        Choice</a>
-                                {% endif %}
-                            </div>
-                            <br>
-                            <div class="LPButton" style="margin-top: 0; ">
-                                {% if course_id %}
-                                    <a href="{% url 'free_text:new' slide_id=slide_id course_id=course_id %}">Free Text
-                                        Question</a>
-                                {% else %}
-                                    <a href="{% url 'free_text:new' slide_id=slide_id %}">Free Text Question</a>
-                                {% endif %}
-                            </div>
-                            <br>
-                            <div class="LPButton" style="margin-top: 0; ">
-                                {% if course_id %}
-                                    <a href="{% url 'click_question:new' slide_id=slide_id course_id=course_id %}">Click
-                                        Question</a>
-                                {% else %}
-                                    <a href="{% url 'click_question:new' slide_id=slide_id %}">Click Question</a>
-                                {% endif %}
-                            </div>
-                            <br>
-                            <div class="LPButton" style="margin-top: 0; ">
-                                {% if course_id %}
-                                    <a href="{% url 'one_to_one:new' slide_id=slide_id course_id=course_id %}">One-to-One
-                                        Sorting Task</a>
-                                {% else %}
-                                    <a href="{% url 'one_to_one:new' slide_id=slide_id %}">One-to-One Sorting Task</a>
-                                {% endif %}
-                            </div>
-                           <br>
-                            <div class="LPButton" style="margin-top: 0; ">
-                                {% if course_id %}
-                                    <a href="{% url 'many_to_one:new' slide_id=slide_id course_id=course_id %}">Many-to-One
-                                        Sorting Task</a>
-                                {% else %}
-                                    <a href="{% url 'many_to_one:new' slide_id=slide_id %}">Many-to-One Sorting Task</a>
-                                {% endif %}
-                            </div>
-                            <br>
-                            <div class="LPButton" style="margin-top: 0; ">
-                                {% if course_id %}
-                                    <a href="{% url 'sorting:new' slide_id=slide_id course_id=course_id %}">Sorting Task</a>
-                                {% else %}
-                                    <a href="{% url 'sorting:new' slide_id=slide_id %}">Sorting Task</a>
-                                {% endif %}
-                            </div>
-                        </div>
+    <div style="padding: 6px 24px 6px 24px;">
+        <h2>
+            Select the type of task
+        </h2>
+        <h3 style="color: var(--color-blue-dark);">
+            Choose from the options presented below
+        </h3>
+    </div>
+
+    <div class="card transparentBackground border-0 text-center">
+    <div class="card-text">
+        <div class="row">
+            <div class="column">
+                <div class="column">
+                    <div class="LPButton" style="margin-top: 0; ">
+                        {% if course_id %}
+                            <a href="{% url 'multiple_choice:new' slide_id=slide_id course_id=course_id %}">Single/Multiple
+                                Choice</a>
+                        {% else %}
+                            <a href="{% url 'multiple_choice:new' slide_id=slide_id %}">Single/Multiple
+                                Choice</a>
+                        {% endif %}
+                    </div>
+                    <br>
+                    <div class="LPButton" style="margin-top: 0; ">
+                        {% if course_id %}
+                            <a href="{% url 'free_text:new' slide_id=slide_id course_id=course_id %}">Free Text
+                                Question</a>
+                        {% else %}
+                            <a href="{% url 'free_text:new' slide_id=slide_id %}">Free Text Question</a>
+                        {% endif %}
+                    </div>
+                    <br>
+                    <div class="LPButton" style="margin-top: 0; ">
+                        {% if course_id %}
+                            <a href="{% url 'click_question:new' slide_id=slide_id course_id=course_id %}">Click
+                                Question</a>
+                        {% else %}
+                            <a href="{% url 'click_question:new' slide_id=slide_id %}">Click Question</a>
+                        {% endif %}
+                    </div>
+                    <br>
+                    <div class="LPButton" style="margin-top: 0; ">
+                        {% if course_id %}
+                            <a href="{% url 'one_to_one:new' slide_id=slide_id course_id=course_id %}">One-to-One
+                                Sorting Task</a>
+                        {% else %}
+                            <a href="{% url 'one_to_one:new' slide_id=slide_id %}">One-to-One Sorting Task</a>
+                        {% endif %}
+                    </div>
+                   <br>
+                    <div class="LPButton" style="margin-top: 0; ">
+                        {% if course_id %}
+                            <a href="{% url 'many_to_one:new' slide_id=slide_id course_id=course_id %}">Many-to-One
+                                Sorting Task</a>
+                        {% else %}
+                            <a href="{% url 'many_to_one:new' slide_id=slide_id %}">Many-to-One Sorting Task</a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    </div>
+</div>
+</div>
 
 {% endblock content %}
+
+
+{% block javascript %}
+
+$(document).ready(function(){
+    collapseSidebar();
+});
+
+{% endblock javascript %}

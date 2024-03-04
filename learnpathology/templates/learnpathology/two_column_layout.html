@@ -1,0 +1,28 @@
+{% extends 'learnpathology/base.html' %}
+{% load static %}
+
+
+{% block content %}
+
+<div class="two-column-container">
+    <div class="content-left">
+
+        {% block content_left %}
+            <div class="card" style="width: 100%; height: 600px;">
+                placeholder card content left
+            </div>
+        {% endblock content_left %}
+
+    </div>
+    <div class="content-right">
+
+        {% block content_right %}
+            <div class="card" style="width: 100%; height: 600px;">
+                placeholder card content right
+            </div>
+        {% endblock content_right %}
+
+    </div>
+</div>
+
+{% endblock content %}

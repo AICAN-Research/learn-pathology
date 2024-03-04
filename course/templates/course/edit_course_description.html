@@ -1,11 +1,25 @@
-{% extends 'learnpathology/base.html' %}
+{% extends 'learnpathology/single_content_layout.html' %}
+
+
+{% block page_title %}
+Edit course description
+{% endblock page_title %}
+
+
+{% block breadcrumb_items %}
+    <li class="breadcrumb-item"><a href="{% url 'course:index' %}">Courses</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'course:view' course_id=course.id %}">{{ course.code }} - {{ course.title }}</a></li>
+    <li class="breadcrumb-item">Edit description</li>
+{% endblock breadcrumb_items %}
+
+
+{% block search_bar %}
+{% endblock search_bar %}
+
 
 {% block content %}
-<div class="container">
-    <h1>Edit course description</h1>
-</div>
 
-<div class="card mx-auto text-center" style="width: 90%">
+<div class="card w-100">
 <div class="card-body">
 <div class="card-text">
 
@@ -35,3 +49,12 @@
 </div>
 
 {% endblock content %}
+
+
+{% block javascript %}
+
+$(document).ready(function(){
+    collapseSidebar();
+});
+
+{% endblock javascript %}

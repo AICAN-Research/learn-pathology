@@ -2,20 +2,26 @@
 {% load slide_filters %}
 
 <div class="container" style="height:{% if two_column %}100%{% else %}85%{% endif %}; background-color: #dcdcdc; padding: 0;">
-<div id="wsi-canvas" class="wsi_canvas" style="height: 100%;"></div>
-{% if annotated_slide %}
-    {{ annotated_slide.get_html | safe }}
-{% endif %}
+    <div id="wsi-canvas" class="wsi_canvas" style="height: 600px;"></div>
 </div>
 
 <script src="{% static 'slide/openseadragon.min.js' %}"></script>
 <script src="{% static 'slide/openseadragon-scalebar.js' %}"></script>
+<script src="{% static 'slide/annotorious-openseadragon-2.7.16/openseadragon-annotorious.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/@recogito/annotorious-toolbar@1.1.0/dist/annotorious-toolbar.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@recogito/annotorious-selector-pack@0.6.0/dist/annotorious-selector-pack.min.js"></script>
+<script src="{% static 'slide/annotorious.min.js' %}"></script>
+
 <script type="text/javascript">
     var viewer = OpenSeadragon({
         id: "wsi-canvas",
         zoomPerScroll: 2,// Scroll speed
         minScrollDeltaTime: 150, //	Number of milliseconds between canvas-scroll events.
         showNavigator: true, // The navigation window top-right
+        // TODO: Remove default buttons by uncommenting next 3 lines, then add custom styled buttons
+        //showHomeControl: false,     // Hide the home button
+        //showFullPageControl: false, // Hide the full-page button
+        //showZoomControl: false,     // Hide the zoom-in and zoom-out buttons
         prefixUrl: "{% static 'slide/images/' %}",
         // Where to find OpenSeadragon button images
         tileSources: {
@@ -28,9 +34,21 @@
             getTileUrl: function (level, x, y) {
                 return "/viewer/tile/{{ slide.id }}/" + ({{ slide.osd_levels }} -1 - level) + "/" + x + "/" + y + "/";
             },
-            overlays: [
-                {{ annotated_slide.get_js | safe }}
-            ],
         }
     });
+
+    // Initialize the Annotorious plugin
+    let anno = OpenSeadragon.Annotorious(viewer);
+    anno.readOnly = true;
+
+    {% if annotations %}
+    {% for a in annotations %}
+        anno.addAnnotation({{ a|safe }});
+    {% endfor %}
+    {% endif %}
+
+if ("{{ tasktype }}" === 'click_question') {
+    anno.setVisible(false);
+}
+
 </script>

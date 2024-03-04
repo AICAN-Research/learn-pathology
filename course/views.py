@@ -91,7 +91,10 @@ def edit(request, course_id):
                  f'The course {course.code} - {course.title} was altered!')
             return redirect('course:view', course_id=course_id, active_tab='course-description')
 
-    return render(request, 'course/edit.html', {'form': courseForm})
+    return render(request, 'course/edit.html', {
+        'form': courseForm,
+        'course': course
+    })
 
 
 @teacher_required
@@ -187,7 +190,7 @@ def slide_selection(request, course_id):
     """
 
     last_url = request.META.get('HTTP_REFERER', '')
-    prev_context = {} if ('course/slide-selection/' not in last_url) else request.session.get('image_browser_context', {})
+    prev_context = {} if ('course/slide_selection/' not in last_url) else request.session.get('image_browser_context', {})
     request.session['image_browser_context'] = {}
     # Initialize empty context dictionary
     context = {}
@@ -200,10 +203,15 @@ def slide_selection(request, course_id):
     hist_path_changed = (general_path_changed or ('histology-pathology' in request.GET))  # Hist/path changed
     search_button_clicked = ('submit_button' in request.GET)  # Search query entered
     clear_search_clicked = ('clear_button' in request.GET)  # Search cleared
+    clear_all_clicked = ('clear_all' in request.GET)  # Clear selection button pressed
 
     # ==================================================================
     # Find selections for filtering options
     # ==================================================================
+    # If clear selection button pressed
+    if clear_all_clicked:
+        prev_context = {}
+
     # ORGAN FILTER
     if organ_changed:
         selected_organ_tag_id = [request.GET.get('organ-system')]
@@ -416,7 +424,8 @@ def upload_material(request, course_id):
         form = CourseMaterialForm()
 
     return render(request, 'course/upload_material.html', {
-        'form': form
+        'form': form,
+        'course': Course.objects.get(id=course_id)
     })
 
 
