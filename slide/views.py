@@ -295,7 +295,7 @@ def tile(request, slide_id, osd_level, x, y):
     return HttpResponse(buffer.getvalue(), content_type='image/jpeg')
 
 
-def create_thumbnail(slide_id, thumbnails_dir):
+def create_thumbnail(slide_id):
     slide = slide_cache.load_slide_to_cache(slide_id)
     access = slide.image.getAccess(fast.ACCESS_READ)
     image = access.getLevelAsImage(slide.image.getNrOfLevels()-1)
@@ -316,7 +316,7 @@ def add(request):
                 # Save form and create thumbnail
                 file_path = store_file_in_db(form.files['image_file'])
                 slide = form.save(file_path)
-                create_thumbnail(slide.id, 'thumbnails')
+                create_thumbnail(slide.id)
 
                 organ_tags = form.cleaned_data['organ_tags']
                 stain_tags = form.cleaned_data['stain_tags']
