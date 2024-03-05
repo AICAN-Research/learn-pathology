@@ -7,13 +7,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 
 from slide.views import slide_cache
-from task.models import Task
 from task.forms import TaskForm
 from course.models import Course
 from user.decorators import teacher_required
 from one_to_one.models import OneToOne, SortingPair
 from one_to_one.forms import OneToOneForm, SortingPairForm
-from slide.models import AnnotatedSlide
 from task.common import process_new_task_request, process_edit_task_request, \
     setup_common_new_task_context, setup_common_edit_task_context
 
@@ -126,7 +124,6 @@ def edit(request, task_id, course_id=None):
     """
     Teacher form for editing a one-to-one sorting task
 
-
     Parameters
     ----------
     request : Http request
@@ -167,8 +164,10 @@ def edit(request, task_id, course_id=None):
                         else:
                             pairForm.cleaned_data['id'].delete()
 
+                # Give a message back to the user
                 messages.add_message(request, messages.SUCCESS,
                                      f'The task {task.name} was altered!')
+
                 if course_id is not None and course_id in Course.objects.values_list('id', flat=True):
                     return redirect('course:view', course_id=course_id, active_tab='tasks')
 
