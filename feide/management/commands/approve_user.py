@@ -9,7 +9,7 @@ class Command(BaseCommand):
     -----
     In the console, use the command:
     ```
-    python manage.py approve_user smistad@ntnu.no
+    python manage.py approve_user cooldude@ntnu.no
     ```
     """
 
@@ -17,7 +17,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         # Positional arguments
-        parser.add_argument('username', type=str, help='Username')
+        parser.add_argument('username', type=str, help='Username, example: cooldude@ntnu.no')
 
     def handle(self, *args, **options):
         try:
