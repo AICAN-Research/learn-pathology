@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-c#865-)ef-&rz)&*26c!!bj473_2npi7$^hzgr_cueydwr6(+6
 DEBUG = True
 
 # To enable FEIDE login you also have to add a social applications object with the client id and secret key to the database
-USE_FEIDE_LOGIN = True
+USE_FEIDE_LOGIN = False
 
 ALLOWED_HOSTS = []
 
@@ -242,6 +242,3 @@ if USE_FEIDE_LOGIN:
     # TODO don't use hard coded urls
     LOGIN_URL = '/user/login/feide/'
     LOGIN_EXEMPT_URLS = ['accounts/dataporten/login/', 'privacy/']
-
-
-BS_ICONS_CACHE = BASE_DIR.joinpath('bs_icon_cache')
