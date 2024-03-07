@@ -2,11 +2,11 @@
 
 
 {% block task_instructions %}
-{{ sorting_task.instructions }}
+{{ sorting.instructions }}
 {% endblock task_instructions %}
 
 {% block task_question %}
-{{ sorting_task.question }}
+{{ sorting.question }}
 {% endblock task_question %}
 
 {% block content_left %}
@@ -14,7 +14,7 @@
         <div class="row">
             <div class="col">
                 <ul class="list-group " id="fixed-list">
-                    {% for pair in sorting_task.pair_set.all %}
+                    {% for pair in sorting.pair_set.all %}
                         <li class="list-group-item ui-state-default ui-state-disabled disabled">{{ pair.fixed }}</li>
                     {% endfor %}
                 </ul>
@@ -22,7 +22,7 @@
             <div class="col">
                 {% csrf_token %}
                 <ul class="list-group sortable" id="sortable-list">
-                    {% for pair in sorting_task.pair_set.all %}
+                    {% for pair in sorting.pair_set.all %}
                         <li class="list-group-item" id="{{ forloop.counter }}">{{ pair.draggable }}</li>
                     {% endfor %}
                 </ul>
