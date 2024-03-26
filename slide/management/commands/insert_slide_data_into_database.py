@@ -1,14 +1,16 @@
-import csv
 import os
-import shutil
+import csv
+import fast
+import numpy as np
 
 from django.core.management import BaseCommand
 from django.db import transaction
 
 from learnpathology.settings import BASE_DIR
 from slide.models import Slide
-from tag.models import Tag
 from slide.views import create_thumbnail
+from tag.models import Tag
+# from slide.views import create_thumbnail
 
 
 class NoMatchingFileError(Exception):
