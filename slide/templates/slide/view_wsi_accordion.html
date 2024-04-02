@@ -53,24 +53,16 @@
     <div class="row">
         <div class="col">
             <div id="popup" style="display: none; min-height: 100px; height: auto; width: 250px; background: var(--color-blue);">
+                <div id="annotorious-toolbar-container" style="display: none;"></div>
                 <div id="popup-content">
                     {% comment %}
                         To be filled dynamically when different buttons are pressed -->
                     {% endcomment %}
-                    <div id="annotorious-toolbar-container" style="display: none;"></div>
                 </div>
             </div>
         </div>
 
         <div class="col">
-            <div class="button-group">
-                <button id="testbutton" class="custom-button btn btn-secondary">
-                    <div class="button-icon">
-                        <span class="iconify" data-icon="fluent:important-12-regular" data-width="24" data-height="24">TEST</span>
-                    </div>
-                </button>
-            </div>
-
             <div class="button-group">
                 <button id="slideInfoButton" class="custom-button btn btn-secondary">
                     <div class="button-icon">
@@ -92,7 +84,6 @@
                     </div>
                 </button>
             </div>
-
             <div class="button-group">
                 <button id="screenshotButton" class="custom-button btn btn-secondary">
                     <div class="button-icon">
@@ -247,82 +238,59 @@
 
     let g_whichPopupIsOpen = 'none';
 
-    // TEST POP-UP FUNCTIONALITY
-    document.getElementById("testbutton").addEventListener('click', function () {
-        console.log('TEST BUTTON WAS PRESSED');
-        if (g_whichPopupIsOpen === 'testbutton') {
+    function activateToolbarPopup() {
+        let pressedButtonId = this.id;
+        console.log('Called activateToolbarPopup(pressedButtonId=' + pressedButtonId + ')');
+
+        if (g_whichPopupIsOpen === pressedButtonId) {
             closeToolbarPopup();
             g_whichPopupIsOpen = 'none';
         } else {
+            // Show popup div
             openToolbarPopup();
-            g_whichPopupIsOpen = 'testbutton';
 
+            // If editing annotation, need to toggle the annotorious toolbar div
+            if (pressedButtonId === 'editAnnotationButton') {
+                document.getElementById('annotorious-toolbar-container').style.display = 'block';
+            } else {
+                document.getElementById('annotorious-toolbar-container').style.display = 'none';
+            }
+
+            // Fill the popup with the corresponding content
             let content = document.getElementById('popup-content');
-            content.innerHTML = '<button id="show-hide-text">Show/hide</button>'
-                + '<div id="popup-text" style="display: none">'
-                + 'POP UP'
-                + '</div>';
+            switch (pressedButtonId) {
+                case 'slideInfoButton':
+                    content.innerHTML = $('#table-content').html();
+                    break;
+                case 'editAnnotationButton':
+                    content.innerHTML = 'editAnnotationButton';
+                    break;
+                case 'annotationListButton':
+                    content.innerHTML = $('#annotationListContent').html();
+                    break;
+                default:
+                    // do something else
+                    content.innerHTML = '<button id="show-hide-text">Show/hide</button>'
+                        + '<div id="popup-text" style="display: none">POP UP</div>';
 
-            document.getElementById("show-hide-text").addEventListener('click', function () {
-                let elem = document.getElementById('popup-text');
-                if (elem.style.display === 'block') {
-                    elem.style.display = 'none';
-                } else {
-                    elem.style.display = 'block';
-                }
-            });
+                    document.getElementById("show-hide-text").addEventListener('click', function () {
+                        let elem = document.getElementById('popup-text');
+                        if (elem.style.display === 'block') {
+                            elem.style.display = 'none';
+                        } else {
+                            elem.style.display = 'block';
+                        }
+                    });
+            }
+
+            // Store which button was pressed/content is displayed
+            g_whichPopupIsOpen = pressedButtonId;
         }
-    });
+    }
 
-
-    const slideInfoButton = document.getElementById('slideInfoButton');
-    slideInfoButton.addEventListener('click', function () {
-        if (g_whichPopupIsOpen === 'slideInfoButton') {
-            closeToolbarPopup();
-            g_whichPopupIsOpen = 'none';
-        } else {
-            openToolbarPopup();
-            g_whichPopupIsOpen = 'slideInfoButton';
-
-            // Add content
-            let content = document.getElementById('popup-content');
-            content.innerHTML = $('#table-content').html();
-        }
-    })
-
-
-    const editAnnotationButton = document.getElementById('editAnnotationButton');
-    editAnnotationButton.addEventListener('click', function () {
-        if (g_whichPopupIsOpen === 'editAnnotationButton') {
-            closeToolbarPopup();
-            $('#annotorious-toolbar-container').style.display = 'none';
-            g_whichPopupIsOpen = 'none';
-        } else {
-            openToolbarPopup();
-            $('#annotorious-toolbar-container').style.display = 'block';
-            g_whichPopupIsOpen = 'editAnnotationButton';
-
-            // Add content
-            let content = document.getElementById('popup-content');
-            content.innerHTML = $('#annotationListContent').html();
-        }
-    })
-
-
-    const annotationListButton = document.getElementById('annotationListButton');
-    annotationListButton.addEventListener('click', function () {
-        if (g_whichPopupIsOpen === 'annotationListButton') {
-            closeToolbarPopup();
-            g_whichPopupIsOpen = 'none';
-        } else {
-            openToolbarPopup();
-            g_whichPopupIsOpen = 'annotationListButton';
-
-            // Add content
-            let content = document.getElementById('popup-content');
-            content.innerHTML = $('#annotationListContent').html();
-        }
-    })
+    document.getElementById("slideInfoButton").addEventListener('click', activateToolbarPopup);
+    document.getElementById("editAnnotationButton").addEventListener('click', activateToolbarPopup);
+    document.getElementById("annotationListButton").addEventListener('click', activateToolbarPopup);
 
     function openToolbarPopup() {
         let popup = document.getElementById('popup');
