@@ -23,17 +23,10 @@
 
 
 <div class="card transparentBackground centerCardHorizontally border-0" style="width: 98%; height: 98%;">
-    <div class="row no-gutters w-100 h-100">
-        <!-- WSI Viewer -->
-        <div class="col " id="imageViewer" style="height: 95%; width: auto">
-            <div class="card slideViewerCard transparentBackground">
-                <div id="wsi-canvas" class="wsi_canvas" style="height: 100%;"></div>
-            </div>
-        </div>
-
-        <div class="col col-2" style="height: fit-content; width: 20%;" id="slideColumn">
-            <h5 style="margin-top: 1rem">Annotation list</h5>
-            <div id="annotationList"></div>
+    <!-- WSI Viewer -->
+    <div id="imageViewer" style="height: 95%; width: auto">
+        <div class="card slideViewerCard transparentBackground">
+            <div id="wsi-canvas" class="wsi_canvas" style="height: 100%;"></div>
         </div>
     </div>
 </div>
@@ -64,6 +57,7 @@
                     {% comment %}
                         To be filled dynamically when different buttons are pressed -->
                     {% endcomment %}
+                    <div id="annotorious-toolbar-container" style="display: none;"></div>
                 </div>
             </div>
         </div>
@@ -92,7 +86,7 @@
                 </button>
             </div>
             <div class="button-group">
-                <button id="AnnotationListButton" class="custom-button btn btn-secondary">
+                <button id="annotationListButton" class="custom-button btn btn-secondary">
                     <div class="button-icon">
                         <span class="iconify" data-icon="fluent:pin-12-regular" data-width="24" data-height="24"></span>
                     </div>
@@ -236,6 +230,19 @@
 </div>
 
 
+
+<div id="annotationListContent" style="display: none;">
+    Annotation list
+    <div id="annotationList"></div>
+    <div class="button-group">
+        <button id="annotation" class="custom-button btn btn-secondary">
+            <div class="button-text">Annotations on/off</div>
+        </button>
+    </div>
+</div>
+
+
+
 <script type="text/javascript">
 
     let g_whichPopupIsOpen = 'none';
@@ -279,7 +286,41 @@
 
             // Add content
             let content = document.getElementById('popup-content');
-            content.innerHTML = "random text";
+            content.innerHTML = $('#table-content').html();
+        }
+    })
+
+
+    const editAnnotationButton = document.getElementById('editAnnotationButton');
+    editAnnotationButton.addEventListener('click', function () {
+        if (g_whichPopupIsOpen === 'editAnnotationButton') {
+            closeToolbarPopup();
+            $('#annotorious-toolbar-container').style.display = 'none';
+            g_whichPopupIsOpen = 'none';
+        } else {
+            openToolbarPopup();
+            $('#annotorious-toolbar-container').style.display = 'block';
+            g_whichPopupIsOpen = 'editAnnotationButton';
+
+            // Add content
+            let content = document.getElementById('popup-content');
+            content.innerHTML = $('#annotationListContent').html();
+        }
+    })
+
+
+    const annotationListButton = document.getElementById('annotationListButton');
+    annotationListButton.addEventListener('click', function () {
+        if (g_whichPopupIsOpen === 'annotationListButton') {
+            closeToolbarPopup();
+            g_whichPopupIsOpen = 'none';
+        } else {
+            openToolbarPopup();
+            g_whichPopupIsOpen = 'annotationListButton';
+
+            // Add content
+            let content = document.getElementById('popup-content');
+            content.innerHTML = $('#annotationListContent').html();
         }
     })
 
@@ -332,48 +373,48 @@ $(document).ready(function(){
         }
     });
 
-{#    // Initialize the Annotorious plugin#}
-{#    var anno = OpenSeadragon.Annotorious(viewer);#}
-{##}
-{#    Annotorious.SelectorPack(anno); // [ 'rect', 'polygon', 'point', 'circle', 'ellipse', 'freehand' ]#}
-{#    anno.removeDrawingTool('freehand');#}
-{#    {% if request.user.is_teacher or request.user.is_superuser %}#}
-{#        const toolbar = new Annotorious.Toolbar(anno, document.getElementById('annotorious-toolbar-container'));#}
-{#    {% else %}#}
-{#        anno.readOnly = true;#}
-{#    {% endif %}#}
-{##}
-{#    {% if annotations %}#}
-{#    {% for a in annotations %}#}
-{#        anno.addAnnotation({{ a|safe }});#}
-{#    {% endfor %}#}
-{#    {% endif %}#}
-{##}
-{##}
-{#    // Annotorious + annotation storing#}
-{#    anno.on('createAnnotation', function(annotation) {#}
-{#        // Save new annotation#}
-{#        let slide_id = {{ slide.id }};#}
-{#        createAnnotation(annotation, slide_id);#}
-{#        updateAnnotationList();#}
-{#        // TODO: Write comment. What do these two lines do?#}
-{#        visible_annotorious = true;#}
-{#        anno.setVisible(visible_annotorious);#}
-{#    });#}
-{##}
-{#    anno.on('updateAnnotation', function(annotation, previous) {#}
-{#        // Update the stored annotation in the DB#}
-{#        let slide_id = {{ slide.id }};#}
-{#        updateAnnotation(annotation, previous, slide_id);#}
-{#        updateAnnotationList();#}
-{#    });#}
-{##}
-{#    anno.on('deleteAnnotation', function(annotation) {#}
-{#        // Delete annotation from DB#}
-{#        let slide_id = {{ slide.id }};#}
-{#        deleteAnnotation(annotation, slide_id);#}
-{#        updateAnnotationList();#}
-{#    });#}
+    // Initialize the Annotorious plugin
+    var anno = OpenSeadragon.Annotorious(viewer);
+
+    Annotorious.SelectorPack(anno); // [ 'rect', 'polygon', 'point', 'circle', 'ellipse', 'freehand' ]
+    anno.removeDrawingTool('freehand');
+    {% if request.user.is_teacher or request.user.is_superuser %}
+        const toolbar = new Annotorious.Toolbar(anno, document.getElementById('annotorious-toolbar-container'));
+    {% else %}
+        anno.readOnly = true;
+    {% endif %}
+
+    {% if annotations %}
+    {% for a in annotations %}
+        anno.addAnnotation({{ a|safe }});
+    {% endfor %}
+    {% endif %}
+
+
+    // Annotorious + annotation storing
+    anno.on('createAnnotation', function(annotation) {
+        // Save new annotation
+        let slide_id = {{ slide.id }};
+        createAnnotation(annotation, slide_id);
+        updateAnnotationList();
+        // TODO: Write comment. What do these two lines do?
+        visible_annotorious = true;
+        anno.setVisible(visible_annotorious);
+    });
+
+    anno.on('updateAnnotation', function(annotation, previous) {
+        // Update the stored annotation in the DB
+        let slide_id = {{ slide.id }};
+        updateAnnotation(annotation, previous, slide_id);
+        updateAnnotationList();
+    });
+
+    anno.on('deleteAnnotation', function(annotation) {
+        // Delete annotation from DB
+        let slide_id = {{ slide.id }};
+        deleteAnnotation(annotation, slide_id);
+        updateAnnotationList();
+    });
 
 
     viewer.addControl(document.getElementById("toolbarDiv"), {anchor: OpenSeadragon.ControlAnchor.BOTTOM_RIGHT});
@@ -399,9 +440,6 @@ $(document).ready(function(){
         alert('Couldn\'t get scaling factor')
     }
 
-
-    window.onLoad = toggleCardVisibility();
-
 {#    // Zoom Button Functionality#}
 {#    const zoomLevels = [0.25, 1, 10, 20, 40]; // Include 0.25x#}
 {#    let currentZoomIndex = 0;#}
@@ -417,12 +455,12 @@ $(document).ready(function(){
 {#            updateButtonLabel();#}
 {#        }#}
 {#    });#}
-
-    function updateButtonLabel() {
-        if (currentZoomIndex < zoomLevels.length) {
-            setZoomButton.textContent = `${zoomLevels[currentZoomIndex]}x`;
-        }
-    }
+{##}
+{#    function updateButtonLabel() {#}
+{#        if (currentZoomIndex < zoomLevels.length) {#}
+{#            setZoomButton.textContent = `${zoomLevels[currentZoomIndex]}x`;#}
+{#        }#}
+{#    }#}
 
 
 
@@ -482,8 +520,6 @@ $(document).ready(function(){
 
 
     // Annotation List Functionality
-    document.getElementById("annotationListButton").addEventListener("click", toggleCardVisibility);
-
     var annotationList = document.getElementById('annotationList');
 
     function updateAnnotationList() {
@@ -540,7 +576,7 @@ $(document).ready(function(){
         console.log(visible_annotorious);
     });
 
-    updateButtonLabel();
+    //updateButtonLabel();
     updateAnnotationList();
 
     /* Info button functionality */
