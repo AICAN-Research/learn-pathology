@@ -78,9 +78,11 @@
             </div>
 
             <div class="button-group">
-                <button class="custom-button btn btn-secondary" style="width: 46px;" data-bs-toggle="modal" data-bs-target="#slideInfoModal"><div class="button-icon">
-                    <span class="iconify" data-icon="fluent:info-24-regular" data-width="24" data-height="24"></span>
-                </div></button>
+                <button id="slideInfoButton" class="custom-button btn btn-secondary">
+                    <div class="button-icon">
+                        <span class="iconify" data-icon="fluent:info-24-regular" data-width="24" data-height="24"></span>
+                    </div>
+                </button>
             </div>
             <div class="button-group">
                 <button id="editAnnotationButton" class="custom-button btn btn-secondary">
@@ -105,21 +107,21 @@
                 </button>
             </div>
             <div class="button-group">
-                <button id="zoomInButton" style="width: 46px; text-align: center" class="custom-button btn btn-secondary">
+                <button id="zoomInButton" class="custom-button btn btn-secondary">
                     <div class="button-icon">
                         <span class="iconify" data-icon="fluent:add-24-regular" data-width="24" data-height="24"></span>
                     </div>
                 </button>
             </div>
             <div class="button-group">
-                   <button id="zoomOutButton" style="width: 46px; text-align: center" class="custom-button btn btn-secondary">
+                   <button id="zoomOutButton" class="custom-button btn btn-secondary">
                        <div class="button-icon">
                            <span class="iconify" data-icon="fluent:subtract-24-regular" data-width="24" data-height="24"></span>
                        </div>
                    </button>
             </div>
             <div class="button-group">
-                 <button id="FullScreenButton" style="width: 46px; text-align: center" class="custom-button btn btn-secondary">
+                 <button id="FullScreenButton" class="custom-button btn btn-secondary">
                      <div class="button-icon">
                          <span class="iconify" data-icon="fluent:arrow-expand-24-regular" data-width="24" data-height="24"></span>
                      </div>
@@ -319,7 +321,7 @@ $(document).ready(function(){
         rotationIncrement: 0,
         tileSources: {
             width: {{ slide.width }},
-            height:  {{ slide.height }},
+            height: {{ slide.height }},
             tileWidth: {{ slide.tile_width }},
             tileHeight: {{ slide.tile_height }},
             minLevel: 0,
