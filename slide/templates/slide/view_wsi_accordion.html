@@ -61,10 +61,9 @@
         <div class="col">
             <div id="popup" style="display: none; min-height: 100px; height: auto; width: 250px; background: var(--color-blue);">
                 <div id="popup-content">
-                    <button id="show-hide-text">Show/hide</button>
-                    <div id="popup-text" style="display: none">
-                        POP UP
-                    </div>
+                    {% comment %}
+                        To be filled dynamically when different buttons are pressed -->
+                    {% endcomment %}
                 </div>
             </div>
         </div>
@@ -237,25 +236,63 @@
 
 <script type="text/javascript">
 
+    let g_whichPopupIsOpen = 'none';
+
     // TEST POP-UP FUNCTIONALITY
     document.getElementById("testbutton").addEventListener('click', function () {
         console.log('TEST BUTTON WAS PRESSED');
-        let elem = document.getElementById('popup');
-        if (elem.style.display === 'block') {
-            elem.style.display = 'none';
+        if (g_whichPopupIsOpen === 'testbutton') {
+            closeToolbarPopup();
+            g_whichPopupIsOpen = 'none';
         } else {
-            elem.style.display = 'block';
-        }
+            openToolbarPopup();
+            g_whichPopupIsOpen = 'testbutton';
 
-    });
-    document.getElementById("show-hide-text").addEventListener('click', function () {
-        let elem = document.getElementById('popup-text');
-        if (elem.style.display === 'block') {
-            elem.style.display = 'none';
-        } else {
-            elem.style.display = 'block';
+            let content = document.getElementById('popup-content');
+            content.innerHTML = '<button id="show-hide-text">Show/hide</button>'
+                + '<div id="popup-text" style="display: none">'
+                + 'POP UP'
+                + '</div>';
+
+            document.getElementById("show-hide-text").addEventListener('click', function () {
+                let elem = document.getElementById('popup-text');
+                if (elem.style.display === 'block') {
+                    elem.style.display = 'none';
+                } else {
+                    elem.style.display = 'block';
+                }
+            });
         }
     });
+
+
+    const slideInfoButton = document.getElementById('slideInfoButton');
+    slideInfoButton.addEventListener('click', function () {
+        if (g_whichPopupIsOpen === 'slideInfoButton') {
+            closeToolbarPopup();
+            g_whichPopupIsOpen = 'none';
+        } else {
+            openToolbarPopup();
+            g_whichPopupIsOpen = 'slideInfoButton';
+
+            // Add content
+            let content = document.getElementById('popup-content');
+            content.innerHTML = "random text";
+        }
+    })
+
+    function openToolbarPopup() {
+        let popup = document.getElementById('popup');
+        if (popup.style.display === 'none') {
+            popup.style.display = 'block';
+        }
+    }
+    function closeToolbarPopup() {
+        let popup = document.getElementById('popup');
+        if (popup.style.display !== 'none') {
+            popup.style.display = 'none';
+        }
+    }
 
 </script>
 
