@@ -40,48 +40,73 @@
 
 
 <div id="toolbarDiv">
-    <!-- Custom buttons for Toolbar -->
-    {% if request.user.is_teacher or request.user.is_superuser %}
-        <div class="button-group">
-            <div id="annotorious-toolbar-container"></div>
-        </div>
-    {% endif %}
+{#    <!-- Custom buttons for Toolbar -->#}
+{#    {% if request.user.is_teacher or request.user.is_superuser %}#}
+{#        <div class="button-group">#}
+{#            <div id="annotorious-toolbar-container"></div>#}
+{#        </div>#}
+{#    {% endif %}#}
+
+{#    <div class="button-group">#}
+{##}
+{#        <button id="zoomButton" class="custom-button btn btn-secondary">#}
+{#    <div class="button-icon">#}
+{#        <span class="iconify" data-icon="fluent:zoom-in-24-regular" data-width="24" data-height="24"></span>#}
+{#    </div>#}
+{#    <div id="setZoomButton" class="button-text"></div>#}
+{#</button>#}
+{#    </div>#}
+
 
     <div class="button-group">
-        <button id="screenshotButton" class="custom-button btn btn-secondary">
-            <div class="button-icon">
-                <span class="iconify" data-icon="fluent:camera-24-regular" data-width="24" data-height="24"></span>
-            </div>
-        </button>
-        <button id="zoomButton" class="custom-button btn btn-secondary">
-    <div class="button-icon">
-        <span class="iconify" data-icon="fluent:zoom-in-24-regular" data-width="24" data-height="24"></span>
-    </div>
-    <div id="setZoomButton" class="button-text"></div>
-</button>
-    </div>
-
-    <div class="button-group">
-        <button id="zoomInButton" style="width: 46px; text-align: center" class="custom-button btn btn-secondary"><div class="button-icon">
-            <span class="iconify" data-icon="fluent:add-24-regular" data-width="24" data-height="24"></span>
-        </div></button>
-        <button id="zoomOutButton" style="width: 46px; text-align: center" class="custom-button btn btn-secondary"><div class="button-icon">
-            <span class="iconify" data-icon="fluent:subtract-24-regular" data-width="24" data-height="24"></span>
-        </div></button>
-        <button id="FullScreenButton" style="width: 46px; text-align: center" class="custom-button btn btn-secondary"><div class="button-icon">
-            <span class="iconify" data-icon="fluent:arrow-expand-24-regular" data-width="24" data-height="24"></span>
-        </div></button>
         <button class="custom-button btn btn-secondary" style="width: 46px;" data-bs-toggle="modal" data-bs-target="#slideInfoModal"><div class="button-icon">
             <span class="iconify" data-icon="fluent:info-24-regular" data-width="24" data-height="24"></span>
         </div></button>
     </div>
+     <div class="button-group">
+<button id="editAnnotationButton" class="custom-button btn btn-secondary">
+            <div class="button-icon">
+                <span class="iconify" data-icon="fluent:edit-12-regular" data-width="24" data-height="24"></span>
+            </div>
+        </button>
+    </div>
+     <div class="button-group">
+<button id="AnnotationListButton" class="custom-button btn btn-secondary">
+            <div class="button-icon">
+                <span class="iconify" data-icon="fluent:pin-12-regular" data-width="24" data-height="24"></span>
+            </div>
+        </button>
+    </div>
 
     <div class="button-group">
-        <button id="annotationListButton" style="width: 200px;" class="custom-button btn btn-secondary"><div class="button-text">Annotation List on/off</div></button>
+<button id="screenshotButton" class="custom-button btn btn-secondary">
+            <div class="button-icon">
+                <span class="iconify" data-icon="fluent:camera-24-regular" data-width="24" data-height="24"></span>
+            </div>
+        </button>
     </div>
-    <div class="button-group">
-        <button id="annotation" style="width: 200px;" class="custom-button btn btn-secondary"><div class="button-text">Annotations on/off </div></button>
+ <div class="button-group">
+<button id="zoomInButton" style="width: 46px; text-align: center" class="custom-button btn btn-secondary"><div class="button-icon">
+            <span class="iconify" data-icon="fluent:add-24-regular" data-width="24" data-height="24"></span>
+        </div></button>
     </div>
+ <div class="button-group">
+   <button id="zoomOutButton" style="width: 46px; text-align: center" class="custom-button btn btn-secondary"><div class="button-icon">
+            <span class="iconify" data-icon="fluent:subtract-24-regular" data-width="24" data-height="24"></span>
+        </div></button>
+    </div>
+ <div class="button-group">
+         <button id="FullScreenButton" style="width: 46px; text-align: center" class="custom-button btn btn-secondary"><div class="button-icon">
+            <span class="iconify" data-icon="fluent:arrow-expand-24-regular" data-width="24" data-height="24"></span>
+        </div></button>
+    </div>
+
+{#    <div class="button-group">#}
+{#        <button id="annotationListButton" style="width: 200px;" class="custom-button btn btn-secondary"><div class="button-text">Annotation List on/off</div></button>#}
+{#    </div>#}
+{#    <div class="button-group">#}
+{#        <button id="annotation" style="width: 200px;" class="custom-button btn btn-secondary"><div class="button-text">Annotations on/off </div></button>#}
+{#    </div>#}
 </div>
 
 
@@ -214,51 +239,51 @@
         }
     });
 
-    // Initialize the Annotorious plugin
-    var anno = OpenSeadragon.Annotorious(viewer);
+{#    // Initialize the Annotorious plugin#}
+{#    var anno = OpenSeadragon.Annotorious(viewer);#}
+{##}
+{#    Annotorious.SelectorPack(anno); // [ 'rect', 'polygon', 'point', 'circle', 'ellipse', 'freehand' ]#}
+{#    anno.removeDrawingTool('freehand');#}
+{#    {% if request.user.is_teacher or request.user.is_superuser %}#}
+{#        const toolbar = new Annotorious.Toolbar(anno, document.getElementById('annotorious-toolbar-container'));#}
+{#    {% else %}#}
+{#        anno.readOnly = true;#}
+{#    {% endif %}#}
+{##}
+{#    {% if annotations %}#}
+{#    {% for a in annotations %}#}
+{#        anno.addAnnotation({{ a|safe }});#}
+{#    {% endfor %}#}
+{#    {% endif %}#}
+{##}
+{##}
+{#    // Annotorious + annotation storing#}
+{#    anno.on('createAnnotation', function(annotation) {#}
+{#        // Save new annotation#}
+{#        let slide_id = {{ slide.id }};#}
+{#        createAnnotation(annotation, slide_id);#}
+{#        updateAnnotationList();#}
+{#        // TODO: Write comment. What do these two lines do?#}
+{#        visible_annotorious = true;#}
+{#        anno.setVisible(visible_annotorious);#}
+{#    });#}
+{##}
+{#    anno.on('updateAnnotation', function(annotation, previous) {#}
+{#        // Update the stored annotation in the DB#}
+{#        let slide_id = {{ slide.id }};#}
+{#        updateAnnotation(annotation, previous, slide_id);#}
+{#        updateAnnotationList();#}
+{#    });#}
+{##}
+{#    anno.on('deleteAnnotation', function(annotation) {#}
+{#        // Delete annotation from DB#}
+{#        let slide_id = {{ slide.id }};#}
+{#        deleteAnnotation(annotation, slide_id);#}
+{#        updateAnnotationList();#}
+{#    });#}
 
-    Annotorious.SelectorPack(anno); // [ 'rect', 'polygon', 'point', 'circle', 'ellipse', 'freehand' ]
-    anno.removeDrawingTool('freehand');
-    {% if request.user.is_teacher or request.user.is_superuser %}
-        const toolbar = new Annotorious.Toolbar(anno, document.getElementById('annotorious-toolbar-container'));
-    {% else %}
-        anno.readOnly = true;
-    {% endif %}
 
-    {% if annotations %}
-    {% for a in annotations %}
-        anno.addAnnotation({{ a|safe }});
-    {% endfor %}
-    {% endif %}
-
-
-    // Annotorious + annotation storing
-    anno.on('createAnnotation', function(annotation) {
-        // Save new annotation
-        let slide_id = {{ slide.id }};
-        createAnnotation(annotation, slide_id);
-        updateAnnotationList();
-        // TODO: Write comment. What do these two lines do?
-        visible_annotorious = true;
-        anno.setVisible(visible_annotorious);
-    });
-
-    anno.on('updateAnnotation', function(annotation, previous) {
-        // Update the stored annotation in the DB
-        let slide_id = {{ slide.id }};
-        updateAnnotation(annotation, previous, slide_id);
-        updateAnnotationList();
-    });
-
-    anno.on('deleteAnnotation', function(annotation) {
-        // Delete annotation from DB
-        let slide_id = {{ slide.id }};
-        deleteAnnotation(annotation, slide_id);
-        updateAnnotationList();
-    });
-
-
-    viewer.addControl(document.getElementById("toolbarDiv"), {anchor: OpenSeadragon.ControlAnchor.BOTTOM_LEFT});
+    viewer.addControl(document.getElementById("toolbarDiv"), {anchor: OpenSeadragon.ControlAnchor.BOTTOM_RIGHT});
 
     // Scalebar
     try {
@@ -267,7 +292,7 @@
             type: OpenSeadragon.ScalebarType.MICROSCOPY,
             pixelsPerMeter: pixelsPerMeter,
             minWidth: "250px",
-            location: OpenSeadragon.ScalebarLocation.BOTTOM_RIGHT,
+            location: OpenSeadragon.ScalebarLocation.BOTTOM_LEFT,
             xOffset: 10,
             yOffset: 20,
             stayInsideImage: true,
