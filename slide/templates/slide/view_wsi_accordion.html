@@ -60,7 +60,8 @@
     <div class="row">
         <div class="col">
             <div id="popup" style="display: none; min-height: 100px; height: auto; width: 250px; background: var(--color-blue);">
-                <div>
+                <button id="show-hide-text">Show/hide</button>
+                <div id="popup-text" style="display: none">
                     POP UP
                 </div>
             </div>
@@ -244,6 +245,14 @@
             elem.style.display = 'block';
         }
 
+    });
+    document.getElementById("show-hide-text").addEventListener('click', function () {
+        let elem = document.getElementById('popup-text');
+        if (elem.style.display === 'block') {
+            elem.style.display = 'none';
+        } else {
+            elem.style.display = 'block';
+        }
     });
 
 </script>
