@@ -209,7 +209,7 @@
     Annotation list
     <div id="annotationList"></div>
     <div class="button-group">
-        <button id="annotation" class="custom-button btn btn-secondary">
+        <button id="toggleAnnotationButton" class="custom-button btn btn-secondary">
             <div class="button-text">Annotations on/off</div>
         </button>
     </div>
@@ -528,7 +528,7 @@ $(document).ready(function(){
     // Annotation Button Functionality
     var visible_annotorious = false;
     console.log(visible_annotorious);
-    document.getElementById("annotation").addEventListener('click', function () {
+    document.getElementById("toggleAnnotationButton").addEventListener('click', function () {
         visible_annotorious = !visible_annotorious;
         anno.setVisible(visible_annotorious);
         console.log(visible_annotorious);
