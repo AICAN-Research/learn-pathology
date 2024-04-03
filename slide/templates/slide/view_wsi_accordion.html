@@ -36,7 +36,7 @@
 
     <div class="row">
         <div class="col">
-            <div id="popup" style="display: none; min-height: 100px; height: auto; width: 250px; background: var(--color-blue);">
+            <div id="popup" style="display: none;">
                 <div id="annotorious-toolbar-container" style="display: none;"></div>
                 <div id="popup-content">
                     {% comment %}
@@ -108,102 +108,139 @@
 </div>
 
 
-<!-- Slide Information CONTENT BEGIN -->
-<div class="modal fade" id="slideInfoModal" tabindex="-1" aria-labelledby="slideInfoModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="slideInfoModalLabel">Slide Information</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+{% comment %}
+***** NOTE *****
+The below div elements (slideInformationContent, annotationListContent) should
+not be displayed here on the page, but their contents are grabbed and used to
+fill the popup when the corresponding button is pressed in the toolbar.
+****************
+{% endcomment %}
+
+<div id="slideInformationContent" style="display: none;">
+
+    <div class="card slideInfoCard border-0" id="slideInfoCardContent">
+        <!-- Slide name as header -->
+        <div class="align-items-center" style="padding-top: 18px; padding-bottom: 3%;">
+            <div class="card-title">
+                <h4 style="color: var(--color-blue-dark); font-weight: bolder; font-size: 18px;">
+                    {{ slide.name }}
+                </h4>
             </div>
-            <div class="modal-body" id="modal-table-content">
-                <div id="table-content" style="display: none;">
-                    <table class="table" style="font-size: 14px;">
-                        <thead class="thead-light">
-                        <tr>
-                            <th colspan="2">Core Information</th>
-                        </tr>
-                        </thead>
-                        <tr>
-                            <th>Slide name</th>
-                            <td>{{ slide.name }}</td>
-                        </tr>
-                        <tr>
-                            <th>Slide description</th>
-                            <td>{{ slide.description }}</td>
-                        </tr>
+        </div>
 
-                        <thead class="thead-light">
-                        <tr>
-                            <th colspan="2">Categorization</th>
-                        </tr>
-                        </thead>
-                        <tr>
-                            <th>Organ</th>
-                            <td>{{ slide.name }}</td>
-                        </tr>
-                        <tr>
-                            <th>Histology/pathology</th>
+        <!-- Accordion CONTENT -->
+        <div class="accordion" id="slideInformationAccordion">
+            <div class="accordion-item">
+                <h3 class="accordion-header myHeading" id="slideInformationHeading">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#slideInformationTab" aria-expanded="false" aria-controls="slideInformationTab">
+                        Slide information
+                    </button>
+                </h3>
+                <div id="slideInformationTab" class="accordion-collapse collapse" aria-labelledby="slideInformationHeading" data-bs-parent="#slideInformationAccordion">
+                    <div class="accordion-body">
+                        <table class="table">
+                            <tr>
+                                <th>Slide name</th>
+                                <td>{{ slide.name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Slide description</th>
+                                <td>{{ slide.description }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="slideCategorizationHeading">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#slideCategorizationTab" aria-expanded="false" aria-controls="slideCategorizationTab">
+                        Categorization
+                    </button>
+                </h2>
+                <div id="slideCategorizationTab" class="accordion-collapse collapse" aria-labelledby="slideCategorizationHeading" data-bs-parent="#slideInformationAccordion">
+                    <div class="accordion-body">
+                        <table class="table">
+                            <tr>
+                                <th>Organ</th>
+                                <td>{{ slide.name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Histology/pathology</th>
+                                {% if slide.pathology %}
+                                    <td>Pathology</td>
+                                {% else %}
+                                    <td>Histology</td>
+                                {% endif %}
+                            </tr>
+                            <tr>
+                                <th>Stain</th>
+                                <td>{{ stain_name }}</td>
+                            </tr>
+
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="slideSupplementaryInfoHeading">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#slideSupplementaryInfoTab" aria-expanded="false" aria-controls="slideSupplementaryInfoTab">
+                        Supplementary information
+                    </button>
+                </h2>
+                <div id="slideSupplementaryInfoTab" class="accordion-collapse collapse" aria-labelledby="slideSupplementaryInfoHeading" data-bs-parent="#slideInformationAccordion">
+                    <div class="accordion-body">
+                        <table class="table">
+
+                            <tr>
+                                <th>
+                                    Long description
+                                    {% if request.user.is_teacher or request.user.is_superuser %}
+                                        <div class="card-content" style="padding-top: 5px">
+                                            <a class="LPButton"
+                                               href="{% url 'slide:edit_description' slide.id %}"
+                                               style="margin: 0;">
+                                                Edit long description
+                                            </a>
+                                        </div>
+                                    {% endif %}
+                                </th>
+                                {% if slide.long_description %}
+                                    <td>{{ slide.long_description }}</td>
+                                {% else %}
+                                    <td>-</td>
+                                {% endif %}
+                            </tr>
                             {% if slide.pathology %}
-                                <td>Pathology</td>
-                            {% else %}
-                                <td>Histology</td>
+                                <tr>
+                                <th>
+                                    General pathology tags
+                                    {% if request.user.is_teacher or request.user.is_superuser %}
+                                        <div class="card-content" style="padding-top: 5px">
+                                            <a class="LPButton" href="{% url 'slide:edit_tags' slide.id %}" style="margin: 0;">
+                                                Edit tags
+                                            </a>
+                                        </div>
+                                    {% endif %}
+                                </th>
+                                <td>
+                                    {% if general_pathology_tags %}
+                                        {% for tag in general_pathology_tags %}
+                                            {{ tag.name }}<br>
+                                        {% endfor %}
+                                    {% endif %}
+                                </td>
+                                </tr>
                             {% endif %}
-                        </tr>
-                        <tr>
-                            <th>Stain</th>
-                            <td>{{ stain_name }}</td>
-                        </tr>
-
-                        <thead class="thead-light">
-                        <tr>
-                            <th colspan="2">Supplementary information</th>
-                        </tr>
-                        </thead>
-                        <tr>
-                            <th>
-                                Long description
-                                {% if request.user.is_teacher or request.user.is_superuser %}
-
-                                    <a class="custom-button-link" href="{% url 'slide:edit_description' slide.id %}">
-                                        <button class="custom-button ">&#9998;
-                                        </button>
-                                    </a>
-
-                                {% endif %}
-                            </th>
-                            {% if slide.long_description %}
-                                <td>{{ slide.long_description }}</td>
-                            {% else %}
-                                <td>-</td>
-                            {% endif %}
-                        </tr>
-                        <tr>
-                            <th>
-                                General pathology tags
-                                {% if request.user.is_teacher or request.user.is_superuser %}
-
-                                    <a class="custom-button-link" href="{% url 'slide:edit_tags' slide.id %}">
-                                        <button class="custom-button ">&#9998;</button>
-                                    </a>
-                                {% endif %}
-                            </th>
-                            <td>
-                                {% if general_pathology_tags %}
-                                    {% for tag in general_pathology_tags %}
-                                        {{ tag.name }}<br>
-                                    {% endfor %}
-                                {% endif %}
-                            </td>
-                        </tr>
-                    </table>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
+        <!-- Accordion CONTENT END -->
     </div>
+
 </div>
-
-
 
 <div id="annotationListContent" style="display: none;">
     Annotation list
@@ -243,10 +280,10 @@
             let content = document.getElementById('popup-content');
             switch (pressedButtonId) {
                 case 'slideInfoButton':
-                    content.innerHTML = $('#table-content').html();
+                    content.innerHTML = $('#slideInformationContent').html();
                     break;
                 case 'editAnnotationButton':
-                    content.innerHTML = 'editAnnotationButton';
+                    content.innerHTML = '';
                     break;
                 case 'annotationListButton':
                     content.innerHTML = $('#annotationListContent').html();

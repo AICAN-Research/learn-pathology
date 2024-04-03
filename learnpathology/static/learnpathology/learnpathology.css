@@ -615,6 +615,15 @@ Slide viewer
     }
 }
 
+#popup {
+    width: 350px;
+    height: auto;
+    min-height: 100px;
+    max-height: 400px;
+    overflow-y: auto;
+    background: var(--color-blue);
+}
+
 /* =============================================
 Image browser
 ============================================= */
