@@ -15,6 +15,8 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect
 from oauthlib.oauth2 import OAuth2Error
 from requests import RequestException
+
+from .models import ApprovedUser
 from .provider import DataportenProvider
 import json
 
@@ -55,12 +57,20 @@ class DataportenAdapter(OAuth2Adapter):
         # Raise exception for 4xx and 5xx response codes
         userinfo_response.raise_for_status()
 
-        # Check that user belongs to NTNU
+        # Check that user belongs to NTNU and check whether person is on the approved user list
         ntnu_found = False
+        approved_user = False
         for userid_sec in userinfo_response.json()['user']['userid_sec']:
-            username = userid_sec.split(':')[1].split('@')[1]
-            if username == 'ntnu.no':
+            username = userid_sec.split(':')[1]
+            org = username.split('@')[1]
+            if org == 'ntnu.no':
                 ntnu_found = True
+                # Check if user is on the pre approved list
+                try:
+                    user = ApprovedUser.objects.get(username=username)
+                    approved_user = True
+                except ApprovedUser.DoesNotExist:
+                    pass
         if not ntnu_found:
             raise ProviderException('Only NTNU users are allowed to login to LearnPathology.')
 
@@ -85,41 +95,40 @@ class DataportenAdapter(OAuth2Adapter):
             )
         )
 
-        # Check that user is either: employee at MH faculty or student at given courses
+        # Check if user is enrolled in medical studies
         #print(json.dumps(groupinfo_response.json(), indent=2))
         ntnu_found = False
-        faculty = False
+        medical_student = False
         student = False
-        enrolled_in_relevant_course = False
-        for group in groupinfo_response.json():
-            if group['id'] == 'fc:org:ntnu.no':
-                ntnu_found = True
-                if group['membership']['primaryAffiliation'] == 'faculty':
-                    # TODO Check that employed at MH faculty or IKOM..
-                    faculty = True
-                for aff in group['membership']['affiliation']:
-                    if aff == 'student':
-                        student = True
-            elif group['id'].find('emne:ntnu.no'):
-                course_code = group['id'].split(':')[-2]
-                if course_code in ['MD4012', 'MD4020', 'MDT4030', 'MDL4030',
-                                   'MDA4030', 'MD4042', 'MD4043', 'MD4041',
-                                   'MD4044', 'MD4045']:
-                    # Check that within date in group['membership']['notAfter']
-                    if 'notAfter' in group['membership']:
-                        notAfterDate = datetime.strptime(group['membership']['notAfter'], '%Y-%m-%dT%H:%M:%SZ')
-                        print(group['membership']['notAfter'], notAfterDate)
-                        if notAfterDate < datetime.now():
-                            enrolled_in_relevant_course = True
+        faculty = False
+        #enrolled_in_relevant_course = False
+        if not approved_user:
+            for group in groupinfo_response.json():
+                if group['id'] == 'fc:org:ntnu.no':
+                    ntnu_found = True
+                    if group['membership']['primaryAffiliation'] == 'faculty':
+                        faculty = True
+                    for aff in group['membership']['affiliation']:
+                        if aff == 'student':
+                            student = True
+                if group['id'] == 'fc:fs:fs:prg:ntnu.no:CMED':
+                    for aff in group['membership']['fsroles']:
+                        if aff == 'STUDENT':
+                            medical_student = True
+                # elif group['id'].find('emne:ntnu.no'):
+                #     course_code = group['id'].split(':')[-2]
+                #     if course_code in ['MD4012', 'MD4020', 'MDT4030', 'MDL4030',
+                #                        'MDA4030', 'MD4042', 'MD4043', 'MD4041',
+                #                        'MD4044', 'MD4045']:
+                #         # Check that within date in group['membership']['notAfter']
+                #         if 'notAfter' in group['membership']:
+                #             notAfterDate = datetime.strptime(group['membership']['notAfter'], '%Y-%m-%dT%H:%M:%SZ')
+                #             print(group['membership']['notAfter'], notAfterDate)
+                #             if notAfterDate < datetime.now():
+                #                 enrolled_in_relevant_course = True
 
-        if not ntnu_found:
-            raise ProviderException('Only NTNU users are allowed to login to LearnPathology.')
-        if not faculty:
-            if student:
-                if not enrolled_in_relevant_course:
-                    raise ProviderException('You are not enrolled to the correct courses to be allowed to login to LearnPathology.')
-            else:
-                raise ProviderException('You have to be employed at NTNU or be a medical student to login to LearnPathology.')
+        if not medical_student and not approved_user:
+            raise ProviderException('Only medical students and teachers at NTNU are allowed to login to LearnPathology')
 
         # The endpoint returns json-data and it needs to be decoded
         extra_data = userinfo_response.json()["user"]

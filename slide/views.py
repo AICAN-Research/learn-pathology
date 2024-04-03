@@ -299,8 +299,8 @@ def create_thumbnail(slide_id):
     slide = slide_cache.load_slide_to_cache(slide_id)
     access = slide.image.getAccess(fast.ACCESS_READ)
     image = access.getLevelAsImage(slide.image.getNrOfLevels()-1)
-    scale = float(image.getHeight())/image.getWidth()
-    resize = fast.ImageResizer.create(512, round(512*scale)).connect(image)
+    scale = float(image.getWidth())/image.getHeight()
+    resize = fast.ImageResizer.create(round(512*scale), 512).connect(image)
     fast.ImageFileExporter\
         .create(f'thumbnails/{slide_id}.jpg')\
         .connect(resize)\

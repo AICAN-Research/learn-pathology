@@ -181,17 +181,14 @@
 </div>
 
 
-<!-- Packages and Javascript stuff -->
-<script src="{% static 'slide/openseadragon.min.js' %}"></script>
-<script src="{% static 'slide/openseadragon-scalebar.js' %}"></script>
-<script src="{% static 'slide/annotorious-openseadragon-2.7.16/openseadragon-annotorious.min.js' %}"></script>
-<script src="https://cdn.jsdelivr.net/npm/@recogito/annotorious-toolbar@1.1.0/dist/annotorious-toolbar.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@recogito/annotorious-selector-pack@0.6.0/dist/annotorious-selector-pack.min.js"></script>
-<script src="{% static 'slide/annotorious.min.js' %}"></script>
+{% endblock content %}
 
-<script type="text/javascript">
 
-    <!--WSI Viewer-->
+{% block javascript %}
+
+    $(document).ready(function(){
+        collapseSidebar();
+      // WSI Viewer
     var viewer = OpenSeadragon({
         id: "wsi-canvas",
         zoomPerScroll: 2, // Scroll speed
@@ -224,9 +221,8 @@
     anno.removeDrawingTool('freehand');
     {% if request.user.is_teacher or request.user.is_superuser %}
         const toolbar = new Annotorious.Toolbar(anno, document.getElementById('annotorious-toolbar-container'));
-    {% endif %}
-    {% if request.user.is_student  %}
-        anno.readOnly = true
+    {% else %}
+        anno.readOnly = true;
     {% endif %}
 
     {% if annotations %}
@@ -264,7 +260,7 @@
 
     viewer.addControl(document.getElementById("toolbarDiv"), {anchor: OpenSeadragon.ControlAnchor.BOTTOM_LEFT});
 
-    <!--Scalebar-->
+    // Scalebar
     try {
         let pixelsPerMeter = {{ slide|get_pixels_per_meter }};
         viewer.scalebar({
@@ -288,7 +284,7 @@
 
     window.onLoad = toggleCardVisibility();
 
-    <!--Zoom Button Functionality-->
+    // Zoom Button Functionality
     const zoomLevels = [0.25, 1, 10, 20, 40]; // Include 0.25x
     let currentZoomIndex = 0;
 
@@ -312,7 +308,7 @@
 
 
 
-    <!--Screenshoot Button Functionality-->
+    // Screenshoot Button Functionality
     document.getElementById("screenshotButton").addEventListener('click', function () {
         console.log('Click!');
         // Hide toolbar:
@@ -337,7 +333,7 @@
 
     });
 
-    <!--Default Button Functionality-->
+    // Default Button Functionality
     document.getElementById("zoomInButton").addEventListener('click', function () {
         var currentZoom = viewer.viewport.getZoom();
         var newZoom = currentZoom * viewer.zoomPerScroll; // Adjust the factor as needed
@@ -366,7 +362,7 @@
     });
 
 
-    <!-- Annotation List Functionality -->
+    // Annotation List Functionality
     document.getElementById("annotationListButton").addEventListener("click", toggleCardVisibility);
 
     var annotationList = document.getElementById('annotationList');
@@ -416,7 +412,7 @@
     }
 
 
-    <!-- Annotation Button Functionality-->
+    // Annotation Button Functionality
     var visible_annotorious = false;
     console.log(visible_annotorious);
     document.getElementById("annotation").addEventListener('click', function () {
@@ -425,36 +421,22 @@
         console.log(visible_annotorious);
     });
 
-    $(document).ready(function () {
-        updateButtonLabel();
-        updateAnnotationList();
+    updateButtonLabel();
+    updateAnnotationList();
 
-        /* Info button functionality */
-        // Function to set the modal content
-        function setModalContent() {
-            var tableContent = $('#table-content').html();
-            $('#modal-table-content').html(tableContent);
-        }
+    /* Info button functionality */
+    // Function to set the modal content
+    function setModalContent() {
+        var tableContent = $('#table-content').html();
+        $('#modal-table-content').html(tableContent);
+    }
 
-        $('#slideInfoModal').modal({
-            show: false
-        });
-
-        $('#slideInfoModal').on('show.bs.modal', function () {
-            setModalContent();
-        });
+    $('#slideInfoModal').modal({
+        show: false
     });
 
-
-</script>
-
-{% endblock content %}
-
-
-{% block javascript %}
-
-    $(document).ready(function(){
-        collapseSidebar();
+    $('#slideInfoModal').on('show.bs.modal', function () {
+        setModalContent();
     });
-
+});
 {% endblock javascript %}

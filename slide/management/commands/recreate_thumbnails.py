@@ -19,5 +19,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         slides = Slide.objects.all()
         for slide in slides:
-            create_thumbnail(slide.id)
-            print('Thumbnail for', slide.id, 'recreated')
+            try:
+                create_thumbnail(slide.id)
+                print('Thumbnail for', slide.id, 'recreated')
+            except Exception as e:
+                print('Failed to recreate thumbnail for ', slide.id, 'because: ', str(e))
