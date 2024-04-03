@@ -178,7 +178,11 @@
 </div>
 
 
-<div id="toolbarDiv" style="text-align: center;">
+<div id="toolbarTopDiv" style="text-align: center; display: inline-block;">
+
+    <div class="navigatorWrapper">
+        <div id="navigatorDiv"></div>
+    </div>
 
     <div class="row gx-0">
         <div class="col">
@@ -191,18 +195,20 @@
 
         <div class="col">
             <div id="popup" style="display: none;">
-                <div id="annotorious-toolbar-container" style="display: none;"></div>
-                <div id="popup-content">
-                    {% comment %}
-                        To be filled dynamically when different buttons are pressed -->
-                    {% endcomment %}
+                <div class="popupContentWrapper">
+                    <div id="annotorious-toolbar-container" style="display: none;"></div>
+                    <div id="popup-content">
+                        {% comment %}
+                            To be filled dynamically when different buttons are pressed -->
+                        {% endcomment %}
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="col">
+        <div class="col" id="buttonColumn">
             <!-- Top 3 buttons centered in the middle -->
-            <div id="topButtons">
+            <div id="topButtons" class="slideViewerToolbarButtonGroup">
                 <div class="button-group">
                     <button id="slideInfoButton" class="custom-button btn btn-secondary">
                         <div class="button-icon">
@@ -226,8 +232,15 @@
                 </div>
             </div>
 
+        </div>
+    </div>
+</div>
+
+<div id="toolbarBottomDiv">
+    <div class="row">
+        <div class="col">
             <!-- Last 4 buttons following -->
-            <div>
+            <div class="slideViewerToolbarButtonGroup">
                 <div class="button-group">
                     <button id="screenshotButton" class="custom-button btn btn-secondary">
                         <div class="button-icon">
@@ -291,9 +304,10 @@
                     content.innerHTML = $('#slideInformationContent').html();
                     break;
                 case 'editAnnotationButton':
-                    content.innerHTML = '';
+                    content.innerHTML = null;
                     break;
                 case 'annotationListButton':
+                    //updateAnnotationList();
                     content.innerHTML = $('#annotationListContent').html();
                     break;
                 default:
@@ -362,6 +376,7 @@ $(document).ready(function(){
         minScrollDeltaTime: 150, //	Number of milliseconds between canvas-scroll events.
         prefixUrl: "{% static 'slide/images/' %}", // Where to find OpenSedragon button images
         showNavigator: true, // The navigation window top-right
+        navigatorId: 'navigatorDiv',
         showHomeControl: false,     // Hide the home button
         showFullPageControl: false, // Hide the full-page button
         showZoomControl: false,     // Hide the zoom-in and zoom-out buttons
@@ -424,19 +439,26 @@ $(document).ready(function(){
         updateAnnotationList();
     });
 
-
-    viewer.addControl(document.getElementById("toolbarDiv"), {anchor: OpenSeadragon.ControlAnchor.BOTTOM_RIGHT});
-
-
+    viewer.addControl(document.getElementById("toolbarTopDiv"), {anchor: OpenSeadragon.ControlAnchor.TOP_RIGHT});
+    viewer.addControl(document.getElementById("toolbarBottomDiv"), {anchor: OpenSeadragon.ControlAnchor.BOTTOM_RIGHT});
 
 
     viewer.addHandler('after-resize', function(event) {
-    if (OpenSeadragon.isFullScreen()) {console.log('Fullscreen') }
-    else {   console.log('event triggered')
-        var viewerHeight = document.getElementById("imageViewer").offsetHeight
-        var marginHeight = Math.round((viewerHeight * 15) / 100);
-        document.getElementById("topButtons").style.marginBottom = marginHeight + "px";
-    }});
+        if (OpenSeadragon.isFullScreen()) {
+            console.log('Fullscreen');
+        } else {
+            console.log('event triggered');
+            let viewerHeight = document.getElementById("imageViewer").offsetHeight;
+            if (viewerHeight < 700) {
+                document.getElementById("buttonColumn").style.gap = 80 + "px";
+            } else {
+                document.getElementById("buttonColumn").style.gap = 250 + "px";
+            }
+            let marginHeight = Math.round((viewerHeight * 15) / 100);
+            //document.getElementById("topButtons").style.marginBottom = marginHeight + "px";
+            //document.getElementById("buttonColumn").style.gap = 150 + "px";
+        }
+    });
 
 
     // Scalebar
@@ -599,19 +621,5 @@ $(document).ready(function(){
     //updateButtonLabel();
     updateAnnotationList();
 
-    /* Info button functionality */
-    // Function to set the modal content
-    function setModalContent() {
-        var tableContent = $('#table-content').html();
-        $('#modal-table-content').html(tableContent);
-    }
-
-    $('#slideInfoModal').modal({
-        show: false
-    });
-
-    $('#slideInfoModal').on('show.bs.modal', function () {
-        setModalContent();
-    });
 });
 {% endblock javascript %}

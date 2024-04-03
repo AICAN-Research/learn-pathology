@@ -621,7 +621,37 @@ Slide viewer
     min-height: 100px;
     max-height: 400px;
     overflow-y: auto;
-    background: var(--color-blue);
+    background: var(--color-white);
+    padding: 5px;
+    border-radius: var(--border-radius);
+}
+
+.popupContentWrapper {
+    border: 2px solid var(--color-light-gray);
+    border-radius: var(--border-radius);
+}
+
+#collapsePopup {
+    background: var(--color-white);
+    border: 2px solid var(--color-gray);
+}
+
+.slideViewerToolbarButtonGroup {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.navigatorWrapper {
+    width: fit-content;
+    margin-left: auto;
+}
+
+#navigatorDiv {
+    background: var(--color-light-gray);
+    border: 2px solid var(--color-gray);
+    width: 250px;
+    height: 190px;
 }
 
 /* =============================================
@@ -1283,12 +1313,13 @@ Header of page main content
 
 .custom-button {
     width: fit-content;
-    height: 48px;
+    /*height: 48px;*/
+    height: fit-content;
     display: inline-flex;
     justify-content: flex-start;
     align-items: center;
     gap: 8px;
-    padding: 12px;
+    padding: 8px;  /* TODO: Fix padding to make buttons smaller */
     background: var(--color-blue-dark);
     border-radius: 8px;
 }
@@ -1300,7 +1331,7 @@ Header of page main content
     background: var(--color-white);
     border: 2px solid var(--color-blue);
 }
-.custom-button.button-light .button-icon {
+.custom-button.button-light > .button-icon {
     color: var(--color-blue-dark);
 }
 .custom-button.button-light .button-text {
