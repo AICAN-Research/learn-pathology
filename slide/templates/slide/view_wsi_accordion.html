@@ -26,7 +26,153 @@
     <!-- WSI Viewer -->
     <div id="imageViewer" style="height: 95%; width: auto">
         <div class="card slideViewerCard transparentBackground">
-            <div id="wsi-canvas" class="wsi_canvas" style="height: 100%;"></div>
+            <div id="wsi-canvas" class="wsi_canvas" style="height: 100%;">
+
+                {% comment %}
+                ***** NOTE *****
+                The below div elements (slideInformationContent, annotationListContent) should
+                not be displayed here on the page, but their contents are grabbed and used to
+                fill the popup when the corresponding button is pressed in the toolbar.
+                ****************
+                {% endcomment %}
+
+                <div id="slideInformationContent" style="display: none;">
+
+                    <div class="card slideInfoCard border-0" id="slideInfoCardContent">
+                        <!-- Slide name as header -->
+                        <div class="align-items-center" style="padding-top: 18px; padding-bottom: 3%;">
+                            <div class="card-title">
+                                <h4 style="color: var(--color-blue-dark); font-weight: bolder; font-size: 18px;">
+                                    {{ slide.name }}
+                                </h4>
+                            </div>
+                        </div>
+
+                        <!-- Accordion CONTENT -->
+                        <div class="accordion" id="slideInformationAccordion">
+                            <div class="accordion-item">
+                                <h3 class="accordion-header myHeading" id="slideInformationHeading">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#slideInformationTab" aria-expanded="false" aria-controls="slideInformationTab">
+                                        Slide information
+                                    </button>
+                                </h3>
+                                <div id="slideInformationTab" class="accordion-collapse collapse" aria-labelledby="slideInformationHeading" data-bs-parent="#slideInformationAccordion">
+                                    <div class="accordion-body">
+                                        <table class="table">
+                                            <tr>
+                                                <th>Slide name</th>
+                                                <td>{{ slide.name }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Slide description</th>
+                                                <td>{{ slide.description }}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="slideCategorizationHeading">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#slideCategorizationTab" aria-expanded="false" aria-controls="slideCategorizationTab">
+                                        Categorization
+                                    </button>
+                                </h2>
+                                <div id="slideCategorizationTab" class="accordion-collapse collapse" aria-labelledby="slideCategorizationHeading" data-bs-parent="#slideInformationAccordion">
+                                    <div class="accordion-body">
+                                        <table class="table">
+                                            <tr>
+                                                <th>Organ</th>
+                                                <td>{{ slide.name }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Histology/pathology</th>
+                                                {% if slide.pathology %}
+                                                    <td>Pathology</td>
+                                                {% else %}
+                                                    <td>Histology</td>
+                                                {% endif %}
+                                            </tr>
+                                            <tr>
+                                                <th>Stain</th>
+                                                <td>{{ stain_name }}</td>
+                                            </tr>
+
+
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="slideSupplementaryInfoHeading">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#slideSupplementaryInfoTab" aria-expanded="false" aria-controls="slideSupplementaryInfoTab">
+                                        Supplementary information
+                                    </button>
+                                </h2>
+                                <div id="slideSupplementaryInfoTab" class="accordion-collapse collapse" aria-labelledby="slideSupplementaryInfoHeading" data-bs-parent="#slideInformationAccordion">
+                                    <div class="accordion-body">
+                                        <table class="table">
+
+                                            <tr>
+                                                <th>
+                                                    Long description
+                                                    {% if request.user.is_teacher or request.user.is_superuser %}
+                                                        <div class="card-content" style="padding-top: 5px">
+                                                            <a class="LPButton"
+                                                               href="{% url 'slide:edit_description' slide.id %}"
+                                                               style="margin: 0;">
+                                                                Edit long description
+                                                            </a>
+                                                        </div>
+                                                    {% endif %}
+                                                </th>
+                                                {% if slide.long_description %}
+                                                    <td>{{ slide.long_description }}</td>
+                                                {% else %}
+                                                    <td>-</td>
+                                                {% endif %}
+                                            </tr>
+                                            {% if slide.pathology %}
+                                                <tr>
+                                                <th>
+                                                    General pathology tags
+                                                    {% if request.user.is_teacher or request.user.is_superuser %}
+                                                        <div class="card-content" style="padding-top: 5px">
+                                                            <a class="LPButton" href="{% url 'slide:edit_tags' slide.id %}" style="margin: 0;">
+                                                                Edit tags
+                                                            </a>
+                                                        </div>
+                                                    {% endif %}
+                                                </th>
+                                                <td>
+                                                    {% if general_pathology_tags %}
+                                                        {% for tag in general_pathology_tags %}
+                                                            {{ tag.name }}<br>
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                </td>
+                                                </tr>
+                                            {% endif %}
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Accordion CONTENT END -->
+                    </div>
+
+                </div>
+
+                <div id="annotationListContent" style="display: none;">
+                    Annotation list
+                    <div id="annotationList"></div>
+                    <div class="button-group">
+                        <button id="toggleAnnotationButton" class="custom-button btn btn-secondary">
+                            <div class="button-text">Annotations on/off</div>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
 </div>
@@ -104,151 +250,6 @@
                 </div>
             </div>
         </div>
-    </div>
-</div>
-
-
-{% comment %}
-***** NOTE *****
-The below div elements (slideInformationContent, annotationListContent) should
-not be displayed here on the page, but their contents are grabbed and used to
-fill the popup when the corresponding button is pressed in the toolbar.
-****************
-{% endcomment %}
-
-<div id="slideInformationContent" style="display: none;">
-
-    <div class="card slideInfoCard border-0" id="slideInfoCardContent">
-        <!-- Slide name as header -->
-        <div class="align-items-center" style="padding-top: 18px; padding-bottom: 3%;">
-            <div class="card-title">
-                <h4 style="color: var(--color-blue-dark); font-weight: bolder; font-size: 18px;">
-                    {{ slide.name }}
-                </h4>
-            </div>
-        </div>
-
-        <!-- Accordion CONTENT -->
-        <div class="accordion" id="slideInformationAccordion">
-            <div class="accordion-item">
-                <h3 class="accordion-header myHeading" id="slideInformationHeading">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#slideInformationTab" aria-expanded="false" aria-controls="slideInformationTab">
-                        Slide information
-                    </button>
-                </h3>
-                <div id="slideInformationTab" class="accordion-collapse collapse" aria-labelledby="slideInformationHeading" data-bs-parent="#slideInformationAccordion">
-                    <div class="accordion-body">
-                        <table class="table">
-                            <tr>
-                                <th>Slide name</th>
-                                <td>{{ slide.name }}</td>
-                            </tr>
-                            <tr>
-                                <th>Slide description</th>
-                                <td>{{ slide.description }}</td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="slideCategorizationHeading">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#slideCategorizationTab" aria-expanded="false" aria-controls="slideCategorizationTab">
-                        Categorization
-                    </button>
-                </h2>
-                <div id="slideCategorizationTab" class="accordion-collapse collapse" aria-labelledby="slideCategorizationHeading" data-bs-parent="#slideInformationAccordion">
-                    <div class="accordion-body">
-                        <table class="table">
-                            <tr>
-                                <th>Organ</th>
-                                <td>{{ slide.name }}</td>
-                            </tr>
-                            <tr>
-                                <th>Histology/pathology</th>
-                                {% if slide.pathology %}
-                                    <td>Pathology</td>
-                                {% else %}
-                                    <td>Histology</td>
-                                {% endif %}
-                            </tr>
-                            <tr>
-                                <th>Stain</th>
-                                <td>{{ stain_name }}</td>
-                            </tr>
-
-
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="slideSupplementaryInfoHeading">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#slideSupplementaryInfoTab" aria-expanded="false" aria-controls="slideSupplementaryInfoTab">
-                        Supplementary information
-                    </button>
-                </h2>
-                <div id="slideSupplementaryInfoTab" class="accordion-collapse collapse" aria-labelledby="slideSupplementaryInfoHeading" data-bs-parent="#slideInformationAccordion">
-                    <div class="accordion-body">
-                        <table class="table">
-
-                            <tr>
-                                <th>
-                                    Long description
-                                    {% if request.user.is_teacher or request.user.is_superuser %}
-                                        <div class="card-content" style="padding-top: 5px">
-                                            <a class="LPButton"
-                                               href="{% url 'slide:edit_description' slide.id %}"
-                                               style="margin: 0;">
-                                                Edit long description
-                                            </a>
-                                        </div>
-                                    {% endif %}
-                                </th>
-                                {% if slide.long_description %}
-                                    <td>{{ slide.long_description }}</td>
-                                {% else %}
-                                    <td>-</td>
-                                {% endif %}
-                            </tr>
-                            {% if slide.pathology %}
-                                <tr>
-                                <th>
-                                    General pathology tags
-                                    {% if request.user.is_teacher or request.user.is_superuser %}
-                                        <div class="card-content" style="padding-top: 5px">
-                                            <a class="LPButton" href="{% url 'slide:edit_tags' slide.id %}" style="margin: 0;">
-                                                Edit tags
-                                            </a>
-                                        </div>
-                                    {% endif %}
-                                </th>
-                                <td>
-                                    {% if general_pathology_tags %}
-                                        {% for tag in general_pathology_tags %}
-                                            {{ tag.name }}<br>
-                                        {% endfor %}
-                                    {% endif %}
-                                </td>
-                                </tr>
-                            {% endif %}
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Accordion CONTENT END -->
-    </div>
-
-</div>
-
-<div id="annotationListContent" style="display: none;">
-    Annotation list
-    <div id="annotationList"></div>
-    <div class="button-group">
-        <button id="toggleAnnotationButton" class="custom-button btn btn-secondary">
-            <div class="button-text">Annotations on/off</div>
-        </button>
     </div>
 </div>
 
