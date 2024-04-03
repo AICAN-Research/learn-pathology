@@ -32,23 +32,7 @@
 </div>
 
 
-<div id="toolbarDiv">
-{#    <!-- Custom buttons for Toolbar -->#}
-{#    {% if request.user.is_teacher or request.user.is_superuser %}#}
-{#        <div class="button-group">#}
-{#            <div id="annotorious-toolbar-container"></div>#}
-{#        </div>#}
-{#    {% endif %}#}
-
-{#    <div class="button-group">#}
-{##}
-{#        <button id="zoomButton" class="custom-button btn btn-secondary">#}
-{#    <div class="button-icon">#}
-{#        <span class="iconify" data-icon="fluent:zoom-in-24-regular" data-width="24" data-height="24"></span>#}
-{#    </div>#}
-{#    <div id="setZoomButton" class="button-text"></div>#}
-{#</button>#}
-{#    </div>#}
+<div id="toolbarDiv" style="text-align: center;">
 
     <div class="row">
         <div class="col">
@@ -63,65 +47,64 @@
         </div>
 
         <div class="col">
-            <div class="button-group">
-                <button id="slideInfoButton" class="custom-button btn btn-secondary">
-                    <div class="button-icon">
-                        <span class="iconify" data-icon="fluent:info-24-regular" data-width="24" data-height="24"></span>
-                    </div>
-                </button>
-            </div>
-            <div class="button-group">
-                <button id="editAnnotationButton" class="custom-button btn btn-secondary">
-                    <div class="button-icon">
-                        <span class="iconify" data-icon="fluent:edit-12-regular" data-width="24" data-height="24"></span>
-                    </div>
-                </button>
-            </div>
-            <div class="button-group">
-                <button id="annotationListButton" class="custom-button btn btn-secondary">
-                    <div class="button-icon">
-                        <span class="iconify" data-icon="fluent:pin-12-regular" data-width="24" data-height="24"></span>
-                    </div>
-                </button>
-            </div>
-            <div class="button-group">
-                <button id="screenshotButton" class="custom-button btn btn-secondary">
-                    <div class="button-icon">
-                        <span class="iconify" data-icon="fluent:camera-24-regular" data-width="24" data-height="24"></span>
-                    </div>
-                </button>
-            </div>
-            <div class="button-group">
-                <button id="zoomInButton" class="custom-button btn btn-secondary">
-                    <div class="button-icon">
-                        <span class="iconify" data-icon="fluent:add-24-regular" data-width="24" data-height="24"></span>
-                    </div>
-                </button>
-            </div>
-            <div class="button-group">
-                   <button id="zoomOutButton" class="custom-button btn btn-secondary">
-                       <div class="button-icon">
-                           <span class="iconify" data-icon="fluent:subtract-24-regular" data-width="24" data-height="24"></span>
-                       </div>
-                   </button>
-            </div>
-            <div class="button-group">
-                 <button id="FullScreenButton" class="custom-button btn btn-secondary">
-                     <div class="button-icon">
-                         <span class="iconify" data-icon="fluent:arrow-expand-24-regular" data-width="24" data-height="24"></span>
-                     </div>
-                 </button>
+            <!-- Top 3 buttons centered in the middle -->
+            <div id="topButtons">
+                <div class="button-group">
+                    <button id="slideInfoButton" class="custom-button btn btn-secondary">
+                        <div class="button-icon">
+                            <span class="iconify" data-icon="fluent:info-24-regular" data-width="24" data-height="24"></span>
+                        </div>
+                    </button>
+                </div>
+                <div class="button-group">
+                    <button id="editAnnotationButton" class="custom-button btn btn-secondary">
+                        <div class="button-icon">
+                            <span class="iconify" data-icon="fluent:edit-12-regular" data-width="24" data-height="24"></span>
+                        </div>
+                    </button>
+                </div>
+                <div class="button-group">
+                    <button id="annotationListButton" class="custom-button btn btn-secondary">
+                        <div class="button-icon">
+                            <span class="iconify" data-icon="fluent:pin-12-regular" data-width="24" data-height="24"></span>
+                        </div>
+                    </button>
+                </div>
             </div>
 
-            {#    <div class="button-group">#}
-            {#        <button id="annotationListButton" style="width: 200px;" class="custom-button btn btn-secondary"><div class="button-text">Annotation List on/off</div></button>#}
-            {#    </div>#}
-            {#    <div class="button-group">#}
-            {#        <button id="annotation" style="width: 200px;" class="custom-button btn btn-secondary"><div class="button-text">Annotations on/off </div></button>#}
-            {#    </div>#}
+            <!-- Last 4 buttons following -->
+            <div>
+                <div class="button-group">
+                    <button id="screenshotButton" class="custom-button btn btn-secondary">
+                        <div class="button-icon">
+                            <span class="iconify" data-icon="fluent:camera-24-regular" data-width="24" data-height="24"></span>
+                        </div>
+                    </button>
+                </div>
+                <div class="button-group">
+                    <button id="zoomInButton" class="custom-button btn btn-secondary">
+                        <div class="button-icon">
+                            <span class="iconify" data-icon="fluent:add-24-regular" data-width="24" data-height="24"></span>
+                        </div>
+                    </button>
+                </div>
+                <div class="button-group">
+                       <button id="zoomOutButton" class="custom-button btn btn-secondary">
+                           <div class="button-icon">
+                               <span class="iconify" data-icon="fluent:subtract-24-regular" data-width="24" data-height="24"></span>
+                           </div>
+                       </button>
+                </div>
+                <div class="button-group">
+                     <button id="FullScreenButton" class="custom-button btn btn-secondary">
+                         <div class="button-icon">
+                             <span class="iconify" data-icon="fluent:arrow-expand-24-regular" data-width="24" data-height="24"></span>
+                         </div>
+                     </button>
+                </div>
+            </div>
         </div>
     </div>
-
 </div>
 
 
@@ -386,6 +369,13 @@ $(document).ready(function(){
 
 
     viewer.addControl(document.getElementById("toolbarDiv"), {anchor: OpenSeadragon.ControlAnchor.BOTTOM_RIGHT});
+
+    viewer.addHandler('after-resize', function(event) {
+        var viewerHeight = document.getElementById("imageViewer").offsetHeight
+        var marginHeight = Math.round((viewerHeight * 15) / 100);
+        document.getElementById("topButtons").style.marginBottom = marginHeight + "px";
+    });
+
 
     // Scalebar
     try {
