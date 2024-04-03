@@ -180,7 +180,15 @@
 
 <div id="toolbarDiv" style="text-align: center;">
 
-    <div class="row">
+    <div class="row gx-0">
+        <div class="col">
+            <button id="collapsePopup" class="custom-button" style="display: none;">
+                <div class="button-icon">
+                    <span class="iconify" data-icon="fluent:arrow-rtl-24-regular" data-width="24" data-height="24"></span>
+                </div>
+            </button>
+        </div>
+
         <div class="col">
             <div id="popup" style="display: none;">
                 <div id="annotorious-toolbar-container" style="display: none;"></div>
@@ -265,7 +273,6 @@
 
         if (g_whichPopupIsOpen === pressedButtonId) {
             closeToolbarPopup();
-            g_whichPopupIsOpen = 'none';
         } else {
             // Show popup div
             openToolbarPopup();
@@ -312,18 +319,30 @@
     document.getElementById("slideInfoButton").addEventListener('click', activateToolbarPopup);
     document.getElementById("editAnnotationButton").addEventListener('click', activateToolbarPopup);
     document.getElementById("annotationListButton").addEventListener('click', activateToolbarPopup);
+    document.getElementById("collapsePopup").addEventListener('click', function () {
+        closeToolbarPopup();
+    });
 
     function openToolbarPopup() {
         let popup = document.getElementById('popup');
         if (popup.style.display === 'none') {
             popup.style.display = 'block';
         }
+        showToolbarCollapseButton();
     }
     function closeToolbarPopup() {
+        hideToolbarCollapseButton();    // Hide button when popup is hidden
         let popup = document.getElementById('popup');
         if (popup.style.display !== 'none') {
             popup.style.display = 'none';
         }
+        g_whichPopupIsOpen = 'none';
+    }
+    function showToolbarCollapseButton() {
+        document.getElementById("collapsePopup").style.display = 'block';
+    }
+    function hideToolbarCollapseButton() {
+        document.getElementById("collapsePopup").style.display = 'none';
     }
 
 </script>
