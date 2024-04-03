@@ -370,11 +370,16 @@ $(document).ready(function(){
 
     viewer.addControl(document.getElementById("toolbarDiv"), {anchor: OpenSeadragon.ControlAnchor.BOTTOM_RIGHT});
 
+
+
+
     viewer.addHandler('after-resize', function(event) {
+    if (OpenSeadragon.isFullScreen()) {console.log('Fullscreen') }
+    else {   console.log('event triggered')
         var viewerHeight = document.getElementById("imageViewer").offsetHeight
         var marginHeight = Math.round((viewerHeight * 15) / 100);
         document.getElementById("topButtons").style.marginBottom = marginHeight + "px";
-    });
+    }});
 
 
     // Scalebar
