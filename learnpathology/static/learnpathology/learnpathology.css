@@ -615,11 +615,26 @@ Slide viewer
     }
 }
 
+
+#toolbarTopDiv {
+    display: inline-block;
+    text-align: center;
+    width: 450px;
+}
+
+#toolbarBottomDiv {
+
+}
+
+.fit-content-width {
+    width: fit-content;
+    max-width: fit-content;
+}
+
 #popup {
-    width: 350px;
+    width: auto;
     height: auto;
-    min-height: 100px;
-    max-height: 400px;
+    max-height: 450px;
     overflow-y: auto;
     background: var(--color-white);
     padding: 5px;
@@ -645,6 +660,7 @@ Slide viewer
 .navigatorWrapper {
     width: fit-content;
     margin-left: auto;
+    margin-bottom: 24px;
 }
 
 #navigatorDiv {
