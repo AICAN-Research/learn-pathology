@@ -38,7 +38,7 @@
         <div id="navigatorDiv"></div>
     </div>
 
-    <div class="row gx-0">
+    <div class="row gx-0" id="collapsePopupWindow">
         <div class="col fit-content-width">
             <button id="collapsePopup" class="custom-button border-0" style="display: none;">
                 <div class="button-icon" style="color: var(--color-blue-dark);">
@@ -498,10 +498,11 @@ $(document).ready(function(){
     // Screenshoot Button Functionality
     const screenshotButton = document.getElementById("screenshotButton");
     screenshotButton.addEventListener('click', function () {
-        console.log('Click!');
-        // Hide toolbar:
-        let toolbar = document.getElementsByClassName("openseadragon-container")[0].childNodes[1];
-        toolbar.style.display = "none";
+        // Hide buttons
+        document.getElementById("buttonColumn").style.display = "none";
+        document.getElementById("toolbarBottomDiv").style.display = "none";
+        // Hide popup
+        document.getElementById("collapsePopupWindow").style.display = "none";
         html2canvas($("#wsi-canvas")[0]).then(canvas => {
             var now = new Date();
             var formattedDate = now.format("yyyy-MM-dd hh-mm-ss");
@@ -509,14 +510,16 @@ $(document).ready(function(){
             // Trigger download
             var link = document.createElement('a');
             link.href = canvas.toDataURL("image/jpeg");
-            link.download = 'LearnPathology Screenshot ' + formattedDate + '.jpg';
+            link.download = 'LearnPathology_screenshot_' + formattedDate + '.jpg';
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
         }).then(x => {
-            // Display toolbar again
-            let toolbar = document.getElementsByClassName("openseadragon-container")[0].childNodes[1];
-            toolbar.style.display = "block";
+            // Display buttons again
+            document.getElementById("buttonColumn").style.display = "block";
+            document.getElementById("toolbarBottomDiv").style.display = "block";
+            // Display popup again
+            document.getElementById("collapsePopupWindow").style.display = "flex";
         });
 
     });
