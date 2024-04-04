@@ -636,19 +636,29 @@ Slide viewer
     height: auto;
     max-height: 450px;
     overflow-y: auto;
+    padding: 8px;
     background: var(--color-white);
-    padding: 5px;
-    border-radius: var(--border-radius);
+    border: 1px solid #DBDEF1;
+    border-radius: var(--border-radius) 0px var(--border-radius) var(--border-radius);
 }
 
-.popupContentWrapper {
+#slideInformationContent {
     border: 2px solid var(--color-light-gray);
     border-radius: var(--border-radius);
 }
 
 #collapsePopup {
+    height: fit-content;
+    width: fit-content;
     background: var(--color-white);
-    border: 2px solid var(--color-gray);
+    /*border: 2px solid var(--color-gray);*/
+    border-radius: 4px 0 0 4px;
+    padding: 4px 0 4px 0;
+    margin-top: 18px;
+}
+
+#buttonColumn {
+    /*padding-left: 4px;*/
 }
 
 .slideViewerToolbarButtonGroup {
@@ -668,6 +678,28 @@ Slide viewer
     border: 2px solid var(--color-gray);
     width: 250px;
     height: 190px;
+}
+
+.annotationListElement {
+    display: inline-block;
+    width: 100%;
+    padding: 5px 5px;
+    margin: 1px 0 1px 0;
+    background-color: var(--color-warning);
+    border: 1px solid var(--color-light-gray);
+    border-radius: var(--border-radius);
+}
+
+.annotationListElementButton {
+    display: inline-flex;
+    flex-direction: row;
+    flex-grow: 1;
+    height: 100%;
+    padding: 5px 5px;
+    /*margin: 1px 0 1px 0;*/
+    /*background-color: var(--color-blue-light);*/
+    border: 1px solid var(--color-blue);
+    /*border-radius: var(--border-radius);*/
 }
 
 /* =============================================
@@ -1125,7 +1157,7 @@ Fonts
 =========================================== */
 .wrapper h1 {
     font-family: var(--font-family);
-    font-size: 40px;
+    font-size: 24px;
     font-style: normal;
     font-weight: 700;
     line-height: 120%;
@@ -1366,18 +1398,3 @@ Header of page main content
 .a9s-toolbar-btn svg ellipse
 {    stroke: var(--color-white);
 }
-
-.annotationListButton {
-    display: inline-block;
-    background-color: var(--color-blue-light);
-    font-family: sans-serif, Arial;
-    font-size: 1rem;
-    font-weight: 400;
-    border: 0 solid var(--color-blue);
-    border-radius: 4px;
-    padding: 5px 5px;
-    margin: 1px 0 1px 0;
-    width: 70%;
-}
-
-
