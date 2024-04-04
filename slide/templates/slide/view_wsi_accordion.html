@@ -216,6 +216,7 @@
                         </div>
                     </button>
                 </div>
+                {% if user.is_superuser or user.is_teacher %}
                 <div class="button-group">
                     <button id="editAnnotationButton" class="custom-button btn btn-secondary">
                         <div class="button-icon">
@@ -223,6 +224,7 @@
                         </div>
                     </button>
                 </div>
+                {% endif %}
                 <div class="button-group">
                     <button id="annotationListButton" class="custom-button btn btn-secondary">
                         <div class="button-icon">
@@ -281,30 +283,40 @@
     let g_whichPopupIsOpen = 'none';
 
     function activateToolbarPopup() {
-        let pressedButtonId = this.id;
-        console.log('Called activateToolbarPopup(pressedButtonId="' + pressedButtonId + '")');
+        const pressedButtonId = this.id;
 
         if (g_whichPopupIsOpen === pressedButtonId) {
             closeToolbarPopup();
         } else {
             openToolbarPopup();
+            removeButtonActivation();
 
             // Show the correct content in the popup
             switch (pressedButtonId) {
                 case 'slideInfoButton':
                     document.getElementById('slideInformationContent').style.display = 'block';
+                    document.getElementById('slideInfoButton').classList.add('active');
+                    {% if user.is_superuser or user.is_teacher %}
                     document.getElementById('annotoriousToolbarWrapper').style.display = 'none';
+                    {% endif %}
                     document.getElementById('annotationListContent').style.display = 'none';
                     break;
                 case 'editAnnotationButton':
                     document.getElementById('slideInformationContent').style.display = 'none';
+                    {% if user.is_superuser or user.is_teacher %}
                     document.getElementById('annotoriousToolbarWrapper').style.display = 'block';
+                    document.getElementById('editAnnotationButton').classList.add('active');
+                    {% endif %}
                     document.getElementById('annotationListContent').style.display = 'none';
                     break;
                 case 'annotationListButton':
                     document.getElementById('slideInformationContent').style.display = 'none';
+                    {% if user.is_superuser or user.is_teacher %}
                     document.getElementById('annotoriousToolbarWrapper').style.display = 'none';
+                    {% endif %}
                     document.getElementById('annotationListContent').style.display = 'block';
+                    document.getElementById('annotationListButton').classList.add('active');
+                    //document.getElementById('popup').removeProperty('overflow-y'); // TODO: Fix this!!
                     break;
                 default:
                     // do something else
@@ -316,6 +328,13 @@
         }
     }
 
+    function removeButtonActivation() {
+        document.getElementById('slideInfoButton').classList.remove('active');
+        {% if user.is_superuser or user.is_teacher %}
+        document.getElementById('editAnnotationButton').classList.remove('active');
+        {% endif %}
+        document.getElementById('annotationListButton').classList.remove('active');
+    }
     function openToolbarPopup() {
         let popup = document.getElementById('popup');
         if (popup.style.display === 'none') {
@@ -325,6 +344,7 @@
     }
     function closeToolbarPopup() {
         hideToolbarCollapseButton();    // Hide button when popup is hidden
+        removeButtonActivation();
         let popup = document.getElementById('popup');
         if (popup.style.display !== 'none') {
             popup.style.display = 'none';
@@ -339,7 +359,9 @@
     }
 
     document.getElementById("slideInfoButton").addEventListener('click', activateToolbarPopup);
+    {% if user.is_superuser or user.is_teacher %}
     document.getElementById("editAnnotationButton").addEventListener('click', activateToolbarPopup);
+    {% endif %}
     document.getElementById("annotationListButton").addEventListener('click', activateToolbarPopup);
     document.getElementById("collapsePopup").addEventListener('click', function () {
         closeToolbarPopup();
