@@ -170,8 +170,12 @@ def image_browser(request):
     if not selected_both:
         slides = slides.filter(pathology=selected_pathology)
     if not (hist_path_changed and 'selected_general_pathology_ids' in prev_context):
-        if general_path_changed:
+        gen_path_tag_id = None
+        if search_button_clicked and 'selected_general_pathology_ids' in prev_context:
+            gen_path_tag_id = prev_context['selected_general_pathology_ids'][0]
+        elif general_path_changed:
             gen_path_tag_id = int(request.GET.get('general_pathology_button').split('-')[-1])
+        if gen_path_tag_id is not None:
             gen_path_tag = Tag.objects.get(id=gen_path_tag_id)
             slides = slides.filter(tags__in=[gen_path_tag])
             context['selected_general_pathology'] = gen_path_tag

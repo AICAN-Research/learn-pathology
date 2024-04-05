@@ -15,6 +15,21 @@ Slides browser
 {% endblock breadcrumb_items %}
 
 
+{% block search_bar %}
+    <form class="form" id="slideDisplayForm" onsubmit="{% url 'slide:browser' %}">
+    <div class="search-bar-container" style="">
+        <div style="display: inline;">
+            <button type="submit" class="btn" name="submit_button">{% bs_icon 'search' %}</button>
+        </div>
+        <div style="display: inline-flex">
+            <input type="text" id="main-search-input" name="search" class="main-search-input" placeholder="Search"
+            {% if search_query %}value="{{ search_query }}"{% endif %}>
+        </div>
+    </div>
+    </form>
+{% endblock search_bar %}
+
+
 {% block button_row %}
 {#<div class="custom-button" style="">#}
 {#    <a href="#" style="display: inline-flex">#}
@@ -148,7 +163,7 @@ Slides browser
 
 <div class="card border-0">
     {% if slides %}
-        <div class="card border-0" style="min-height: 600px; padding-top: 10px">
+        <div class="card border-0" style="min-height: 600px">
             {% include 'slide/grid_view_task.html' with slides=slides %}
         </div>
 
