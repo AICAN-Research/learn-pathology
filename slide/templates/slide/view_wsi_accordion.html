@@ -125,33 +125,48 @@
                                 </div>
                                 <div class="accordion-item">
                                     <h2 class="accordion-header" id="slideSupplementaryInfoHeading">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#slideSupplementaryInfoTab" aria-expanded="false" aria-controls="slideSupplementaryInfoTab">
+                                        <button class="accordion-button collapsed" type="button"
+                                                data-bs-toggle="collapse" data-bs-target="#slideSupplementaryInfoTab"
+                                                aria-expanded="false" aria-controls="slideSupplementaryInfoTab">
                                             Supplementary information
                                         </button>
                                     </h2>
-                                    <div id="slideSupplementaryInfoTab" class="accordion-collapse collapse" aria-labelledby="slideSupplementaryInfoHeading" data-bs-parent="#slideInformationAccordion">
+                                    <div id="slideSupplementaryInfoTab" class="accordion-collapse collapse"
+                                         aria-labelledby="slideSupplementaryInfoHeading"
+                                         data-bs-parent="#slideInformationAccordion">
                                         <div class="accordion-body">
                                             <table class="table">
-
                                                 <tr>
                                                     <th>
                                                         Long description
                                                         {% if request.user.is_teacher or request.user.is_superuser %}
-                                                            <div class="card-content" style="padding-top: 5px">
-                                                                <a class="LPButton"
-                                                                   href="{% url 'slide:edit_description' slide.id %}"
+                                                            <div class="card-content"
+                                                                 style="padding-top: 5px; position: relative;">
+                                                                <a class="LPButton" href="#"
+                                                                   onclick="showEditField('{{ slide.id }}')"
                                                                    style="margin: 0;">
-                                                                    Edit long description
+                                                                    <span class="iconify"
+                                                                          data-icon="fluent:edit-12-regular"
+                                                                          data-width="24" data-height="24"></span>
                                                                 </a>
                                                             </div>
                                                         {% endif %}
                                                     </th>
-                                                    {% if slide.long_description %}
-                                                        <td>{{ slide.long_description }}</td>
-                                                    {% else %}
-                                                        <td>-</td>
-                                                    {% endif %}
+                                                    <td>
+                                                        <div id="editField" style="display: none;">
+                                                            <textarea id="newDescription" name="newDescription"
+                                                                      style="height: 100px;"></textarea>
+                                                            <button onclick="saveDescription('{{ slide.id }}')">Save</button>
+                                                        </div>
+                                                        {% if slide.long_description %}
+                                                            <span id="longDescriptionSpan">{{ slide.long_description }}</span>
+                                                        {% else %}
+                                                            <span id="longDescriptionSpan"
+                                                                  style="display: none;">-</span>
+                                                        {% endif %}
+                                                    </td>
                                                 </tr>
+
                                                 {% if slide.pathology %}
                                                     <tr>
                                                     <th>
@@ -366,6 +381,43 @@
     document.getElementById("collapsePopup").addEventListener('click', function () {
         closeToolbarPopup();
     });
+
+// Function to show the edit field and hide the long description
+    function showEditField(slideId) {
+        var description = "{{ slide.long_description }}";
+        document.getElementById("newDescription").value = description;
+        document.getElementById("editField").style.display = "block";
+        document.getElementById("longDescriptionSpan").style.display = "none";
+    }
+
+function saveDescription(slideId) {
+    var newDescription = $("#newDescription").val();
+
+    $.ajax({
+        url: "{% url 'slide:edit_description' slide.id %}",
+        type: "POST",
+        headers: { "X-CSRFToken": "{{ csrf_token }}" },
+        data: {
+            'slide_id': slideId,
+            'new_description': newDescription
+        },
+        dataType: "json",
+        success: function (response) {
+            if (response.success) {
+                $("#longDescriptionSpan").text(newDescription);
+                $("#editField").hide();
+                $("#longDescriptionSpan").show();
+            } else {
+                alert("Failed to update description: " + response.error);
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error("AJAX request failed with status: " + status + ", error: " + error);
+            alert("Failed to update description. Please try again later.");
+        }
+    });
+}
+
 
 </script>
 

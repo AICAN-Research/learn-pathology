@@ -8,6 +8,7 @@ from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.db import transaction, IntegrityError
 from django.db.models import Q
 from django.http import HttpResponse, Http404, JsonResponse
+from django.views.decorators.http import require_POST
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.files.uploadedfile import UploadedFile
 
@@ -351,19 +352,16 @@ def edit_description(request, slide_id):
     """
 
     slide = slide_cache.load_slide_to_cache(slide_id)
-    form = SlideDescriptionForm(request.POST or None, instance=slide)
+    new_description = request.POST.get('new_description')
 
-    if request.method == 'POST':  # Form was submitted
-        if form.is_valid():
-            form.save()
-            messages.add_message(request, messages.SUCCESS,
-                 f'The slide description of {slide.name} was altered!')
-            return redirect('slide:view_full', slide_id=slide_id)
-
-    return render(request, 'slide/edit_description.html', {
-        'slide': slide,
-        'form': form
-    })
+    try:
+        slide.long_description = new_description
+        slide.save()
+        return JsonResponse({'success': True})
+    except Slide.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Slide not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
 
 @teacher_required
