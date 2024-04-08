@@ -222,7 +222,7 @@
                                                                     {% endfor %}
                                                                 </div>
                                                             {% else %}
-                                                                <p>No pathology tags selected</p>
+                                                                <p id="noPathologyTags" >No pathology tags selected</p>
                                                             {% endif %}
                                                         </td>
                                                     </tr>
@@ -426,9 +426,14 @@
         closeToolbarPopup();
     });
 
-// Function to show the edit field and hide the long description
+   var changed_description = None
+
+
     function showEditField(slideId) {
-        var description = "{{ slide.long_description }}";
+        if (changed_description) {
+            var description = changed_description;
+        }else {
+        var description = "{{ slide.long_description }}";}
         document.getElementById("newDescription").value = description;
         document.getElementById("editField").style.display = "block";
         document.getElementById("longDescriptionSpan").style.display = "none";
@@ -452,7 +457,8 @@ function saveDescription(slideId) {
                 $("#editField").hide();
                 $("#longDescriptionSpan").show();
 
-                location.reload();
+                changed_description = newDescription;
+
             } else {
                 alert("Failed to update description: " + response.error);
             }
@@ -464,19 +470,26 @@ function saveDescription(slideId) {
     });
 }
 
+
 function showEditTagsForm(slideId) {
     var editTagsForm = document.getElementById('editTagsForm' + slideId);
     var tagDisplaySection = document.getElementById('generalPathologyTags' + slideId);
 
-    // Check if the tagDisplaySection exists
+    try {
+        var noTags = document.getElementById('noPathologyTags');
+        noTags.style.display = 'none';
+    } catch (error) {
+        console.error("An error occurred while hiding 'noPathologyTags': " + error);
+    }
+
+
     if (tagDisplaySection) {
-        // Hide tag display section
         tagDisplaySection.style.display = 'none';
+
     } else {
         console.error("Tag display section not found for slide ID: " + slideId);
     }
 
-    // Show edit form
     if (editTagsForm) {
         editTagsForm.style.display = 'block';
     } else {
@@ -507,16 +520,21 @@ function showEditTagsForm(slideId) {
                 if (response.success) {
                     // Update displayed tags if successful
                     var tagsDisplay = "";
+                    if (response.tag_names.length === 0) {
+                        tagsDisplay =   '<p>No pathology tags selected</p>'
+                    }
+                    else {
                     response.tag_names.forEach(function (tag) {
                         tagsDisplay += '<a href="#" class="list-group-item list-group-item-action">' + tag.name + '</a>';
                     });
+                        }
                     $("#generalPathologyTags" + slideId).html(tagsDisplay);
 
                     // Hide edit form and show tag display section
                     $("#editTagsForm" + slideId).hide();
                     $("#generalPathologyTags" + slideId).show();
 
-                    location.reload();
+                    {#location.reload();#}
                 } else {
                     alert("Failed to update tags: " + response.error);
                 }
@@ -527,6 +545,8 @@ function showEditTagsForm(slideId) {
             }
         });
     }
+
+
 
 </script>
 
