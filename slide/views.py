@@ -401,11 +401,11 @@ def edit_general_pathology_tags(request, slide_id):
         for tag_id in selected_tags_ids:
             tag_to_add = Tag.objects.get(id=tag_id)
             slide.tags.add(tag_to_add)
-            # tag_names.append({'id': tag_to_add.id, 'name': tag_to_add.name})
+            tag_names.append({'id': tag_to_add.id, 'name': tag_to_add.name})
 
         slide.save()
 
-        return JsonResponse({'success': True})
+        return JsonResponse({'success': True, 'tag_names': tag_names})
     except Slide.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Slide not found'}, status=404)
     except Exception as e:

@@ -169,39 +169,58 @@
 
                                                 {% if slide.pathology %}
                                                     <tr>
-    <th>
-        General pathology tags
-        {% if request.user.is_teacher or request.user.is_superuser %}
-            <div class="card-content" style="padding-top: 5px; position: relative;">
-                <a class="LPButton" href="#" onclick="showEditTagsForm('{{ slide.id }}')" style="margin: 0;">
-                    <span class="iconify" data-icon="fluent:edit-12-regular" data-width="24" data-height="24"></span>
-                </a>
-            </div>
-        {% endif %}
-    </th>
-    <td>
-        <div id="editTagsForm{{ slide.id }}" style="display: none;">
-            <form id="editTagsFormInner{{ slide.id }}">
-                <!-- Checkboxes for each tag -->
-                {% for tag in all_general_pathology_tags %}
-                    <input type="checkbox" id="{{ tag.id }}" name="tags" value="{{ tag.id }}"
-                        {% if tag in general_pathology_tags %} checked {% endif %}>
-                    <label for="{{ tag.id }}">{{ tag.name }}</label><br>
-                {% endfor %}
-                <button type="button" onclick="saveTagsChanges('{{ slide.id }}')">Save</button>
-            </form>
-        </div>
-{% if general_pathology_tags %}
-    <div id="generalPathologyTags{{ slide.id }}">
-        {% for tag in general_pathology_tags %}
-            {{ tag.name }}<br>
-        {% endfor %}
-    </div>
-{% else %}
-    <br> No pathology tags selected
-    {% endif %}
-    </td>
-</tr>
+                                                        <th>
+                                                            General pathology tags
+                                                            {% if request.user.is_teacher or request.user.is_superuser %}
+                                                                <div class="card-content"
+                                                                     style="padding-top: 5px; position: relative;">
+
+                                                                    <a class="LPButton" href="#"
+                                                                       onclick="showEditTagsForm('{{ slide.id }}')"
+                                                                       style="margin: 0;">
+                                                                        <span class="iconify"
+                                                                              data-icon="fluent:edit-12-regular"
+                                                                              data-width="24" data-height="24"></span>
+                                                                    </a>
+                                                                </div>
+                                                            {% endif %}
+                                                        </th>
+                                                        <td>
+                                                            <div id="editTagsForm{{ slide.id }}" style="display: none;">
+                                                                <form id="editTagsFormInner{{ slide.id }}">
+                                                                    <!-- Checkboxes for each tag -->
+                                                                    {% for tag in all_general_pathology_tags %}
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input"
+                                                                                   type="checkbox" id="{{ tag.id }}"
+                                                                                   name="tags" value="{{ tag.id }}"
+                                                                                    {% if tag in general_pathology_tags %}
+                                                                                   checked
+                                                                                    {% endif %}>
+                                                                            <label class="form-check-label"
+                                                                                   for="{{ tag.id }}">{{ tag.name }}</label>
+                                                                        </div>
+                                                                    {% endfor %}
+                                                                    <button type="button" class="btn btn-primary"
+                                                                            onclick="saveTagsChanges('{{ slide.id }}')">
+                                                                        Save
+                                                                    </button>
+                                                                </form>
+
+                                                            </div>
+                                                            {% if general_pathology_tags %}
+                                                                <div id="generalPathologyTags{{ slide.id }}"
+                                                                     class="list-group">
+                                                                    {% for tag in general_pathology_tags %}
+                                                                        <a href="#"
+                                                                           class="list-group-item list-group-item-action">{{ tag.name }}</a>
+                                                                    {% endfor %}
+                                                                </div>
+                                                            {% else %}
+                                                                <p>No pathology tags selected</p>
+                                                            {% endif %}
+                                                        </td>
+                                                    </tr>
 
 
                                                 {% endif %}
@@ -478,9 +497,8 @@ function showEditTagsForm(slideId) {
                 if (response.success) {
                     // Update displayed tags if successful
                     var tagsDisplay = "";
-                    selectedTags.forEach(function (tagId) {
-                        // Retrieve tag name based on tagId, update tagsDisplay accordingly
-                        tagsDisplay += tagId + "<br>"; // Replace with actual tag name retrieval
+                    response.tag_names.forEach(function (tag) {
+                        tagsDisplay += '<a href="#" class="list-group-item list-group-item-action">' + tag.name + '</a>';
                     });
                     $("#generalPathologyTags" + slideId).html(tagsDisplay);
 
