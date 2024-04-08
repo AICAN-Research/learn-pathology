@@ -280,98 +280,6 @@
 </div>
 
 
-
-<script type="text/javascript">
-
-    let g_whichPopupIsOpen = 'none';
-
-    function activateToolbarPopup() {
-        const pressedButtonId = this.id;
-
-        if (g_whichPopupIsOpen === pressedButtonId) {
-            closeToolbarPopup();
-        } else {
-            openToolbarPopup();
-            removeButtonActivation();
-
-            // Show the correct content in the popup
-            switch (pressedButtonId) {
-                case 'slideInfoButton':
-                    document.getElementById('slideInformationContent').style.display = 'block';
-                    document.getElementById('slideInfoButton').classList.add('active');
-                    {% if user.is_superuser or user.is_teacher %}
-                    document.getElementById('annotoriousToolbarWrapper').style.display = 'none';
-                    {% endif %}
-                    document.getElementById('annotationListContent').style.display = 'none';
-                    break;
-                case 'editAnnotationButton':
-                    document.getElementById('slideInformationContent').style.display = 'none';
-                    {% if user.is_superuser or user.is_teacher %}
-                    document.getElementById('annotoriousToolbarWrapper').style.display = 'block';
-                    document.getElementById('editAnnotationButton').classList.add('active');
-                    {% endif %}
-                    document.getElementById('annotationListContent').style.display = 'none';
-                    break;
-                case 'annotationListButton':
-                    document.getElementById('slideInformationContent').style.display = 'none';
-                    {% if user.is_superuser or user.is_teacher %}
-                    document.getElementById('annotoriousToolbarWrapper').style.display = 'none';
-                    {% endif %}
-                    document.getElementById('annotationListContent').style.display = 'block';
-                    document.getElementById('annotationListButton').classList.add('active');
-                    //document.getElementById('popup').removeProperty('overflow-y'); // TODO: Fix this!!
-                    break;
-                default:
-                    // do something else
-                    document.getElementById('popup-content').innerHTML = 'SOMETHING WRONG HAPPENED IN THE SWITCH/CASE BLOCK!';
-            }
-
-            // Store which button was pressed/content is displayed
-            g_whichPopupIsOpen = pressedButtonId;
-        }
-    }
-
-    function removeButtonActivation() {
-        document.getElementById('slideInfoButton').classList.remove('active');
-        {% if user.is_superuser or user.is_teacher %}
-        document.getElementById('editAnnotationButton').classList.remove('active');
-        {% endif %}
-        document.getElementById('annotationListButton').classList.remove('active');
-    }
-    function openToolbarPopup() {
-        let popup = document.getElementById('popup');
-        if (popup.style.display === 'none') {
-            popup.style.display = 'block';
-        }
-        showToolbarCollapseButton();
-    }
-    function closeToolbarPopup() {
-        hideToolbarCollapseButton();    // Hide button when popup is hidden
-        removeButtonActivation();
-        let popup = document.getElementById('popup');
-        if (popup.style.display !== 'none') {
-            popup.style.display = 'none';
-        }
-        g_whichPopupIsOpen = 'none';
-    }
-    function showToolbarCollapseButton() {
-        document.getElementById("collapsePopup").style.display = 'block';
-    }
-    function hideToolbarCollapseButton() {
-        document.getElementById("collapsePopup").style.display = 'none';
-    }
-
-    document.getElementById("slideInfoButton").addEventListener('click', activateToolbarPopup);
-    {% if user.is_superuser or user.is_teacher %}
-    document.getElementById("editAnnotationButton").addEventListener('click', activateToolbarPopup);
-    {% endif %}
-    document.getElementById("annotationListButton").addEventListener('click', activateToolbarPopup);
-    document.getElementById("collapsePopup").addEventListener('click', function () {
-        closeToolbarPopup();
-    });
-
-</script>
-
 {% endblock content %}
 
 
@@ -379,9 +287,10 @@
 
 $(document).ready(function(){
     collapseSidebar();
+    let g_whichPopupIsOpen = 'none';
 
     // WSI Viewer
-    var viewer = OpenSeadragon({
+    let viewer = OpenSeadragon({
         id: "wsi-canvas",
         zoomPerScroll: 2, // Scroll speed
         minScrollDeltaTime: 150, //	Number of milliseconds between canvas-scroll events.
@@ -406,23 +315,57 @@ $(document).ready(function(){
             },
         }
     });
+    viewer.addControl(document.getElementById("toolbarTopDiv"), {anchor: OpenSeadragon.ControlAnchor.TOP_RIGHT});
+    viewer.addControl(document.getElementById("toolbarBottomDiv"), {anchor: OpenSeadragon.ControlAnchor.BOTTOM_RIGHT});
 
+    // Scalebar
+    try {
+        let pixelsPerMeter = {{ slide|get_pixels_per_meter }};
+        viewer.scalebar({
+            type: OpenSeadragon.ScalebarType.MICROSCOPY,
+            pixelsPerMeter: pixelsPerMeter,
+            minWidth: "250px",
+            location: OpenSeadragon.ScalebarLocation.BOTTOM_LEFT,
+            xOffset: 10,
+            yOffset: 20,
+            stayInsideImage: true,
+            color: "rgba(100,100,100,0.9)",
+            fontColor: "rgb(50,50,50)",
+            backgroundColor: "rgba(230, 230, 230, 0.5)",
+            fontSize: "large",
+            barThickness: 3
+        });
+    } catch (e) {
+        alert('Couldn\'t get scaling factor')
+    }
+
+    /*
+    ANNOTORIOUS AND ANNOTATIONS
+    */
     // Initialize the Annotorious plugin
-    var anno = OpenSeadragon.Annotorious(viewer);
+    let anno = OpenSeadragon.Annotorious(viewer);
 
     Annotorious.SelectorPack(anno); // [ 'rect', 'polygon', 'point', 'circle', 'ellipse', 'freehand' ]
     anno.removeDrawingTool('freehand');
     {% if request.user.is_teacher or request.user.is_superuser %}
-        const toolbar = new Annotorious.Toolbar(anno, document.getElementById('annotorious-toolbar-container'));
+    const toolbar = new Annotorious.Toolbar(anno, document.getElementById('annotorious-toolbar-container'));
     {% else %}
-        anno.readOnly = true;
+    anno.readOnly = true;
     {% endif %}
 
     {% if annotations %}
     {% for a in annotations %}
-        anno.addAnnotation({{ a|safe }});
+    anno.addAnnotation({{ a|safe }});
     {% endfor %}
     {% endif %}
+    let visible_annotorious = false;
+    anno.setVisible(visible_annotorious);
+
+    // Annotation List Functionality
+    let annotationList = document.getElementById('annotationList');
+
+    //updateButtonLabel();
+    updateAnnotationList();
 
 
     // Annotorious + annotation storing
@@ -450,29 +393,50 @@ $(document).ready(function(){
         updateAnnotationList();
     });
 
-    viewer.addControl(document.getElementById("toolbarTopDiv"), {anchor: OpenSeadragon.ControlAnchor.TOP_RIGHT});
-    viewer.addControl(document.getElementById("toolbarBottomDiv"), {anchor: OpenSeadragon.ControlAnchor.BOTTOM_RIGHT});
 
-    // Scalebar
-    try {
-        let pixelsPerMeter = {{ slide|get_pixels_per_meter }};
-        viewer.scalebar({
-            type: OpenSeadragon.ScalebarType.MICROSCOPY,
-            pixelsPerMeter: pixelsPerMeter,
-            minWidth: "250px",
-            location: OpenSeadragon.ScalebarLocation.BOTTOM_LEFT,
-            xOffset: 10,
-            yOffset: 20,
-            stayInsideImage: true,
-            color: "rgba(100,100,100,0.9)",
-            fontColor: "rgb(50,50,50)",
-            backgroundColor: "rgba(230, 230, 230, 0.5)",
-            fontSize: "large",
-            barThickness: 3
+    /*
+    BUTTON LISTENERS
+    */
+    document.getElementById("zoomInButton").addEventListener('click', zoomIn);
+    document.getElementById("zoomOutButton").addEventListener('click', zoomOut);
+    document.getElementById("FullScreenButton").addEventListener('click', toggleFullscreen);
+
+    document.getElementById("slideInfoButton").addEventListener('click', activateToolbarPopup);
+    {% if user.is_superuser or user.is_teacher %}
+    document.getElementById("editAnnotationButton").addEventListener('click', activateToolbarPopup);
+    {% endif %}
+    document.getElementById("annotationListButton").addEventListener('click', activateToolbarPopup);
+    document.getElementById("collapsePopup").addEventListener('click', closeToolbarPopup);
+
+    document.getElementById("toggleAnnotationButton").addEventListener('click', toggleAnnotationVisibility);
+
+    // Screenshoot Button Functionality
+    document.getElementById("screenshotButton").addEventListener('click', function () {
+        // Hide buttons
+        document.getElementById("buttonColumn").style.display = "none";
+        document.getElementById("toolbarBottomDiv").style.display = "none";
+        // Hide popup
+        document.getElementById("collapsePopupWindow").style.display = "none";
+        html2canvas($("#wsi-canvas")[0]).then(canvas => {
+            let now = new Date();
+            let formattedDate = now.format("yyyy-MM-dd hh-mm-ss");
+            console.log(now);
+            // Trigger download
+            let link = document.createElement('a');
+            link.href = canvas.toDataURL("image/jpeg");
+            link.download = 'LearnPathology_screenshot_' + formattedDate + '.jpg';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }).then(x => {
+            // Display buttons again
+            document.getElementById("buttonColumn").style.display = "block";
+            document.getElementById("toolbarBottomDiv").style.display = "block";
+            // Display popup again
+            document.getElementById("collapsePopupWindow").style.display = "flex";
         });
-    } catch (e) {
-        alert('Couldn\'t get scaling factor')
-    }
+
+    });
 
 {#    // Zoom Button Functionality#}
 {#    const zoomLevels = [0.25, 1, 10, 20, 40]; // Include 0.25x#}
@@ -497,84 +461,25 @@ $(document).ready(function(){
 {#    }#}
 
 
-
-    // Screenshoot Button Functionality
-    const screenshotButton = document.getElementById("screenshotButton");
-    screenshotButton.addEventListener('click', function () {
-        // Hide buttons
-        document.getElementById("buttonColumn").style.display = "none";
-        document.getElementById("toolbarBottomDiv").style.display = "none";
-        // Hide popup
-        document.getElementById("collapsePopupWindow").style.display = "none";
-        html2canvas($("#wsi-canvas")[0]).then(canvas => {
-            var now = new Date();
-            var formattedDate = now.format("yyyy-MM-dd hh-mm-ss");
-            console.log(now);
-            // Trigger download
-            var link = document.createElement('a');
-            link.href = canvas.toDataURL("image/jpeg");
-            link.download = 'LearnPathology_screenshot_' + formattedDate + '.jpg';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }).then(x => {
-            // Display buttons again
-            document.getElementById("buttonColumn").style.display = "block";
-            document.getElementById("toolbarBottomDiv").style.display = "block";
-            // Display popup again
-            document.getElementById("collapsePopupWindow").style.display = "flex";
-        });
-
-    });
-
-    // Default Button Functionality
-    document.getElementById("zoomInButton").addEventListener('click', function () {
-        var currentZoom = viewer.viewport.getZoom();
-        var newZoom = currentZoom * viewer.zoomPerScroll; // Adjust the factor as needed
-
-        if (newZoom <= viewer.viewport.getMaxZoom()) {
-            viewer.viewport.zoomTo(newZoom);
-        }
-    });
-
-    // Zoom out button event listener
-    document.getElementById("zoomOutButton").addEventListener('click', function () {
-        var currentZoom = viewer.viewport.getZoom();
-        var newZoom = currentZoom / viewer.zoomPerScroll; // Adjust the factor as needed
-
-        if (newZoom >= viewer.viewport.getMinZoom()) {
-            viewer.viewport.zoomTo(newZoom);
-        }
-    });
-
-    document.getElementById("FullScreenButton").addEventListener('click', function () {
-        if (OpenSeadragon.isFullScreen()) {
-            viewer.setFullScreen(false);
-        } else {
-            viewer.setFullScreen(true);
-        }
-    });
-
-
-    // Annotation List Functionality
-    var annotationList = document.getElementById('annotationList');
-
+    /*
+    FUNCTION IMPLEMENTATIONS
+    */
     function updateAnnotationList() {
         annotationList.innerHTML = ''; // Clear previous list
 
-        var annotations = anno.getAnnotations();
+        let annotations = anno.getAnnotations();
 
         annotations.sort(function (a, b) {
-            var textA = a.body[0].value.toUpperCase();
-            var textB = b.body[0].value.toUpperCase();
+            let textA = a.body[0].value.toUpperCase();
+            let textB = b.body[0].value.toUpperCase();
             return textA.localeCompare(textB);
         });
 
         annotations.forEach(function (annotation) {
-            var listItem = document.createElement('div');
+            let listItem = document.createElement('div');
             listItem.classList.add('annotationListElement');
 
-            var annotationButton = document.createElement('button');
+            let annotationButton = document.createElement('button');
             annotationButton.textContent = annotation.body[0].value;
             annotationButton.classList.add('annotationListElementButton', 'transparentBackground');
             annotationButton.addEventListener('click', function () {
@@ -587,7 +492,7 @@ $(document).ready(function(){
             });
 
             {% if request.user.is_teacher or request.user.is_superuser %}
-            var deleteButton = document.createElement('button');
+            let deleteButton = document.createElement('button');
             deleteButton.innerHTML = '<span class="iconify" data-icon="fluent:dismiss-12-regular" data-width="24" data-height="24"></span>';
             deleteButton.classList.add('annotationListElementDelete', 'transparentBackground');
 
@@ -605,19 +510,118 @@ $(document).ready(function(){
         });
     }
 
+    function activateToolbarPopup() {
+        const pressedButtonId = this.id;
 
-    // Annotation Button Functionality
-    var visible_annotorious = false;
-    anno.setVisible(visible_annotorious);
-    console.log(visible_annotorious);
-    document.getElementById("toggleAnnotationButton").addEventListener('click', function () {
+        if (g_whichPopupIsOpen === pressedButtonId) {
+            closeToolbarPopup();
+        } else {
+            openToolbarPopup();
+            removeButtonActivation();
+
+            // Show the correct content in the popup
+            switch (pressedButtonId) {
+                case 'slideInfoButton':
+                    document.getElementById('slideInformationContent').style.display = 'block';
+                    document.getElementById('slideInfoButton').classList.add('active');
+                    {% if user.is_superuser or user.is_teacher %}
+                    document.getElementById('annotoriousToolbarWrapper').style.display = 'none';
+                    {% endif %}
+                    document.getElementById('annotationListContent').style.display = 'none';
+                    break;
+                case 'editAnnotationButton':
+                    document.getElementById('slideInformationContent').style.display = 'none';
+                    {% if user.is_superuser or user.is_teacher %}
+                    document.getElementById('annotoriousToolbarWrapper').style.display = 'block';
+                    document.getElementById('editAnnotationButton').classList.add('active');
+                    {% endif %}
+                    document.getElementById('annotationListContent').style.display = 'none';
+                    if (!visible_annotorious) {
+                        toggleAnnotationVisibility();
+                    }
+                    break;
+                case 'annotationListButton':
+                    document.getElementById('slideInformationContent').style.display = 'none';
+                    {% if user.is_superuser or user.is_teacher %}
+                    document.getElementById('annotoriousToolbarWrapper').style.display = 'none';
+                    {% endif %}
+                    document.getElementById('annotationListContent').style.display = 'block';
+                    document.getElementById('annotationListButton').classList.add('active');
+                    //document.getElementById('popup').removeProperty('overflow-y'); // TODO: Fix this!!
+                    break;
+                default:
+                    // do something else
+                    document.getElementById('popup-content').innerHTML = 'SOMETHING WRONG HAPPENED IN THE SWITCH/CASE BLOCK!';
+            }
+
+            // Store which button was pressed/content is displayed
+            g_whichPopupIsOpen = pressedButtonId;
+        }
+    }
+
+    function openToolbarPopup() {
+        let popup = document.getElementById('popup');
+        if (popup.style.display === 'none') {
+            popup.style.display = 'block';
+        }
+        showToolbarCollapseButton();
+    }
+
+    function showToolbarCollapseButton() {
+        document.getElementById("collapsePopup").style.display = 'block';
+    }
+
+    function hideToolbarCollapseButton() {
+        document.getElementById("collapsePopup").style.display = 'none';
+    }
+
+    function removeButtonActivation() {
+        document.getElementById('slideInfoButton').classList.remove('active');
+        {% if user.is_superuser or user.is_teacher %}
+        document.getElementById('editAnnotationButton').classList.remove('active');
+        {% endif %}
+        document.getElementById('annotationListButton').classList.remove('active');
+    }
+
+    function closeToolbarPopup() {
+        hideToolbarCollapseButton();    // Hide button when popup is hidden
+        removeButtonActivation();
+        let popup = document.getElementById('popup');
+        if (popup.style.display !== 'none') {
+            popup.style.display = 'none';
+        }
+        g_whichPopupIsOpen = 'none';
+    }
+
+    function zoomIn() {
+        let currentZoom = viewer.viewport.getZoom();
+        let newZoom = currentZoom * viewer.zoomPerScroll; // Adjust the factor as needed
+        if (newZoom <= viewer.viewport.getMaxZoom()) {
+            viewer.viewport.zoomTo(newZoom);
+        }
+    }
+
+    function zoomOut() {
+        let currentZoom = viewer.viewport.getZoom();
+        let newZoom = currentZoom / viewer.zoomPerScroll; // Adjust the factor as needed
+        if (newZoom >= viewer.viewport.getMinZoom()) {
+            viewer.viewport.zoomTo(newZoom);
+        }
+    }
+
+    function toggleFullscreen() {
+        if (OpenSeadragon.isFullScreen()) {
+            viewer.setFullScreen(false);
+        } else {
+            viewer.setFullScreen(true);
+        }
+    }
+
+    function toggleAnnotationVisibility() {
         visible_annotorious = !visible_annotorious;
         anno.setVisible(visible_annotorious);
-        console.log(visible_annotorious);
-    });
-
-    //updateButtonLabel();
-    updateAnnotationList();
+        document.getElementById('toggleAnnotationButton').checked = visible_annotorious;
+    }
 
 });
 {% endblock javascript %}
