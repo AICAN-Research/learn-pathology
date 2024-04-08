@@ -154,10 +154,15 @@
                                                     </th>
                                                     <td>
                                                         <div id="editField" style="display: none;">
-                                                            <textarea id="newDescription" name="newDescription"
-                                                                      style="height: 100px;"></textarea>
-                                                            <button onclick="saveDescription('{{ slide.id }}')">Save</button>
+                                                            <div class="form-group">
+                                                                <textarea id="newDescription" name="newDescription"
+                                                                          class="form-control" rows="3"></textarea>
+                                                            </div>
+                                                            <button type="button" class="btn btn-primary"
+                                                                    onclick="saveDescription('{{ slide.id }}')">Save
+                                                            </button>
                                                         </div>
+
                                                         {% if slide.long_description %}
                                                             <span id="longDescriptionSpan">{{ slide.long_description }}</span>
                                                         {% else %}
@@ -446,6 +451,8 @@ function saveDescription(slideId) {
                 $("#longDescriptionSpan").text(newDescription);
                 $("#editField").hide();
                 $("#longDescriptionSpan").show();
+
+                location.reload();
             } else {
                 alert("Failed to update description: " + response.error);
             }
@@ -508,6 +515,8 @@ function showEditTagsForm(slideId) {
                     // Hide edit form and show tag display section
                     $("#editTagsForm" + slideId).hide();
                     $("#generalPathologyTags" + slideId).show();
+
+                    location.reload();
                 } else {
                     alert("Failed to update tags: " + response.error);
                 }
