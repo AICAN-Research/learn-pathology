@@ -6,7 +6,7 @@
     {% for chunk in slides|as_chunks:12 %}
         <div class="row">
             {% for slide in chunk %}
-                <div class="column col-xs-6 col-sm-6 col-md-4 col-lg-3 col-xl-3" style="display: flex; padding: 24px; border: 1px solid lightgrey">
+                <div class="column col-xs-6 col-sm-6 col-md-4 col-lg-3 col-xl-3" style="padding: 24px; border: 1px solid lightgrey">
                     {% if course %}
                         {% include grid_card_url with slide=slide course=course %}
                     {% else %}

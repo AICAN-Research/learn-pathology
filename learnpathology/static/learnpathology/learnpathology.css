@@ -509,7 +509,7 @@ Radio button toolbar used with slide filters
 
 .radio-toolbar input[type="radio"]:checked+label{
     font-weight: bold;
-    color: #3092f6;
+    color: var(--color-blue-dark);
 }
 
 /* =============================================
@@ -626,19 +626,21 @@ Image browser
 
 /* Styling for cards containing thumbnails, name, short description */
 .slideGridViewCard {
-    height: 95%;
+    height: 100%;
     max-height: 500px;
-    min-height: fit-content;
-    border-color: var(--grid-card-border);
+    border: 0;
+    display: flex;
 }
 .cardImageHeader {
-    height: 60%;
-    min-height: 50%;
-    max-height: 250px;
+    height: 80%;
+    display: flex;
+    max-height: 500px;
     background-color: var(--grid-card-background);
 }
 .gridCardContent {
-    height: fit-content;
+    height: 20%;
+    display: flex;
+    align-self: stretch;
     max-height: 50%;
     padding: 5% 2% 2% 2%;
     border: none;
@@ -1186,10 +1188,10 @@ Header of page main content
     height: 40px;
     display: inline-flex;
     flex-direction: row;
-    align-items: flex-start;
-    justify-content: start;
+    /*align-items: flex-start;*/
+    /*justify-content: start;*/
 
-    padding: 8px;
+    /*padding: 8px;*/
     background: var(--color-white);
     border: 1px solid var(--color-light-gray);
     border-radius: var(--border-radius);
