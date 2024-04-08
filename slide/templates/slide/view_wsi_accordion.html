@@ -74,15 +74,11 @@
                                 <div class="accordion-item"
                                      style="border-top-left-radius: 0; border-top-right-radius: 0;">
                                     <h3 class="accordion-header" id="slideInformationHeading">
-                                        <button class="accordion-button collapsed" type="button"
-                                                data-bs-toggle="collapse" data-bs-target="#slideInformationTab"
-                                                aria-expanded="false" aria-controls="slideInformationTab">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#slideInformationTab" aria-expanded="false" aria-controls="slideInformationTab">
                                             Slide information
                                         </button>
                                     </h3>
-                                    <div id="slideInformationTab" class="accordion-collapse collapse"
-                                         aria-labelledby="slideInformationHeading"
-                                         data-bs-parent="#slideInformationAccordion">
+                                    <div id="slideInformationTab" class="accordion-collapse collapse" aria-labelledby="slideInformationHeading" data-bs-parent="#slideInformationAccordion">
                                         <div class="accordion-body">
                                             <table class="table">
                                                 <tr>
@@ -99,15 +95,11 @@
                                 </div>
                                 <div class="accordion-item">
                                     <h2 class="accordion-header" id="slideCategorizationHeading">
-                                        <button class="accordion-button collapsed" type="button"
-                                                data-bs-toggle="collapse" data-bs-target="#slideCategorizationTab"
-                                                aria-expanded="false" aria-controls="slideCategorizationTab">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#slideCategorizationTab" aria-expanded="false" aria-controls="slideCategorizationTab">
                                             Categorization
                                         </button>
                                     </h2>
-                                    <div id="slideCategorizationTab" class="accordion-collapse collapse"
-                                         aria-labelledby="slideCategorizationHeading"
-                                         data-bs-parent="#slideInformationAccordion">
+                                    <div id="slideCategorizationTab" class="accordion-collapse collapse" aria-labelledby="slideCategorizationHeading" data-bs-parent="#slideInformationAccordion">
                                         <div class="accordion-body">
                                             <table class="table">
                                                 <tr>
@@ -117,9 +109,9 @@
                                                 <tr>
                                                     <th>Histology/pathology</th>
                                                     {% if slide.pathology %}
-                                                        <td>Pathology</td>
+                                                    <td>Pathology</td>
                                                     {% else %}
-                                                        <td>Histology</td>
+                                                    <td>Histology</td>
                                                     {% endif %}
                                                 </tr>
                                                 <tr>
@@ -132,113 +124,87 @@
                                 </div>
                                 <div class="accordion-item">
                                     <h2 class="accordion-header" id="slideSupplementaryInfoHeading">
-                                        <button class="accordion-button collapsed" type="button"
-                                                data-bs-toggle="collapse"
-                                                data-bs-target="#slideSupplementaryInfoTab"
-                                                aria-expanded="false" aria-controls="slideSupplementaryInfoTab">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#slideSupplementaryInfoTab" aria-expanded="false" aria-controls="slideSupplementaryInfoTab">
                                             Supplementary information
                                         </button>
                                     </h2>
-                                    <div id="slideSupplementaryInfoTab" class="accordion-collapse collapse"
-                                         aria-labelledby="slideSupplementaryInfoHeading"
-                                         data-bs-parent="#slideInformationAccordion">
+                                    <div id="slideSupplementaryInfoTab" class="accordion-collapse collapse" aria-labelledby="slideSupplementaryInfoHeading" data-bs-parent="#slideInformationAccordion">
                                         <div class="accordion-body">
                                             <table class="table">
                                                 <tr>
                                                     <th>
                                                         Long description
                                                         {% if request.user.is_teacher or request.user.is_superuser %}
-                                                            <div class="card-content"
-                                                                 style="padding-top: 5px; position: relative;">
-                                                                <a class="LPButton" href="#"
-                                                                   onclick="showEditField('{{ slide.id }}')"
-                                                                   style="margin: 0;">
-                                                                <span class="iconify"
-                                                                      data-icon="fluent:edit-12-regular"
-                                                                      data-width="24" data-height="24"></span>
-                                                                </a>
-                                                            </div>
+                                                        <div class="card-content" style="padding-top: 5px; position: relative;">
+                                                            <button id="editDescriptionButton" class="custom-button btn btn-secondary">
+                                                                <div class="button-icon">
+                                                                    <span class="iconify" data-icon="fluent:edit-12-regular" data-width="24" data-height="24"></span>
+                                                                </div>
+                                                            </button>
+                                                            </a>
+                                                        </div>
                                                         {% endif %}
                                                     </th>
                                                     <td>
                                                         <div id="editField" style="display: none;">
                                                             <div class="form-group">
-                                                            <textarea id="newDescription" name="newDescription"
-                                                                      class="form-control" rows="3"></textarea>
+                                                                <textarea id="newDescription" name="newDescription" class="form-control" rows="3"></textarea>
                                                             </div>
-                                                            <button type="button" class="btn btn-primary"
-                                                                    onclick="saveDescription('{{ slide.id }}')">Save
+                                                            <button id="saveDescriptionButton" class="custom-button btn btn-secondary">
+                                                                Save
                                                             </button>
                                                         </div>
 
                                                         {% if slide.long_description %}
-                                                            <span id="longDescriptionSpan">{{ slide.long_description }}</span>
+                                                        <span id="longDescriptionSpan">{{ slide.long_description }}</span>
                                                         {% else %}
-                                                            <span id="longDescriptionSpan"
-                                                                  style="display: none;">-</span>
+                                                        <span id="longDescriptionSpan" style="display: none;">-</span>
                                                         {% endif %}
                                                     </td>
                                                 </tr>
 
                                                 {% if slide.pathology %}
-                                                    <tr>
-                                                        <th>
-                                                            General pathology tags
-                                                            {% if request.user.is_teacher or request.user.is_superuser %}
-                                                                <div class="card-content"
-                                                                     style="padding-top: 5px; position: relative;">
-
-                                                                    <a class="LPButton" href="#"
-                                                                       onclick="showEditTagsForm('{{ slide.id }}')"
-                                                                       style="margin: 0;">
-                                                                    <span class="iconify"
-                                                                          data-icon="fluent:edit-12-regular"
-                                                                          data-width="24" data-height="24"></span>
-                                                                    </a>
+                                                <tr>
+                                                    <th>
+                                                        General pathology tags
+                                                        {% if request.user.is_teacher or request.user.is_superuser %}
+                                                        <div class="card-content" style="padding-top: 5px; position: relative;">
+                                                            <button id="editTagsButton" class="custom-button btn btn-secondary">
+                                                                <div class="button-icon">
+                                                                    <span class="iconify" data-icon="fluent:edit-12-regular" data-width="24" data-height="24"></span>
                                                                 </div>
+                                                            </button>
+                                                        </div>
+                                                        {% endif %}
+                                                    </th>
+                                                    <td>
+                                                        <div id="editTagsForm{{ slide.id }}" style="display: none;">
+                                                            <form id="editTagsFormInner{{ slide.id }}">
+                                                                <!-- Checkboxes for each tag -->
+                                                                {% for tag in all_general_pathology_tags %}
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox" id="{{ tag.id }}" name="tags" value="{{ tag.id }}" {% if tag in general_pathology_tags %}checked{% endif %}>
+                                                                        <label class="form-check-label" for="{{ tag.id }}">{{ tag.name }}</label>
+                                                                    </div>
+                                                                {% endfor %}
+                                                                <button id="saveTagsButton" class="custom-button btn btn-secondary">
+                                                                    Save
+                                                                </button>
+                                                            </form>
+
+                                                        </div>
+
+                                                        <div id="generalPathologyTags{{ slide.id }}" class="list-group">
+                                                            {% if general_pathology_tags %}
+                                                            {% for tag in general_pathology_tags %}
+                                                                <div class="list-group-item list-group-item-action">{{ tag.name }}</div>
+                                                            {% endfor %}
+                                                            {% else %}
+                                                                <p id="noPathologyTags">No pathology tags selected</p>
                                                             {% endif %}
-                                                        </th>
-                                                        <td>
-                                                            <div id="editTagsForm{{ slide.id }}"
-                                                                 style="display: none;">
-                                                                <form id="editTagsFormInner{{ slide.id }}">
-                                                                    <!-- Checkboxes for each tag -->
-                                                                    {% for tag in all_general_pathology_tags %}
-                                                                        <div class="form-check">
-                                                                            <input class="form-check-input"
-                                                                                   type="checkbox" id="{{ tag.id }}"
-                                                                                   name="tags" value="{{ tag.id }}"
-                                                                                    {% if tag in general_pathology_tags %}
-                                                                                   checked
-                                                                                    {% endif %}>
-                                                                            <label class="form-check-label"
-                                                                                   for="{{ tag.id }}">{{ tag.name }}</label>
-                                                                        </div>
-                                                                    {% endfor %}
-                                                                    <button type="button" class="btn btn-primary"
-                                                                            onclick="saveTagsChanges('{{ slide.id }}')">
-                                                                        Save
-                                                                    </button>
-                                                                </form>
-
-                                                            </div>
-
-                                                            <div id="generalPathologyTags{{ slide.id }}"
-                                                                 class="list-group">
-                                                                {% if general_pathology_tags %}
-                                                                    {% for tag in general_pathology_tags %}
-                                                                        <a href="#"
-                                                                           class="list-group-item list-group-item-action">{{ tag.name }}</a>
-                                                                    {% endfor %}
-                                                                {% else %}
-                                                                    <p id="noPathologyTags">No pathology tags
-                                                                        selected</p>
-                                                                {% endif %}
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-
-
+                                                        </div>
+                                                    </td>
+                                                </tr>
                                                 {% endif %}
                                             </table>
                                         </div>
@@ -698,9 +664,15 @@ $(document).ready(function(){
     /*
     EDIT DESCRIPTION AND PATHOLOGY TAGS
     */
-    let changed_description = null;
+    let changed_description = '';
+    const slide_id = {{ slide.id }};
 
-    function showEditField(slideId) {
+    document.getElementById('editDescriptionButton').addEventListener('click', showEditField);
+    document.getElementById('saveDescriptionButton').addEventListener('click', saveDescription);
+    document.getElementById('editTagsButton').addEventListener('click', showEditTagsForm);
+    document.getElementById('saveTagsButton').addEventListener('click', saveTagsChanges);
+
+    function showEditField() {
         if (changed_description) {
             var description = changed_description;
         } else {
@@ -711,15 +683,14 @@ $(document).ready(function(){
         document.getElementById("longDescriptionSpan").style.display = "none";
     }
 
-    function saveDescription(slideId) {
+    function saveDescription() {
         var newDescription = $("#newDescription").val();
-
         $.ajax({
             url: "{% url 'slide:edit_description' slide.id %}",
             type: "POST",
             headers: {"X-CSRFToken": "{{ csrf_token }}"},
             data: {
-                'slide_id': slideId,
+                'slide_id': slide_id,
                 'new_description': newDescription
             },
             dataType: "json",
@@ -742,9 +713,9 @@ $(document).ready(function(){
         });
     }
 
-    function showEditTagsForm(slideId) {
-        var editTagsForm = document.getElementById('editTagsForm' + slideId);
-        var tagDisplaySection = document.getElementById('generalPathologyTags' + slideId);
+    function showEditTagsForm() {
+        var editTagsForm = document.getElementById('editTagsForm' + slide_id);
+        var tagDisplaySection = document.getElementById('generalPathologyTags' + slide_id);
 
         try {
             var noTags = document.getElementById('noPathologyTags');
@@ -756,17 +727,17 @@ $(document).ready(function(){
         if (tagDisplaySection) {
             tagDisplaySection.style.display = 'none';
         } else {
-            console.error("Tag display section not found for slide ID: " + slideId);
+            console.error("Tag display section not found for slide ID: " + slide_id);
         }
 
         if (editTagsForm) {
             editTagsForm.style.display = 'block';
         } else {
-            console.error("Edit tags form not found for slide ID: " + slideId);
+            console.error("Edit tags form not found for slide ID: " + slide_id);
         }
     }
 
-    function saveTagsChanges(slideId) {
+    function saveTagsChanges() {
         // Collect selected tag IDs
         var selectedTags = [];
         $("input[name='tags']:checked").each(function () {
@@ -780,7 +751,7 @@ $(document).ready(function(){
             type: "POST",
             headers: {"X-CSRFToken": "{{ csrf_token }}"},
             data: {
-                'slide_id': slideId,
+                'slide_id': slide_id,
                 'selected_tags': selectedTags
             },
             dataType: "json",
@@ -795,11 +766,11 @@ $(document).ready(function(){
                             tagsDisplay += '<a href="#" class="list-group-item list-group-item-action">' + tag.name + '</a>';
                         });
                     }
-                    $("#generalPathologyTags" + slideId).html(tagsDisplay);
+                    $("#generalPathologyTags" + slide_id).html(tagsDisplay);
 
                     // Hide edit form and show tag display section
-                    $("#editTagsForm" + slideId).hide();
-                    $("#generalPathologyTags" + slideId).show();
+                    $("#editTagsForm" + slide_id).hide();
+                    $("#generalPathologyTags" + slide_id).show();
 
                     {#location.reload();#}
                 } else {
