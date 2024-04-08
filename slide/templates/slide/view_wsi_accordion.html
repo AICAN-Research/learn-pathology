@@ -190,13 +190,16 @@
                     {% endif %}
 
                     <div id="annotationListContent" style="display: none;">
-                        <div id="annotationListWrapper" style="display: inline-flex; flex-direction: column; gap: 8px;">
-                            <div class="stickyDiv" style="position: sticky; top: 0; width: inherit; background: var(--color-white);">
-                                <div>Annotations</div>
-                                <div class="button-group">
-                                    <button id="toggleAnnotationButton" class="custom-button btn btn-secondary">
-                                        <div class="button-text">Annotations on/off</div>
-                                    </button>
+                        <div id="annotationListWrapper" style="display: inline-flex; flex-direction: column; gap: 8px; width: 100%;">
+                            <div class="stickyDiv" style="display: inline-flex; justify-content: space-between; padding: 0 4px; position: sticky; top: 8px; width: inherit; background: var(--color-white);">
+                                <h3>Annotations</h3>
+                                <div style="display: inline-flex; width: auto; justify-content: space-between;">
+                                    <div style="margin-right: 8px;">Hide</div>
+                                    <div class="form-check form-switch" style="width: fit-content;">
+                                        <input class="form-check-input" style="align-self: center;" type="checkbox" role="switch" id="toggleAnnotationButton">
+                                        <label class="form-check-label" for="flexSwitchCheckChecked"></label>
+                                    </div>
+                                    <div>Show</div>
                                 </div>
                             </div>
 
@@ -573,20 +576,20 @@ $(document).ready(function(){
 
             var annotationButton = document.createElement('button');
             annotationButton.textContent = annotation.body[0].value;
-            annotationButton.classList.add('btn', 'annotationListElementButton');
+            annotationButton.classList.add('annotationListElementButton', 'transparentBackground');
             annotationButton.addEventListener('click', function () {
                 anno.setVisible(true);
                 visible_annotorious = true;
                 console.log(visible_annotorious);
                 anno.selectAnnotation(annotation);
                 anno.fitBoundsWithConstraints(annotation, {'padding': 200});
+                document.getElementById('toggleAnnotationButton').checked = 'true';
             });
 
-            listItem.appendChild(annotationButton);
             {% if request.user.is_teacher or request.user.is_superuser %}
             var deleteButton = document.createElement('button');
             deleteButton.innerHTML = '<span class="iconify" data-icon="fluent:dismiss-12-regular" data-width="24" data-height="24"></span>';
-            deleteButton.classList.add('btn', 'btn-danger');
+            deleteButton.classList.add('annotationListElementDelete', 'transparentBackground');
 
             deleteButton.addEventListener('click', function () {
                 deleteAnnotation(annotation, {{ slide.id }});
@@ -594,7 +597,8 @@ $(document).ready(function(){
                 anno.cancelSelected();
                 updateAnnotationList();
             });
-            listItem.appendChild(deleteButton);
+            annotationButton.appendChild(deleteButton);
+            listItem.appendChild(annotationButton);
             {% endif %}
 
             annotationList.appendChild(listItem);
@@ -604,6 +608,7 @@ $(document).ready(function(){
 
     // Annotation Button Functionality
     var visible_annotorious = false;
+    anno.setVisible(visible_annotorious);
     console.log(visible_annotorious);
     document.getElementById("toggleAnnotationButton").addEventListener('click', function () {
         visible_annotorious = !visible_annotorious;
