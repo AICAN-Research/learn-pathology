@@ -169,24 +169,41 @@
 
                                                 {% if slide.pathology %}
                                                     <tr>
-                                                    <th>
-                                                        General pathology tags
-                                                        {% if request.user.is_teacher or request.user.is_superuser %}
-                                                            <div class="card-content" style="padding-top: 5px">
-                                                                <a class="LPButton" href="{% url 'slide:edit_tags' slide.id %}" style="margin: 0;">
-                                                                    Edit tags
-                                                                </a>
-                                                            </div>
-                                                        {% endif %}
-                                                    </th>
-                                                    <td>
-                                                        {% if general_pathology_tags %}
-                                                            {% for tag in general_pathology_tags %}
-                                                                {{ tag.name }}<br>
-                                                            {% endfor %}
-                                                        {% endif %}
-                                                    </td>
-                                                    </tr>
+    <th>
+        General pathology tags
+        {% if request.user.is_teacher or request.user.is_superuser %}
+            <div class="card-content" style="padding-top: 5px; position: relative;">
+                <a class="LPButton" href="#" onclick="showEditTagsForm('{{ slide.id }}')" style="margin: 0;">
+                    <span class="iconify" data-icon="fluent:edit-12-regular" data-width="24" data-height="24"></span>
+                </a>
+            </div>
+        {% endif %}
+    </th>
+    <td>
+        <div id="editTagsForm{{ slide.id }}" style="display: none;">
+            <form id="editTagsFormInner{{ slide.id }}">
+                <!-- Checkboxes for each tag -->
+                {% for tag in all_general_pathology_tags %}
+                    <input type="checkbox" id="{{ tag.id }}" name="tags" value="{{ tag.id }}"
+                        {% if tag in general_pathology_tags %} checked {% endif %}>
+                    <label for="{{ tag.id }}">{{ tag.name }}</label><br>
+                {% endfor %}
+                <button type="button" onclick="saveTagsChanges('{{ slide.id }}')">Save</button>
+            </form>
+        </div>
+{% if general_pathology_tags %}
+    <div id="generalPathologyTags{{ slide.id }}">
+        {% for tag in general_pathology_tags %}
+            {{ tag.name }}<br>
+        {% endfor %}
+    </div>
+{% else %}
+    <br> No pathology tags selected
+    {% endif %}
+    </td>
+</tr>
+
+
                                                 {% endif %}
                                             </table>
                                         </div>
@@ -418,6 +435,68 @@ function saveDescription(slideId) {
     });
 }
 
+function showEditTagsForm(slideId) {
+    var editTagsForm = document.getElementById('editTagsForm' + slideId);
+    var tagDisplaySection = document.getElementById('generalPathologyTags' + slideId);
+
+    // Check if the tagDisplaySection exists
+    if (tagDisplaySection) {
+        // Hide tag display section
+        tagDisplaySection.style.display = 'none';
+    } else {
+        console.error("Tag display section not found for slide ID: " + slideId);
+    }
+
+    // Show edit form
+    if (editTagsForm) {
+        editTagsForm.style.display = 'block';
+    } else {
+        console.error("Edit tags form not found for slide ID: " + slideId);
+    }
+}
+
+
+     function saveTagsChanges(slideId) {
+        // Collect selected tag IDs
+        var selectedTags = [];
+        $("input[name='tags']:checked").each(function () {
+            selectedTags.push($(this).val());
+        });
+         console.log(selectedTags);
+
+        // AJAX request to save changes
+        $.ajax({
+            url: "{% url 'slide:edit_tags' slide.id %}",
+            type: "POST",
+            headers: { "X-CSRFToken": "{{ csrf_token }}" },
+            data: {
+                'slide_id': slideId,
+                'selected_tags': selectedTags
+            },
+            dataType: "json",
+            success: function (response) {
+                if (response.success) {
+                    // Update displayed tags if successful
+                    var tagsDisplay = "";
+                    selectedTags.forEach(function (tagId) {
+                        // Retrieve tag name based on tagId, update tagsDisplay accordingly
+                        tagsDisplay += tagId + "<br>"; // Replace with actual tag name retrieval
+                    });
+                    $("#generalPathologyTags" + slideId).html(tagsDisplay);
+
+                    // Hide edit form and show tag display section
+                    $("#editTagsForm" + slideId).hide();
+                    $("#generalPathologyTags" + slideId).show();
+                } else {
+                    alert("Failed to update tags: " + response.error);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX request failed with status: " + status + ", error: " + error);
+                alert("Failed to update tags. Please try again later.");
+            }
+        });
+    }
 
 </script>
 
