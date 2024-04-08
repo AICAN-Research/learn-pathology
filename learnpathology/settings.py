@@ -28,6 +28,10 @@ DEBUG = True
 # To enable FEIDE login you also have to add a social applications object with the client id and secret key to the database
 USE_FEIDE_LOGIN = False
 
+# To enable TILE CACHE you need to install the python package pymemcache and the linux package memcached.
+# Remember to configure the size of the memcached in /etc/memcached.conf
+USE_TILE_CACHE = False
+
 ALLOWED_HOSTS = []
 
 # For using flatpages, set to site corresponding to this settings.py file
@@ -243,3 +247,20 @@ if USE_FEIDE_LOGIN:
     LOGIN_URL = '/user/login/feide/'
     LOGIN_EXEMPT_URLS = ['accounts/dataporten/login/', 'privacy/']
 
+
+#BS_ICONS_CACHE = BASE_DIR.joinpath('bs_icon_cache')
+
+if USE_TILE_CACHE:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
+            'LOCATION': '127.0.0.1:11211',
+            'MAX_ENTRIES': 100000,
+            'OPTIONS': {
+                'no_delay': True,
+                'ignore_exc': True,
+                'max_pool_size': 4,
+                'use_pooling': True,
+            }
+        }
+    }

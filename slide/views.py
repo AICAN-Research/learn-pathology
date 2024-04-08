@@ -10,6 +10,7 @@ from django.db.models import Q
 from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.files.uploadedfile import UploadedFile
+from django.views.decorators.cache import cache_page
 
 from tag.models import Tag
 from task.models import Task
@@ -36,10 +37,11 @@ class SlideCache:
         self.slides = {}
 
     def load_slide_to_cache(self, slide_id):
-        slide = Slide.objects.get(pk=slide_id)
-        slide.load_image() # This will load slide with FAST, so it is ready to use
-        self.slides[slide_id] = slide
-        return slide
+        if slide_id not in self.slides:
+            slide = Slide.objects.get(pk=slide_id)
+            slide.load_image() # This will load slide with FAST, so it is ready to use
+            self.slides[slide_id] = slide
+        return self.slides[slide_id]
 
     def get_slide(self, slide_id):
         return self.slides[slide_id]
@@ -277,11 +279,12 @@ def whole_slide_viewer(request, slide_id):
     })
 
 
+@cache_page(60 * 30)
 def tile(request, slide_id, osd_level, x, y):
     """
     Gets OSD tile from slide, converts to JPEG and sends to client
     """
-    slide = slide_cache.get_slide(slide_id)
+    slide = slide_cache.load_slide_to_cache(slide_id)
     try:
         buffer = slide.get_osd_tile_as_buffer(osd_level, x, y)
     except Exception as e:
