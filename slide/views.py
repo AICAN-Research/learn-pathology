@@ -458,59 +458,7 @@ def remove_tag(request):
     return JsonResponse(data={})
 
 
-@teacher_required
-def add_or_edit_descriptive_annotation(request, slide_id):
-    """
-    View to handle descriptive/basic annotations of a Slide.
-    (Annotations that are not connected to Courses or Tasks)
-    """
-    context = {}
 
-    # Get slide
-    slide = Slide.objects.get(pk=slide_id)
-    slide_cache.load_slide_to_cache(slide.id)
-    context['slide'] = slide
-
-    # Get annotated slide
-    try:
-        annotated_slide = AnnotatedSlide.objects.get(slide_id=slide.id, task__isnull=True)
-    except MultipleObjectsReturned as err:
-        print("Multiple descriptive AnnotatedSlide objects found. Clean up DB!")  # Using last slide for now")
-        raise MultipleObjectsReturned(err)
-    except ObjectDoesNotExist as err:
-        print("Did not find descriptive AnnotatedSlide. Making a new object")
-        annotated_slide = AnnotatedSlide()
-        annotated_slide.slide = slide
-
-    if request.method == 'POST':  # Form was submitted
-        with transaction.atomic():  # Make save operation atomic
-            # Delete all existing annotations
-            delete_existing_annotations(annotated_slide)
-            annotated_slide.save()
-
-            # Store annotations (pointers)
-            for key in request.POST:
-
-                if key.startswith('right-arrow-overlay-') and key.endswith('-text'):
-                    save_pointer_annotation(request, key, annotated_slide)
-                elif key.startswith('boundingbox-') and key.endswith('-text'):
-                    save_boundingbox_annotation(request, key, annotated_slide)
-
-            # Give a message back to the user
-            messages.add_message(request, messages.SUCCESS, 'Annotations added successfully!')
-            return redirect('slide:view_full', slide_id=slide_id)
-
-    else:
-        context['annotated_slide'] = annotated_slide
-        context['pointers'] = Pointer.objects.filter(annotated_slide=annotated_slide)
-        context['boxes'] = BoundingBox.objects.filter(annotated_slide=annotated_slide)
-
-        print('Annotated slide id:', annotated_slide.id)
-
-    context['annotation_types'] = [
-        Pointer, BoundingBox
-    ]
-    return render(request, 'slide/add_edit_descriptive_annotations.html', context)
 
 
 def create_annotation(request):
@@ -607,47 +555,3 @@ def delete_existing_annotations(annotated_slide):
     BoundingBox.objects.filter(annotated_slide=annotated_slide).delete()
 
 
-@teacher_required
-def save_pointer_annotation(request, key, annotated_slide):
-    prefix = key[:-len('text')]
-    text = request.POST[key]
-    position_x = float(request.POST[prefix + 'x'])
-    position_y = float(request.POST[prefix + 'y'])
-
-    # Using get_or_create matches pointers and retrieves identical one if it exists
-    pointer, pointer_was_created = Pointer.objects.get_or_create(
-        annotated_slide=annotated_slide,
-        text=text,
-        position_x=position_x,
-        position_y=position_y
-    )
-    if pointer_was_created:
-        try:
-            pointer.save()
-        except IntegrityError as err:
-            print(f"{err.__class__.__name__}: Could not save pointer. {err}")
-
-
-@teacher_required
-def save_boundingbox_annotation(request, key, annotated_slide):
-    prefix = key[:-len('text')]
-    text = request.POST[key]
-    position_x = float(request.POST[prefix + 'x'])
-    position_y = float(request.POST[prefix + 'y'])
-    width = round(float(request.POST[prefix + 'width']), ndigits=5)
-    height = round(float(request.POST[prefix + 'height']), ndigits=5)
-
-    # Using get_or_create matches pointers and retrieves identical one if it exists
-    box, box_was_created = BoundingBox.objects.get_or_create(
-        annotated_slide=annotated_slide,
-        text=text,
-        position_x=position_x,
-        position_y=position_y,
-        width=width,
-        height=height
-    )
-    if box_was_created:
-        try:
-            box.save()
-        except IntegrityError as err:
-            print(f"{err.__class__.__name__}: Could not save box. {err}")
