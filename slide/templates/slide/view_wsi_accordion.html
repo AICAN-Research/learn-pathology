@@ -22,559 +22,301 @@
 {% block content %}
 
 
-    <div class="card transparentBackground centerCardHorizontally border-0" style="width: 100%; height: 100%;">
-        <!-- WSI Viewer -->
-        <div id="imageViewer" style="height: 95%; width: auto">
-            <div class="card slideViewerCard transparentBackground">
-                <div id="wsi-canvas" class="wsi_canvas" style="height: 100%;"></div>
-            </div>
+<div class="card transparentBackground centerCardHorizontally border-0" style="width: 100%; height: 100%;">
+    <!-- WSI Viewer -->
+    <div id="imageViewer" style="height: 95%; width: auto">
+        <div class="card slideViewerCard transparentBackground">
+            <div id="wsi-canvas" class="wsi_canvas" style="height: 100%;"></div>
         </div>
     </div>
+</div>
 
 
-    <div id="toolbarTopDiv">
+<div id="toolbarTopDiv">
 
-        <div class="navigatorWrapper">
-            <div id="navigatorDiv"></div>
+    <div class="navigatorWrapper">
+        <div id="navigatorDiv"></div>
+    </div>
+
+    <div class="row gx-0" id="collapsePopupWindow">
+        <div class="col fit-content-width">
+            <button id="collapsePopup" class="custom-button border-0" style="display: none;">
+                <div class="button-icon" style="color: var(--color-blue-dark);">
+                    <span class="iconify" data-icon="fluent:chevron-right-24-regular" data-width="24" data-height="24"></span>
+                </div>
+            </button>
         </div>
 
-        <div class="row gx-0" id="collapsePopupWindow">
-            <div class="col fit-content-width">
-                <button id="collapsePopup" class="custom-button border-0" style="display: none;">
-                    <div class="button-icon" style="color: var(--color-blue-dark);">
-                        <span class="iconify" data-icon="fluent:chevron-right-24-regular" data-width="24"
-                              data-height="24"></span>
-                    </div>
-                </button>
-            </div>
+        <div class="col">
+            <div id="popup" style="display: none;">
 
-            <div class="col">
-                <div id="popup" style="display: none;">
-
-                    <div id="popup-content">
-                        {% comment %}
+                <div id="popup-content">
+                    {% comment %}
                     The div elements {annotorious-toolbar-container, slideInformationContent,
                     annotationListContent} are set to display: none because they are shown/hidden
                     in the popup depending on which button in the toolbar is pressed.
                     {% endcomment %}
 
-                        <div id="slideInformationContent" style="display: none;">
+                    <div id="slideInformationContent" style="display: none;">
 
-                            <div class="card slideInfoCard border-0" id="slideInfoCardContent">
-                                <!-- Slide name as header -->
-                                <div class="align-items-center" style="padding-top: 18px; padding-bottom: 3%;">
-                                    <div class="card-title">
-                                        <h4 style="color: var(--color-blue-dark); font-weight: bolder; font-size: 18px;">
-                                            {{ slide.name }}
-                                        </h4>
+                        <div class="card slideInfoCard border-0" id="slideInfoCardContent">
+                            <!-- Slide name as header -->
+                            <div class="align-items-center" style="padding-top: 18px; padding-bottom: 3%;">
+                                <div class="card-title">
+                                    <h4 style="color: var(--color-blue-dark); font-weight: bolder; font-size: 18px;">
+                                        {{ slide.name }}
+                                    </h4>
+                                </div>
+                            </div>
+
+                            <!-- Accordion CONTENT -->
+                            <div class="accordion" id="slideInformationAccordion">
+                                <div class="accordion-item"
+                                     style="border-top-left-radius: 0; border-top-right-radius: 0;">
+                                    <h3 class="accordion-header" id="slideInformationHeading">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#slideInformationTab" aria-expanded="false" aria-controls="slideInformationTab">
+                                            Slide information
+                                        </button>
+                                    </h3>
+                                    <div id="slideInformationTab" class="accordion-collapse collapse" aria-labelledby="slideInformationHeading" data-bs-parent="#slideInformationAccordion">
+                                        <div class="accordion-body">
+                                            <table class="table">
+                                                <tr>
+                                                    <th>Slide name</th>
+                                                    <td>{{ slide.name }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Slide description</th>
+                                                    <td>{{ slide.description }}</td>
+                                                </tr>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
-
-                                <!-- Accordion CONTENT -->
-                                <div class="accordion" id="slideInformationAccordion">
-                                    <div class="accordion-item"
-                                         style="border-top-left-radius: 0; border-top-right-radius: 0;">
-                                        <h3 class="accordion-header" id="slideInformationHeading">
-                                            <button class="accordion-button collapsed" type="button"
-                                                    data-bs-toggle="collapse" data-bs-target="#slideInformationTab"
-                                                    aria-expanded="false" aria-controls="slideInformationTab">
-                                                Slide information
-                                            </button>
-                                        </h3>
-                                        <div id="slideInformationTab" class="accordion-collapse collapse"
-                                             aria-labelledby="slideInformationHeading"
-                                             data-bs-parent="#slideInformationAccordion">
-                                            <div class="accordion-body">
-                                                <table class="table">
-                                                    <tr>
-                                                        <th>Slide name</th>
-                                                        <td>{{ slide.name }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Slide description</th>
-                                                        <td>{{ slide.description }}</td>
-                                                    </tr>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="accordion-item">
-                                        <h2 class="accordion-header" id="slideCategorizationHeading">
-                                            <button class="accordion-button collapsed" type="button"
-                                                    data-bs-toggle="collapse" data-bs-target="#slideCategorizationTab"
-                                                    aria-expanded="false" aria-controls="slideCategorizationTab">
-                                                Categorization
-                                            </button>
-                                        </h2>
-                                        <div id="slideCategorizationTab" class="accordion-collapse collapse"
-                                             aria-labelledby="slideCategorizationHeading"
-                                             data-bs-parent="#slideInformationAccordion">
-                                            <div class="accordion-body">
-                                                <table class="table">
-                                                    <tr>
-                                                        <th>Organ</th>
-                                                        <td>{{ slide.name }}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Histology/pathology</th>
-                                                        {% if slide.pathology %}
-                                                            <td>Pathology</td>
-                                                        {% else %}
-                                                            <td>Histology</td>
-                                                        {% endif %}
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Stain</th>
-                                                        <td>{{ stain_name }}</td>
-                                                    </tr>
-
-
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="accordion-item">
-                                        <h2 class="accordion-header" id="slideSupplementaryInfoHeading">
-                                            <button class="accordion-button collapsed" type="button"
-                                                    data-bs-toggle="collapse"
-                                                    data-bs-target="#slideSupplementaryInfoTab"
-                                                    aria-expanded="false" aria-controls="slideSupplementaryInfoTab">
-                                                Supplementary information
-                                            </button>
-                                        </h2>
-                                        <div id="slideSupplementaryInfoTab" class="accordion-collapse collapse"
-                                             aria-labelledby="slideSupplementaryInfoHeading"
-                                             data-bs-parent="#slideInformationAccordion">
-                                            <div class="accordion-body">
-                                                <table class="table">
-                                                    <tr>
-                                                        <th>
-                                                            Long description
-                                                            {% if request.user.is_teacher or request.user.is_superuser %}
-                                                                <div class="card-content"
-                                                                     style="padding-top: 5px; position: relative;">
-                                                                    <a class="LPButton" href="#"
-                                                                       onclick="showEditField('{{ slide.id }}')"
-                                                                       style="margin: 0;">
-                                                                    <span class="iconify"
-                                                                          data-icon="fluent:edit-12-regular"
-                                                                          data-width="24" data-height="24"></span>
-                                                                    </a>
-                                                                </div>
-                                                            {% endif %}
-                                                        </th>
-                                                        <td>
-                                                            <div id="editField" style="display: none;">
-                                                                <div class="form-group">
-                                                                <textarea id="newDescription" name="newDescription"
-                                                                          class="form-control" rows="3"></textarea>
-                                                                </div>
-                                                                <button type="button" class="btn btn-primary"
-                                                                        onclick="saveDescription('{{ slide.id }}')">Save
-                                                                </button>
-                                                            </div>
-
-                                                            {% if slide.long_description %}
-                                                                <span id="longDescriptionSpan">{{ slide.long_description }}</span>
-                                                            {% else %}
-                                                                <span id="longDescriptionSpan"
-                                                                      style="display: none;">-</span>
-                                                            {% endif %}
-                                                        </td>
-                                                    </tr>
-
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="slideCategorizationHeading">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#slideCategorizationTab" aria-expanded="false" aria-controls="slideCategorizationTab">
+                                            Categorization
+                                        </button>
+                                    </h2>
+                                    <div id="slideCategorizationTab" class="accordion-collapse collapse" aria-labelledby="slideCategorizationHeading" data-bs-parent="#slideInformationAccordion">
+                                        <div class="accordion-body">
+                                            <table class="table">
+                                                <tr>
+                                                    <th>Organ</th>
+                                                    <td>{{ slide.name }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Histology/pathology</th>
                                                     {% if slide.pathology %}
-                                                        <tr>
-                                                            <th>
-                                                                General pathology tags
-                                                                {% if request.user.is_teacher or request.user.is_superuser %}
-                                                                    <div class="card-content"
-                                                                         style="padding-top: 5px; position: relative;">
-
-                                                                        <a class="LPButton" href="#"
-                                                                           onclick="showEditTagsForm('{{ slide.id }}')"
-                                                                           style="margin: 0;">
-                                                                        <span class="iconify"
-                                                                              data-icon="fluent:edit-12-regular"
-                                                                              data-width="24" data-height="24"></span>
-                                                                        </a>
-                                                                    </div>
-                                                                {% endif %}
-                                                            </th>
-                                                            <td>
-                                                                <div id="editTagsForm{{ slide.id }}"
-                                                                     style="display: none;">
-                                                                    <form id="editTagsFormInner{{ slide.id }}">
-                                                                        <!-- Checkboxes for each tag -->
-                                                                        {% for tag in all_general_pathology_tags %}
-                                                                            <div class="form-check">
-                                                                                <input class="form-check-input"
-                                                                                       type="checkbox" id="{{ tag.id }}"
-                                                                                       name="tags" value="{{ tag.id }}"
-                                                                                        {% if tag in general_pathology_tags %}
-                                                                                       checked
-                                                                                        {% endif %}>
-                                                                                <label class="form-check-label"
-                                                                                       for="{{ tag.id }}">{{ tag.name }}</label>
-                                                                            </div>
-                                                                        {% endfor %}
-                                                                        <button type="button" class="btn btn-primary"
-                                                                                onclick="saveTagsChanges('{{ slide.id }}')">
-                                                                            Save
-                                                                        </button>
-                                                                    </form>
-
-                                                                </div>
-
-                                                                <div id="generalPathologyTags{{ slide.id }}"
-                                                                     class="list-group">
-                                                                    {% if general_pathology_tags %}
-                                                                        {% for tag in general_pathology_tags %}
-                                                                            <a href="#"
-                                                                               class="list-group-item list-group-item-action">{{ tag.name }}</a>
-                                                                        {% endfor %}
-                                                                    {% else %}
-                                                                        <p id="noPathologyTags">No pathology tags
-                                                                            selected</p>
-                                                                    {% endif %}
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-
-
+                                                    <td>Pathology</td>
+                                                    {% else %}
+                                                    <td>Histology</td>
                                                     {% endif %}
-                                                </table>
-                                            </div>
+                                                </tr>
+                                                <tr>
+                                                    <th>Stain</th>
+                                                    <td>{{ stain_name }}</td>
+                                                </tr>
+                                            </table>
                                         </div>
                                     </div>
                                 </div>
-                                <!-- Accordion CONTENT END -->
-                            </div>
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="slideSupplementaryInfoHeading">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#slideSupplementaryInfoTab" aria-expanded="false" aria-controls="slideSupplementaryInfoTab">
+                                            Supplementary information
+                                        </button>
+                                    </h2>
+                                    <div id="slideSupplementaryInfoTab" class="accordion-collapse collapse" aria-labelledby="slideSupplementaryInfoHeading" data-bs-parent="#slideInformationAccordion">
+                                        <div class="accordion-body">
+                                            <table class="table">
+                                                <tr>
+                                                    <th>
+                                                        Long description
+                                                        {% if request.user.is_teacher or request.user.is_superuser %}
+                                                        <div class="card-content" style="padding-top: 5px; position: relative;">
+                                                            <button id="editDescriptionButton" class="custom-button btn btn-secondary">
+                                                                <div class="button-icon">
+                                                                    <span class="iconify" data-icon="fluent:edit-12-regular" data-width="24" data-height="24"></span>
+                                                                </div>
+                                                            </button>
+                                                            </a>
+                                                        </div>
+                                                        {% endif %}
+                                                    </th>
+                                                    <td>
+                                                        <div id="editField" style="display: none;">
+                                                            <div class="form-group">
+                                                                <textarea id="newDescription" name="newDescription" class="form-control" rows="3"></textarea>
+                                                            </div>
+                                                            <button id="saveDescriptionButton" class="custom-button btn btn-secondary">
+                                                                Save
+                                                            </button>
+                                                        </div>
 
-                        </div>
+                                                        {% if slide.long_description %}
+                                                        <span id="longDescriptionSpan">{{ slide.long_description }}</span>
+                                                        {% else %}
+                                                        <span id="longDescriptionSpan" style="display: none;">-</span>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
 
-                        {% if user.is_superuser or user.is_teacher %}
-                            <div id="annotoriousToolbarWrapper" style="display: none;">
-                                <div id="annotorious-toolbar-container"></div>
-                            </div>
-                        {% endif %}
+                                                {% if slide.pathology %}
+                                                <tr>
+                                                    <th>
+                                                        General pathology tags
+                                                        {% if request.user.is_teacher or request.user.is_superuser %}
+                                                        <div class="card-content" style="padding-top: 5px; position: relative;">
+                                                            <button id="editTagsButton" class="custom-button btn btn-secondary">
+                                                                <div class="button-icon">
+                                                                    <span class="iconify" data-icon="fluent:edit-12-regular" data-width="24" data-height="24"></span>
+                                                                </div>
+                                                            </button>
+                                                        </div>
+                                                        {% endif %}
+                                                    </th>
+                                                    <td>
+                                                        <div id="editTagsForm{{ slide.id }}" style="display: none;">
+                                                            <form id="editTagsFormInner{{ slide.id }}">
+                                                                <!-- Checkboxes for each tag -->
+                                                                {% for tag in all_general_pathology_tags %}
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox" id="{{ tag.id }}" name="tags" value="{{ tag.id }}" {% if tag in general_pathology_tags %}checked{% endif %}>
+                                                                        <label class="form-check-label" for="{{ tag.id }}">{{ tag.name }}</label>
+                                                                    </div>
+                                                                {% endfor %}
+                                                                <button id="saveTagsButton" class="custom-button btn btn-secondary">
+                                                                    Save
+                                                                </button>
+                                                            </form>
 
-                        <div id="annotationListContent" style="display: none;">
-                            <div id="annotationListWrapper"
-                                 style="display: inline-flex; flex-direction: column; gap: 8px; width: 100%;">
-                                <div class="stickyDiv"
-                                     style="display: inline-flex; justify-content: space-between; padding: 0 4px; position: sticky; top: 8px; width: inherit; background: var(--color-white);">
-                                    <h3>Annotations</h3>
-                                    <div style="display: inline-flex; width: auto; justify-content: space-between;">
-                                        <div style="margin-right: 8px;">Hide</div>
-                                        <div class="form-check form-switch" style="width: fit-content;">
-                                            <input class="form-check-input" style="align-self: center;" type="checkbox"
-                                                   role="switch" id="toggleAnnotationButton">
-                                            <label class="form-check-label" for="flexSwitchCheckChecked"></label>
+                                                        </div>
+
+                                                        <div id="generalPathologyTags{{ slide.id }}" class="list-group">
+                                                            {% if general_pathology_tags %}
+                                                            {% for tag in general_pathology_tags %}
+                                                                <div class="list-group-item list-group-item-action">{{ tag.name }}</div>
+                                                            {% endfor %}
+                                                            {% else %}
+                                                                <p id="noPathologyTags">No pathology tags selected</p>
+                                                            {% endif %}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                {% endif %}
+                                            </table>
                                         </div>
-                                        <div>Show</div>
                                     </div>
                                 </div>
-
-                                <div id="annotationList" style="overflow-y: auto; max-height: 350px;">
-
-                                </div>
-
                             </div>
+                            <!-- Accordion CONTENT END -->
                         </div>
+
                     </div>
 
-                </div>
-            </div>
-
-            <div class="col fit-content-width" id="buttonColumn">
-                <!-- Top 3 buttons centered in the middle -->
-                <div id="topButtons" class="slideViewerToolbarButtonGroup">
-                    <div class="button-group">
-                        <button id="slideInfoButton" class="custom-button btn btn-secondary">
-                            <div class="button-icon">
-                                <span class="iconify" data-icon="fluent:info-24-regular" data-width="24"
-                                      data-height="24"></span>
-                            </div>
-                        </button>
-                    </div>
                     {% if user.is_superuser or user.is_teacher %}
-                        <div class="button-group">
-                            <button id="editAnnotationButton" class="custom-button btn btn-secondary">
-                                <div class="button-icon">
-                                    <span class="iconify" data-icon="fluent:edit-12-regular" data-width="24"
-                                          data-height="24"></span>
-                                </div>
-                            </button>
-                        </div>
+                    <div id="annotoriousToolbarWrapper" style="display: none;">
+                        <div id="annotorious-toolbar-container"></div>
+                    </div>
                     {% endif %}
-                    <div class="button-group">
-                        <button id="annotationListButton" class="custom-button btn btn-secondary">
-                            <div class="button-icon">
-                                <span class="iconify" data-icon="fluent:pin-12-regular" data-width="24"
-                                      data-height="24"></span>
+
+                    <div id="annotationListContent" style="display: none;">
+                        <div id="annotationListWrapper" style="display: inline-flex; flex-direction: column; gap: 8px; width: 100%;">
+                            <div class="stickyDiv" style="display: inline-flex; justify-content: space-between; padding: 0 4px; position: sticky; top: 8px; width: inherit; background: var(--color-white);">
+                                <h3>Annotations</h3>
+                                <div style="display: inline-flex; width: auto; justify-content: space-between;">
+                                    <div style="margin-right: 8px;">Hide</div>
+                                    <div class="form-check form-switch" style="width: fit-content;">
+                                        <input class="form-check-input" style="align-self: center;" type="checkbox" role="switch" id="toggleAnnotationButton">
+                                        <label class="form-check-label" for="flexSwitchCheckChecked"></label>
+                                    </div>
+                                    <div>Show</div>
+                                </div>
                             </div>
-                        </button>
+
+                            <div id="annotationList" style="overflow-y: auto; max-height: 350px;">
+
+                            </div>
+
+                        </div>
                     </div>
                 </div>
 
             </div>
         </div>
-    </div>
 
-    <div id="toolbarBottomDiv">
-        <div class="slideViewerToolbarButtonGroup">
-            <div class="button-group">
-                <button id="screenshotButton" class="custom-button btn btn-secondary">
-                    <div class="button-icon">
-                        <span class="iconify" data-icon="fluent:camera-24-regular" data-width="24"
-                              data-height="24"></span>
-                    </div>
-                </button>
+        <div class="col fit-content-width" id="buttonColumn">
+            <!-- Top 3 buttons centered in the middle -->
+            <div id="topButtons" class="slideViewerToolbarButtonGroup">
+                <div class="button-group">
+                    <button id="slideInfoButton" class="custom-button btn btn-secondary">
+                        <div class="button-icon">
+                            <span class="iconify" data-icon="fluent:info-24-regular" data-width="24" data-height="24"></span>
+                        </div>
+                    </button>
+                </div>
+                {% if user.is_superuser or user.is_teacher %}
+                <div class="button-group">
+                    <button id="editAnnotationButton" class="custom-button btn btn-secondary">
+                        <div class="button-icon">
+                            <span class="iconify" data-icon="fluent:edit-12-regular" data-width="24" data-height="24"></span>
+                        </div>
+                    </button>
+                </div>
+                {% endif %}
+                <div class="button-group">
+                    <button id="annotationListButton" class="custom-button btn btn-secondary">
+                        <div class="button-icon">
+                            <span class="iconify" data-icon="fluent:pin-12-regular" data-width="24" data-height="24"></span>
+                        </div>
+                    </button>
+                </div>
             </div>
-            <div class="button-group">
-                <button id="zoomInButton" class="custom-button btn btn-secondary">
-                    <div class="button-icon">
-                        <span class="iconify" data-icon="fluent:add-24-regular" data-width="24" data-height="24"></span>
-                    </div>
-                </button>
-            </div>
-            <div class="button-group">
-                <button id="zoomOutButton" class="custom-button btn btn-secondary">
-                    <div class="button-icon">
-                        <span class="iconify" data-icon="fluent:subtract-24-regular" data-width="24"
-                              data-height="24"></span>
-                    </div>
-                </button>
-            </div>
-            <div class="button-group">
-                <button id="FullScreenButton" class="custom-button btn btn-secondary">
-                    <div class="button-icon">
-                        <span class="iconify" data-icon="fluent:arrow-expand-24-regular" data-width="24"
-                              data-height="24"></span>
-                    </div>
-                </button>
-            </div>
+
         </div>
     </div>
+</div>
+
+<div id="toolbarBottomDiv">
+    <div class="slideViewerToolbarButtonGroup">
+        <div class="button-group">
+            <button id="screenshotButton" class="custom-button btn btn-secondary">
+                <div class="button-icon">
+                    <span class="iconify" data-icon="fluent:camera-24-regular" data-width="24" data-height="24"></span>
+                </div>
+            </button>
+        </div>
+        <div class="button-group">
+            <button id="zoomInButton" class="custom-button btn btn-secondary">
+                <div class="button-icon">
+                    <span class="iconify" data-icon="fluent:add-24-regular" data-width="24" data-height="24"></span>
+                </div>
+            </button>
+        </div>
+        <div class="button-group">
+           <button id="zoomOutButton" class="custom-button btn btn-secondary">
+               <div class="button-icon">
+                   <span class="iconify" data-icon="fluent:subtract-24-regular" data-width="24" data-height="24"></span>
+               </div>
+           </button>
+        </div>
+        <div class="button-group">
+             <button id="FullScreenButton" class="custom-button btn btn-secondary">
+                 <div class="button-icon">
+                     <span class="iconify" data-icon="fluent:arrow-expand-24-regular" data-width="24" data-height="24"></span>
+                 </div>
+             </button>
+        </div>
+    </div>
+</div>
 
 
 
-    <script type="text/javascript">
+<script type="text/javascript">
 
-        let g_whichPopupIsOpen = 'none';
-
-        function activateToolbarPopup() {
-            const pressedButtonId = this.id;
-
-            if (g_whichPopupIsOpen === pressedButtonId) {
-                closeToolbarPopup();
-            } else {
-                openToolbarPopup();
-                removeButtonActivation();
-
-                // Show the correct content in the popup
-                switch (pressedButtonId) {
-                    case 'slideInfoButton':
-                        document.getElementById('slideInformationContent').style.display = 'block';
-                        document.getElementById('slideInfoButton').classList.add('active');
-                    {% if user.is_superuser or user.is_teacher %}
-                        document.getElementById('annotoriousToolbarWrapper').style.display = 'none';
-                    {% endif %}
-                        document.getElementById('annotationListContent').style.display = 'none';
-                        break;
-                    case 'editAnnotationButton':
-                        document.getElementById('slideInformationContent').style.display = 'none';
-                    {% if user.is_superuser or user.is_teacher %}
-                        document.getElementById('annotoriousToolbarWrapper').style.display = 'block';
-                        document.getElementById('editAnnotationButton').classList.add('active');
-                    {% endif %}
-                        document.getElementById('annotationListContent').style.display = 'none';
-                        break;
-                    case 'annotationListButton':
-                        document.getElementById('slideInformationContent').style.display = 'none';
-                    {% if user.is_superuser or user.is_teacher %}
-                        document.getElementById('annotoriousToolbarWrapper').style.display = 'none';
-                    {% endif %}
-                        document.getElementById('annotationListContent').style.display = 'block';
-                        document.getElementById('annotationListButton').classList.add('active');
-                        //document.getElementById('popup').removeProperty('overflow-y'); // TODO: Fix this!!
-                        break;
-                    default:
-                        // do something else
-                        document.getElementById('popup-content').innerHTML = 'SOMETHING WRONG HAPPENED IN THE SWITCH/CASE BLOCK!';
-                }
-
-                // Store which button was pressed/content is displayed
-                g_whichPopupIsOpen = pressedButtonId;
-            }
-        }
-
-        function removeButtonActivation() {
-            document.getElementById('slideInfoButton').classList.remove('active');
-            {% if user.is_superuser or user.is_teacher %}
-                document.getElementById('editAnnotationButton').classList.remove('active');
-            {% endif %}
-            document.getElementById('annotationListButton').classList.remove('active');
-        }
-
-        function openToolbarPopup() {
-            let popup = document.getElementById('popup');
-            if (popup.style.display === 'none') {
-                popup.style.display = 'block';
-            }
-            showToolbarCollapseButton();
-        }
-
-        function closeToolbarPopup() {
-            hideToolbarCollapseButton();    // Hide button when popup is hidden
-            removeButtonActivation();
-            let popup = document.getElementById('popup');
-            if (popup.style.display !== 'none') {
-                popup.style.display = 'none';
-            }
-            g_whichPopupIsOpen = 'none';
-        }
-
-        function showToolbarCollapseButton() {
-            document.getElementById("collapsePopup").style.display = 'block';
-        }
-
-        function hideToolbarCollapseButton() {
-            document.getElementById("collapsePopup").style.display = 'none';
-        }
-
-        document.getElementById("slideInfoButton").addEventListener('click', activateToolbarPopup);
-        {% if user.is_superuser or user.is_teacher %}
-            document.getElementById("editAnnotationButton").addEventListener('click', activateToolbarPopup);
-        {% endif %}
-        document.getElementById("annotationListButton").addEventListener('click', activateToolbarPopup);
-        document.getElementById("collapsePopup").addEventListener('click', function () {
-            closeToolbarPopup();
-        });
-
-        var changed_description = null;
-
-
-        function showEditField(slideId) {
-            if (changed_description) {
-                var description = changed_description;
-            } else {
-                var description = "{{ slide.long_description }}";
-            }
-            document.getElementById("newDescription").value = description;
-            document.getElementById("editField").style.display = "block";
-            document.getElementById("longDescriptionSpan").style.display = "none";
-        }
-
-        function saveDescription(slideId) {
-            var newDescription = $("#newDescription").val();
-
-            $.ajax({
-                url: "{% url 'slide:edit_description' slide.id %}",
-                type: "POST",
-                headers: {"X-CSRFToken": "{{ csrf_token }}"},
-                data: {
-                    'slide_id': slideId,
-                    'new_description': newDescription
-                },
-                dataType: "json",
-                success: function (response) {
-                    if (response.success) {
-                        $("#longDescriptionSpan").text(newDescription);
-                        $("#editField").hide();
-                        $("#longDescriptionSpan").show();
-
-                        changed_description = newDescription;
-
-                    } else {
-                        alert("Failed to update description: " + response.error);
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error("AJAX request failed with status: " + status + ", error: " + error);
-                    alert("Failed to update description. Please try again later.");
-                }
-            });
-        }
-
-
-        function showEditTagsForm(slideId) {
-            var editTagsForm = document.getElementById('editTagsForm' + slideId);
-            var tagDisplaySection = document.getElementById('generalPathologyTags' + slideId);
-
-            try {
-                var noTags = document.getElementById('noPathologyTags');
-                noTags.style.display = 'none';
-            } catch (error) {
-                console.error("An error occurred while hiding 'noPathologyTags': " + error);
-            }
-
-
-            if (tagDisplaySection) {
-                tagDisplaySection.style.display = 'none';
-
-            } else {
-                console.error("Tag display section not found for slide ID: " + slideId);
-            }
-
-            if (editTagsForm) {
-                editTagsForm.style.display = 'block';
-            } else {
-                console.error("Edit tags form not found for slide ID: " + slideId);
-            }
-        }
-
-
-        function saveTagsChanges(slideId) {
-            // Collect selected tag IDs
-            var selectedTags = [];
-            $("input[name='tags']:checked").each(function () {
-                selectedTags.push($(this).val());
-            });
-            console.log(selectedTags);
-
-            // AJAX request to save changes
-            $.ajax({
-                url: "{% url 'slide:edit_tags' slide.id %}",
-                type: "POST",
-                headers: {"X-CSRFToken": "{{ csrf_token }}"},
-                data: {
-                    'slide_id': slideId,
-                    'selected_tags': selectedTags
-                },
-                dataType: "json",
-                success: function (response) {
-                    if (response.success) {
-                        // Update displayed tags if successful
-                        var tagsDisplay = "";
-                        if (response.tag_names.length === 0) {
-                            tagsDisplay = '<p>No pathology tags selected</p>'
-                        } else {
-                            response.tag_names.forEach(function (tag) {
-                                tagsDisplay += '<a href="#" class="list-group-item list-group-item-action">' + tag.name + '</a>';
-                            });
-                        }
-                        $("#generalPathologyTags" + slideId).html(tagsDisplay);
-
-                        // Hide edit form and show tag display section
-                        $("#editTagsForm" + slideId).hide();
-                        $("#generalPathologyTags" + slideId).show();
-
-                        {#location.reload();#}
-                    } else {
-                        alert("Failed to update tags: " + response.error);
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error("AJAX request failed with status: " + status + ", error: " + error);
-                    alert("Failed to update tags. Please try again later.");
-                }
-            });
-        }
-
-
-    </script>
+</script>
 
 {% endblock content %}
 
@@ -583,9 +325,10 @@
 
 $(document).ready(function(){
     collapseSidebar();
+    let g_whichPopupIsOpen = 'none';
 
     // WSI Viewer
-    var viewer = OpenSeadragon({
+    let viewer = OpenSeadragon({
         id: "wsi-canvas",
         zoomPerScroll: 2, // Scroll speed
         minScrollDeltaTime: 150, //	Number of milliseconds between canvas-scroll events.
@@ -610,23 +353,57 @@ $(document).ready(function(){
             },
         }
     });
+    viewer.addControl(document.getElementById("toolbarTopDiv"), {anchor: OpenSeadragon.ControlAnchor.TOP_RIGHT});
+    viewer.addControl(document.getElementById("toolbarBottomDiv"), {anchor: OpenSeadragon.ControlAnchor.BOTTOM_RIGHT});
 
+    // Scalebar
+    try {
+        let pixelsPerMeter = {{ slide|get_pixels_per_meter }};
+        viewer.scalebar({
+            type: OpenSeadragon.ScalebarType.MICROSCOPY,
+            pixelsPerMeter: pixelsPerMeter,
+            minWidth: "250px",
+            location: OpenSeadragon.ScalebarLocation.BOTTOM_LEFT,
+            xOffset: 10,
+            yOffset: 20,
+            stayInsideImage: true,
+            color: "rgba(100,100,100,0.9)",
+            fontColor: "rgb(50,50,50)",
+            backgroundColor: "rgba(230, 230, 230, 0.5)",
+            fontSize: "large",
+            barThickness: 3
+        });
+    } catch (e) {
+        alert('Couldn\'t get scaling factor')
+    }
+
+    /*
+    ANNOTORIOUS AND ANNOTATIONS
+    */
     // Initialize the Annotorious plugin
-    var anno = OpenSeadragon.Annotorious(viewer);
+    let anno = OpenSeadragon.Annotorious(viewer);
 
     Annotorious.SelectorPack(anno); // [ 'rect', 'polygon', 'point', 'circle', 'ellipse', 'freehand' ]
     anno.removeDrawingTool('freehand');
     {% if request.user.is_teacher or request.user.is_superuser %}
-        const toolbar = new Annotorious.Toolbar(anno, document.getElementById('annotorious-toolbar-container'));
+    const toolbar = new Annotorious.Toolbar(anno, document.getElementById('annotorious-toolbar-container'));
     {% else %}
-        anno.readOnly = true;
+    anno.readOnly = true;
     {% endif %}
 
     {% if annotations %}
     {% for a in annotations %}
-        anno.addAnnotation({{ a|safe }});
+    anno.addAnnotation({{ a|safe }});
     {% endfor %}
     {% endif %}
+    let visible_annotorious = false;
+    anno.setVisible(visible_annotorious);
+
+    // Annotation List Functionality
+    let annotationList = document.getElementById('annotationList');
+
+    //updateButtonLabel();
+    updateAnnotationList();
 
 
     // Annotorious + annotation storing
@@ -654,29 +431,50 @@ $(document).ready(function(){
         updateAnnotationList();
     });
 
-    viewer.addControl(document.getElementById("toolbarTopDiv"), {anchor: OpenSeadragon.ControlAnchor.TOP_RIGHT});
-    viewer.addControl(document.getElementById("toolbarBottomDiv"), {anchor: OpenSeadragon.ControlAnchor.BOTTOM_RIGHT});
 
-    // Scalebar
-    try {
-        let pixelsPerMeter = {{ slide|get_pixels_per_meter }};
-        viewer.scalebar({
-            type: OpenSeadragon.ScalebarType.MICROSCOPY,
-            pixelsPerMeter: pixelsPerMeter,
-            minWidth: "250px",
-            location: OpenSeadragon.ScalebarLocation.BOTTOM_LEFT,
-            xOffset: 10,
-            yOffset: 20,
-            stayInsideImage: true,
-            color: "rgba(100,100,100,0.9)",
-            fontColor: "rgb(50,50,50)",
-            backgroundColor: "rgba(230, 230, 230, 0.5)",
-            fontSize: "large",
-            barThickness: 3
+    /*
+    BUTTON LISTENERS
+    */
+    document.getElementById("zoomInButton").addEventListener('click', zoomIn);
+    document.getElementById("zoomOutButton").addEventListener('click', zoomOut);
+    document.getElementById("FullScreenButton").addEventListener('click', toggleFullscreen);
+
+    document.getElementById("slideInfoButton").addEventListener('click', activateToolbarPopup);
+    {% if user.is_superuser or user.is_teacher %}
+    document.getElementById("editAnnotationButton").addEventListener('click', activateToolbarPopup);
+    {% endif %}
+    document.getElementById("annotationListButton").addEventListener('click', activateToolbarPopup);
+    document.getElementById("collapsePopup").addEventListener('click', closeToolbarPopup);
+
+    document.getElementById("toggleAnnotationButton").addEventListener('click', toggleAnnotationVisibility);
+
+    // Screenshoot Button Functionality
+    document.getElementById("screenshotButton").addEventListener('click', function () {
+        // Hide buttons
+        document.getElementById("buttonColumn").style.display = "none";
+        document.getElementById("toolbarBottomDiv").style.display = "none";
+        // Hide popup
+        document.getElementById("collapsePopupWindow").style.display = "none";
+        html2canvas($("#wsi-canvas")[0]).then(canvas => {
+            let now = new Date();
+            let formattedDate = now.format("yyyy-MM-dd hh-mm-ss");
+            console.log(now);
+            // Trigger download
+            let link = document.createElement('a');
+            link.href = canvas.toDataURL("image/jpeg");
+            link.download = 'LearnPathology_screenshot_' + formattedDate + '.jpg';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }).then(x => {
+            // Display buttons again
+            document.getElementById("buttonColumn").style.display = "block";
+            document.getElementById("toolbarBottomDiv").style.display = "block";
+            // Display popup again
+            document.getElementById("collapsePopupWindow").style.display = "flex";
         });
-    } catch (e) {
-        alert('Couldn\'t get scaling factor')
-    }
+
+    });
 
 {#    // Zoom Button Functionality#}
 {#    const zoomLevels = [0.25, 1, 10, 20, 40]; // Include 0.25x#}
@@ -701,84 +499,25 @@ $(document).ready(function(){
 {#    }#}
 
 
-
-    // Screenshoot Button Functionality
-    const screenshotButton = document.getElementById("screenshotButton");
-    screenshotButton.addEventListener('click', function () {
-        // Hide buttons
-        document.getElementById("buttonColumn").style.display = "none";
-        document.getElementById("toolbarBottomDiv").style.display = "none";
-        // Hide popup
-        document.getElementById("collapsePopupWindow").style.display = "none";
-        html2canvas($("#wsi-canvas")[0]).then(canvas => {
-            var now = new Date();
-            var formattedDate = now.format("yyyy-MM-dd hh-mm-ss");
-            console.log(now);
-            // Trigger download
-            var link = document.createElement('a');
-            link.href = canvas.toDataURL("image/jpeg");
-            link.download = 'LearnPathology_screenshot_' + formattedDate + '.jpg';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }).then(x => {
-            // Display buttons again
-            document.getElementById("buttonColumn").style.display = "block";
-            document.getElementById("toolbarBottomDiv").style.display = "block";
-            // Display popup again
-            document.getElementById("collapsePopupWindow").style.display = "flex";
-        });
-
-    });
-
-    // Default Button Functionality
-    document.getElementById("zoomInButton").addEventListener('click', function () {
-        var currentZoom = viewer.viewport.getZoom();
-        var newZoom = currentZoom * viewer.zoomPerScroll; // Adjust the factor as needed
-
-        if (newZoom <= viewer.viewport.getMaxZoom()) {
-            viewer.viewport.zoomTo(newZoom);
-        }
-    });
-
-    // Zoom out button event listener
-    document.getElementById("zoomOutButton").addEventListener('click', function () {
-        var currentZoom = viewer.viewport.getZoom();
-        var newZoom = currentZoom / viewer.zoomPerScroll; // Adjust the factor as needed
-
-        if (newZoom >= viewer.viewport.getMinZoom()) {
-            viewer.viewport.zoomTo(newZoom);
-        }
-    });
-
-    document.getElementById("FullScreenButton").addEventListener('click', function () {
-        if (OpenSeadragon.isFullScreen()) {
-            viewer.setFullScreen(false);
-        } else {
-            viewer.setFullScreen(true);
-        }
-    });
-
-
-    // Annotation List Functionality
-    var annotationList = document.getElementById('annotationList');
-
+    /*
+    FUNCTION IMPLEMENTATIONS
+    */
     function updateAnnotationList() {
         annotationList.innerHTML = ''; // Clear previous list
 
-        var annotations = anno.getAnnotations();
+        let annotations = anno.getAnnotations();
 
         annotations.sort(function (a, b) {
-            var textA = a.body[0].value.toUpperCase();
-            var textB = b.body[0].value.toUpperCase();
+            let textA = a.body[0].value.toUpperCase();
+            let textB = b.body[0].value.toUpperCase();
             return textA.localeCompare(textB);
         });
 
         annotations.forEach(function (annotation) {
-            var listItem = document.createElement('div');
+            let listItem = document.createElement('div');
             listItem.classList.add('annotationListElement');
 
-            var annotationButton = document.createElement('button');
+            let annotationButton = document.createElement('button');
             annotationButton.textContent = annotation.body[0].value;
             annotationButton.classList.add('annotationListElementButton', 'transparentBackground');
             annotationButton.addEventListener('click', function () {
@@ -791,7 +530,7 @@ $(document).ready(function(){
             });
 
             {% if request.user.is_teacher or request.user.is_superuser %}
-            var deleteButton = document.createElement('button');
+            let deleteButton = document.createElement('button');
             deleteButton.innerHTML = '<span class="iconify" data-icon="fluent:dismiss-12-regular" data-width="24" data-height="24"></span>';
             deleteButton.classList.add('annotationListElementDelete', 'transparentBackground');
 
@@ -809,19 +548,241 @@ $(document).ready(function(){
         });
     }
 
+    function activateToolbarPopup() {
+        const pressedButtonId = this.id;
 
-    // Annotation Button Functionality
-    var visible_annotorious = false;
-    anno.setVisible(visible_annotorious);
-    console.log(visible_annotorious);
-    document.getElementById("toggleAnnotationButton").addEventListener('click', function () {
+        if (g_whichPopupIsOpen === pressedButtonId) {
+            closeToolbarPopup();
+        } else {
+            openToolbarPopup();
+            removeButtonActivation();
+
+            // Show the correct content in the popup
+            switch (pressedButtonId) {
+                case 'slideInfoButton':
+                    document.getElementById('slideInformationContent').style.display = 'block';
+                    document.getElementById('slideInfoButton').classList.add('active');
+                    {% if user.is_superuser or user.is_teacher %}
+                    document.getElementById('annotoriousToolbarWrapper').style.display = 'none';
+                    {% endif %}
+                    document.getElementById('annotationListContent').style.display = 'none';
+                    break;
+                case 'editAnnotationButton':
+                    document.getElementById('slideInformationContent').style.display = 'none';
+                    {% if user.is_superuser or user.is_teacher %}
+                    document.getElementById('annotoriousToolbarWrapper').style.display = 'block';
+                    document.getElementById('editAnnotationButton').classList.add('active');
+                    {% endif %}
+                    document.getElementById('annotationListContent').style.display = 'none';
+                    if (!visible_annotorious) {
+                        toggleAnnotationVisibility();
+                    }
+                    break;
+                case 'annotationListButton':
+                    document.getElementById('slideInformationContent').style.display = 'none';
+                    {% if user.is_superuser or user.is_teacher %}
+                    document.getElementById('annotoriousToolbarWrapper').style.display = 'none';
+                    {% endif %}
+                    document.getElementById('annotationListContent').style.display = 'block';
+                    document.getElementById('annotationListButton').classList.add('active');
+                    //document.getElementById('popup').removeProperty('overflow-y'); // TODO: Fix this!!
+                    break;
+                default:
+                    // do something else
+                    document.getElementById('popup-content').innerHTML = 'SOMETHING WRONG HAPPENED IN THE SWITCH/CASE BLOCK!';
+            }
+
+            // Store which button was pressed/content is displayed
+            g_whichPopupIsOpen = pressedButtonId;
+        }
+    }
+
+    function openToolbarPopup() {
+        let popup = document.getElementById('popup');
+        if (popup.style.display === 'none') {
+            popup.style.display = 'block';
+        }
+        showToolbarCollapseButton();
+    }
+
+    function showToolbarCollapseButton() {
+        document.getElementById("collapsePopup").style.display = 'block';
+    }
+
+    function hideToolbarCollapseButton() {
+        document.getElementById("collapsePopup").style.display = 'none';
+    }
+
+    function removeButtonActivation() {
+        document.getElementById('slideInfoButton').classList.remove('active');
+        {% if user.is_superuser or user.is_teacher %}
+        document.getElementById('editAnnotationButton').classList.remove('active');
+        {% endif %}
+        document.getElementById('annotationListButton').classList.remove('active');
+    }
+
+    function closeToolbarPopup() {
+        hideToolbarCollapseButton();    // Hide button when popup is hidden
+        removeButtonActivation();
+        let popup = document.getElementById('popup');
+        if (popup.style.display !== 'none') {
+            popup.style.display = 'none';
+        }
+        g_whichPopupIsOpen = 'none';
+    }
+
+    function zoomIn() {
+        let currentZoom = viewer.viewport.getZoom();
+        let newZoom = currentZoom * viewer.zoomPerScroll; // Adjust the factor as needed
+        if (newZoom <= viewer.viewport.getMaxZoom()) {
+            viewer.viewport.zoomTo(newZoom);
+        }
+    }
+
+    function zoomOut() {
+        let currentZoom = viewer.viewport.getZoom();
+        let newZoom = currentZoom / viewer.zoomPerScroll; // Adjust the factor as needed
+        if (newZoom >= viewer.viewport.getMinZoom()) {
+            viewer.viewport.zoomTo(newZoom);
+        }
+    }
+
+    function toggleFullscreen() {
+        if (OpenSeadragon.isFullScreen()) {
+            viewer.setFullScreen(false);
+        } else {
+            viewer.setFullScreen(true);
+        }
+    }
+
+    function toggleAnnotationVisibility() {
         visible_annotorious = !visible_annotorious;
         anno.setVisible(visible_annotorious);
-        console.log(visible_annotorious);
-    });
+        document.getElementById('toggleAnnotationButton').checked = visible_annotorious;
+    }
 
-    //updateButtonLabel();
-    updateAnnotationList();
+    /*
+    EDIT DESCRIPTION AND PATHOLOGY TAGS
+    */
+    let changed_description = '';
+    const slide_id = {{ slide.id }};
+
+    document.getElementById('editDescriptionButton').addEventListener('click', showEditField);
+    document.getElementById('saveDescriptionButton').addEventListener('click', saveDescription);
+    document.getElementById('editTagsButton').addEventListener('click', showEditTagsForm);
+    document.getElementById('saveTagsButton').addEventListener('click', saveTagsChanges);
+
+    function showEditField() {
+        if (changed_description) {
+            var description = changed_description;
+        } else {
+            var description = "{{ slide.long_description }}";
+        }
+        document.getElementById("newDescription").value = description;
+        document.getElementById("editField").style.display = "block";
+        document.getElementById("longDescriptionSpan").style.display = "none";
+    }
+
+    function saveDescription() {
+        var newDescription = $("#newDescription").val();
+        $.ajax({
+            url: "{% url 'slide:edit_description' slide.id %}",
+            type: "POST",
+            headers: {"X-CSRFToken": "{{ csrf_token }}"},
+            data: {
+                'slide_id': slide_id,
+                'new_description': newDescription
+            },
+            dataType: "json",
+            success: function (response) {
+                if (response.success) {
+                    $("#longDescriptionSpan").text(newDescription);
+                    $("#editField").hide();
+                    $("#longDescriptionSpan").show();
+
+                    changed_description = newDescription;
+
+                } else {
+                    alert("Failed to update description: " + response.error);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX request failed with status: " + status + ", error: " + error);
+                alert("Failed to update description. Please try again later.");
+            }
+        });
+    }
+
+    function showEditTagsForm() {
+        var editTagsForm = document.getElementById('editTagsForm' + slide_id);
+        var tagDisplaySection = document.getElementById('generalPathologyTags' + slide_id);
+
+        try {
+            var noTags = document.getElementById('noPathologyTags');
+            noTags.style.display = 'none';
+        } catch (error) {
+            console.error("An error occurred while hiding 'noPathologyTags': " + error);
+        }
+
+        if (tagDisplaySection) {
+            tagDisplaySection.style.display = 'none';
+        } else {
+            console.error("Tag display section not found for slide ID: " + slide_id);
+        }
+
+        if (editTagsForm) {
+            editTagsForm.style.display = 'block';
+        } else {
+            console.error("Edit tags form not found for slide ID: " + slide_id);
+        }
+    }
+
+    function saveTagsChanges() {
+        // Collect selected tag IDs
+        var selectedTags = [];
+        $("input[name='tags']:checked").each(function () {
+            selectedTags.push($(this).val());
+        });
+        console.log(selectedTags);
+
+        // AJAX request to save changes
+        $.ajax({
+            url: "{% url 'slide:edit_tags' slide.id %}",
+            type: "POST",
+            headers: {"X-CSRFToken": "{{ csrf_token }}"},
+            data: {
+                'slide_id': slide_id,
+                'selected_tags': selectedTags
+            },
+            dataType: "json",
+            success: function (response) {
+                if (response.success) {
+                    // Update displayed tags if successful
+                    var tagsDisplay = "";
+                    if (response.tag_names.length === 0) {
+                        tagsDisplay = '<p>No pathology tags selected</p>'
+                    } else {
+                        response.tag_names.forEach(function (tag) {
+                            tagsDisplay += '<a href="#" class="list-group-item list-group-item-action">' + tag.name + '</a>';
+                        });
+                    }
+                    $("#generalPathologyTags" + slide_id).html(tagsDisplay);
+
+                    // Hide edit form and show tag display section
+                    $("#editTagsForm" + slide_id).hide();
+                    $("#generalPathologyTags" + slide_id).show();
+
+                    {#location.reload();#}
+                } else {
+                    alert("Failed to update tags: " + response.error);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX request failed with status: " + status + ", error: " + error);
+                alert("Failed to update tags. Please try again later.");
+            }
+        });
+    }
 
 });
 {% endblock javascript %}
