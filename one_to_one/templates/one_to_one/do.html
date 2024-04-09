@@ -40,20 +40,22 @@
 
 
 {% block task_javascript %}
-        var mode = document.querySelector('#mode').dataset.mode;
+
+$(document).ready(function(){
+        var mode = "{{ mode }}"; //document.getElementById('mode').dataset.mode;
         var idOrder = JSON.parse("{{id_order}}");
         var answerOrder = JSON.parse("{{answer_order}}");
 
         window.addEventListener('DOMContentLoaded', function () {
             if (mode === 'get') {
                 console.log('Shuffle List.')
-                shuffleList()
+                shuffleList();
             }
             else if (mode === 'post') {
-                console.log(idOrder)
-                console.log("Don't shuffle List.")
-                rearrangeList(idOrder)
-                colorAnswers(idOrder, answerOrder)
+                console.log(idOrder);
+                console.log("Don't shuffle List.");
+                rearrangeList(idOrder);
+                colorAnswers(idOrder, answerOrder);
             }
         })
 
@@ -103,7 +105,8 @@
             }
         }
 
-        var sortableList = document.querySelector('.sortable');
+        //var sortableList = document.querySelector('.sortable');
+        var sortableList = document.getElementById('sortable-list');
         var sortable_list = new Sortable(sortableList);
 
         // Capture the order of the list items on form submission
@@ -120,4 +123,5 @@
             input.value = itemIds;
             myForm.appendChild(input);
         });
+});
 {% endblock task_javascript %}
