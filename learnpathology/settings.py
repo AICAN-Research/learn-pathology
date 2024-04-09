@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,19 +21,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-c#865-)ef-&rz)&*26c!!bj473_2npi7$^hzgr_cueydwr6(+6'
+SECRET_KEY = 'ih^&f=k6+5n0+-$lgcr#$9z75n00f$zmnptk#od3mikayz6md9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 # To enable FEIDE login you also have to add a social applications object with the client id and secret key to the database
-USE_FEIDE_LOGIN = False
+USE_FEIDE_LOGIN = True
 
 # To enable TILE CACHE you need to install the python package pymemcache and the linux package memcached.
 # Remember to configure the size of the memcached in /etc/memcached.conf
-USE_TILE_CACHE = False
+USE_TILE_CACHE = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['10.20.93.218', 'learnpathology.no', 'www.learnpathology.no']
 
 # For using flatpages, set to site corresponding to this settings.py file
 APPEND_SLASH = True
@@ -159,6 +160,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -255,7 +257,12 @@ if USE_TILE_CACHE:
         'default': {
             'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
             'LOCATION': '127.0.0.1:11211',
-            #'LOCATION': 'unix:/tmp/memcached.sock',
             'MAX_ENTRIES': 100000,
+            'OPTIONS': {
+                'no_delay': True,
+                'ignore_exc': True,
+                'max_pool_size': 4,
+                'use_pooling': True,
+            }
         }
     }
