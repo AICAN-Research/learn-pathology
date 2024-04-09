@@ -677,7 +677,8 @@ $(document).ready(function(){
         if (changed_description) {
             var description = changed_description;
         } else {
-            var description = "{{ slide.long_description }}";
+            var description = "{{ slide.long_description | safe }}";
+            description = description.replace(/<br\s*\/?>/g, '\n');
         }
         document.getElementById("newDescription").value = description;
         document.getElementById("editField").style.display = "block";
