@@ -3,15 +3,13 @@ import random
 from django.contrib import messages
 from django.db import transaction
 from django.forms import formset_factory, modelformset_factory
-from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 
-from slide.models import Slide, Pointer, AnnotatedSlide, BoundingBox
-from slide.views import slide_cache, save_boundingbox_annotation, save_pointer_annotation, delete_existing_annotations
+from slide.models import AnnotatedSlide
 from task.common import process_new_task_request, process_edit_task_request, \
     setup_common_new_task_context, setup_common_edit_task_context
 from slide.models import Slide
 from slide.views import slide_cache
-from task.models import Task
 from task.forms import TaskForm
 from multiple_choice.models import MultipleChoice, Choice, RandomMCChoice
 from multiple_choice.forms import MultipleChoiceForm, ChoiceForm
@@ -65,52 +63,6 @@ def do(request, task_id, course_id=None):
     context['choice_text'] = choice_text
     context['counter_corr_answ'] = counter_corr_answ
     return render(request, 'multiple_choice/do.html', context)
-
-
-def do_random(request, slide_id=None):
-    """
-    Student form for answering/viewing a random multiple choice task
-
-    Parameters
-    ----------
-    request : Http request
-
-    slide_id : int
-        ID of Slide instance
-    """
-
-    if request.method == 'GET':  # If the request is GET
-        # Select a random slide
-        slide_ids = list(Slide.objects.all().values_list('id', flat=True))
-        slide_id = random.sample(slide_ids, k=1)[0]   # index since random.sample returns k-length list
-
-    slide = Slide.objects.get(id=slide_id)
-    slide_cache.load_slide_to_cache(slide_id)
-    # Load all choices for this slide
-    answers = RandomMCChoice.objects.filter(slide=slide_id)
-
-    answered = 'no'
-    choice_text = None
-    if request.method == 'POST':
-        print('POST')
-        # Process form
-        choice_id = request.POST.get('choice', None)  # returns None if no choice was made
-        if choice_id is not None:
-            choice = RandomMCChoice.objects.get(slide=slide, id=choice_id)
-            choice_text = choice.text
-            if choice.correct:
-                answered = 'correct'
-            else:
-                answered = 'incorrect'
-        else:
-            answered = 'no_choice'
-
-    return render(request, 'multiple_choice/random_quest.html', {
-        'answers': answers,
-        'answered': answered,
-        'slide': slide,
-        'choice_text': choice_text,
-    })
 
 
 @teacher_required
@@ -175,51 +127,6 @@ def new(request, slide_id, course_id=None):
         'multipleChoiceForm': multiple_choice_form,
         'choiceFormset': choice_formset,
     })
-
-
-def new_random(num_choices=5):
-    """
-    TODO:
-      - Update docstring (this function description)
-      - When re-generating random questions, remove old options first
-
-    Teacher form for creating a multiple choice task
-
-
-    Should return:
-    - task
-    - slide_id
-
-    """
-
-    # Iterate through slide_id's to generate new random questions
-    for slide_id in Slide.objects.values_list('id', flat=True):
-        new_choices = []
-
-        slide = Slide.objects.get(id=slide_id)
-
-        # Add correct answer
-        choice = RandomMCChoice()
-        choice.slide = slide
-        choice.text = slide.description
-        choice.correct = True
-        new_choices.append(choice)
-
-        # Use list comprehension to list all slide descriptions except the correct one
-        incorrect_slide_descriptions = [slide.description for slide in Slide.objects.exclude(id=slide_id)]
-        answers = random.sample(incorrect_slide_descriptions, k=num_choices - 1)
-
-        for answer in answers:
-            choice = RandomMCChoice()
-            choice.slide = slide
-            choice.text = answer
-            choice.correct = False
-            new_choices.append(choice)
-
-        random.seed()
-        random.shuffle(new_choices)
-        for choice in new_choices:
-            choice.save()
 
 
 @teacher_required

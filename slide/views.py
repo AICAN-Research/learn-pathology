@@ -1,24 +1,21 @@
 import os.path
 import json
-import re
 
 import django.urls
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
-from django.db import transaction, IntegrityError
+from django.db import transaction
 from django.db.models import Q
-from django.http import HttpResponse, Http404, JsonResponse
-from django.views.decorators.http import require_POST
-from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render, redirect
 from django.core.files.uploadedfile import UploadedFile
 from django.views.decorators.cache import cache_page
 
 from tag.models import Tag
-from task.models import Task
-from user.decorators import student_required, teacher_required
+
+from user.decorators import teacher_required
 from slide.models import Slide, AnnotatedSlide, Pointer, BoundingBox, Annotation
-from slide.forms import SlideForm, SlideDescriptionForm
+from slide.forms import SlideForm
 
 
 GENERAL_PATHOLOGY_TAGS = (
