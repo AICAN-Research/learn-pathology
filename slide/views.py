@@ -1,5 +1,6 @@
 import os.path
 import json
+import re
 
 import django.urls
 from django.contrib import messages
@@ -367,8 +368,10 @@ def edit_description(request, slide_id):
 
     slide = slide_cache.load_slide_to_cache(slide_id)
     new_description = request.POST.get('new_description')
+    new_description = new_description.replace('\n', '<br>')
 
     try:
+
         slide.long_description = new_description
         slide.save()
         return JsonResponse({'success': True})

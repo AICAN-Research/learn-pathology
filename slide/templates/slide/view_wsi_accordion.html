@@ -155,12 +155,12 @@
                                                             </button>
                                                         </div>
 
-                                                        <div>
+
                                                         {% if slide.long_description %}
-                                                        <span id="longDescriptionSpan">{{ slide.long_description }}</span>
+                                                        <span id="longDescriptionSpan" style="white-space: pre-line">{{ slide.long_description | safe }}</span>
                                                         {% else %}
                                                         <span id="longDescriptionSpan" style="display: none;">-</span>
-                                                        {% endif %}</div>
+                                                        {% endif %}
                                                     </td>
                                                 </tr>
 
