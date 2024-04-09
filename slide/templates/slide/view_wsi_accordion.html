@@ -239,7 +239,7 @@
             <!-- Top 3 buttons centered in the middle -->
             <div id="topButtons" class="slideViewerToolbarButtonGroup">
                 <div class="button-group">
-                    <button id="slideInfoButton" class="custom-button btn btn-secondary">
+                    <button id="slideInfoButton" class="custom-button btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Slide Information">
                         <div class="button-icon">
                             <span class="iconify" data-icon="fluent:info-24-regular" data-width="24" data-height="24"></span>
                         </div>
@@ -247,7 +247,7 @@
                 </div>
                 {% if user.is_superuser or user.is_teacher %}
                 <div class="button-group">
-                    <button id="editAnnotationButton" class="custom-button btn btn-secondary">
+                    <button id="editAnnotationButton" class="custom-button btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Edit Annotation">
                         <div class="button-icon">
                             <span class="iconify" data-icon="fluent:edit-12-regular" data-width="24" data-height="24"></span>
                         </div>
@@ -255,7 +255,7 @@
                 </div>
                 {% endif %}
                 <div class="button-group">
-                    <button id="annotationListButton" class="custom-button btn btn-secondary">
+                    <button id="annotationListButton" class="custom-button btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Annotation List">
                         <div class="button-icon">
                             <span class="iconify" data-icon="fluent:pin-12-regular" data-width="24" data-height="24"></span>
                         </div>
@@ -270,28 +270,28 @@
 <div id="toolbarBottomDiv">
     <div class="slideViewerToolbarButtonGroup">
         <div class="button-group">
-            <button id="screenshotButton" class="custom-button btn btn-secondary">
+            <button id="screenshotButton" class="custom-button btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Screenshot">
                 <div class="button-icon">
                     <span class="iconify" data-icon="fluent:camera-24-regular" data-width="24" data-height="24"></span>
                 </div>
             </button>
         </div>
         <div class="button-group">
-            <button id="zoomInButton" class="custom-button btn btn-secondary">
+            <button id="zoomInButton" class="custom-button btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Zoom In">
                 <div class="button-icon">
                     <span class="iconify" data-icon="fluent:add-24-regular" data-width="24" data-height="24"></span>
                 </div>
             </button>
         </div>
         <div class="button-group">
-           <button id="zoomOutButton" class="custom-button btn btn-secondary">
+           <button id="zoomOutButton" class="custom-button btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Zoom Out">
                <div class="button-icon">
                    <span class="iconify" data-icon="fluent:subtract-24-regular" data-width="24" data-height="24"></span>
                </div>
            </button>
         </div>
         <div class="button-group">
-             <button id="FullScreenButton" class="custom-button btn btn-secondary">
+             <button id="FullScreenButton" class="custom-button btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Fullscreen">
                  <div class="button-icon">
                      <span class="iconify" data-icon="fluent:arrow-expand-24-regular" data-width="24" data-height="24"></span>
                  </div>
@@ -418,6 +418,10 @@ $(document).ready(function(){
         deleteAnnotation(annotation, slide_id);
         updateAnnotationList();
     });
+
+    $(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
 
 
     /*
