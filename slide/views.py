@@ -1,5 +1,6 @@
 import os.path
 import json
+import re
 
 import django.urls
 from django.contrib import messages
@@ -8,6 +9,7 @@ from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.db import transaction, IntegrityError
 from django.db.models import Q
 from django.http import HttpResponse, Http404, JsonResponse
+from django.views.decorators.http import require_POST
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.files.uploadedfile import UploadedFile
 from django.views.decorators.cache import cache_page
@@ -242,12 +244,22 @@ def organ_tag_id_list_to_queryset(id_list):
 def whole_slide_view_full(request, slide_id):
     slide = slide_cache.load_slide_to_cache(slide_id)
     stain = slide.tags.get(is_stain=True)
-    general_pathology_tags = [tag for tag in slide.tags.filter(is_organ=False, is_stain=False)
+    selected_general_pathology_tags = [tag for tag in slide.tags.filter(is_organ=False, is_stain=False)
                               if tag.name.lower() in GENERAL_PATHOLOGY_TAGS]
+
+    other_tags = Tag.objects.filter(is_organ=False, is_stain=False)
+    all_general_pathology_tags = []
+    for tag in other_tags:
+        if tag.name.lower() in GENERAL_PATHOLOGY_TAGS:
+            all_general_pathology_tags.append(tag)
+
+
+
     context = {
         'slide': slide,
         'stain_name': stain.name,
-        'general_pathology_tags': general_pathology_tags
+        'general_pathology_tags': selected_general_pathology_tags,
+        'all_general_pathology_tags' : all_general_pathology_tags
     }
 
     try:
@@ -270,6 +282,7 @@ def whole_slide_view_full(request, slide_id):
         context['annotations'].append(ann.deserialize())
 
     return render(request, 'slide/view_wsi_accordion.html', context)
+
 
 
 def whole_slide_viewer(request, slide_id):
@@ -354,19 +367,18 @@ def edit_description(request, slide_id):
     """
 
     slide = slide_cache.load_slide_to_cache(slide_id)
-    form = SlideDescriptionForm(request.POST or None, instance=slide)
+    new_description = request.POST.get('new_description')
+    new_description = new_description.replace('\n', '<br>')
 
-    if request.method == 'POST':  # Form was submitted
-        if form.is_valid():
-            form.save()
-            messages.add_message(request, messages.SUCCESS,
-                 f'The slide description of {slide.name} was altered!')
-            return redirect('slide:view_full', slide_id=slide_id)
+    try:
 
-    return render(request, 'slide/edit_description.html', {
-        'slide': slide,
-        'form': form
-    })
+        slide.long_description = new_description
+        slide.save()
+        return JsonResponse({'success': True})
+    except Slide.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Slide not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
 
 @teacher_required
@@ -376,22 +388,36 @@ def edit_general_pathology_tags(request, slide_id):
     """
 
     slide = slide_cache.load_slide_to_cache(slide_id)
+    selected_tags_ids = request.POST.getlist('selected_tags[]')
 
     if not slide.pathology:
         messages.add_message(request, messages.ERROR, 'This slide is not a pathology slide. Cannot add general pathology tags.')
         return redirect('slide:view_full', slide_id=slide.id)
 
-    other_tags = Tag.objects.filter(is_organ=False, is_stain=False)
-    general_pathology_tags = []
-    for tag in other_tags:
-        if tag.name.lower() in GENERAL_PATHOLOGY_TAGS:
-            general_pathology_tags.append(tag)
+    # remove existing tags first
+    selected_general_pathology_tags = [tag for tag in slide.tags.filter(is_organ=False, is_stain=False)
+                                       if tag.name.lower() in GENERAL_PATHOLOGY_TAGS]
+    if selected_general_pathology_tags:
+        for tag in selected_general_pathology_tags:
+            slide.tags.remove(tag)
 
-    return render(request, 'slide/select_general_pathology_tags.html', {
-        'slide': slide,
-        'general_pathology_tags': general_pathology_tags,
-        'stain_name': slide.tags.get(is_stain=True),
-    })
+    tag_names = []
+
+    try:
+        for tag_id in selected_tags_ids:
+            tag_to_add = Tag.objects.get(id=tag_id)
+            slide.tags.add(tag_to_add)
+            tag_names.append({'id': tag_to_add.id, 'name': tag_to_add.name})
+
+        slide.save()
+
+        return JsonResponse({'success': True, 'tag_names': tag_names})
+    except Slide.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Slide not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+
 
 
 @teacher_required
