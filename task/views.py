@@ -1,13 +1,9 @@
-import random
 
-import django.shortcuts
 from django.contrib import messages
-from django.db import transaction
-from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
-from django.urls import resolve
+from django.shortcuts import render, redirect
 
 from course.models import Course
-from slide.models import Slide, Pointer, AnnotatedSlide, BoundingBox
+from slide.models import Slide
 from slide.views import slide_cache
 from user.decorators import teacher_required
 from task.models import Task
