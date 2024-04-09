@@ -89,19 +89,6 @@
                                                     <th>Slide description</th>
                                                     <td>{{ slide.description }}</td>
                                                 </tr>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="slideCategorizationHeading">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#slideCategorizationTab" aria-expanded="false" aria-controls="slideCategorizationTab">
-                                            Categorization
-                                        </button>
-                                    </h2>
-                                    <div id="slideCategorizationTab" class="accordion-collapse collapse" aria-labelledby="slideCategorizationHeading" data-bs-parent="#slideInformationAccordion">
-                                        <div class="accordion-body">
-                                            <table class="table">
                                                 <tr>
                                                     <th>Organ</th>
                                                     <td>{{ slide.name }}</td>
@@ -532,7 +519,7 @@ $(document).ready(function(){
 
             {% if request.user.is_teacher or request.user.is_superuser %}
             let deleteButton = document.createElement('button');
-            deleteButton.innerHTML = '<span class="iconify" data-icon="fluent:dismiss-12-regular" data-width="24" data-height="24"></span>';
+            deleteButton.innerHTML = '<span class="iconify" data-icon="fluent:bin-recycle-24-regular" data-width="24" data-height="24"></span>';
             deleteButton.classList.add('annotationListElementDelete', 'transparentBackground');
 
             deleteButton.addEventListener('click', function () {
