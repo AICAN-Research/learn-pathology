@@ -632,7 +632,7 @@ Image browser
     border: 0;
 }
 .cardImageHeader {
-    height: 60%;
+    height: 70%;
     min-height: 50%;
     max-height: 250px;
     background-color: var(--grid-card-background);
