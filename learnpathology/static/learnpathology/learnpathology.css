@@ -627,17 +627,18 @@ Image browser
 /* Styling for cards containing thumbnails, name, short description */
 .slideGridViewCard {
     height: 100%;
-    min-height: 250px;
     max-height: 500px;
+    min-height: fit-content;
     border: 0;
 }
 .cardImageHeader {
-    height: 80%;
-    max-height: 500px;
+    height: 60%;
+    min-height: 50%;
+    max-height: 250px;
     background-color: var(--grid-card-background);
 }
 .gridCardContent {
-    height: 20%;
+    height: fit-content;
     max-height: 50%;
     padding: 5% 2% 2% 2%;
     border: none;
