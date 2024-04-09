@@ -46,18 +46,15 @@ $(document).ready(function(){
     var idOrder = JSON.parse("{{id_order}}");
     var answerOrder = JSON.parse("{{answer_order}}");
 
-    window.addEventListener('DOMContentLoaded', function () {
-        if (mode === 'get') {
-            console.log('Shuffle List.')
-            shuffleList();
-        }
-        else if (mode === 'post') {
-            console.log(idOrder);
-            console.log("Don't shuffle List.");
-            rearrangeList(idOrder);
-            colorAnswers(idOrder, answerOrder);
-        }
-    })
+    if (mode === 'get') {
+        console.log('Shuffle List.')
+        shuffleList();
+    } else if (mode === 'post') {
+        console.log(idOrder);
+        console.log("Don't shuffle List.");
+        rearrangeList(idOrder);
+        colorAnswers(idOrder, answerOrder);
+    }
 
     function shuffleList() {
         var ul = document.querySelector('#sortable-list');
