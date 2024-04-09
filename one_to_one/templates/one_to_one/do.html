@@ -40,84 +40,85 @@
 
 
 {% block task_javascript %}
-        var mode = document.querySelector('#mode').dataset.mode;
-        var idOrder = JSON.parse("{{id_order}}");
-        var answerOrder = JSON.parse("{{answer_order}}");
 
-        window.addEventListener('DOMContentLoaded', function () {
-            if (mode === 'get') {
-                console.log('Shuffle List.')
-                shuffleList()
-            }
-            else if (mode === 'post') {
-                console.log(idOrder)
-                console.log("Don't shuffle List.")
-                rearrangeList(idOrder)
-                colorAnswers(idOrder, answerOrder)
-            }
-        })
+$(document).ready(function(){
+    var mode = "{{ mode }}"; //document.getElementById('mode').dataset.mode;
+    var idOrder = JSON.parse("{{id_order}}");
+    var answerOrder = JSON.parse("{{answer_order}}");
 
-        function shuffleList() {
-            var ul = document.querySelector('#sortable-list');
-            for (var i = ul.children.length; i >= 0; i--) {
-                ul.appendChild(ul.children[Math.random() * i | 0]);
-            }
+    if (mode === 'get') {
+        console.log('Shuffle List.')
+        shuffleList();
+    } else if (mode === 'post') {
+        console.log(idOrder);
+        console.log("Don't shuffle List.");
+        rearrangeList(idOrder);
+        colorAnswers(idOrder, answerOrder);
+    }
+
+    function shuffleList() {
+        var ul = document.querySelector('#sortable-list');
+        for (var i = ul.children.length; i >= 0; i--) {
+            ul.appendChild(ul.children[Math.random() * i | 0]);
         }
+    }
 
-        function rearrangeList(order) {
-            var list = document.getElementById("sortable-list");
-            var items = list.getElementsByTagName("li");
-            var itemsArr = [];
+    function rearrangeList(order) {
+        var list = document.getElementById("sortable-list");
+        var items = list.getElementsByTagName("li");
+        var itemsArr = [];
 
-            // Create a new array with the items in the desired order
-            for (var i = 0; i < order.length; i++) {
-                for (var j = 0; j < items.length; j++) {
-                    if (items[j].getAttribute("id") == order[i]) {
-                        itemsArr.push(items[j]);
-                        break;
-                    }
-                }
-            }
-
-            // Append the sorted items to the list
-            for (var i = 0; i < itemsArr.length; i++) {
-                list.appendChild(itemsArr[i]);
-            }
-        }
-
-        function colorAnswers(idOrder, answerOrder) {
-            var list = document.getElementById("sortable-list");
-            var items = list.getElementsByTagName("li");
-
-            for (var i = 0; i < items.length; i++) {
-                var itemId = parseInt(items[i].getAttribute("id"));
-                if (idOrder.includes(itemId)) {
-                    if (answerOrder[idOrder.indexOf(itemId)]) {
-                        items[i].style.color = "green";
-                        items[i].innerHTML += " &#10004";
-                    } else {
-                        items[i].style.color = "red";
-                        items[i].innerHTML += " &#10006;";
-                    }
+        // Create a new array with the items in the desired order
+        for (var i = 0; i < order.length; i++) {
+            for (var j = 0; j < items.length; j++) {
+                if (items[j].getAttribute("id") == order[i]) {
+                    itemsArr.push(items[j]);
+                    break;
                 }
             }
         }
 
-        var sortableList = document.querySelector('.sortable');
-        var sortable_list = new Sortable(sortableList);
+        // Append the sorted items to the list
+        for (var i = 0; i < itemsArr.length; i++) {
+            list.appendChild(itemsArr[i]);
+        }
+    }
 
-        // Capture the order of the list items on form submission
-        var myForm = document.querySelector('#my-form');
-        myForm.addEventListener('submit', function (event) {
-            var itemIds = [];
-            var listItems = document.querySelectorAll('.sortable li');
-            for (var i = 0; i < listItems.length; i++) {
-                itemIds.push(listItems[i].getAttribute('id'));
+    function colorAnswers(idOrder, answerOrder) {
+        var list = document.getElementById("sortable-list");
+        var items = list.getElementsByTagName("li");
+
+        for (var i = 0; i < items.length; i++) {
+            var itemId = parseInt(items[i].getAttribute("id"));
+            if (idOrder.includes(itemId)) {
+                if (answerOrder[idOrder.indexOf(itemId)]) {
+                    items[i].style.color = "green";
+                    items[i].innerHTML += " &#10004";
+                } else {
+                    items[i].style.color = "red";
+                    items[i].innerHTML += " &#10006;";
+                }
             }
-            var input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'item_ids';
-            input.value = itemIds;
-            myForm.appendChild(input);
-        });
+        }
+    }
+
+    //var sortableList = document.querySelector('.sortable');
+    var sortableList = document.getElementById('sortable-list');
+    var sortable_list = new Sortable(sortableList);
+
+    // Capture the order of the list items on form submission
+    var myForm = document.querySelector('#my-form');
+    myForm.addEventListener('submit', function (event) {
+        var itemIds = [];
+        var listItems = document.querySelectorAll('.sortable li');
+        for (var i = 0; i < listItems.length; i++) {
+            itemIds.push(listItems[i].getAttribute('id'));
+        }
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'item_ids';
+        input.value = itemIds;
+        myForm.appendChild(input);
+    });
+});
 {% endblock task_javascript %}
