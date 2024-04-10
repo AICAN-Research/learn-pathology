@@ -17,7 +17,7 @@
 {% block button_row %}
 
 {% if request.user.is_teacher or request.user.is_superuser %}
-<div class="custom-button button-light"> <!-- TODO: removed style, should add with class instead -->
+<div class="custom-button "> <!-- TODO: removed style, should add with class instead -->
     <a href="{% url 'course:delete' course_id=course.id %}" style="display: inline-flex;">
         <div class="button-icon">
             <span class="iconify" data-icon="fluent:bin-recycle-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
