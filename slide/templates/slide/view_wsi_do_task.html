@@ -1,8 +1,56 @@
 {% load static %}
 {% load slide_filters %}
 
-<div class="container" style="height:{% if two_column %}100%{% else %}85%{% endif %}; background-color: #dcdcdc; padding: 0;">
+<div class="container"
+     style="height:{% if two_column %}100%{% else %}85%{% endif %}; background-color: #dcdcdc; padding: 0;">
     <div id="wsi-canvas" class="wsi_canvas" style="height: 600px;"></div>
+</div>
+
+<div id="toolbarBottomDiv">
+    <div class="slideViewerToolbarButtonGroup">
+        <div class="button-group">
+            <button id="toggleAnnotationButton" class="custom-button btn btn-secondary" data-toggle="tooltip"
+                    data-placement="left" title="Show/Hide Annotations">
+                <div class="button-icon">
+                    <span class="iconify" data-icon="fluent:pin-12-regular" data-width="24" data-height="24"></span>
+                </div>
+            </button>
+        </div>
+        <div class="button-group">
+            <button id="screenshotButton" class="custom-button btn btn-secondary" data-toggle="tooltip"
+                    data-placement="left" title="Screenshot">
+                <div class="button-icon">
+                    <span class="iconify" data-icon="fluent:camera-24-regular" data-width="24" data-height="24"></span>
+                </div>
+            </button>
+        </div>
+        <div class="button-group">
+            <button id="zoomInButton" class="custom-button btn btn-secondary" data-toggle="tooltip"
+                    data-placement="left" title="Zoom In">
+                <div class="button-icon">
+                    <span class="iconify" data-icon="fluent:add-24-regular" data-width="24" data-height="24"></span>
+                </div>
+            </button>
+        </div>
+        <div class="button-group">
+            <button id="zoomOutButton" class="custom-button btn btn-secondary" data-toggle="tooltip"
+                    data-placement="left" title="Zoom Out">
+                <div class="button-icon">
+                    <span class="iconify" data-icon="fluent:subtract-24-regular" data-width="24"
+                          data-height="24"></span>
+                </div>
+            </button>
+        </div>
+        <div class="button-group">
+            <button id="FullScreenButton" class="custom-button btn btn-secondary" data-toggle="tooltip"
+                    data-placement="left" title="Fullscreen">
+                <div class="button-icon">
+                    <span class="iconify" id="FullScreenButtonIcon" data-icon="fluent:arrow-expand-24-regular"
+                          data-width="24" data-height="24"></span>
+                </div>
+            </button>
+        </div>
+    </div>
 </div>
 
 <script src="{% static 'slide/openseadragon.min.js' %}"></script>
@@ -18,10 +66,9 @@
         zoomPerScroll: 2,// Scroll speed
         minScrollDeltaTime: 150, //	Number of milliseconds between canvas-scroll events.
         showNavigator: true, // The navigation window top-right
-        // TODO: Remove default buttons by uncommenting next 3 lines, then add custom styled buttons
-        //showHomeControl: false,     // Hide the home button
-        //showFullPageControl: false, // Hide the full-page button
-        //showZoomControl: false,     // Hide the zoom-in and zoom-out buttons
+        showHomeControl: false,     // Hide the home button
+        showFullPageControl: false, // Hide the full-page button
+        showZoomControl: false,     // Hide the zoom-in and zoom-out buttons
         prefixUrl: "{% static 'slide/images/' %}",
         // Where to find OpenSeadragon button images
         tileSources: {
@@ -47,8 +94,106 @@
     {% endfor %}
     {% endif %}
 
-if ("{{ tasktype }}" === 'click_question') {
-    anno.setVisible(false);
-}
+    if ("{{ tasktype }}" === 'click_question') {
+        anno.setVisible(false);
+    }
+
+
+    try {
+        let pixelsPerMeter = {{ slide|get_pixels_per_meter }};
+        viewer.scalebar({
+            type: OpenSeadragon.ScalebarType.MICROSCOPY,
+            pixelsPerMeter: pixelsPerMeter,
+            minWidth: "250px",
+            location: OpenSeadragon.ScalebarLocation.BOTTOM_LEFT,
+            xOffset: 10,
+            yOffset: 20,
+            stayInsideImage: true,
+            color: "rgba(100,100,100,0.9)",
+            fontColor: "rgb(50,50,50)",
+            backgroundColor: "rgba(230, 230, 230, 0.5)",
+            fontSize: "large",
+            barThickness: 3
+        });
+    } catch (e) {
+        alert('Couldn\'t get scaling factor');
+    }
+
+    document.getElementById("zoomInButton").addEventListener('click', zoomIn);
+    document.getElementById("zoomOutButton").addEventListener('click', zoomOut);
+    document.getElementById("FullScreenButton").addEventListener('click', toggleFullscreen);
+    document.getElementById("toggleAnnotationButton").addEventListener('click', toggleAnnotationVisibility);
+
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+
+
+    {#document.getElementById("toggleAnnotationButton").addEventListener('click', toggleAnnotationVisibility);#}
+    viewer.addHandler('full-page', updateFullScreenButton);
+
+    document.getElementById("screenshotButton").addEventListener('click', function () {
+        // Hide buttons
+        document.getElementById("toolbarBottomDiv").style.display = "none";
+        html2canvas($("#wsi-canvas")[0]).then(canvas => {
+            let now = new Date();
+            let formattedDate = now.format("yyyy-MM-dd hh-mm-ss");
+            console.log(now);
+            // Trigger download
+            let link = document.createElement('a');
+            link.href = canvas.toDataURL("image/jpeg");
+            link.download = 'LearnPathology_screenshot_' + formattedDate + '.jpg';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }).then(x => {
+            document.getElementById("toolbarBottomDiv").style.display = "block";
+        });
+
+    });
+
+
+    viewer.addControl(document.getElementById("toolbarBottomDiv"), {anchor: OpenSeadragon.ControlAnchor.BOTTOM_RIGHT});
+
+
+    function zoomIn() {
+        let currentZoom = viewer.viewport.getZoom();
+        let newZoom = currentZoom * viewer.zoomPerScroll; // Adjust the factor as needed
+        if (newZoom <= viewer.viewport.getMaxZoom()) {
+            viewer.viewport.zoomTo(newZoom);
+        }
+    }
+
+    function zoomOut() {
+        let currentZoom = viewer.viewport.getZoom();
+        let newZoom = currentZoom / viewer.zoomPerScroll; // Adjust the factor as needed
+        if (newZoom >= viewer.viewport.getMinZoom()) {
+            viewer.viewport.zoomTo(newZoom);
+        }
+    }
+
+    function toggleFullscreen() {
+        if (OpenSeadragon.isFullScreen()) {
+            viewer.setFullScreen(false);
+        } else {
+            viewer.setFullScreen(true);
+        }
+    }
+
+    var visible_annotorious = true;
+    function toggleAnnotationVisibility() {
+        visible_annotorious = !visible_annotorious;
+        anno.setVisible(visible_annotorious);
+    }
+
+    function updateFullScreenButton(event) {
+        var fullScreenButton = $('#FullScreenButtonIcon');
+        if (event.fullPage) {
+            fullScreenButton.attr('data-icon', 'fluent:arrow-move-inward-20-filled');
+        } else {
+            fullScreenButton.attr('data-icon', 'fluent:arrow-expand-24-regular');
+        }
+    }
+
 
 </script>
