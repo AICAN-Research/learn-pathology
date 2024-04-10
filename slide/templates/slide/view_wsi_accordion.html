@@ -292,8 +292,8 @@
         </div>
         <div class="button-group">
              <button id="FullScreenButton" class="custom-button btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Fullscreen">
-                 <div class="button-icon">
-                     <span class="iconify" data-icon="fluent:arrow-expand-24-regular" data-width="24" data-height="24"></span>
+                 <div class="button-icon" >
+                     <span class="iconify" id="FullScreenButtonIcon" data-icon="fluent:arrow-expand-24-regular" data-width="24" data-height="24"></span>
                  </div>
              </button>
         </div>
@@ -343,6 +343,7 @@ $(document).ready(function(){
     });
     viewer.addControl(document.getElementById("toolbarTopDiv"), {anchor: OpenSeadragon.ControlAnchor.TOP_RIGHT});
     viewer.addControl(document.getElementById("toolbarBottomDiv"), {anchor: OpenSeadragon.ControlAnchor.BOTTOM_RIGHT});
+
 
     // Scalebar
     try {
@@ -439,6 +440,7 @@ $(document).ready(function(){
     document.getElementById("collapsePopup").addEventListener('click', closeToolbarPopup);
 
     document.getElementById("toggleAnnotationButton").addEventListener('click', toggleAnnotationVisibility);
+    viewer.addHandler('full-page', updateFullScreenButton);
 
     // Screenshoot Button Functionality
     document.getElementById("screenshotButton").addEventListener('click', function () {
@@ -652,6 +654,16 @@ $(document).ready(function(){
         anno.setVisible(visible_annotorious);
         document.getElementById('toggleAnnotationButton').checked = visible_annotorious;
     }
+
+    function updateFullScreenButton(event) {
+        var fullScreenButton = $('#FullScreenButtonIcon');
+        if (event.fullPage) {
+            fullScreenButton.attr('data-icon', 'fluent:arrow-move-inward-20-filled');
+        } else {
+            fullScreenButton.attr('data-icon', 'fluent:arrow-expand-24-regular');
+        }
+    }
+
 
     /*
     EDIT DESCRIPTION AND PATHOLOGY TAGS
