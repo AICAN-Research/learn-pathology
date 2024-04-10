@@ -9,7 +9,7 @@ class TaskForm(ModelForm):
         fields = ['name', 'pathology', 'organ_tags', 'other_tags']
         labels = {
             'name': 'Question name',
-            'pathology': 'Is the question about pathology?',
+            'pathology': 'Is the question about histology or pathology?',
         }
         widgets = {
             'name': Textarea(attrs={'rows': 1, 'cols': 70}),
