@@ -48,12 +48,10 @@ function highlightMenuItem() {
         || location.href.includes('free_text/do')
         || location.href.includes('click_question/do')
         || location.href.includes('one_to_one/do')
-        || location.href.includes('many_to_one/do');
     let url_is_task_edit = location.href.includes('multiple_choice/edit')
         || location.href.includes('free_text/edit')
         || location.href.includes('click_question/edit')
         || location.href.includes('one_to_one/edit')
-        || location.href.includes('many_to_one/edit');
 
     if (location.href.includes('slide')){
         menu_item = 'slide';
