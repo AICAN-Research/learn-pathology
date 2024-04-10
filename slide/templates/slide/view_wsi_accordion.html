@@ -373,7 +373,6 @@ $(document).ready(function(){
     let anno = OpenSeadragon.Annotorious(viewer);
 
     Annotorious.SelectorPack(anno); // [ 'rect', 'polygon', 'point', 'circle', 'ellipse', 'freehand' ]
-    anno.removeDrawingTool('freehand');
     {% if request.user.is_teacher or request.user.is_superuser %}
     const toolbar = new Annotorious.Toolbar(anno, document.getElementById('annotorious-toolbar-container'));
     {% else %}
