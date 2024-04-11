@@ -300,6 +300,10 @@
     </div>
 </div>
 
+<div id="AICAN-logo" class="container text-center" style="margin-top: 2rem; margin-bottom: 2rem; visibility: hidden"> Copyright by <br>
+    <img src="{% static 'learnpathology/images/logo_v0.png' %}" alt="LearnPathology logo" style="max-width: 400px;align-self: center; opacity: 0.5">
+</div>
+
 
 
 <script type="text/javascript">
@@ -343,6 +347,7 @@ $(document).ready(function(){
     });
     viewer.addControl(document.getElementById("toolbarTopDiv"), {anchor: OpenSeadragon.ControlAnchor.TOP_RIGHT});
     viewer.addControl(document.getElementById("toolbarBottomDiv"), {anchor: OpenSeadragon.ControlAnchor.BOTTOM_RIGHT});
+    viewer.addControl(document.getElementById("AICAN-logo"), {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
 
 
     // Scalebar
@@ -446,6 +451,9 @@ $(document).ready(function(){
         // Hide buttons
         document.getElementById("buttonColumn").style.display = "none";
         document.getElementById("toolbarBottomDiv").style.display = "none";
+        {% if not request.user.is_teacher  %}
+        document.getElementById("AICAN-logo").style.visibility  = "visible";
+        {% endif %}
         // Hide popup
         document.getElementById("collapsePopupWindow").style.display = "none";
         html2canvas($("#wsi-canvas")[0]).then(canvas => {
@@ -463,6 +471,7 @@ $(document).ready(function(){
             // Display buttons again
             document.getElementById("buttonColumn").style.display = "block";
             document.getElementById("toolbarBottomDiv").style.display = "block";
+            document.getElementById("AICAN-logo").style.visibility  = "hidden";
             // Display popup again
             document.getElementById("collapsePopupWindow").style.display = "flex";
         });
