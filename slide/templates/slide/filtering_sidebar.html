@@ -12,10 +12,14 @@
     <div class="card border-0 w-100 text-start">
         <div class="card-body" style="padding-bottom: 0;">
             <div class="radio-toolbar" style="margin-top: 2px;">
-                <a href="{% url 'slide:browser_reset' %}">
-                    <button class="wideLabel" style="text-align: center; border: 2px solid #c65127;">
-                        Clear selection {% bs_icon 'x-circle' %}
-                    </button>
+                {% if course %}
+                    <a href="{% url 'course:reset_slide_selection' course_id=course.id %}">
+                {% else %}
+                    <a href="{% url 'slide:browser_reset' %}">
+                {% endif %}
+                        <button class="wideLabel" style="text-align: center; border: 2px solid #c65127;">
+                            Clear selection {% bs_icon 'x-circle' %}
+                        </button>
                 </a>
             </div>
         </div>
