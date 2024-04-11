@@ -46,9 +46,16 @@ Select slides for <span style="color: var(--color-blue-dark);">{{ course.title }
 <div class="card-body">
 <div class="card-text">
 
-<h3>
-    Click on a slide to add it to/remove it from the course <i>{{ course.code }} - {{ course.title }}</i>
-</h3>
+
+  <div class="row" style="width: 100%">
+
+      <div class="col" style="float: left; width: 50%"  > <p>Click on a slide to add it to/remove it from the course <i>{{ course.code }} - {{ course.title }}</i></p></div>
+
+    <div class="col" style="text-align: right; width: 50%" >
+      <p>Number of slides in the course: <span id="numberOfSlides">{{ numberOfSlides }}</span></p>
+    </div>
+  </div>
+
 
 <div class="row" style="margin: 0 0 0 0;">
 
@@ -157,11 +164,20 @@ Select slides for <span style="color: var(--color-blue-dark);">{{ course.title }
 </div>
 {% endblock content %}
 
+<script>
+
+</script>
 
 {% block javascript %}
 
 $(document).ready(function(){
     collapseSidebar();
+
+        var svgs = document.querySelectorAll('svg.bi.text-success');
+        var numberOfSlides = svgs.length;
+        document.getElementById('numberOfSlides').innerText = numberOfSlides;
+
+
 });
 
 {% endblock javascript %}
