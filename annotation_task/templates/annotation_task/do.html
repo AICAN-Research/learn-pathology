@@ -1,4 +1,4 @@
-{% extends "task/do_task_one_column.html" %}
+{% extends "task/do_task_two_column.html" %}
 
 
 {% block task_instructions %}
@@ -10,174 +10,123 @@
 {% endblock task_question %}
 
 
-
-{% block card_content_top %}
-    <div class="row">
-        <div class="col">
-        <form action="{% url 'click_question:do' task_id=task.id course_id=course_id %}" method="post">
-            {% csrf_token %}
-            <div class="row">
-                <div class="col"></div>
-                <div class="col">
-                    <div class="LPButton" style="margin-top: 0;" onclick="anno.setVisible(true);">
-                        Show solution
-                    </div>
-                     <div class="LPButton" style="margin-top: 0; ">
-                        <a href="{% url next_task.do_url task_id=next_task_id course_id=course_id %}">Next Task</a>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card" style="border-color: green; border-width: thick; display: none" id="answered_correct">
-                        This is right!
-                    </div>
-                    <div class="card" style="border-color: red; border-width: thick; display: none" id="answered_false">
-                        This is wrong! Try again
-                    </div>
-                </div>
+{% block content_left %}
+    <form id="my-form" method="POST">
+        <div class="row">
+            <div class="col">
+                <ul class="list-group " id="fixed-list">
+                    {% for annotation in annotations %}
+                        <li class="list-group-item ui-state-default ui-state-disabled disabled">{{ annotation.body.0.value }}</li>
+                    {% endfor %}
+                </ul>
             </div>
-
-        </form>
+            <div class="col">
+                {% csrf_token %}
+                <ul class="list-group sortable" id="sortable-list">
+                    {% for annotation in annotations_correct %}
+                        <li class="list-group-item" id="{{ forloop.counter }}">{{ annotation.body.0.value }}</li>
+                    {% endfor %}
+                </ul>
+                <br>
+            </div>
         </div>
-    </div>
-{% endblock card_content_top %}
+
+        <input class="LPButton" type="submit" value="Submit">
+        <div class="LPButton" style="margin-top: 0; ">
+            <a href="{% url next_task.do_url task_id=next_task_id course_id=course_id %}">Next Task</a>
+        </div>
+    </form>
+{% endblock content_left %}
+
+<script>
 
 
-{% block card_content_bottom %}
-    {% if slide %}
-                    {% include 'slide/view_wsi_do_task.html' with two_column=1 slide=slide annotated_slide=task.annotated_slide tasktype=task.type %}
-                {% else %}
-                    {% include 'slide/view_wsi_do_task.html' with slide=slide annotated_slide=task.annotated_slide tasktype=task.type %}
-                {% endif %}
 
-<script type="text/javascript">
-
- viewer.addHandler('canvas-click', function (event) {
-    var webPoint = event.position;
-    var viewportPoint = viewer.viewport.pointFromPixel(webPoint);
-    var imagePoint = viewer.viewport.viewportToImageCoordinates(viewportPoint);
-
-    const annotations = anno.getAnnotations();
-
-    var clickedInside = false;
-
-    annotations.forEach(function (annotation) {
-        if (annotation.target.selector.type === "FragmentSelector") {
-            const selector = annotation.target.selector.value;
-            const xywh = selector.split('pixel:')[1].split(',').map(value => parseFloat(value));
-
-            // Check if click is within the annotation coordinates for FragmentSelector
-            if (isPointInsideRectangle(imagePoint, xywh)) {
-                clickedInside = true;
-            }
-        } else if (annotation.target.selector.type === "SvgSelector") {
-            const svgValue = annotation.target.selector.value;
-
-            if (svgValue.includes("<circle")) {
-                // Parse circle coordinates and radius
-                const cx = parseFloat(svgValue.match(/cx="([^"]+)"/)[1]);
-                const cy = parseFloat(svgValue.match(/cy="([^"]+)"/)[1]);
-                const r = parseFloat(svgValue.match(/r="([^"]+)"/)[1]);
-
-                // Check if click is within the circle
-                if (isPointInsideCircle(imagePoint, { cx, cy, r })) {
-                    clickedInside = true;
-                }
-            } else if (svgValue.includes("<ellipse")) {
-                // Parse ellipse coordinates and radii
-                const cx = parseFloat(svgValue.match(/cx="([^"]+)"/)[1]);
-                const cy = parseFloat(svgValue.match(/cy="([^"]+)"/)[1]);
-                const rx = parseFloat(svgValue.match(/rx="([^"]+)"/)[1]);
-                const ry = parseFloat(svgValue.match(/ry="([^"]+)"/)[1]);
-
-                // Check if click is within the ellipse
-                if (isPointInsideEllipse(imagePoint, { cx, cy, rx, ry })) {
-                    clickedInside = true;
-                }
-            } else if (svgValue.includes("<polygon")) {
-                // Parse polygon coordinates
-                const pointsString = svgValue.match(/points="([^"]+)"/)[1];
-                const points = pointsString.split(' ').map(point => {
-                    const [x, y] = point.split(',').map(value => parseFloat(value));
-                    return { x, y };
-                });
-
-                // Check if click is within the polygon
-                if (isPointInsidePolygon(imagePoint, points)) {
-                    clickedInside = true;
-                }
-            }
-        }
-    });
-
-     document.getElementById('answered_correct').style.display = 'none'
-     document.getElementById('answered_false').style.display = 'none'
-
-
-    if (clickedInside){
-        var displayElement = document.getElementById('answered_correct');
-    }else {
-        var displayElement = document.getElementById('answered_false');
-    }
-    displayElement.style.display = 'block';
-});
-
- viewer.addHandler('canvas-click', function(event) {
-        // Prevent the default zooming behavior
-        event.preventDefault();
-    });
-
-// Function to check if a point is inside a rectangle
-function isPointInsideRectangle(point, rectangle) {
-    return (
-        point.x >= rectangle[0] &&
-        point.x <= rectangle[0] + rectangle[2] &&
-        point.y >= rectangle[1] &&
-        point.y <= rectangle[1] + rectangle[3]
-    );
-}
-
-// Function to check if a point is inside a circle
-function isPointInsideCircle(point, circle) {
-    const distanceSquared = Math.pow(point.x - circle.cx, 2) + Math.pow(point.y - circle.cy, 2);
-    return distanceSquared <= Math.pow(circle.r, 2);
-}
-
-// Function to check if a point is inside an ellipse
-function isPointInsideEllipse(point, ellipse) {
-    const normalizedX = (point.x - ellipse.cx) / ellipse.rx;
-    const normalizedY = (point.y - ellipse.cy) / ellipse.ry;
-    return Math.pow(normalizedX, 2) + Math.pow(normalizedY, 2) <= 1;
-}
-
-// Function to check if a point is inside a polygon
-function isPointInsidePolygon(point, polygon) {
-    let inside = false;
-    const x = point.x;
-    const y = point.y;
-
-    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-        const xi = polygon[i].x;
-        const yi = polygon[i].y;
-        const xj = polygon[j].x;
-        const yj = polygon[j].y;
-
-        const intersect = ((yi > y) !== (yj > y)) &&
-            (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-        if (intersect) inside = !inside;
-    }
-
-    return inside;
-}
 </script>
-{% endblock card_content_bottom %}
 
 
 {% block task_javascript %}
 
+$(document).ready(function(){
+    var mode = "{{ mode }}"; //document.getElementById('mode').dataset.mode;
+    var idOrder = JSON.parse("{{id_order}}");
+    var answerOrder = JSON.parse("{{answer_order}}");
 
+
+    if (mode === 'get') {
+        console.log('Shuffle List.')
+        shuffleList();
+    } else if (mode === 'post') {
+        console.log(idOrder);
+        console.log("Don't shuffle List.");
+        rearrangeList(idOrder);
+        colorAnswers(idOrder, answerOrder);
+    }
+
+
+    function shuffleList() {
+        var ul = document.querySelector('#sortable-list');
+        for (var i = ul.children.length; i >= 0; i--) {
+            ul.appendChild(ul.children[Math.random() * i | 0]);
+        }
+    }
+
+    function rearrangeList(order) {
+        var list = document.getElementById("sortable-list");
+        var items = list.getElementsByTagName("li");
+        var itemsArr = [];
+
+        // Create a new array with the items in the desired order
+        for (var i = 0; i < order.length; i++) {
+            for (var j = 0; j < items.length; j++) {
+                if (items[j].getAttribute("id") == order[i]) {
+                    itemsArr.push(items[j]);
+                    break;
+                }
+            }
+        }
+
+        // Append the sorted items to the list
+        for (var i = 0; i < itemsArr.length; i++) {
+            list.appendChild(itemsArr[i]);
+        }
+    }
+
+    function colorAnswers(idOrder, answerOrder) {
+        var list = document.getElementById("sortable-list");
+        var items = list.getElementsByTagName("li");
+
+        for (var i = 0; i < items.length; i++) {
+            var itemId = parseInt(items[i].getAttribute("id"));
+            if (idOrder.includes(itemId)) {
+                if (answerOrder[idOrder.indexOf(itemId)]) {
+                    items[i].style.color = "green";
+                    items[i].innerHTML += " &#10004";
+                } else {
+                    items[i].style.color = "red";
+                    items[i].innerHTML += " &#10006;";
+                }
+            }
+        }
+    }
+
+    //var sortableList = document.querySelector('.sortable');
+    var sortableList = document.getElementById('sortable-list');
+    var sortable_list = new Sortable(sortableList);
+
+    // Capture the order of the list items on form submission
+    var myForm = document.querySelector('#my-form');
+    myForm.addEventListener('submit', function (event) {
+        var itemIds = [];
+        var listItems = document.querySelectorAll('.sortable li');
+        for (var i = 0; i < listItems.length; i++) {
+            itemIds.push(listItems[i].getAttribute('id'));
+        }
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'item_ids';
+        input.value = itemIds;
+        myForm.appendChild(input);
+    });
+});
 {% endblock task_javascript %}
-
-<script>
-
-</script>
-

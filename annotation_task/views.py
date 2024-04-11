@@ -1,3 +1,6 @@
+import json
+import copy
+
 from django.contrib import messages
 from django.db import transaction
 from django.shortcuts import render, redirect, get_object_or_404
@@ -14,39 +17,42 @@ from user.decorators import teacher_required
 
 def do(request, task_id, course_id=None):
     """
-    Student form for answering/viewing a click question
+    Student form for answering/viewing an annotation task
 
-    Parameters
-    ----------
-    request : Http request
-
-    task_id : int
-        ID of Task instance
-    course_id : int
-        ID of Course instance
     """
 
     context = setup_common_new_task_context(task_id, course_id)
     slide_cache.load_slide_to_cache(context['slide'].id)
 
-    # ======== Click question specific ========
-    click_question = context['task'].clickquestion
+    # ======== Annotation task specific ========
+    annotation_task = context['task'].annotationtask
+    context['annotations_correct']= copy.deepcopy(context['annotations'])
 
-    answered = None
-    student_selection = None
+    for i,  annotation in enumerate(context['annotations']):
+        annotation['body'][0]['value'] = chr(65 + i)
+
+
+
+    mode = 'get'
+    id_order = [1, 2, 3,4,5,6,7,8,9,10]
+    answer_order = []
     if request.method == 'POST':
         # Process form
-        # TODO: Update 'studentText' to something more descriptive - stuck from copying from free_text task?
-        student_selection = request.POST.get('studentText',None)
-        if student_selection:
-            answered = 'yes'
-        else:
-            answered = 'no'
+        id_order = request.POST.get('item_ids', None).split(',')
+        id_order = [int(x) for x in id_order]
+        for i, item in enumerate(id_order):
+            if item == i + 1:
+                answer_order.append(True)
+            else:
+                answer_order.append(False)
 
-    context['click_question'] = click_question
-    context['answered'] = answered,
-    context['student_selection'] = student_selection,
-    return render(request, 'click_question/do.html', context)
+        mode = 'post'
+
+    context['annotation_task'] = annotation_task
+    context['answer_order'] = json.dumps(answer_order)
+    context['mode'] = mode
+    context['id_order'] = json.dumps(id_order)
+    return render(request, 'annotation_task/do.html', context)
 
 
 @teacher_required
