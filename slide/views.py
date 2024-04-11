@@ -1,4 +1,6 @@
 import os.path
+import json
+import re
 
 import django.urls
 from django.contrib import messages
@@ -7,13 +9,15 @@ from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.db import transaction, IntegrityError
 from django.db.models import Q
 from django.http import HttpResponse, Http404, JsonResponse
+from django.views.decorators.http import require_POST
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.files.uploadedfile import UploadedFile
+from django.views.decorators.cache import cache_page
 
 from tag.models import Tag
 from task.models import Task
 from user.decorators import student_required, teacher_required
-from slide.models import Slide, AnnotatedSlide, Pointer, BoundingBox
+from slide.models import Slide, AnnotatedSlide, Pointer, BoundingBox, Annotation
 from slide.forms import SlideForm, SlideDescriptionForm
 
 
@@ -30,14 +34,16 @@ class SlideCache:
     def __init__(self):
         # TODO load FAST once
         import fast
+        # fast.Reporter.setGlobalReportMethod(fast.Reporter.COUT)
         test = fast.WholeSlideImageImporter.New() # Just to initialize FAST..
         self.slides = {}
 
     def load_slide_to_cache(self, slide_id):
-        slide = Slide.objects.get(pk=slide_id)
-        slide.load_image() # This will load slide with FAST, so it is ready to use
-        self.slides[slide_id] = slide
-        return slide
+        if slide_id not in self.slides:
+            slide = Slide.objects.get(pk=slide_id)
+            slide.load_image() # This will load slide with FAST, so it is ready to use
+            self.slides[slide_id] = slide
+        return self.slides[slide_id]
 
     def get_slide(self, slide_id):
         return self.slides[slide_id]
@@ -237,12 +243,22 @@ def organ_tag_id_list_to_queryset(id_list):
 def whole_slide_view_full(request, slide_id):
     slide = slide_cache.load_slide_to_cache(slide_id)
     stain = slide.tags.get(is_stain=True)
-    general_pathology_tags = [tag for tag in slide.tags.filter(is_organ=False, is_stain=False)
+    selected_general_pathology_tags = [tag for tag in slide.tags.filter(is_organ=False, is_stain=False)
                               if tag.name.lower() in GENERAL_PATHOLOGY_TAGS]
+
+    other_tags = Tag.objects.filter(is_organ=False, is_stain=False)
+    all_general_pathology_tags = []
+    for tag in other_tags:
+        if tag.name.lower() in GENERAL_PATHOLOGY_TAGS:
+            all_general_pathology_tags.append(tag)
+
+
+
     context = {
         'slide': slide,
         'stain_name': stain.name,
-        'general_pathology_tags': general_pathology_tags
+        'general_pathology_tags': selected_general_pathology_tags,
+        'all_general_pathology_tags' : all_general_pathology_tags
     }
 
     try:
@@ -259,7 +275,13 @@ def whole_slide_view_full(request, slide_id):
     context['pointers'] = Pointer.objects.filter(annotated_slide=annotated_slide)
     context['boxes'] = BoundingBox.objects.filter(annotated_slide=annotated_slide)
 
+    annotations = Annotation.objects.filter(annotated_slide=annotated_slide)
+    context['annotations'] = []
+    for ann in annotations:
+        context['annotations'].append(ann.deserialize())
+
     return render(request, 'slide/view_wsi_accordion.html', context)
+
 
 
 def whole_slide_viewer(request, slide_id):
@@ -269,11 +291,12 @@ def whole_slide_viewer(request, slide_id):
     })
 
 
+@cache_page(60 * 30)
 def tile(request, slide_id, osd_level, x, y):
     """
     Gets OSD tile from slide, converts to JPEG and sends to client
     """
-    slide = slide_cache.get_slide(slide_id)
+    slide = slide_cache.load_slide_to_cache(slide_id)
     try:
         buffer = slide.get_osd_tile_as_buffer(osd_level, x, y)
     except Exception as e:
@@ -291,8 +314,8 @@ def create_thumbnail(slide_id):
     slide = slide_cache.load_slide_to_cache(slide_id)
     access = slide.image.getAccess(fast.ACCESS_READ)
     image = access.getLevelAsImage(slide.image.getNrOfLevels()-1)
-    scale = float(image.getHeight())/image.getWidth()
-    resize = fast.ImageResizer.create(128, round(128*scale)).connect(image)
+    scale = float(image.getWidth())/image.getHeight()
+    resize = fast.ImageResizer.create(round(512*scale), 512).connect(image)
     fast.ImageFileExporter\
         .create(f'thumbnails/{slide_id}.jpg')\
         .connect(resize)\
@@ -343,19 +366,18 @@ def edit_description(request, slide_id):
     """
 
     slide = slide_cache.load_slide_to_cache(slide_id)
-    form = SlideDescriptionForm(request.POST or None, instance=slide)
+    new_description = request.POST.get('new_description')
+    new_description = new_description.replace('\n', '<br>')
 
-    if request.method == 'POST':  # Form was submitted
-        if form.is_valid():
-            form.save()
-            messages.add_message(request, messages.SUCCESS,
-                 f'The slide description of {slide.name} was altered!')
-            return redirect('slide:view_full', slide_id=slide_id)
+    try:
 
-    return render(request, 'slide/edit_description.html', {
-        'slide': slide,
-        'form': form
-    })
+        slide.long_description = new_description
+        slide.save()
+        return JsonResponse({'success': True})
+    except Slide.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Slide not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
 
 @teacher_required
@@ -365,22 +387,36 @@ def edit_general_pathology_tags(request, slide_id):
     """
 
     slide = slide_cache.load_slide_to_cache(slide_id)
+    selected_tags_ids = request.POST.getlist('selected_tags[]')
 
     if not slide.pathology:
         messages.add_message(request, messages.ERROR, 'This slide is not a pathology slide. Cannot add general pathology tags.')
         return redirect('slide:view_full', slide_id=slide.id)
 
-    other_tags = Tag.objects.filter(is_organ=False, is_stain=False)
-    general_pathology_tags = []
-    for tag in other_tags:
-        if tag.name.lower() in GENERAL_PATHOLOGY_TAGS:
-            general_pathology_tags.append(tag)
+    # remove existing tags first
+    selected_general_pathology_tags = [tag for tag in slide.tags.filter(is_organ=False, is_stain=False)
+                                       if tag.name.lower() in GENERAL_PATHOLOGY_TAGS]
+    if selected_general_pathology_tags:
+        for tag in selected_general_pathology_tags:
+            slide.tags.remove(tag)
 
-    return render(request, 'slide/select_general_pathology_tags.html', {
-        'slide': slide,
-        'general_pathology_tags': general_pathology_tags,
-        'stain_name': slide.tags.get(is_stain=True),
-    })
+    tag_names = []
+
+    try:
+        for tag_id in selected_tags_ids:
+            tag_to_add = Tag.objects.get(id=tag_id)
+            slide.tags.add(tag_to_add)
+            tag_names.append({'id': tag_to_add.id, 'name': tag_to_add.name})
+
+        slide.save()
+
+        return JsonResponse({'success': True, 'tag_names': tag_names})
+    except Slide.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Slide not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+
 
 
 @teacher_required
@@ -474,6 +510,91 @@ def add_or_edit_descriptive_annotation(request, slide_id):
         Pointer, BoundingBox
     ]
     return render(request, 'slide/add_edit_descriptive_annotations.html', context)
+
+
+def create_annotation(request):
+    """
+    Async saving of annotorious annotations
+    """
+    print('Creating new annotation')
+
+    slide_id = int(request.GET.get('slide_id'))
+    slide = Slide.objects.get(id=slide_id)
+
+    # Get descriptive AnnotatedSlide
+    try:
+        annotated_slide = AnnotatedSlide.objects.get(slide=slide, task__isnull=True)
+    except ObjectDoesNotExist as err:
+        annotated_slide = AnnotatedSlide(slide=slide)
+        annotated_slide.save()
+    except MultipleObjectsReturned as err:
+        print("Multiple descriptive AnnotatedSlide objects found. Clean up DB!")  # Using last slide for now")
+        raise MultipleObjectsReturned(err)
+
+    # Create annotation
+    annotation = Annotation(annotated_slide=annotated_slide,
+                            json_string=request.GET.get('annotation'))
+    annotation.save()
+
+    return JsonResponse(data={})
+
+
+def update_annotation(request):
+    """
+    Async updating of annotorious annotations
+    """
+    print('Updating annotation')
+
+    slide_id = int(request.GET.get('slide_id'))
+    slide = Slide.objects.get(id=slide_id)
+
+    # Get descriptive AnnotatedSlide
+    annotated_slide = AnnotatedSlide.objects.get(slide=slide, task__isnull=True)
+
+    # Get correct annotation (matching Annotorious/W3C id)
+    annotations_this_slide = Annotation.objects.filter(annotated_slide=annotated_slide)
+    annotation_json_old = request.GET.get('previous_annotation')
+    annotation_id = json.loads(annotation_json_old)['id']
+
+    # Find the corresponding annotation using the ID given by Annotorious
+    annotation = None
+    for annotation in annotations_this_slide:
+        if annotation_id in annotation.deserialize()['id']:
+            break
+
+    # Replace old JSON with new
+    annotation.json_string = request.GET.get('annotation')
+    annotation.save()
+
+    return JsonResponse(data={})
+
+
+def delete_annotation(request):
+    """
+    Async deleting of annotorious annotations
+    """
+    print('Deleting annotation')
+
+    slide_id = int(request.GET.get('slide_id'))
+    slide = Slide.objects.get(id=slide_id)
+
+    # Get descriptive AnnotatedSlide
+    annotated_slide = AnnotatedSlide.objects.get(slide=slide, task__isnull=True)
+
+    # Get correct annotation (matching Annotorious/W3C id)
+    annotations_this_slide = Annotation.objects.filter(annotated_slide=annotated_slide)
+    annotation_json = request.GET.get('annotation')
+    annotation_id = json.loads(annotation_json)['id']
+
+    # Find the corresponding annotation using the ID given by Annotorious
+    annotation = None
+    for annotation in annotations_this_slide:
+        if annotation_id in annotation.deserialize()['id']:
+            break
+
+    annotation.delete()
+
+    return JsonResponse(data={})
 
 
 def delete_existing_annotations(annotated_slide):

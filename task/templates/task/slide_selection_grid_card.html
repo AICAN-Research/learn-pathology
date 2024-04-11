@@ -19,7 +19,7 @@
 {#        {% if slide_selected == 'true' %}#}
         <div id="slide_{{ slide.id }}_checkmark" style="{% if slide_selected == 'true' %}display: block;{% else %}display: none;{% endif %} float: right; position: absolute; top: 5px; right: 5px;">
             <svg class="bi text-success" width="32px" height="32px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-                {% bs_icon 'check-circle' %} <!-- TODO: Update icon to fluent icons -->
+                {% include 'svg_icons/check-circle.svg' %}">
             </svg>
         </div>
 {#        {% endif %}#}

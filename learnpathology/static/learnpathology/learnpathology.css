@@ -506,6 +506,13 @@ Radio button toolbar used with slide filters
     width: 49%;
 }
 
+.radio-toolbar label:hover {
+    background-color: var(--color-blue-light);
+}
+.radio-toolbar label.active {
+    background-color: var(--color-blue);
+}
+
 
 .radio-toolbar input[type="radio"]:checked+label{
     font-weight: bold;
@@ -541,7 +548,7 @@ Course navigation tabs
 }
 
 .courseNavTabs .nav-link {
-    background-color: var(--color-white);
+    background-color: var(--color-gray);
     color: var(--text-colour);
     border-style: solid;
     border-width: 1px  1px 0 1px;
@@ -556,7 +563,7 @@ Course navigation tabs
 }
 
 .courseNavTabs .nav-link.active {
-    background-color: var(--background);
+    background-color: var(--color-white);
     font-weight: bold;
     border-color: var(--color-blue);
     border-bottom-color: var(--color-white);
@@ -607,6 +614,107 @@ Slide viewer
     .slideViewerCard {
         margin: 5px auto 5px auto!important;
     }
+}
+
+
+#toolbarTopDiv {
+    display: inline-block;
+    text-align: center;
+    width: 450px;
+}
+
+#toolbarBottomDiv {
+
+}
+
+.fit-content-width {
+    width: fit-content;
+    max-width: fit-content;
+}
+
+#popup {
+    width: auto;
+    height: auto;
+    max-height: 450px;
+    overflow-y: auto;
+    padding: 8px;
+    background: var(--color-white);
+    border: 1px solid #DBDEF1;
+    border-radius: var(--border-radius) 0px var(--border-radius) var(--border-radius);
+}
+
+#slideInformationContent {
+    border: 2px solid var(--color-light-gray);
+    border-radius: var(--border-radius);
+}
+
+#collapsePopup {
+    height: fit-content;
+    width: fit-content;
+    background: var(--color-white);
+    /*border: 2px solid var(--color-gray);*/
+    border-radius: 4px 0 0 4px;
+    padding: 4px 0 4px 0;
+    margin-top: 18px;
+}
+
+#buttonColumn {
+    /*padding-left: 4px;*/
+}
+
+.slideViewerToolbarButtonGroup {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.navigatorWrapper {
+    width: fit-content;
+    margin-left: auto;
+    margin-bottom: 24px;
+}
+
+#navigatorDiv {
+    background: var(--color-light-gray);
+    border: 2px solid var(--color-gray);
+    width: 250px;
+    height: 190px;
+}
+
+.annotationList {
+    padding: 4px;
+}
+
+.annotationListElement {
+    display: inline-flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    min-height: 60px;
+    height: auto;
+    /*padding: 5px 5px;*/
+    margin: 1px 0 1px 0;
+    background-color: var(--color-white);
+    border: 2px solid var(--color-gray);
+    border-radius: var(--border-radius);
+}
+
+.annotationListElementButton {
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    text-align: start;
+    width: 100%;
+    height: 100%;
+    padding: 16px 16px;
+    border: 0 solid var(--color-light-gray);
+}
+
+.annotationListElementDelete {
+    align-self: center;
+    padding: 5px;
+    border: 0 solid var(--color-white);
 }
 
 /* =============================================
@@ -766,7 +874,6 @@ Sidebar
     justify-content: flex-start;
     align-items: center;
     align-self: stretch;
-    gap: 200px;
 }
 
 /* Header and top items */
@@ -1065,7 +1172,7 @@ Fonts
 =========================================== */
 .wrapper h1 {
     font-family: var(--font-family);
-    font-size: 40px;
+    font-size: 24px;
     font-style: normal;
     font-weight: 700;
     line-height: 120%;
@@ -1187,8 +1294,8 @@ Header of page main content
     height: 40px;
     display: inline-flex;
     flex-direction: row;
-    /*align-items: flex-start;*/
-    /*justify-content: start;*/
+    align-items: flex-start;
+    justify-content: start;
 
     /*padding: 8px;*/
     background: var(--color-white);
@@ -1270,12 +1377,13 @@ Header of page main content
 
 .custom-button {
     width: fit-content;
-    height: 48px;
+    /*height: 48px;*/
+    height: fit-content;
     display: inline-flex;
     justify-content: flex-start;
     align-items: center;
     gap: 8px;
-    padding: 12px;
+    padding: 8px;  /* TODO: Fix padding to make buttons smaller */
     background: var(--color-blue-dark);
     border-radius: 8px;
 }
@@ -1287,9 +1395,22 @@ Header of page main content
     background: var(--color-white);
     border: 2px solid var(--color-blue);
 }
-.custom-button.button-light .button-icon {
+.custom-button.button-light > .button-icon {
     color: var(--color-blue-dark);
 }
 .custom-button.button-light .button-text {
     color: var(--color-blue-dark);
+}
+
+.a9s-toolbar-btn {
+    background-color: var(--color-blue-dark) !important;
+    color: var(--color-white);
+}
+
+.a9s-toolbar-btn svg path,
+.a9s-toolbar-btn svg line,
+.a9s-toolbar-btn svg circle,
+.a9s-toolbar-btn svg rect,
+.a9s-toolbar-btn svg ellipse
+{    stroke: var(--color-white);
 }

@@ -21,6 +21,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" integrity="sha512-nMNlpuaDPrqlEls3IX/Q56H36qvBASwb3ipuo3MxeWbsQB1881ox0cRv7UPTgBlriqoynt35KjEwgGUeUXIPnw==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap5-toggle@5.0.4/css/bootstrap5-toggle.min.css" rel="stylesheet"/>
 
+    <!-- OpenSeadragon and Annotorious -->
+    <script src="{% static 'slide/openseadragon.min.js' %}"></script>
+    <script src="{% static 'slide/openseadragon-scalebar.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'slide/annotorious-openseadragon-2.7.16/annotorious.min.css' %}">
+    <script src="{% static 'slide/annotorious-openseadragon-2.7.16/openseadragon-annotorious.min.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@recogito/annotorious-toolbar@1.1.0/dist/annotorious-toolbar.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@recogito/annotorious-selector-pack@0.6.0/dist/annotorious-selector-pack.min.js"></script>
+
     <link rel="stylesheet" href="{% static 'learnpathology/learnpathology.css' %}">
     <script src="{% static 'learnpathology/learnpathology.js' %}"></script>
     <script src="{% static 'slide/annotate.js' %}"></script>
@@ -29,6 +37,15 @@
     <script src="{% static 'slide/add_remove_tags.js' %}"></script>
     <script src="{% static 'course/button.js' %}"></script>
     <script src="{% static 'course/utils.js' %}"></script>
+
+    <script type="text/javascript">
+        {% block javascript %}
+        {% endblock javascript %}
+
+        {% block task_javascript %}
+        {% endblock task_javascript %}
+
+    </script>
 </head>
 <body>
 
@@ -117,7 +134,7 @@
                         <div class="sidebar-item-icon">
                             <span class="iconify" data-icon="fluent:person-28-regular" data-width="24" data-height="24"></span>
                         </div>
-                        <span class="sidebar-item-text">{{ request.user.username }}</span>
+                        <span class="sidebar-item-text">{% if request.user.first_name %}{{ request.user.first_name }} {{ request.user.last_name }}{% else %}{{ request.user.username }}{% endif %}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
 {#                        <li><a class="dropdown-item" href="#">Profile</a></li>#}
@@ -219,14 +236,14 @@
     </div>
 </div>
 
-<script type="text/javascript">
-    {% block javascript %}
-    {% endblock javascript %}
+{#<script type="text/javascript">#}
+{#    {% block javascript %}#}
+{#    {% endblock javascript %}#}
+{##}
+{#    {% block task_javascript %}#}
+{#    {% endblock task_javascript %}#}
+{#</script>#}
 
-    {% block task_javascript %}
-    {% endblock task_javascript %}
-
-</script>
 
 <script>
     setTimeout(function() {

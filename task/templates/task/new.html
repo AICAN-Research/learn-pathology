@@ -28,13 +28,19 @@
     {% else %}
         <a href="{% url 'task:list' %}" style="display: inline-flex;">
     {% endif %}
-            <div class="button-icon">
-                <span class="iconify" data-icon="fluent:bin-recycle-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
-            </div>
-            <div style="justify-content: flex-start; align-items: center; display: flex">
+        <div class="button-icon">
+            <span class="iconify" data-icon="fluent:bin-recycle-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
+        </div>
+        <div style="justify-content: flex-start; align-items: center; display: flex">
+            {% if task %}
+                <div class="button-text">Cancel & Exit</div>
+            {% else %}
                 <div class="button-text">Exit & discard task</div>
-            </div>
-        </a>
+            {% endif %}
+        </div>
+    </a>
+
+
 </div>
 {% endblock button_row %}
 

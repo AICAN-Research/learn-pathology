@@ -2,6 +2,7 @@ import os
 import time
 import threading
 from io import BytesIO
+import json
 
 import fast
 import numpy as np
@@ -57,11 +58,8 @@ class Slide(models.Model):
             smallest_width = image.getLevelWidth(levels-1)
             smallest_height = image.getLevelHeight(levels-1)
             osd_level = 0
-            tile_width = 256
-            tile_height = 256
-            if self.path.endswith('.vsi'):  # TODO Hack for now
-                tile_width = image.getLevelTileWidth(0)
-                tile_height = image.getLevelTileHeight(0)
+            tile_width = image.getLevelTileWidth(0)
+            tile_height = image.getLevelTileHeight(0)
             osd_tile_width = {0: tile_width}
             osd_tile_height = {0: tile_height}
             osd_to_fast_level_map = {0: 0}
@@ -168,7 +166,6 @@ class Slide(models.Model):
     def get_osd_tile_as_buffer(self, osd_level, x, y):
         fast_level = self.get_fast_level(osd_level)
         width, height = self.get_osd_tile_size(osd_level)
-        access = self._image.getAccess(fast.ACCESS_READ)
         tile_width = width
         tile_height = height
         if x*width + tile_width >= self._image.getLevelWidth(fast_level):
@@ -177,7 +174,9 @@ class Slide(models.Model):
             tile_height = self._image.getLevelHeight(fast_level) - y*height - 1
 
         self.timers['getPatchImage'].start()
+        access = self._image.getAccess(fast.ACCESS_READ)
         image = access.getPatchAsImage(fast_level, x*width, y*height, tile_width, tile_height)
+        del access # Free access to other threads
         self.timers['getPatchImage'].stop()
 
         self.timers['sharpening'].start()
@@ -232,8 +231,7 @@ class Slide(models.Model):
             cdvec2_elem = property_elem.find('CdVec2')
             scale_xy = [float(d.text) for d in cdvec2_elem.findall('double')]
 
-            print('Scale factor (um/px):', scale_xy)
-            self._scale_factor = scale_xy
+            self._scale_factor = scale_xy   # scale factor in um/px
 
         except Exception as err:
             print(f"An error occurred: The requested metadata.xml file for {self.path} was not found. Setting scale factor None")
@@ -269,6 +267,28 @@ class AnnotatedSlide(models.Model):
         for bb in BoundingBox.objects.filter(annotated_slide=self):
             js += bb.get_js()
         return js
+
+
+class Annotation(models.Model):
+    annotated_slide = models.ForeignKey(AnnotatedSlide, on_delete=models.CASCADE)
+    json_string = models.TextField(blank=False, help_text='The annotation in W3C format (JSON) stored as a string')
+
+    def deserialize(self):
+        return json.loads(self.json_string)
+
+    @property
+    def text(self):
+        """
+        The text/comment of the annotation
+        """
+        raise NotImplementedError('Annotation property "text" has not been implemented yet')
+
+    @property
+    def type(self):
+        """
+        Human-readable annotation type (point, box, ellipse, ...)
+        """
+        raise NotImplementedError('Annotation property "type" has not been implemented yet')
 
 
 class Pointer(models.Model):
