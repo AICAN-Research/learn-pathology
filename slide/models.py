@@ -1,6 +1,4 @@
 import os
-import time
-import threading
 from io import BytesIO
 import json
 
@@ -24,7 +22,7 @@ class Slide(models.Model):
     path = models.CharField(max_length=1024)
     description = models.TextField()  # short description
     long_description = models.TextField(null=True, blank=True)  # (optional) longer description
-    pathology = models.BooleanField(default=False, help_text='Does the slide show pathology or not')
+    pathology = models.BooleanField(default=False, help_text='Does the slide show pathology or histology')
     tags = models.ManyToManyField(Tag)
 
     def __str__(self):
@@ -246,28 +244,6 @@ class AnnotatedSlide(models.Model):
     """
     slide = models.ForeignKey(Slide, on_delete=models.CASCADE)
 
-    def get_html(self):
-        """
-        Get HTML for all annotations
-        """
-        html = ''
-        for pointer in Pointer.objects.filter(annotated_slide=self):
-            html += pointer.get_html()
-        for bb in BoundingBox.objects.filter(annotated_slide=self):
-            html += bb.get_html()
-        return html
-
-    def get_js(self):
-        """
-        Get JS for all annotations
-        """
-        js = ''
-        for pointer in Pointer.objects.filter(annotated_slide=self):
-            js += pointer.get_js()
-        for bb in BoundingBox.objects.filter(annotated_slide=self):
-            js += bb.get_js()
-        return js
-
 
 class Annotation(models.Model):
     annotated_slide = models.ForeignKey(AnnotatedSlide, on_delete=models.CASCADE)
@@ -291,98 +267,7 @@ class Annotation(models.Model):
         raise NotImplementedError('Annotation property "type" has not been implemented yet')
 
 
-class Pointer(models.Model):
-    """
-    A pointer on a slide consisting of a position (x,y) and a text
-    """
-    annotated_slide = models.ForeignKey(AnnotatedSlide, on_delete=models.CASCADE)
-    position_x = models.FloatField()
-    position_y = models.FloatField()
-    text = models.CharField(max_length=256)
-
-    class Meta:
-        unique_together = [
-            ['annotated_slide', 'position_x', 'position_y', 'text']
-        ]
-
-    def get_html(self):
-        html = ''
-        # Add pointer container
-        html += f'<div id="right-arrow-overlay-{self.id}" class="overlay transparentBackground border-0">' \
-                f'&#x2192; ' \
-                f'</div>'
-        html += f'<div id="arrow-text-overlay-{self.id}" class=" textOverlay border-primary"> ' \
-                f'{self.text}</div>'
-        return html
-
-    def get_js(self):
-        js = ''
-        # Add arrow
-        js += f"{{" \
-             f"id: 'right-arrow-overlay-{self.id}'," \
-             f"x: {self.position_x}," \
-             f"y: {self.position_y}," \
-             f"placement: 'RIGHT'," \
-             f"checkResize: false" \
-             f"}},"
-        # Add text
-        js += f"{{" \
-             f"id: 'arrow-text-overlay-{self.id}'," \
-             f"x: {self.position_x}," \
-             f"y: {self.position_y}," \
-             f"placement: 'RIGHT'," \
-             f"checkResize: false," \
-              f"}},"
-        return js
 
 
-class BoundingBox(models.Model):
-    """
-    A bounding box annotation on a slide consisting of a top/bottom left
-    position (x,y), width and height, and a text.
-    """
-    annotated_slide = models.ForeignKey(AnnotatedSlide, on_delete=models.CASCADE)
-    position_x = models.FloatField()
-    position_y = models.FloatField()
-    width = models.FloatField()
-    height = models.FloatField()
-    text = models.CharField(max_length=256)
 
-    class Meta:
-        unique_together = [
-            ['annotated_slide', 'position_x', 'position_y', 'width', 'height', 'text']
-        ]
 
-    def get_html(self):
-        html = f'<div id="boundingbox-{self.id}" class="overlay"></div>'
-        print('Got BoundingBox html')
-
-        html += f'<div id="boundingbox-text-overlay-{self.id}">' \
-                f'    <div class="textOverlay" style="padding-top: 5px; padding-left: 5px;">' \
-                f'        {self.text}' \
-                f'    </div>' \
-                f'</div>'
-        print('Got BoundingBox Text html')
-        return html
-
-    def get_js(self):
-        js = ''
-        js += f"{{" \
-             f"id: 'boundingbox-{self.id}', " \
-             f"x: {self.position_x}, " \
-             f"y: {self.position_y}, " \
-             f"width: {self.width}, " \
-             f"height: {self.height}, " \
-             f"placement: 'TOPLEFT', " \
-             f"checkResize: true, " \
-             f"className: 'card LPBoundingBox' }},"
-
-        js += f"{{" \
-              f"id: 'boundingbox-text-overlay-{self.id}', " \
-              f"x: {self.position_x}, " \
-              f"y: {self.position_y}, " \
-              f"placement: 'TOPLEFT', " \
-              f"checkResize: true, " \
-              f"}},"
-        print('Got BoundingBox js')
-        return js

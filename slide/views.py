@@ -14,7 +14,7 @@ from django.views.decorators.cache import cache_page
 from tag.models import Tag
 
 from user.decorators import teacher_required
-from slide.models import Slide, AnnotatedSlide, Pointer, BoundingBox, Annotation
+from slide.models import Slide, AnnotatedSlide, Annotation
 from slide.forms import SlideForm
 
 
@@ -269,9 +269,6 @@ def whole_slide_view_full(request, slide_id):
         annotated_slide = None
 
     context['annotated_slide'] = annotated_slide
-    # Add annotations to context
-    context['pointers'] = Pointer.objects.filter(annotated_slide=annotated_slide)
-    context['boxes'] = BoundingBox.objects.filter(annotated_slide=annotated_slide)
 
     annotations = Annotation.objects.filter(annotated_slide=annotated_slide)
     context['annotations'] = []
@@ -543,12 +540,5 @@ def delete_annotation(request):
     return JsonResponse(data={})
 
 
-def delete_existing_annotations(annotated_slide):
-    """
-    Before saving new annotations, delete all existing to prevent duplicates
-    and simplify handling (don't need to check if objects are unique, etc.)
-    """
-    Pointer.objects.filter(annotated_slide=annotated_slide).delete()
-    BoundingBox.objects.filter(annotated_slide=annotated_slide).delete()
 
 

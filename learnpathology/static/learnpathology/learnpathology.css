@@ -820,13 +820,6 @@ Image browser
 /* =============================================
 Annotations
 ============================================= */
-.LPBoundingBox {
-    background-color: rgba(0, 0, 0, 0%);    /* transparent background */
-    border-color: rgba(237, 193, 49, 0.91);
-    border-width: 3px;  /* 2px? */
-    color: black
-
-}
 
 .textOverlay{
     background-color: rgba(0, 0, 0, 0%);
