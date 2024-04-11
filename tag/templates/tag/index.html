@@ -13,7 +13,7 @@ Tags
 
 {% block button_row %}
 
-{% if user.is_superuser or user.is_teacher %}
+{% if user.is_superuser %}
     <div class="custom-button" style="">
         <a href="{% url 'tag:new' %}" style="display: inline-flex;">
             <div class="button-icon">
@@ -45,22 +45,24 @@ Tags
 
     {% if tags %}
         <table class="table">
-        <thead class="thead-light">
+            <thead class="thead-light">
             <tr>
                 <th>Name</th>
-                <th>Edit</th>
-                <th>Delete</th>
-            </tr>
-        </thead>
-        {% for tag in tags %}
-            <tr>
-                <td>{{ tag.name }}</td>
-                {% if user.is_teacher or user.is_superuser %}
-                    <td><a href="{% url 'tag:edit' tag.id %}">Edit</a></td>
-                    <td><a href="{% url 'tag:delete' tag.id %}">Delete</a></td>
+                {% if user.is_superuser %}
+                    <th>Edit</th>
+                    <th>Delete</th>
                 {% endif %}
             </tr>
-        {% endfor %}
+            </thead>
+            {% for tag in tags %}
+                <tr>
+                    <td>{{ tag.name }}</td>
+                    {% if user.is_superuser %}
+                        <td><a href="{% url 'tag:edit' tag.id %}">Edit</a></td>
+                        <td><a href="{% url 'tag:delete' tag.id %}">Delete</a></td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
         </table>
     {% else %}
     <p>
