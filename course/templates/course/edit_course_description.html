@@ -58,11 +58,21 @@ Edit course description
 
 {% endblock content %}
 
+<script> $(document).ready(function () {
 
+
+
+window.addEventListener('popstate', function(event) {
+    console.log('Back button clicked');
+    // Your code to handle the back button click
+});
+
+}) </script>
 {% block javascript %}
 
 $(document).ready(function(){
     collapseSidebar();
+
 });
 
 {% endblock javascript %}
