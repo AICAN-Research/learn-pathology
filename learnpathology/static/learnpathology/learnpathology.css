@@ -1183,7 +1183,7 @@ Header of page main content
 }
 
 .search-bar-container {
-    width: 250px;
+    width: fit-content;
     height: 40px;
     display: inline-flex;
     flex-direction: row;

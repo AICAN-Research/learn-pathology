@@ -15,21 +15,6 @@ Slides browser
 {% endblock breadcrumb_items %}
 
 
-{% block search_bar %}
-    <form class="form" id="slideDisplayForm" onsubmit="{% url 'slide:browser' %}">
-    <div class="search-bar-container" style="">
-        <div style="display: inline;">
-            <button type="submit" class="btn" name="submit_button">{% bs_icon 'search' %}</button>
-        </div>
-        <div style="display: inline-flex">
-            <input type="text" id="main-search-input" name="search" class="main-search-input" placeholder="Search"
-            {% if search_query %}value="{{ search_query }}"{% endif %}>
-        </div>
-    </div>
-    </form>
-{% endblock search_bar %}
-
-
 {% block button_row %}
 {#<div class="custom-button" style="">#}
 {#    <a href="#" style="display: inline-flex">#}

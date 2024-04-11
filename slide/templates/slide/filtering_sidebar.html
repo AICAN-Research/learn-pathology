@@ -26,7 +26,17 @@
     </div>
 
     <form class="form" id="slideDisplayForm" onsubmit="{% url 'slide:browser' %}">
-    <div class="image-browser-side-panel">
+        <div class="card-body" style="padding-bottom: 0;">
+            <div class="search-bar-container">
+            <div style="display: flex;">
+                <button type="submit" class="btn" name="submit_button">{% bs_icon 'search' %}</button>
+            </div>
+            <div style="display: inline-flex">
+                <input type="text" id="main-search-input" name="search" class="main-search-input" placeholder="Search"
+                {% if search_query %}value="{{ search_query }}"{% endif %}>
+            </div>
+        </div>
+
         {% comment %}
         <!-- SEARCH feature -->
         <h4 style="margin: 14px 24px 0 24px;"><label for="search_input">Search</label></h4>
