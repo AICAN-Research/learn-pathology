@@ -449,22 +449,16 @@ Radio button toolbar used with slide filters
 }
 
 .radio-toolbar input[type="radio"] {
-    /*display: block;*/
-    /*display: inline-flex;*/
     color: var(--text-colour-dark);
+    position: absolute;
+    margin-top:0.4em;
+    width: 0.75em;
+    height: 0.75em;
 }
 
-.radio-toolbar label {
-    /*display: inline-block;*/
-    /*display: inline-block;*/
-    /*width: auto;*/
-    /*background-color: var(--color-blue-light);*/
-    /*padding: 10px 20px;*/
-    /*font-family: sans-serif, Arial;*/
-    /*font-size: 1rem;*/
-    /*font-weight: 400;*/
-    /*border: 1px solid var(--color-blue);*/
-    /*border-radius: 4px;*/
+.radio-toolbar label{
+    margin-bottom:0.2em;
+    margin-left:2.5ch;
 }
 
 .radio-toolbar label.wideLabel {
@@ -518,6 +512,13 @@ Radio button toolbar used with slide filters
 .radio-toolbar label.active {
     background-color: var(--color-blue);
 }
+
+
+.radio-toolbar input[type="radio"]:checked+label{
+    font-weight: bold;
+    color: var(--color-blue-dark);
+}
+
 
 /* =============================================
 Course page styling
@@ -734,13 +735,13 @@ Image browser
 
 /* Styling for cards containing thumbnails, name, short description */
 .slideGridViewCard {
-    height: 95%;
+    height: 100%;
     max-height: 500px;
     min-height: fit-content;
-    border-color: var(--grid-card-border);
+    border: 0;
 }
 .cardImageHeader {
-    height: 60%;
+    height: 70%;
     min-height: 50%;
     max-height: 250px;
     background-color: var(--grid-card-background);
@@ -1226,8 +1227,9 @@ Fonts
 }
 
 
-#slideDisplayForm h4 {
-    margin: 10px 24px 0 24px;
+#slideDisplayForm h6 {
+    margin: 20px 24px 0 16px;
+    font-weight: bold;
 }
 
 /* ===========================================
@@ -1288,14 +1290,12 @@ Header of page main content
 }
 
 .search-bar-container {
-    width: 250px;
+    width: fit-content;
     height: 40px;
     display: inline-flex;
     flex-direction: row;
-    align-items: flex-start;
-    justify-content: start;
 
-    padding: 8px;
+    /*padding: 8px;*/
     background: var(--color-white);
     border: 1px solid var(--color-light-gray);
     border-radius: var(--border-radius);

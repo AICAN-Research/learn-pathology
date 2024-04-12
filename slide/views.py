@@ -105,7 +105,7 @@ def index(request):
 
 def image_browser(request):
     """
-    Set up the context for the image browser.
+    Set up the context for the image browser page.
 
     The logic here is to find the relevant slides based on the currently active filters,
     and if search has been applied to search only among those relevant slides.
@@ -122,7 +122,7 @@ def image_browser(request):
     # ==================================================================
     organ_changed = ('organ-system' in request.GET)                     # Organ selection changed
     general_path_changed = ('general_pathology_button' in request.GET)  # General pathology changed
-    hist_path_changed = (general_path_changed or ('histology-pathology' in request.GET))   # Hist/path changed
+    hist_path_changed = ('histology-pathology' in request.GET)          # Histology/pathology changed
     search_button_clicked = ('submit_button' in request.GET)            # Search query entered
     clear_search_clicked = ('clear_button' in request.GET)              # Search cleared
 
@@ -131,8 +131,10 @@ def image_browser(request):
     # ==================================================================
     # ORGAN FILTER
     if organ_changed:
+        # Update the organ selection from the GET request
         selected_organ_tag_id = [request.GET.get('organ-system')]
     else:
+        # Retrieve the previous organ selection or set to 'all'
         selected_organ_tag_id = prev_context['selected_organ_tag_ids'] if ('selected_organ_tag_ids' in prev_context) else ['all']
     if 'all' in selected_organ_tag_id:
         organ_tags = Tag.objects.filter(is_organ=True)
@@ -141,27 +143,22 @@ def image_browser(request):
 
     # HISTOLOGY/PATHOLOGY FILTER
     if hist_path_changed:
-        if general_path_changed:
-            histology_pathology = 'pathology'
-            general_path_selected = True
-        else:
-            histology_pathology = request.GET.get('histology-pathology')
-            general_path_selected = False
+        # Update the histology_pathology variable from the GET request
+        histology_pathology = request.GET.get('histology-pathology')
 
         selected_histology = (histology_pathology == 'histology')
         selected_pathology = (histology_pathology == 'pathology')
-        selected_both = (not selected_histology and not selected_pathology)
     else:
-        selected_both = prev_context['selected_both'] if 'selected_both' in prev_context else True
+        # Retrieve the previous values or set to False
         selected_histology = prev_context['selected_histology'] if 'selected_histology' in prev_context else False
         selected_pathology = prev_context['selected_pathology'] if 'selected_pathology' in prev_context else False
 
-        general_path_selected = ('selected_general_pathology_ids' in prev_context)
+    selected_both = (not selected_histology and not selected_pathology)
 
-    # SEARCH
+    # SEARCH FILTER
     if search_button_clicked:
         search_query = request.GET.get('search')
-        if search_query is None or len(search_query) == 0:
+        if len(search_query) == 0:
             search_query = None
     elif clear_search_clicked:
         search_query = None
@@ -178,15 +175,17 @@ def image_browser(request):
     slides = slides.filter(tags__in=organ_tags)
     if not selected_both:
         slides = slides.filter(pathology=selected_pathology)
-    if general_path_selected:
-        if general_path_changed:
-            gen_path_tag_id = int(request.GET.get('general_pathology_button').split('-')[-1])
-        elif 'selected_general_pathology_ids' in prev_context:
+    if not (hist_path_changed and 'selected_general_pathology_ids' in prev_context):
+        gen_path_tag_id = None
+        if search_button_clicked and 'selected_general_pathology_ids' in prev_context:
             gen_path_tag_id = prev_context['selected_general_pathology_ids'][0]
-        gen_path_tag = Tag.objects.get(id=gen_path_tag_id)
-        slides = slides.filter(tags__in=[gen_path_tag])
-        context['selected_general_pathology'] = gen_path_tag
-        request.session['image_browser_context']['selected_general_pathology_ids'] = queryset_to_id_list(Tag.objects.filter(id=gen_path_tag_id))  # function takes queryset
+        elif general_path_changed:
+            gen_path_tag_id = int(request.GET.get('general_pathology_button').split('-')[-1])
+        if gen_path_tag_id is not None:
+            gen_path_tag = Tag.objects.get(id=gen_path_tag_id)
+            slides = slides.filter(tags__in=[gen_path_tag])
+            context['selected_general_pathology'] = gen_path_tag
+            request.session['image_browser_context']['selected_general_pathology_ids'] = queryset_to_id_list(Tag.objects.filter(id=gen_path_tag_id))  # function takes queryset
     if search_query is not None:    # If search was updated, search among applicable_slides
         slides = slides.filter(Q(name__contains=search_query) | Q(description__contains=search_query))
 
