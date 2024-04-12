@@ -75,6 +75,8 @@ $(document).ready(function(){
 
         listItems[i].addEventListener('click', function(event) {
 
+            anno.setVisible(true);
+            visible_annotorious = true;
             var annotationId = annotations[i]['id'];
             anno.selectAnnotation(annotationId);
             anno.fitBoundsWithConstraints(annotationId, {'padding': 200});
