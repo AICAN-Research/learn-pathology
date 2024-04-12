@@ -13,6 +13,7 @@ urlpatterns = [
     path('view/<int:course_id>/<str:active_tab>', views.course_page, name='view'),
     path('view/<int:course_id>/<int:return_task>', views.course_page, name='view'),
     path('slide_selection/<int:course_id>', views.slide_selection, name='slide_selection'),
+    path('slide_selection/<int:course_id>/reset', views.reset_slide_selection, name='reset_slide_selection'),
     path('task_selection/<int:course_id>', views.task_selection, name='task_selection'),
     path('add_item/', views.add_to_course, name='add_item'),
     path('remove_item/', views.remove_from_course, name='remove_item'),
