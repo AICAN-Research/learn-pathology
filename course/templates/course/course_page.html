@@ -17,6 +17,7 @@
 {% block button_row %}
 
 {% if request.user.is_teacher or request.user.is_superuser %}
+
 <div class="custom-button"> <!-- TODO: removed style, should add with class instead -->
     <a href="{% url 'course:delete' course_id=course.id %}" style="display: inline-flex;">
         <div class="button-icon">

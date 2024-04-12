@@ -2,10 +2,10 @@
 {% load slide_filters %}
 
 
-<div class="fill" style="min-height: 600px">
-    <div id="wsi-canvas" class="wsi_canvas" style="height: 600px;"></div>
+
+    <div id="wsi-canvas" class="wsi_canvas" style="height: 60vh;"></div>
     <div id="my-toolbar-container"></div>
-</div>
+
 
 <div id="annotation_list" style="display: none;"></div>
 
@@ -49,11 +49,11 @@ viewer.innerTracker.keyHandler = null;
 
 var anno = OpenSeadragon.Annotorious(viewer);
 Annotorious.SelectorPack(anno); // [ 'rect', 'polygon', 'point', 'circle', 'ellipse', 'freehand' ]
-anno.removeDrawingTool('freehand');
+
 
 if ("{{ tasktype }}" === 'click_question') {
-    console.log('inside the if')
     anno.removeDrawingTool('point');
+    anno.removeDrawingTool('freehand');
 }
 const toolbar = new Annotorious.Toolbar(anno, document.getElementById('my-toolbar-container'));
 viewer.addControl(document.getElementById("my-toolbar-container"), {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});

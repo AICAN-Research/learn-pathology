@@ -8,7 +8,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 from task.common import process_new_task_request, process_edit_task_request, \
     setup_common_new_task_context, setup_common_edit_task_context
 from slide.views import slide_cache
-from task.models import Task
 from task.forms import TaskForm
 from one_to_one.models import OneToOne, SortingPair
 from one_to_one.forms import OneToOneForm, SortingPairForm

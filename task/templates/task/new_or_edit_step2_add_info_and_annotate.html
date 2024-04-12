@@ -83,10 +83,20 @@
                         <thead class="thead-light">
                             <tr><th colspan="2">Task metadata and tagging</th></tr>
                         </thead>
-                        <tr>
-                            <th>{{ taskForm.pathology.label }}</th>
-                            <td>{{ taskForm.pathology }}</td>
-                        </tr>
+                       <tr>
+        <th>
+            {{ taskForm.pathology.label }}
+                    </th>
+      <td>
+    Histology
+    <div class="form-check form-switch" style="display: inline-block;">
+        <input class="form-check-input" type="checkbox" id="toggleAnnotationButton" name="pathology"{% if task.pathology %} checked {% endif %}>
+        <label class="form-check-label" for="toggleAnnotationButton"></label>
+    </div>
+
+    Pathology
+</td>
+    </tr>
                         <tr>
                             <th>{{ taskForm.organ_tags.label }}</th>
                             <td>{{ taskForm.organ_tags }}</td>
@@ -124,10 +134,10 @@
 
                 <div style="padding: 6px 24px 6px 24px;">
                     <h2>
-                        New task: Annotate WSI
+                        Annotate WSI
                     </h2>
                     <h3 style="color: var(--color-blue-dark);">
-                        Fill in the descriptive fields of the task
+                        Add the necessary annotation needed for the task.
                     </h3>
                 </div>
         {% if clickQuestionForm %}

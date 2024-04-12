@@ -1,13 +1,9 @@
-import random
 
-import django.shortcuts
 from django.contrib import messages
-from django.db import transaction
-from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
-from django.urls import resolve
+from django.shortcuts import render, redirect
 
 from course.models import Course
-from slide.models import Slide, Pointer, AnnotatedSlide, BoundingBox
+from slide.models import Slide
 from slide.views import slide_cache
 from user.decorators import teacher_required
 from task.models import Task
@@ -20,9 +16,6 @@ from free_text.forms import FreeTextForm
 from click_question.forms import ClickQuestionForm
 from one_to_one.forms import OneToOneForm
 from one_to_one.views import get_sorting_pair_formset
-from many_to_one.models import ManyToOne
-from many_to_one.forms import ManyToOneForm
-from many_to_one.views import TableColumnFormSet
 
 
 def list(request):
@@ -111,11 +104,6 @@ def new(request, slide_id=None, course_id=None):
                 context['oneToOneForm'] = OneToOneForm()
                 context['sortingPairFormSet'] = get_sorting_pair_formset()
                 return render(request, 'one_to_one/new.html', context)
-            elif task_type == 'many_to_one_sort':
-                context['new_url'] = '/many_to_one/new'
-                context['manyToOneForm'] = ManyToOneForm()
-                context['column_formset'] = TableColumnFormSet(instance=ManyToOne(), prefix='column')
-                return render(request, 'many_to_one/new.html', context)
             else:
                 raise ValueError(f"'{task_type}' is not a valid question type")
 

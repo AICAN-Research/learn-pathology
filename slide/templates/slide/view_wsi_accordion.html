@@ -89,19 +89,6 @@
                                                     <th>Slide description</th>
                                                     <td>{{ slide.description }}</td>
                                                 </tr>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="slideCategorizationHeading">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#slideCategorizationTab" aria-expanded="false" aria-controls="slideCategorizationTab">
-                                            Categorization
-                                        </button>
-                                    </h2>
-                                    <div id="slideCategorizationTab" class="accordion-collapse collapse" aria-labelledby="slideCategorizationHeading" data-bs-parent="#slideInformationAccordion">
-                                        <div class="accordion-body">
-                                            <table class="table">
                                                 <tr>
                                                     <th>Organ</th>
                                                     <td>{{ slide.name }}</td>
@@ -252,7 +239,7 @@
             <!-- Top 3 buttons centered in the middle -->
             <div id="topButtons" class="slideViewerToolbarButtonGroup">
                 <div class="button-group">
-                    <button id="slideInfoButton" class="custom-button btn btn-secondary">
+                    <button id="slideInfoButton" class="custom-button btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Slide Information">
                         <div class="button-icon">
                             <span class="iconify" data-icon="fluent:info-24-regular" data-width="24" data-height="24"></span>
                         </div>
@@ -260,7 +247,7 @@
                 </div>
                 {% if user.is_superuser or user.is_teacher %}
                 <div class="button-group">
-                    <button id="editAnnotationButton" class="custom-button btn btn-secondary">
+                    <button id="editAnnotationButton" class="custom-button btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Edit Annotation">
                         <div class="button-icon">
                             <span class="iconify" data-icon="fluent:edit-12-regular" data-width="24" data-height="24"></span>
                         </div>
@@ -268,7 +255,7 @@
                 </div>
                 {% endif %}
                 <div class="button-group">
-                    <button id="annotationListButton" class="custom-button btn btn-secondary">
+                    <button id="annotationListButton" class="custom-button btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Annotation List">
                         <div class="button-icon">
                             <span class="iconify" data-icon="fluent:pin-12-regular" data-width="24" data-height="24"></span>
                         </div>
@@ -283,34 +270,38 @@
 <div id="toolbarBottomDiv">
     <div class="slideViewerToolbarButtonGroup">
         <div class="button-group">
-            <button id="screenshotButton" class="custom-button btn btn-secondary">
+            <button id="screenshotButton" class="custom-button btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Screenshot">
                 <div class="button-icon">
                     <span class="iconify" data-icon="fluent:camera-24-regular" data-width="24" data-height="24"></span>
                 </div>
             </button>
         </div>
         <div class="button-group">
-            <button id="zoomInButton" class="custom-button btn btn-secondary">
+            <button id="zoomInButton" class="custom-button btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Zoom In">
                 <div class="button-icon">
                     <span class="iconify" data-icon="fluent:add-24-regular" data-width="24" data-height="24"></span>
                 </div>
             </button>
         </div>
         <div class="button-group">
-           <button id="zoomOutButton" class="custom-button btn btn-secondary">
+           <button id="zoomOutButton" class="custom-button btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Zoom Out">
                <div class="button-icon">
                    <span class="iconify" data-icon="fluent:subtract-24-regular" data-width="24" data-height="24"></span>
                </div>
            </button>
         </div>
         <div class="button-group">
-             <button id="FullScreenButton" class="custom-button btn btn-secondary">
-                 <div class="button-icon">
-                     <span class="iconify" data-icon="fluent:arrow-expand-24-regular" data-width="24" data-height="24"></span>
+             <button id="FullScreenButton" class="custom-button btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Fullscreen">
+                 <div class="button-icon" >
+                     <span class="iconify" id="FullScreenButtonIcon" data-icon="fluent:arrow-expand-24-regular" data-width="24" data-height="24"></span>
                  </div>
              </button>
         </div>
     </div>
+</div>
+
+<div id="AICAN-logo" class="container text-center" style="margin-top: 2rem; margin-bottom: 2rem; visibility: hidden"> Copyright by <br>
+    <img src="{% static 'learnpathology/images/logo_v0.png' %}" alt="LearnPathology logo" style="max-width: 400px;align-self: center; opacity: 0.5">
 </div>
 
 
@@ -356,6 +347,8 @@ $(document).ready(function(){
     });
     viewer.addControl(document.getElementById("toolbarTopDiv"), {anchor: OpenSeadragon.ControlAnchor.TOP_RIGHT});
     viewer.addControl(document.getElementById("toolbarBottomDiv"), {anchor: OpenSeadragon.ControlAnchor.BOTTOM_RIGHT});
+    viewer.addControl(document.getElementById("AICAN-logo"), {anchor: OpenSeadragon.ControlAnchor.TOP_LEFT});
+
 
     // Scalebar
     try {
@@ -385,7 +378,6 @@ $(document).ready(function(){
     let anno = OpenSeadragon.Annotorious(viewer);
 
     Annotorious.SelectorPack(anno); // [ 'rect', 'polygon', 'point', 'circle', 'ellipse', 'freehand' ]
-    anno.removeDrawingTool('freehand');
     {% if request.user.is_teacher or request.user.is_superuser %}
     const toolbar = new Annotorious.Toolbar(anno, document.getElementById('annotorious-toolbar-container'));
     {% else %}
@@ -432,6 +424,10 @@ $(document).ready(function(){
         updateAnnotationList();
     });
 
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'})
+        });
+
 
     /*
     BUTTON LISTENERS
@@ -448,12 +444,16 @@ $(document).ready(function(){
     document.getElementById("collapsePopup").addEventListener('click', closeToolbarPopup);
 
     document.getElementById("toggleAnnotationButton").addEventListener('click', toggleAnnotationVisibility);
+    viewer.addHandler('full-page', updateFullScreenButton);
 
     // Screenshoot Button Functionality
     document.getElementById("screenshotButton").addEventListener('click', function () {
         // Hide buttons
         document.getElementById("buttonColumn").style.display = "none";
         document.getElementById("toolbarBottomDiv").style.display = "none";
+        {% if not request.user.is_teacher  %}
+        document.getElementById("AICAN-logo").style.visibility  = "visible";
+        {% endif %}
         // Hide popup
         document.getElementById("collapsePopupWindow").style.display = "none";
         html2canvas($("#wsi-canvas")[0]).then(canvas => {
@@ -471,6 +471,7 @@ $(document).ready(function(){
             // Display buttons again
             document.getElementById("buttonColumn").style.display = "block";
             document.getElementById("toolbarBottomDiv").style.display = "block";
+            document.getElementById("AICAN-logo").style.visibility  = "hidden";
             // Display popup again
             document.getElementById("collapsePopupWindow").style.display = "flex";
         });
@@ -503,6 +504,7 @@ $(document).ready(function(){
     /*
     FUNCTION IMPLEMENTATIONS
     */
+
     function updateAnnotationList() {
         annotationList.innerHTML = ''; // Clear previous list
 
@@ -530,22 +532,25 @@ $(document).ready(function(){
                 document.getElementById('toggleAnnotationButton').checked = 'true';
             });
 
-            {% if request.user.is_teacher or request.user.is_superuser %}
-            let deleteButton = document.createElement('button');
-            deleteButton.innerHTML = '<span class="iconify" data-icon="fluent:dismiss-12-regular" data-width="24" data-height="24"></span>';
-            deleteButton.classList.add('annotationListElementDelete', 'transparentBackground');
-
-            deleteButton.addEventListener('click', function () {
-                deleteAnnotation(annotation, {{ slide.id }});
-                anno.removeAnnotation(annotation);
-                anno.cancelSelected();
-                updateAnnotationList();
-            });
-            annotationButton.appendChild(deleteButton);
             listItem.appendChild(annotationButton);
+
+            {% if request.user.is_teacher or request.user.is_superuser %}
+                let deleteButton = document.createElement('button');
+                deleteButton.innerHTML = '<span class="iconify" data-icon="fluent:bin-recycle-24-regular" data-width="24" data-height="24"></span>';
+                deleteButton.classList.add('annotationListElementDelete', 'transparentBackground');
+
+                deleteButton.addEventListener('click', function () {
+                    deleteAnnotation(annotation, {{ slide.id }});
+                    anno.removeAnnotation(annotation);
+                    anno.cancelSelected();
+                    updateAnnotationList();
+                });
+
+                annotationButton.appendChild(deleteButton);
             {% endif %}
 
             annotationList.appendChild(listItem);
+
         });
     }
 
@@ -661,6 +666,16 @@ $(document).ready(function(){
         anno.setVisible(visible_annotorious);
         document.getElementById('toggleAnnotationButton').checked = visible_annotorious;
     }
+
+    function updateFullScreenButton(event) {
+        var fullScreenButton = $('#FullScreenButtonIcon');
+        if (event.fullPage) {
+            fullScreenButton.attr('data-icon', 'fluent:arrow-move-inward-20-filled');
+        } else {
+            fullScreenButton.attr('data-icon', 'fluent:arrow-expand-24-regular');
+        }
+    }
+
 
     /*
     EDIT DESCRIPTION AND PATHOLOGY TAGS
