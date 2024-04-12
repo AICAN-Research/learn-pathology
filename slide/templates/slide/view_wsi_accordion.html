@@ -504,6 +504,7 @@ $(document).ready(function(){
     /*
     FUNCTION IMPLEMENTATIONS
     */
+
     function updateAnnotationList() {
         annotationList.innerHTML = ''; // Clear previous list
 
@@ -531,22 +532,25 @@ $(document).ready(function(){
                 document.getElementById('toggleAnnotationButton').checked = 'true';
             });
 
-            {% if request.user.is_teacher or request.user.is_superuser %}
-            let deleteButton = document.createElement('button');
-            deleteButton.innerHTML = '<span class="iconify" data-icon="fluent:bin-recycle-24-regular" data-width="24" data-height="24"></span>';
-            deleteButton.classList.add('annotationListElementDelete', 'transparentBackground');
-
-            deleteButton.addEventListener('click', function () {
-                deleteAnnotation(annotation, {{ slide.id }});
-                anno.removeAnnotation(annotation);
-                anno.cancelSelected();
-                updateAnnotationList();
-            });
-            annotationButton.appendChild(deleteButton);
             listItem.appendChild(annotationButton);
+
+            {% if request.user.is_teacher or request.user.is_superuser %}
+                let deleteButton = document.createElement('button');
+                deleteButton.innerHTML = '<span class="iconify" data-icon="fluent:bin-recycle-24-regular" data-width="24" data-height="24"></span>';
+                deleteButton.classList.add('annotationListElementDelete', 'transparentBackground');
+
+                deleteButton.addEventListener('click', function () {
+                    deleteAnnotation(annotation, {{ slide.id }});
+                    anno.removeAnnotation(annotation);
+                    anno.cancelSelected();
+                    updateAnnotationList();
+                });
+
+                annotationButton.appendChild(deleteButton);
             {% endif %}
 
             annotationList.appendChild(listItem);
+
         });
     }
 
