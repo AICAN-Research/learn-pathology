@@ -31,8 +31,6 @@ def do(request, task_id, course_id=None):
     for i,  annotation in enumerate(context['annotations']):
         annotation['body'][0]['value'] = chr(65 + i)
 
-
-
     mode = 'get'
     id_order = [1, 2, 3,4,5,6,7,8,9,10]
     answer_order = []

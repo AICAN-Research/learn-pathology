@@ -16,7 +16,7 @@
             <div class="col">
                 <ul class="list-group " id="fixed-list">
                     {% for annotation in annotations %}
-                        <li class="list-group-item ui-state-default ui-state-disabled disabled">{{ annotation.body.0.value }}</li>
+                        <li  class="list-group-item ui-state-default ">{{ annotation.body.0.value }}</li>
                     {% endfor %}
                 </ul>
             </div>
@@ -41,28 +41,25 @@
 <script>
 
 
-
 </script>
 
 
 {% block task_javascript %}
 
 $(document).ready(function(){
-    var mode = "{{ mode }}"; //document.getElementById('mode').dataset.mode;
+    var mode = "{{ mode }}";
     var idOrder = JSON.parse("{{id_order}}");
     var answerOrder = JSON.parse("{{answer_order}}");
+    var annotations = {{annotations_correct|safe}};
+    console.log(annotations[0]);
 
-
+    createClickReactions(annotations);
     if (mode === 'get') {
-        console.log('Shuffle List.')
         shuffleList();
     } else if (mode === 'post') {
-        console.log(idOrder);
-        console.log("Don't shuffle List.");
         rearrangeList(idOrder);
         colorAnswers(idOrder, answerOrder);
     }
-
 
     function shuffleList() {
         var ul = document.querySelector('#sortable-list');
@@ -70,6 +67,26 @@ $(document).ready(function(){
             ul.appendChild(ul.children[Math.random() * i | 0]);
         }
     }
+
+   function createClickReactions(annotations) {
+        var fixedList = document.getElementById('fixed-list');
+        var listItems = fixedList.getElementsByTagName('li');
+        for (let i = 0; i < listItems.length; i++) {
+
+        listItems[i].addEventListener('click', function(event) {
+
+            var annotationId = annotations[i]['id'];
+            anno.selectAnnotation(annotationId);
+            anno.fitBoundsWithConstraints(annotationId, {'padding': 200});
+
+        });
+    }
+
+        console.log('Create click reactions');
+        anno.setVisible(true);
+
+
+    };
 
     function rearrangeList(order) {
         var list = document.getElementById("sortable-list");
@@ -109,6 +126,8 @@ $(document).ready(function(){
             }
         }
     }
+
+
 
     //var sortableList = document.querySelector('.sortable');
     var sortableList = document.getElementById('sortable-list');

@@ -9,4 +9,4 @@ class AnnotationTask(models.Model):
 
     task = models.OneToOneField(Task, on_delete=models.CASCADE)
     question = models.CharField(max_length=2048)
-    instructions = models.CharField(max_length=2048, default='Match the annotations to the correct labels.')
+    instructions = models.CharField(max_length=2048, default='Match the annotations to the correct labels. Letters can be clicked to zoom to the corresponding annotation')
