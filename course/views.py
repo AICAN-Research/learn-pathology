@@ -1,4 +1,3 @@
-import json
 import os
 import sys
 
@@ -198,24 +197,21 @@ def slide_selection(request, course_id):
     # ==================================================================
     # Set up variables for which filtering options have been applied
     # ==================================================================
-    organ_changed = ('organ-system' in request.GET)  # Organ selection changed
+    organ_changed = ('organ-system' in request.GET)                     # Organ selection changed
     general_path_changed = ('general_pathology_button' in request.GET)  # General pathology changed
-    hist_path_changed = (general_path_changed or ('histology-pathology' in request.GET))  # Hist/path changed
-    search_button_clicked = ('submit_button' in request.GET)  # Search query entered
-    clear_search_clicked = ('clear_button' in request.GET)  # Search cleared
-    clear_all_clicked = ('clear_all' in request.GET)  # Clear selection button pressed
+    hist_path_changed = ('histology-pathology' in request.GET)          # Histology/pathology changed
+    search_button_clicked = ('submit_button' in request.GET)            # Search query entered
+    clear_search_clicked = ('clear_button' in request.GET)              # Search cleared
 
     # ==================================================================
     # Find selections for filtering options
     # ==================================================================
-    # If clear selection button pressed
-    if clear_all_clicked:
-        prev_context = {}
-
     # ORGAN FILTER
     if organ_changed:
+        # Update the organ selection from the GET request
         selected_organ_tag_id = [request.GET.get('organ-system')]
     else:
+        # Retrieve the previous organ selection or set to 'all'
         selected_organ_tag_id = prev_context['selected_organ_tag_ids'] if ('selected_organ_tag_ids' in prev_context) else ['all']
     if 'all' in selected_organ_tag_id:
         organ_tags = Tag.objects.filter(is_organ=True)
@@ -224,27 +220,22 @@ def slide_selection(request, course_id):
 
     # HISTOLOGY/PATHOLOGY FILTER
     if hist_path_changed:
-        if general_path_changed:
-            histology_pathology = 'pathology'
-            general_path_selected = True
-        else:
-            histology_pathology = request.GET.get('histology-pathology')
-            general_path_selected = False
+        # Update the histology_pathology variable from the GET request
+        histology_pathology = request.GET.get('histology-pathology')
 
         selected_histology = (histology_pathology == 'histology')
         selected_pathology = (histology_pathology == 'pathology')
-        selected_both = (not selected_histology and not selected_pathology)
     else:
-        selected_both = prev_context['selected_both'] if 'selected_both' in prev_context else True
+        # Retrieve the previous values or set to False
         selected_histology = prev_context['selected_histology'] if 'selected_histology' in prev_context else False
         selected_pathology = prev_context['selected_pathology'] if 'selected_pathology' in prev_context else False
 
-        general_path_selected = ('selected_general_pathology_ids' in prev_context)
+    selected_both = (not selected_histology and not selected_pathology)
 
-    # SEARCH
+    # SEARCH FILTER
     if search_button_clicked:
         search_query = request.GET.get('search')
-        if search_query is None or len(search_query) == 0:
+        if len(search_query) == 0:
             search_query = None
     elif clear_search_clicked:
         search_query = None
@@ -261,22 +252,24 @@ def slide_selection(request, course_id):
     slides = slides.filter(tags__in=organ_tags)
     if not selected_both:
         slides = slides.filter(pathology=selected_pathology)
-    if general_path_selected:
-        if general_path_changed:
-            gen_path_tag_id = int(request.GET.get('general_pathology_button').split('-')[-1])
-        elif 'selected_general_pathology_ids' in prev_context:
+    if not (hist_path_changed and 'selected_general_pathology_ids' in prev_context):
+        gen_path_tag_id = None
+        if search_button_clicked and 'selected_general_pathology_ids' in prev_context:
             gen_path_tag_id = prev_context['selected_general_pathology_ids'][0]
-        gen_path_tag = Tag.objects.get(id=gen_path_tag_id)
-        slides = slides.filter(tags__in=[gen_path_tag])
-        context['selected_general_pathology'] = gen_path_tag
-        request.session['image_browser_context']['selected_general_pathology_ids'] = queryset_to_id_list(Tag.objects.filter(id=gen_path_tag_id))  # function takes queryset
-    if search_query is not None:  # If search was updated, search among applicable_slides
+        elif general_path_changed:
+            gen_path_tag_id = int(request.GET.get('general_pathology_button').split('-')[-1])
+        if gen_path_tag_id is not None:
+            gen_path_tag = Tag.objects.get(id=gen_path_tag_id)
+            slides = slides.filter(tags__in=[gen_path_tag])
+            context['selected_general_pathology'] = gen_path_tag
+            request.session['image_browser_context']['selected_general_pathology_ids'] = queryset_to_id_list(Tag.objects.filter(id=gen_path_tag_id))  # function takes queryset
+    if search_query is not None:    # If search was updated, search among applicable_slides
         slides = slides.filter(Q(name__contains=search_query) | Q(description__contains=search_query))
 
     # ==================================================================
     # Update context
     # ==================================================================
-    context['slides'] = slides.order_by('name')
+    context['slides'] = sorted(slides, key=lambda s: s.name)
     context['selected_organ_tag'] = ['all'] if 'all' in selected_organ_tag_id else Tag.objects.filter(id__in=selected_organ_tag_id)
     context['selected_both'] = selected_both
     context['selected_histology'] = selected_histology
@@ -444,3 +437,9 @@ def store_file_in_db(f: UploadedFile):
             destination.write(chunk)
 
     return destination_path
+
+
+def reset_slide_selection(request, course_id):
+    if 'image_browser_context' in request.session:
+        del request.session['image_browser_context']
+    return redirect('course:slide_selection', course_id=course_id)

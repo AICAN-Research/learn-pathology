@@ -1,8 +1,8 @@
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
-from many_to_one import views
+from annotation_task import views
 
-app_name = 'many_to_one'
+app_name = 'annotation_task'
 urlpatterns = [
     path('do/<int:task_id>/<int:course_id>', views.do, name='do'),
     path('new/<int:slide_id>/', views.new, name='new'),

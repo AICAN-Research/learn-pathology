@@ -1,9 +1,35 @@
-{% extends 'learnpathology/base.html' %}
+{% extends 'learnpathology/single_content_layout.html' %}
+{% load bootstrap_icons %}
+{% load static %}
+
+
+{% block page_title %}
+New Course
+{% endblock page_title %}
+
+
+{% block breadcrumb_items %}
+    <li class="breadcrumb-item"><a href="{% url 'course:index' %}">Courses</a></li>
+
+{% endblock breadcrumb_items %}
+
+{% block button_row %}
+
+<div class="custom-button" style="">
+        <a href="{% url 'course:index' %}" style="display: inline-flex;">
+        <div class="button-icon">
+            <span class="iconify" data-icon="fluent:bin-recycle-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
+        </div>
+        <div style="justify-content: flex-start; align-items: center; display: flex">
+                <div class="button-text">Exit & discard course</div>
+        </div>
+    </a>
+</div>
+
+{% endblock button_row %}
 
 {% block content %}
-<div class="container">
-    <h1>New course</h1>
-</div>
+
 
 <div class="card mx-auto text-center" style="width: 90%">
 <div class="card-body">

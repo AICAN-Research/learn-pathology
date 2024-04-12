@@ -21,7 +21,7 @@
                                     Here are course materials
                                     <ul>
                                         {% for item in course_materials %}
-                                            <li><a href="#">
+                                            <li><a href="{{ item.path }}" download>
                                                 {{ item.name }}
                                             </a></li>
                                         {% endfor %}

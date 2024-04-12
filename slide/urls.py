@@ -18,7 +18,6 @@ urlpatterns = [
     path('edit-tags/<int:slide_id>', views.edit_general_pathology_tags, name='edit_tags'),
     path('add-tag/', views.add_tag, name='add_tag'),
     path('remove-tag/', views.remove_tag, name='remove_tag'),
-    path('base-annotations/<int:slide_id>/', views.add_or_edit_descriptive_annotation, name='base_annotations'),
     # Annotation stuff
     path('annotation/create/', views.create_annotation, name='create_annotation'),
     path('annotation/update/', views.update_annotation, name='update_annotation'),

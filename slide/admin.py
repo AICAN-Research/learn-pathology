@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.admin import register
-from .models import Slide, AnnotatedSlide, Pointer, Annotation
+from .models import Slide, AnnotatedSlide, Annotation
 
 # Register your models here.
 @register(Slide)
