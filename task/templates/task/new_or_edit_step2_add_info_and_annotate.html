@@ -90,9 +90,10 @@
       <td>
     Histology
     <div class="form-check form-switch" style="display: inline-block;">
-        <input class="form-check-input" type="checkbox" id="toggleAnnotationButton" name="pathology">
+        <input class="form-check-input" type="checkbox" id="toggleAnnotationButton" name="pathology"{% if task.pathology %} checked {% endif %}>
         <label class="form-check-label" for="toggleAnnotationButton"></label>
     </div>
+
     Pathology
 </td>
     </tr>
