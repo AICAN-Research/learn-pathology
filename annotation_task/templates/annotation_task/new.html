@@ -1,0 +1,37 @@
+{% extends 'task/new_or_edit_step2_add_info_and_annotate.html' %}
+
+
+{% block task_type %}
+Annotation Task
+{% endblock task_type %}
+
+
+{% block task_type_new_url %}
+{{ new_url }}
+{% endblock task_type_new_url %}
+
+
+{% block specific_task_type_form %}
+
+<table class="table">
+
+    <thead class="thead-light">
+        <tr><th colspan="2">Task info</th></tr>
+    </thead>
+    <tr>
+        <th>{{ taskForm.name.label }} (short, descriptive)</th>
+        <td>{{ taskForm.name }}</td>
+    </tr>
+    <tr>
+        <th>{{ annotationTaskForm.question.label }}</th>
+        <td>{{ annotationTaskForm.question }} </td>
+    </tr>
+    <tr>
+        <th>{{ annotationTaskForm.instructions.label }}</th>
+        <td>{{ annotationTaskForm.instructions }}</td>
+
+    </tr>
+
+</table>
+
+{% endblock specific_task_type_form %}

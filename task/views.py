@@ -16,6 +16,7 @@ from free_text.forms import FreeTextForm
 from click_question.forms import ClickQuestionForm
 from one_to_one.forms import OneToOneForm
 from one_to_one.views import get_sorting_pair_formset
+from annotation_task.views import AnnotationTaskForm
 
 
 def list(request):
@@ -104,6 +105,10 @@ def new(request, slide_id=None, course_id=None):
                 context['oneToOneForm'] = OneToOneForm()
                 context['sortingPairFormSet'] = get_sorting_pair_formset()
                 return render(request, 'one_to_one/new.html', context)
+            elif task_type == 'annotation_task':
+                context['new_url'] = '/annotation_task/new'
+                context['annotationTaskForm'] = AnnotationTaskForm()
+                return render(request, 'annotation_task/new.html', context)
             else:
                 raise ValueError(f"'{task_type}' is not a valid question type")
 

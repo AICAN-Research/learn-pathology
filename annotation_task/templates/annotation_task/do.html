@@ -1,0 +1,152 @@
+{% extends "task/do_task_two_column.html" %}
+
+
+{% block task_instructions %}
+{{ annotation_task.instructions }}
+{% endblock task_instructions %}
+
+{% block task_question %}
+{{ annotation_task.question }}
+{% endblock task_question %}
+
+
+{% block content_left %}
+    <form id="my-form" method="POST">
+        <div class="row">
+            <div class="col">
+                <ul class="list-group " id="fixed-list">
+                    {% for annotation in annotations %}
+                        <li  class="list-group-item ui-state-default ">{{ annotation.body.0.value }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="col">
+                {% csrf_token %}
+                <ul class="list-group sortable" id="sortable-list">
+                    {% for annotation in annotations_correct %}
+                        <li class="list-group-item" id="{{ forloop.counter }}">{{ annotation.body.0.value }}</li>
+                    {% endfor %}
+                </ul>
+                <br>
+            </div>
+        </div>
+
+        <input class="LPButton" type="submit" value="Submit">
+        <div class="LPButton" style="margin-top: 0; ">
+            <a href="{% url next_task.do_url task_id=next_task_id course_id=course_id %}">Next Task</a>
+        </div>
+    </form>
+{% endblock content_left %}
+
+<script>
+
+
+</script>
+
+
+{% block task_javascript %}
+
+$(document).ready(function(){
+    var mode = "{{ mode }}";
+    var idOrder = JSON.parse("{{id_order}}");
+    var answerOrder = JSON.parse("{{answer_order}}");
+    var annotations = {{annotations_correct|safe}};
+
+    createClickReactions(annotations);
+    if (mode === 'get') {
+        shuffleList();
+    } else if (mode === 'post') {
+        rearrangeList(idOrder);
+        colorAnswers(idOrder, answerOrder);
+    }
+
+    function shuffleList() {
+        var ul = document.querySelector('#sortable-list');
+        for (var i = ul.children.length; i >= 0; i--) {
+            ul.appendChild(ul.children[Math.random() * i | 0]);
+        }
+    }
+
+   function createClickReactions(annotations) {
+        var fixedList = document.getElementById('fixed-list');
+        var listItems = fixedList.getElementsByTagName('li');
+        for (let i = 0; i < listItems.length; i++) {
+
+        listItems[i].addEventListener('click', function(event) {
+
+            anno.setVisible(true);
+            visible_annotorious = true;
+            var annotationId = annotations[i]['id'];
+            anno.selectAnnotation(annotationId);
+            anno.fitBoundsWithConstraints(annotationId, {'padding': 200});
+
+        });
+    }
+
+        console.log('Create click reactions');
+        anno.setVisible(true);
+
+
+    };
+
+    function rearrangeList(order) {
+        var list = document.getElementById("sortable-list");
+        var items = list.getElementsByTagName("li");
+        var itemsArr = [];
+
+        // Create a new array with the items in the desired order
+        for (var i = 0; i < order.length; i++) {
+            for (var j = 0; j < items.length; j++) {
+                if (items[j].getAttribute("id") == order[i]) {
+                    itemsArr.push(items[j]);
+                    break;
+                }
+            }
+        }
+
+        // Append the sorted items to the list
+        for (var i = 0; i < itemsArr.length; i++) {
+            list.appendChild(itemsArr[i]);
+        }
+    }
+
+    function colorAnswers(idOrder, answerOrder) {
+        var list = document.getElementById("sortable-list");
+        var items = list.getElementsByTagName("li");
+
+        for (var i = 0; i < items.length; i++) {
+            var itemId = parseInt(items[i].getAttribute("id"));
+            if (idOrder.includes(itemId)) {
+                if (answerOrder[idOrder.indexOf(itemId)]) {
+                    items[i].style.color = "green";
+                    items[i].innerHTML += " &#10004";
+                } else {
+                    items[i].style.color = "red";
+                    items[i].innerHTML += " &#10006;";
+                }
+            }
+        }
+    }
+
+
+
+    //var sortableList = document.querySelector('.sortable');
+    var sortableList = document.getElementById('sortable-list');
+    var sortable_list = new Sortable(sortableList);
+
+    // Capture the order of the list items on form submission
+    var myForm = document.querySelector('#my-form');
+    myForm.addEventListener('submit', function (event) {
+        var itemIds = [];
+        var listItems = document.querySelectorAll('.sortable li');
+        for (var i = 0; i < listItems.length; i++) {
+            itemIds.push(listItems[i].getAttribute('id'));
+        }
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'item_ids';
+        input.value = itemIds;
+        myForm.appendChild(input);
+    });
+});
+{% endblock task_javascript %}
