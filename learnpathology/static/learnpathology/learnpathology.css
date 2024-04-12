@@ -1294,8 +1294,6 @@ Header of page main content
     height: 40px;
     display: inline-flex;
     flex-direction: row;
-    align-items: flex-start;
-    justify-content: start;
 
     /*padding: 8px;*/
     background: var(--color-white);
