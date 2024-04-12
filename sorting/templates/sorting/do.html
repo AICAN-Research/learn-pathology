@@ -1,0 +1,123 @@
+{% extends "task/do_task_two_column.html" %}
+
+
+{% block task_instructions %}
+{{ sorting_task.instructions }}
+{% endblock task_instructions %}
+
+{% block task_question %}
+{{ sorting_task.question }}
+{% endblock task_question %}
+
+{% block content_left %}
+    <form id="my-form" method="POST">
+        <div class="row">
+            <div class="col">
+                <ul class="list-group " id="fixed-list">
+                    {% for pair in sorting_task.pair_set.all %}
+                        <li class="list-group-item ui-state-default ui-state-disabled disabled">{{ pair.fixed }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="col">
+                {% csrf_token %}
+                <ul class="list-group sortable" id="sortable-list">
+                    {% for pair in sorting_task.pair_set.all %}
+                        <li class="list-group-item" id="{{ forloop.counter }}">{{ pair.draggable }}</li>
+                    {% endfor %}
+                </ul>
+                <br>
+                <div id="mode" data-mode="{{ mode }}"></div>
+            </div>
+        </div>
+
+        <input class="LPButton" type="submit" value="Submit">
+        <div class="LPButton" style="margin-top: 0; ">
+            <a href="{% url next_task.do_url task_id=next_task.id course_id=course_id %}">Next Task</a>
+        </div>
+    </form>
+{% endblock content_left %}
+
+
+{% block task_javascript %}
+        var mode = document.querySelector('#mode').dataset.mode;
+        var idOrder = JSON.parse("{{id_order}}");
+        var answerOrder = JSON.parse("{{is_correct_order}}");
+
+        window.addEventListener('DOMContentLoaded', function () {
+            if (mode === 'get') {
+                console.log('Shuffle List.')
+                shuffleList()
+            }
+            else if (mode === 'post') {
+                console.log(idOrder)
+                console.log("Don't shuffle List.")
+                rearrangeList(idOrder)
+                colorAnswers(idOrder, answerOrder)
+            }
+        })
+
+        function shuffleList() {
+            var ul = document.querySelector('#sortable-list');
+            for (var i = ul.children.length; i >= 0; i--) {
+                ul.appendChild(ul.children[Math.random() * i | 0]);
+            }
+        }
+
+        function rearrangeList(order) {
+            var list = document.getElementById("sortable-list");
+            var items = list.getElementsByTagName("li");
+            var itemsArr = [];
+
+            // Create a new array with the items in the desired order
+            for (var i = 0; i < order.length; i++) {
+                for (var j = 0; j < items.length; j++) {
+                    if (items[j].getAttribute("id") == order[i]) {
+                        itemsArr.push(items[j]);
+                        break;
+                    }
+                }
+            }
+
+            // Append the sorted items to the list
+            for (var i = 0; i < itemsArr.length; i++) {
+                list.appendChild(itemsArr[i]);
+            }
+        }
+
+        function colorAnswers(idOrder, answerOrder) {
+            var list = document.getElementById("sortable-list");
+            var items = list.getElementsByTagName("li");
+
+            for (var i = 0; i < items.length; i++) {
+                var itemId = parseInt(items[i].getAttribute("id"));
+                if (idOrder.includes(itemId)) {
+                    if (answerOrder[idOrder.indexOf(itemId)]) {
+                        items[i].style.color = "green";
+                        items[i].innerHTML += " &#10004";
+                    } else {
+                        items[i].style.color = "red";
+                        items[i].innerHTML += " &#10006;";
+                    }
+                }
+            }
+        }
+
+        var sortableList = document.querySelector('.sortable');
+        var sortable_list = new Sortable(sortableList);
+
+        // Capture the order of the list items on form submission
+        var myForm = document.querySelector('#my-form');
+        myForm.addEventListener('submit', function (event) {
+            var itemIds = [];
+            var listItems = document.querySelectorAll('.sortable li');
+            for (var i = 0; i < listItems.length; i++) {
+                itemIds.push(listItems[i].getAttribute('id'));
+            }
+            var input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'item_ids';
+            input.value = itemIds;
+            myForm.appendChild(input);
+        });
+{% endblock task_javascript %}

@@ -39,10 +39,9 @@ urlpatterns = [
     path('click_question/', include('click_question.urls')),
     path('one_to_one/', include('one_to_one.urls')),
     path('many_to_one/', include('many_to_one.urls')),
-
+    path('sorting/', include('sorting.urls')),
     path('one_column/', learnpathology.views.test_one_column),
     path('two_column/', learnpathology.views.test_two_column),
-
 ]
 
 if settings.DEBUG:
