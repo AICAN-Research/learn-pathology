@@ -51,7 +51,6 @@ $(document).ready(function(){
     var idOrder = JSON.parse("{{id_order}}");
     var answerOrder = JSON.parse("{{answer_order}}");
     var annotations = {{annotations_correct|safe}};
-    console.log(annotations[0]);
 
     createClickReactions(annotations);
     if (mode === 'get') {
