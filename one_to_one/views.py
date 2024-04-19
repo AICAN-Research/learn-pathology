@@ -8,7 +8,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 from task.common import process_new_task_request, process_edit_task_request, \
     setup_common_new_task_context, setup_common_edit_task_context
 from slide.views import slide_cache
-from task.models import Task
 from task.forms import TaskForm
 from one_to_one.models import OneToOne, SortingPair
 from one_to_one.forms import OneToOneForm, SortingPairForm
@@ -136,18 +135,15 @@ def edit(request, task_id,course_id=None):
                 task = task_form.save()
                 process_edit_task_request(request, task, task_form)
                 one_to_one = one_to_one_form.save()
-                #one_to_one.sortingpair_set.all().delete()
 
                 for pairForm in sorting_pair_formset:
-                    print(pairForm.errors)
-
-                    if pairForm.is_valid():
-
-                        pair = pairForm.save(commit=False)
-                        print(f'{pair.fixed} is valid ')
-                        if len(pair.fixed) > 0 and len(pair.draggable) > 0:
+                    if pairForm.has_changed():
+                        if pairForm.is_valid():
+                            pair = pairForm.save(commit=False)
                             pair.task = one_to_one
                             pair.save()
+                        else:
+                            pairForm.cleaned_data['id'].delete()
 
                 messages.add_message(request, messages.SUCCESS,
                                      f'The task {task.name} was altered!')

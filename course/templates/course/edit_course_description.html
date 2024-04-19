@@ -16,6 +16,11 @@ Edit course description
 {% block search_bar %}
 {% endblock search_bar %}
 
+{% block button_row %}
+
+
+ {% endblock button_row %}
+
 
 {% block content %}
 
@@ -29,18 +34,21 @@ Edit course description
 
         <table class="table">
 
-            <thead class="thead-light">
-            <tr><th>Field</th><th>Content</th></tr>
-            </thead>
-            <tr><th>Name</th>
-                <td>{{ course.title }}</td></tr>
             <tr><th>{{ form.long_description.label }}</th>
                 <td>{{ form.long_description }}</td></tr>
 
         </table>
-
-        <br>
-        <input type="submit" value="Update course description">
+        <div style="text-align: right">
+            <button class="custom-button" type="submit">
+                <div class="button-icon">
+                    <span class="iconify" data-icon="fluent:save-24-regular" data-width="24" data-height="24"
+                          style="font-weight: bolder;"></span>
+                </div>
+                <div style="justify-content: flex-start; align-items: center; display: flex">
+                    <div class="button-text">Save & return to course page</div>
+                </div>
+            </button>
+        </div>
     </form>
 
 
@@ -50,11 +58,21 @@ Edit course description
 
 {% endblock content %}
 
+<script> $(document).ready(function () {
 
+
+
+window.addEventListener('popstate', function(event) {
+    console.log('Back button clicked');
+    // Your code to handle the back button click
+});
+
+}) </script>
 {% block javascript %}
 
 $(document).ready(function(){
     collapseSidebar();
+
 });
 
 {% endblock javascript %}

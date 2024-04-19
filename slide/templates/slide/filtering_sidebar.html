@@ -1,0 +1,127 @@
+{% load bootstrap_icons %}
+
+<!-- Menu/toolbar -->
+
+<style>
+    label::first-letter {
+        text-transform:capitalize;
+    }
+</style>
+
+<div class="card image-filtering-sidepanel">
+    <div class="card border-0 w-100 text-start">
+        <div class="card-body" style="padding-bottom: 0;">
+            <div class="radio-toolbar" style="margin-top: 2px;">
+                {% if course %}
+                    <a href="{% url 'course:reset_slide_selection' course_id=course.id %}">
+                {% else %}
+                    <a href="{% url 'slide:browser_reset' %}">
+                {% endif %}
+                        <button class="wideLabel" style="text-align: center; border: 2px solid #c65127;">
+                            Clear selection {% bs_icon 'x-circle' %}
+                        </button>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <form class="form" id="slideDisplayForm" onsubmit="{% url 'slide:browser' %}">
+        <div class="card-body" style="padding-bottom: 0;">
+            <div class="search-bar-container">
+            <div style="display: flex;">
+                <button type="submit" class="btn" name="submit_button">{% bs_icon 'search' %}</button>
+            </div>
+            <div style="display: inline-flex">
+                <input type="text" id="main-search-input" name="search" class="main-search-input" placeholder="Search"
+                {% if search_query %}value="{{ search_query }}"{% endif %}>
+            </div>
+        </div>
+
+        {% comment %}
+        <!-- SEARCH feature -->
+        <h4 style="margin: 14px 24px 0 24px;"><label for="search_input">Search</label></h4>
+        <div class="card border-0 w-100 text-start">
+            <div class="card-body">
+                <input type="text" name="search" placeholder="Search names, descriptions..." id="search_input"
+                       {% if search_query %}value="{{ search_query }}"{% endif %} style="width: 100%;">
+                <div style="margin-top: 2px;">
+                    <button class="imageBrowserSearchButtons" type="submit" name="submit_button">Search</button>
+                    <button class="imageBrowserSearchButtons" type="submit" name="clear_button">Clear search</button>
+                </div>
+            </div>
+        </div>
+        {% endcomment %}
+
+
+        <!-- HISTOLOGY/PATHOLOGY selection -->
+        <h6>Typology</h6>
+        <div class="card border-0 w-100 text-start">
+            <div class="card-body">
+                <div class="radio-toolbar">
+                    <div>
+                        <input type="radio" name="histology-pathology" id="hist-path-btn" value="both" {% if selected_both %}checked="checked"{% endif %} onchange="this.form.submit();">
+                        <label for="hist-path-btn" class="body-text">Both</label>
+                    </div>
+                    <div>
+                        <input type="radio" name="histology-pathology" id="histology-btn" value="histology" {% if selected_histology %}checked="checked"{% endif %} onchange="this.form.submit();">
+                        <label for="histology-btn" class="body-text">Histology</label>
+                    </div>
+                    <div>
+                        <input type="radio" name="histology-pathology" id="pathology-btn" value="pathology"
+                               {% if selected_pathology and not selected_general_pathology %}checked="checked"{% endif %} onchange="this.form.submit();">
+                        <label for="pathology-btn" class="body-text">Pathology</label>
+                    </div>
+
+                    {% comment %}
+                    <input type="radio" name="histology-pathology" id="hist-path-btn" value="both" onchange="this.form.submit();">
+                    <label for="hist-path-btn" class="wideLabel{% if selected_both %} active{% endif %}">Both</label>
+
+                    <input type="radio" name="histology-pathology" id="histology-btn" value="histology" onchange="this.form.submit();">
+                    <label for="histology-btn" class="wideLabel{% if selected_histology %} active{% endif %}">Histology</label>
+
+                    <input type="radio" name="histology-pathology" id="pathology-btn" value="pathology" onchange="this.form.submit();">
+                    <label for="pathology-btn" class="wideLabel{% if selected_pathology %} active{% endif %}">Pathology</label>
+                    {% endcomment %}
+                    {% if selected_pathology %}
+                        <ul class="" style="list-style: none;">
+                            {% for tag in general_pathology_tags %}
+                                <div>
+                                    <input type="radio" name="general_pathology_button" id="general_pathology-id-{{ tag.id }}" value="general_pathology_tag-id-{{ tag.id }}"
+                                           {% if tag == selected_general_pathology %}checked="checked"{% endif %}
+                                           onchange="this.form.submit();">
+                                    <label for="general_pathology-id-{{ tag.id }}" class="body-text">{{ tag.name }}</label>
+                                <div>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <!-- ORGAN SYSTEM selection -->
+        <h6>Organ systems</h6>
+        <div class="card border-0 w-100 text-start">
+            <div class="card-body container-fluid">
+                <div class="radio-toolbar">
+                    <!-- Show 'All' button -->
+{#                    <input type="radio" name="organ-system" id="organ-all" value="all" onchange="this.form.submit();">#}
+{#                    <label for="organ-all" class="wideLabel {% if 'all' in selected_organ_tag %}active{% endif %}">All</label>#}
+                    <div>
+                        <input type="radio" name="organ-system" id="organ-all" value="all" {% if 'all' in selected_organ_tag %}checked="checked"{% endif %} onchange="this.form.submit();">
+                        <label for="organ-all" class="body-text">All</label>
+                    </div>
+
+                    <!-- Other organ buttons -->
+                    {% for organ in organ_tags %}
+{#                        <input type="radio" name="organ-system" id="{{ organ.id }}" value="{{ organ.id }}" onchange="this.form.submit();">#}
+{#                        <label for="{{ organ.id }}" class="wideLabel{% if organ in selected_organ_tag %} active{% endif %}">{{ organ.name }}</label>#}
+                        <div>
+                            <input type="radio" name="organ-system" id="{{ organ.id }}" value="{{ organ.id }}" {% if organ in selected_organ_tag %}checked="checked"{% endif %} onchange="this.form.submit();">
+                            <label for="{{ organ.id }}" class="body-text">{{ organ.name }}</label>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    </form>
+</div>

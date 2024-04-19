@@ -2,32 +2,32 @@
 
 
 {% block task_instructions %}
-{{ one_to_one.instructions }}
+{{ annotation_task.instructions }}
 {% endblock task_instructions %}
 
 {% block task_question %}
-{{ one_to_one.question }}
+{{ annotation_task.question }}
 {% endblock task_question %}
+
 
 {% block content_left %}
     <form id="my-form" method="POST">
         <div class="row">
             <div class="col">
                 <ul class="list-group " id="fixed-list">
-                    {% for pair in one_to_one.sortingpair_set.all %}
-                        <li class="list-group-item ui-state-default ui-state-disabled disabled">{{ pair.fixed }}</li>
+                    {% for annotation in annotations %}
+                        <li  class="list-group-item ui-state-default ">{{ annotation.body.0.value }}</li>
                     {% endfor %}
                 </ul>
             </div>
             <div class="col">
                 {% csrf_token %}
                 <ul class="list-group sortable" id="sortable-list">
-                    {% for pair in one_to_one.sortingpair_set.all %}
-                        <li class="list-group-item" id="{{ forloop.counter }}">{{ pair.draggable }}</li>
+                    {% for annotation in annotations_correct %}
+                        <li class="list-group-item" id="{{ forloop.counter }}">{{ annotation.body.0.value }}</li>
                     {% endfor %}
                 </ul>
                 <br>
-                <div id="mode" data-mode="{{ mode }}"></div>
             </div>
         </div>
 
@@ -38,20 +38,24 @@
     </form>
 {% endblock content_left %}
 
+<script>
+
+
+</script>
+
 
 {% block task_javascript %}
 
 $(document).ready(function(){
-    var mode = "{{ mode }}"; //document.getElementById('mode').dataset.mode;
+    var mode = "{{ mode }}";
     var idOrder = JSON.parse("{{id_order}}");
     var answerOrder = JSON.parse("{{answer_order}}");
+    var annotations = {{annotations_correct|safe}};
 
+    createClickReactions(annotations);
     if (mode === 'get') {
-        console.log('Shuffle List.')
         shuffleList();
     } else if (mode === 'post') {
-        console.log(idOrder);
-        console.log("Don't shuffle List.");
         rearrangeList(idOrder);
         colorAnswers(idOrder, answerOrder);
     }
@@ -62,6 +66,28 @@ $(document).ready(function(){
             ul.appendChild(ul.children[Math.random() * i | 0]);
         }
     }
+
+   function createClickReactions(annotations) {
+        var fixedList = document.getElementById('fixed-list');
+        var listItems = fixedList.getElementsByTagName('li');
+        for (let i = 0; i < listItems.length; i++) {
+
+        listItems[i].addEventListener('click', function(event) {
+
+            anno.setVisible(true);
+            visible_annotorious = true;
+            var annotationId = annotations[i]['id'];
+            anno.selectAnnotation(annotationId);
+            anno.fitBoundsWithConstraints(annotationId, {'padding': 200});
+
+        });
+    }
+
+        console.log('Create click reactions');
+        anno.setVisible(true);
+
+
+    };
 
     function rearrangeList(order) {
         var list = document.getElementById("sortable-list");
@@ -101,6 +127,8 @@ $(document).ready(function(){
             }
         }
     }
+
+
 
     //var sortableList = document.querySelector('.sortable');
     var sortableList = document.getElementById('sortable-list');

@@ -3,20 +3,19 @@ import json
 
 import django.urls
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
-from django.db import transaction, IntegrityError
+from django.db import transaction
 from django.db.models import Q
-from django.http import HttpResponse, Http404, JsonResponse
-from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render, redirect
 from django.core.files.uploadedfile import UploadedFile
 from django.views.decorators.cache import cache_page
 
 from tag.models import Tag
-from task.models import Task
-from user.decorators import student_required, teacher_required
-from slide.models import Slide, AnnotatedSlide, Pointer, BoundingBox, Annotation
-from slide.forms import SlideForm, SlideDescriptionForm
+
+from user.decorators import teacher_required
+from slide.models import Slide, AnnotatedSlide, Annotation
+from slide.forms import SlideForm
 
 
 GENERAL_PATHOLOGY_TAGS = (
@@ -103,7 +102,7 @@ def index(request):
 
 def image_browser(request):
     """
-    Set up the context for the image browser.
+    Set up the context for the image browser page.
 
     The logic here is to find the relevant slides based on the currently active filters,
     and if search has been applied to search only among those relevant slides.
@@ -120,7 +119,7 @@ def image_browser(request):
     # ==================================================================
     organ_changed = ('organ-system' in request.GET)                     # Organ selection changed
     general_path_changed = ('general_pathology_button' in request.GET)  # General pathology changed
-    hist_path_changed = (general_path_changed or ('histology-pathology' in request.GET))   # Hist/path changed
+    hist_path_changed = ('histology-pathology' in request.GET)          # Histology/pathology changed
     search_button_clicked = ('submit_button' in request.GET)            # Search query entered
     clear_search_clicked = ('clear_button' in request.GET)              # Search cleared
 
@@ -129,8 +128,10 @@ def image_browser(request):
     # ==================================================================
     # ORGAN FILTER
     if organ_changed:
+        # Update the organ selection from the GET request
         selected_organ_tag_id = [request.GET.get('organ-system')]
     else:
+        # Retrieve the previous organ selection or set to 'all'
         selected_organ_tag_id = prev_context['selected_organ_tag_ids'] if ('selected_organ_tag_ids' in prev_context) else ['all']
     if 'all' in selected_organ_tag_id:
         organ_tags = Tag.objects.filter(is_organ=True)
@@ -139,27 +140,22 @@ def image_browser(request):
 
     # HISTOLOGY/PATHOLOGY FILTER
     if hist_path_changed:
-        if general_path_changed:
-            histology_pathology = 'pathology'
-            general_path_selected = True
-        else:
-            histology_pathology = request.GET.get('histology-pathology')
-            general_path_selected = False
+        # Update the histology_pathology variable from the GET request
+        histology_pathology = request.GET.get('histology-pathology')
 
         selected_histology = (histology_pathology == 'histology')
         selected_pathology = (histology_pathology == 'pathology')
-        selected_both = (not selected_histology and not selected_pathology)
     else:
-        selected_both = prev_context['selected_both'] if 'selected_both' in prev_context else True
+        # Retrieve the previous values or set to False
         selected_histology = prev_context['selected_histology'] if 'selected_histology' in prev_context else False
         selected_pathology = prev_context['selected_pathology'] if 'selected_pathology' in prev_context else False
 
-        general_path_selected = ('selected_general_pathology_ids' in prev_context)
+    selected_both = (not selected_histology and not selected_pathology)
 
-    # SEARCH
+    # SEARCH FILTER
     if search_button_clicked:
         search_query = request.GET.get('search')
-        if search_query is None or len(search_query) == 0:
+        if len(search_query) == 0:
             search_query = None
     elif clear_search_clicked:
         search_query = None
@@ -176,15 +172,17 @@ def image_browser(request):
     slides = slides.filter(tags__in=organ_tags)
     if not selected_both:
         slides = slides.filter(pathology=selected_pathology)
-    if general_path_selected:
-        if general_path_changed:
-            gen_path_tag_id = int(request.GET.get('general_pathology_button').split('-')[-1])
-        elif 'selected_general_pathology_ids' in prev_context:
+    if not (hist_path_changed and 'selected_general_pathology_ids' in prev_context):
+        gen_path_tag_id = None
+        if search_button_clicked and 'selected_general_pathology_ids' in prev_context:
             gen_path_tag_id = prev_context['selected_general_pathology_ids'][0]
-        gen_path_tag = Tag.objects.get(id=gen_path_tag_id)
-        slides = slides.filter(tags__in=[gen_path_tag])
-        context['selected_general_pathology'] = gen_path_tag
-        request.session['image_browser_context']['selected_general_pathology_ids'] = queryset_to_id_list(Tag.objects.filter(id=gen_path_tag_id))  # function takes queryset
+        elif general_path_changed:
+            gen_path_tag_id = int(request.GET.get('general_pathology_button').split('-')[-1])
+        if gen_path_tag_id is not None:
+            gen_path_tag = Tag.objects.get(id=gen_path_tag_id)
+            slides = slides.filter(tags__in=[gen_path_tag])
+            context['selected_general_pathology'] = gen_path_tag
+            request.session['image_browser_context']['selected_general_pathology_ids'] = queryset_to_id_list(Tag.objects.filter(id=gen_path_tag_id))  # function takes queryset
     if search_query is not None:    # If search was updated, search among applicable_slides
         slides = slides.filter(Q(name__contains=search_query) | Q(description__contains=search_query))
 
@@ -242,12 +240,22 @@ def organ_tag_id_list_to_queryset(id_list):
 def whole_slide_view_full(request, slide_id):
     slide = slide_cache.load_slide_to_cache(slide_id)
     stain = slide.tags.get(is_stain=True)
-    general_pathology_tags = [tag for tag in slide.tags.filter(is_organ=False, is_stain=False)
+    selected_general_pathology_tags = [tag for tag in slide.tags.filter(is_organ=False, is_stain=False)
                               if tag.name.lower() in GENERAL_PATHOLOGY_TAGS]
+
+    other_tags = Tag.objects.filter(is_organ=False, is_stain=False)
+    all_general_pathology_tags = []
+    for tag in other_tags:
+        if tag.name.lower() in GENERAL_PATHOLOGY_TAGS:
+            all_general_pathology_tags.append(tag)
+
+
+
     context = {
         'slide': slide,
         'stain_name': stain.name,
-        'general_pathology_tags': general_pathology_tags
+        'general_pathology_tags': selected_general_pathology_tags,
+        'all_general_pathology_tags' : all_general_pathology_tags
     }
 
     try:
@@ -260,9 +268,6 @@ def whole_slide_view_full(request, slide_id):
         annotated_slide = None
 
     context['annotated_slide'] = annotated_slide
-    # Add annotations to context
-    context['pointers'] = Pointer.objects.filter(annotated_slide=annotated_slide)
-    context['boxes'] = BoundingBox.objects.filter(annotated_slide=annotated_slide)
 
     annotations = Annotation.objects.filter(annotated_slide=annotated_slide)
     context['annotations'] = []
@@ -270,6 +275,7 @@ def whole_slide_view_full(request, slide_id):
         context['annotations'].append(ann.deserialize())
 
     return render(request, 'slide/view_wsi_accordion.html', context)
+
 
 
 def whole_slide_viewer(request, slide_id):
@@ -354,19 +360,18 @@ def edit_description(request, slide_id):
     """
 
     slide = slide_cache.load_slide_to_cache(slide_id)
-    form = SlideDescriptionForm(request.POST or None, instance=slide)
+    new_description = request.POST.get('new_description')
+    new_description = new_description.replace('\n', '<br>')
 
-    if request.method == 'POST':  # Form was submitted
-        if form.is_valid():
-            form.save()
-            messages.add_message(request, messages.SUCCESS,
-                 f'The slide description of {slide.name} was altered!')
-            return redirect('slide:view_full', slide_id=slide_id)
+    try:
 
-    return render(request, 'slide/edit_description.html', {
-        'slide': slide,
-        'form': form
-    })
+        slide.long_description = new_description
+        slide.save()
+        return JsonResponse({'success': True})
+    except Slide.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Slide not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
 
 @teacher_required
@@ -376,22 +381,36 @@ def edit_general_pathology_tags(request, slide_id):
     """
 
     slide = slide_cache.load_slide_to_cache(slide_id)
+    selected_tags_ids = request.POST.getlist('selected_tags[]')
 
     if not slide.pathology:
         messages.add_message(request, messages.ERROR, 'This slide is not a pathology slide. Cannot add general pathology tags.')
         return redirect('slide:view_full', slide_id=slide.id)
 
-    other_tags = Tag.objects.filter(is_organ=False, is_stain=False)
-    general_pathology_tags = []
-    for tag in other_tags:
-        if tag.name.lower() in GENERAL_PATHOLOGY_TAGS:
-            general_pathology_tags.append(tag)
+    # remove existing tags first
+    selected_general_pathology_tags = [tag for tag in slide.tags.filter(is_organ=False, is_stain=False)
+                                       if tag.name.lower() in GENERAL_PATHOLOGY_TAGS]
+    if selected_general_pathology_tags:
+        for tag in selected_general_pathology_tags:
+            slide.tags.remove(tag)
 
-    return render(request, 'slide/select_general_pathology_tags.html', {
-        'slide': slide,
-        'general_pathology_tags': general_pathology_tags,
-        'stain_name': slide.tags.get(is_stain=True),
-    })
+    tag_names = []
+
+    try:
+        for tag_id in selected_tags_ids:
+            tag_to_add = Tag.objects.get(id=tag_id)
+            slide.tags.add(tag_to_add)
+            tag_names.append({'id': tag_to_add.id, 'name': tag_to_add.name})
+
+        slide.save()
+
+        return JsonResponse({'success': True, 'tag_names': tag_names})
+    except Slide.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Slide not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+
 
 
 @teacher_required
@@ -432,59 +451,7 @@ def remove_tag(request):
     return JsonResponse(data={})
 
 
-@teacher_required
-def add_or_edit_descriptive_annotation(request, slide_id):
-    """
-    View to handle descriptive/basic annotations of a Slide.
-    (Annotations that are not connected to Courses or Tasks)
-    """
-    context = {}
 
-    # Get slide
-    slide = Slide.objects.get(pk=slide_id)
-    slide_cache.load_slide_to_cache(slide.id)
-    context['slide'] = slide
-
-    # Get annotated slide
-    try:
-        annotated_slide = AnnotatedSlide.objects.get(slide_id=slide.id, task__isnull=True)
-    except MultipleObjectsReturned as err:
-        print("Multiple descriptive AnnotatedSlide objects found. Clean up DB!")  # Using last slide for now")
-        raise MultipleObjectsReturned(err)
-    except ObjectDoesNotExist as err:
-        print("Did not find descriptive AnnotatedSlide. Making a new object")
-        annotated_slide = AnnotatedSlide()
-        annotated_slide.slide = slide
-
-    if request.method == 'POST':  # Form was submitted
-        with transaction.atomic():  # Make save operation atomic
-            # Delete all existing annotations
-            delete_existing_annotations(annotated_slide)
-            annotated_slide.save()
-
-            # Store annotations (pointers)
-            for key in request.POST:
-
-                if key.startswith('right-arrow-overlay-') and key.endswith('-text'):
-                    save_pointer_annotation(request, key, annotated_slide)
-                elif key.startswith('boundingbox-') and key.endswith('-text'):
-                    save_boundingbox_annotation(request, key, annotated_slide)
-
-            # Give a message back to the user
-            messages.add_message(request, messages.SUCCESS, 'Annotations added successfully!')
-            return redirect('slide:view_full', slide_id=slide_id)
-
-    else:
-        context['annotated_slide'] = annotated_slide
-        context['pointers'] = Pointer.objects.filter(annotated_slide=annotated_slide)
-        context['boxes'] = BoundingBox.objects.filter(annotated_slide=annotated_slide)
-
-        print('Annotated slide id:', annotated_slide.id)
-
-    context['annotation_types'] = [
-        Pointer, BoundingBox
-    ]
-    return render(request, 'slide/add_edit_descriptive_annotations.html', context)
 
 
 def create_annotation(request):
@@ -572,56 +539,5 @@ def delete_annotation(request):
     return JsonResponse(data={})
 
 
-def delete_existing_annotations(annotated_slide):
-    """
-    Before saving new annotations, delete all existing to prevent duplicates
-    and simplify handling (don't need to check if objects are unique, etc.)
-    """
-    Pointer.objects.filter(annotated_slide=annotated_slide).delete()
-    BoundingBox.objects.filter(annotated_slide=annotated_slide).delete()
 
 
-@teacher_required
-def save_pointer_annotation(request, key, annotated_slide):
-    prefix = key[:-len('text')]
-    text = request.POST[key]
-    position_x = float(request.POST[prefix + 'x'])
-    position_y = float(request.POST[prefix + 'y'])
-
-    # Using get_or_create matches pointers and retrieves identical one if it exists
-    pointer, pointer_was_created = Pointer.objects.get_or_create(
-        annotated_slide=annotated_slide,
-        text=text,
-        position_x=position_x,
-        position_y=position_y
-    )
-    if pointer_was_created:
-        try:
-            pointer.save()
-        except IntegrityError as err:
-            print(f"{err.__class__.__name__}: Could not save pointer. {err}")
-
-
-@teacher_required
-def save_boundingbox_annotation(request, key, annotated_slide):
-    prefix = key[:-len('text')]
-    text = request.POST[key]
-    position_x = float(request.POST[prefix + 'x'])
-    position_y = float(request.POST[prefix + 'y'])
-    width = round(float(request.POST[prefix + 'width']), ndigits=5)
-    height = round(float(request.POST[prefix + 'height']), ndigits=5)
-
-    # Using get_or_create matches pointers and retrieves identical one if it exists
-    box, box_was_created = BoundingBox.objects.get_or_create(
-        annotated_slide=annotated_slide,
-        text=text,
-        position_x=position_x,
-        position_y=position_y,
-        width=width,
-        height=height
-    )
-    if box_was_created:
-        try:
-            box.save()
-        except IntegrityError as err:
-            print(f"{err.__class__.__name__}: Could not save box. {err}")
