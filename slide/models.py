@@ -3,7 +3,6 @@ import time
 import threading
 from io import BytesIO
 import json
-
 import fast
 import numpy as np
 from PIL import Image
@@ -11,9 +10,12 @@ from pathlib import Path
 import xml.etree.ElementTree as ET
 from django.db import models
 from django.conf import settings
-
 from slide.timing import Timer
 from tag.models import Tag
+
+if settings.USE_TURBOJPEG:
+    from turbojpeg import TurboJPEG, TJPF_RGB
+    jpeg = TurboJPEG()
 
 
 class Slide(models.Model):
@@ -36,7 +38,7 @@ class Slide(models.Model):
                 'import': Timer('Importing WSI'),
                 'getPatchImage': Timer('getPatchImage function'),
                 'sharpening': Timer('Tile sharpening'),
-                'conversion': Timer('Tile FAST->PIL conversion'),
+                'conversion': Timer('Tile FAST->NUMPY conversion'),
                 'resize': Timer('Tile resize'),
                 'jpeg': Timer('JPEG Conversion'),
             }
@@ -179,29 +181,31 @@ class Slide(models.Model):
         del access # Free access to other threads
         self.timers['getPatchImage'].stop()
 
-        self.timers['sharpening'].start()
-        sharpening = fast.ImageSharpening.create(1.5).connect(image)
-        image = sharpening.runAndGetOutputData()
-        self.timers['sharpening'].stop()
+        if settings.USE_IMAGE_SHARPENING:
+            self.timers['sharpening'].start()
+            image = fast.ImageSharpening.create(1.5).connect(image).runAndGetOutputData()
+            self.timers['sharpening'].stop()
 
-        #tileAccess = image.getImageAccess(fast.ACCESS_READ)
-        #return Image.frombytes(size=(tile_width, tile_height), data=tileAccess.get(), mode='RGB')
+        # TODO DO we really need this?:
+        #if tile_width != self._tile_width or tile_height != self._tile_height:
+        #    self.timers['resize'].start()
+        #    image = fast.ImageResizer.create(self._tile_width, self._tile_height).connect(image).runAndGetOutputData()
+        #    self.timers['resize'].stop()
 
-        # TODO get rid of asarray conversion, and read directly from bytes instead somehow
         self.timers['conversion'].start()
         image = np.asarray(image)
-        tile = Image.fromarray(image, mode='RGB')
         self.timers['conversion'].stop()
-
-        if tile.width != self._tile_width: # TODO What about edges cases here.
-            self.timers['resize'].start()
-            tile.thumbnail((self._tile_height, self._tile_width), resample=Image.BICUBIC)
-            self.timers['resize'].stop()
 
         # Convert PIL image to JPEG byte buffer and send back
         self.timers['jpeg'].start()
         buffer = BytesIO()
-        tile.save(buffer, 'jpeg', quality=75)  # TODO Set quality
+        if settings.USE_TURBOJPEG:
+            # Use turbo jpeg to compress image since it is quite fast
+            buffer.write(jpeg.encode(image, pixel_format=TJPF_RGB, quality=75))
+        else:
+            # Use pillow to compress which is slow
+            tile = Image.fromarray(image, mode='RGB')
+            tile.save(buffer, 'jpeg', quality=75)  # TODO Set quality
         self.timers['jpeg'].stop()
 
         if settings.PRINT_RUNTIME:
