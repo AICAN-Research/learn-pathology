@@ -267,3 +267,6 @@ if USE_TILE_CACHE:
             }
         }
     }
+
+USE_TURBOJPEG = False
+USE_IMAGE_SHARPENING = False

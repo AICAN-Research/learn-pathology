@@ -21,11 +21,12 @@ class Timer():
         self.counter += 1
 
     def print(self):
-        print()
-        print("Runtime of ", self.name)
-        print("-------------------------------------")
-        print("Average: " + str(self.sum/self.counter) + " ms")
-        print("Max: " + str(self.max) + " Min: " + str(self.min))
-        print("Count: " + str(self.counter))
+        if self.counter > 0:
+            print()
+            print("Runtime of ", self.name)
+            print("-------------------------------------")
+            print("Average: " + str(self.sum/self.counter) + " ms")
+            print("Max: " + str(self.max) + " Min: " + str(self.min))
+            print("Count: " + str(self.counter))
 
 
