@@ -1,11 +1,11 @@
-
+{% load static %}
 <div class="slideGridViewCard card">
 
     {# Image display #}
     <a class="cardImageHeader card border-0" href="{% url 'slide:view_full' slide.id %}">
         <div class="card transparentBackground border-0 w-100 h-100">
             <div class="headerImageContainer card">
-                <img class="headerImage" src="/slide/thumbnails/{{ slide.id }}.jpg" alt="WSI thumbnail for {{ slide.name }}">
+                <img class="headerImage" src="{% get_static_prefix %}/slide/thumbnails/{{ slide.id }}.jpg" alt="WSI thumbnail for {{ slide.name }}">
                 <!-- Use below line to crop image to fit the header container -->
                 {# <img class="headerImage croppedImage" src="/slide/thumbnails/{{ slide.id }}.jpg" alt="WSI thumbnail"> #}
             </div>
