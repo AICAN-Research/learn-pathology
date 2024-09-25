@@ -90,6 +90,12 @@
                         </div>
                         <span class="sidebar-item-text">Tasks</span>
                     </a>
+                       <a class="sidebar-item noLinkStyling" href="{% url 'comparison:index' %}" title="Comparison">
+                        <div class="sidebar-item-icon">
+                            <span class="iconify" data-icon="fluent:arrows-bidirectional-20-filled" data-width="24" data-height="24"></span>
+                        </div>
+                        <span class="sidebar-item-text">Comparison</span>
+                    </a>
                     {% if request.user.is_teacher or request.user.is_superuser %}
                         <!-- specific options for teachers or superuser -->
                         <a class="sidebar-item noLinkStyling" href="{% url 'tag:index' %}" title="Tags">

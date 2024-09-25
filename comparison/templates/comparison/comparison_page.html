@@ -1,0 +1,106 @@
+{% extends 'learnpathology/single_content_layout.html' %}
+{% load slide_filters %}
+{% load static %}
+{% load bootstrap_icons %}
+
+{% block breadcrumb_items %}
+    <li class="breadcrumb-item"><a href="{% url 'comparison:index' %}">Comparison browser</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ slide_1.name }} & {{ slide_2.name }}</li>
+{% endblock breadcrumb_items %}
+
+{% block page_title %}
+    {{ slide_1.name }} & {{ slide_2.name }}
+{% endblock page_title %}
+
+{% block button_row %}
+{% endblock button_row %}
+
+{% block content %}
+<div class="card transparentBackground centerCardHorizontally border-0" style="width: 100%; height: 100%;">
+    <div id="imageViewer" class="row" style="height: 95%; width: auto">
+        <div class="col-md-6">
+            <div class="card slideViewerCard transparentBackground">
+                <div id="wsi-canvas-1" class="wsi_canvas" style="height: 100%;"></div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card slideViewerCard transparentBackground">
+                <div id="wsi-canvas-2" class="wsi_canvas" style="height: 100%;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+     <div class="navigatorWrapper">
+        <div id="navigatorDiv-1"></div>
+    </div>
+       <div class="navigatorWrapper">
+        <div id="navigatorDiv-2"></div>
+    </div>
+{% endblock content %}
+
+
+
+{% block javascript %}
+    $(document).ready(function() {
+
+
+    let viewer1 = OpenSeadragon({
+        id: "wsi-canvas-1",
+        zoomPerScroll: 2, // Scroll speed
+        minScrollDeltaTime: 150, //	Number of milliseconds between canvas-scroll events.
+        prefixUrl: "{% static 'slide/images/' %}", // Where to find OpenSedragon button images
+        showNavigator: true, // The navigation window top-right
+        navigatorId: 'navigatorDiv-1',
+        showHomeControl: false,     // Hide the home button
+        showFullPageControl: false, // Hide the full-page button
+        showZoomControl: false,     // Hide the zoom-in and zoom-out buttons
+        minZoomLevel: 0.25, // Set your minimum zoom level
+        maxZoomLevel: 40,
+        rotationIncrement: 0,
+        tileSources: {
+            width: {{ slide_1.width }},
+            height: {{ slide_1.height }},
+            tileWidth: {{ slide_1.tile_width }},
+            tileHeight: {{ slide_1.tile_height }},
+            minLevel: 0,
+            maxLevel: {{ slide_1.osd_levels }}-1,
+            getTileUrl: function (level, x, y) {
+                return "/viewer/tile/{{ slide_1.id }}/" + ({{ slide_1.osd_levels }} -1 - level) + "/" + x + "/" + y + "/";
+            },
+        }
+    });
+
+    let viewer2 = OpenSeadragon({
+        id: "wsi-canvas-2",
+        zoomPerScroll: 2, // Scroll speed
+        minScrollDeltaTime: 150, //	Number of milliseconds between canvas-scroll events.
+        prefixUrl: "{% static 'slide/images/' %}", // Where to find OpenSedragon button images
+        showNavigator: true, // The navigation window top-right
+        navigatorId: 'navigatorDiv-2',
+        showHomeControl: false,     // Hide the home button
+        showFullPageControl: false, // Hide the full-page button
+        showZoomControl: false,     // Hide the zoom-in and zoom-out buttons
+        minZoomLevel: 0.25, // Set your minimum zoom level
+        maxZoomLevel: 40,
+        rotationIncrement: 0,
+        tileSources: {
+            width: {{ slide_2.width }},
+            height: {{ slide_2.height }},
+            tileWidth: {{ slide_2.tile_width }},
+            tileHeight: {{ slide_2.tile_height }},
+            minLevel: 0,
+            maxLevel: {{ slide_2.osd_levels }}-1,
+            getTileUrl: function (level, x, y) {
+                return "/viewer/tile/{{ slide_2.id }}/" + ({{ slide_2.osd_levels }} -1 - level) + "/" + x + "/" + y + "/";
+            },
+        }
+    });
+
+    console.log('Test')
+
+
+
+    });
+{% endblock javascript %}
+

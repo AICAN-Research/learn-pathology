@@ -34,6 +34,7 @@ urlpatterns = [
     path('tag/', include('tag.urls')),
     path('course/', include('course.urls')),
     path('task/', include('task.urls')),
+    path('comparison/', include('comparison.urls')),
     path('ckeditor/', include('ckeditor_uploader.urls')),
     path('free_text/', include('free_text.urls')),
     path('click_question/', include('click_question.urls')),
