@@ -19,12 +19,19 @@ from one_to_one.views import get_sorting_pair_formset
 from annotation_task.views import AnnotationTaskForm
 
 
-def list(request):
+def list(request, slide_id=None):
     """
     Show list of tasks
     """
 
-    tasks = Task.objects.all()
+
+    if slide_id:
+        tasks = Task.objects.filter(annotated_slide__slide=slide_id)
+    else:
+        tasks = Task.objects.all()
+        slide_id = 0
+
+
 
     # Filters
     organs = request.GET.getlist('organ[]')
@@ -57,6 +64,7 @@ def list(request):
         'selected_other_tags': tags,
         'selected_pathology': selected_pathology,
         'selected_histology': selected_histology,
+        'slide_id': slide_id,
     })
 
 

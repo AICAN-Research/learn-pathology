@@ -12,7 +12,7 @@ from course.models import Course
 from user.decorators import teacher_required
 
 
-def do(request, task_id, course_id=None):
+def do(request, task_id, course_id=None, slide_id=None):
     """
     Student form for answering/viewing a click question
 
@@ -26,7 +26,7 @@ def do(request, task_id, course_id=None):
         ID of Course instance
     """
 
-    context = setup_common_new_task_context(task_id, course_id)
+    context = setup_common_new_task_context(task_id, slide_id, course_id)
     slide_cache.load_slide_to_cache(context['slide'].id)
 
     # ======== Click question specific ========

@@ -96,9 +96,9 @@ Task list
                         </thead>
                         {% for task in tasks %}
                             <tr>
-                                <td><a href="{% url task.do_url task_id=task.id course_id=0 %}">{{ task.name }}</a></td>
+                                <td><a href="{% url task.do_url task_id=task.id course_id=0 slide_id=slide_id%}">{{ task.name }}</a></td>
                                 <td>{{ task.type }}</td>
-                                <td><a href="{% url task.do_url task_id=task.id course_id=0 %}">Do task</a></td>
+                                <td><a href="{% url task.do_url task_id=task.id course_id=0 slide_id=slide_id %}">Do task</a></td>
                                 {% if request.user.is_teacher or request.user.is_superuser %}
                                     <td><a href="{% url task.edit_url task.id %}">Edit</a></td>
                                     <td><a href="{% url 'task:task_delete' task.id %}">Delete</a></td>

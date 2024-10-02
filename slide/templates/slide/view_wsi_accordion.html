@@ -269,7 +269,17 @@
 
 <div id="toolbarBottomDiv">
     <div class="slideViewerToolbarButtonGroup">
+
+        <a class="sidebar-item noLinkStyling" href="{% url 'task:list' slide.id %}" title="Related Tasks">
         <div class="button-group">
+            <button id="related_tasks" class="custom-button btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Related Tasks">
+                <div class="button-icon">
+                    <span class="iconify" data-icon="fluent:task-list-square-rtl-20-regular" data-width="24" data-height="24"></span>
+                </div>
+            </button>
+        </div>
+        </a>
+            <div class="button-group">
             <button id="screenshotButton" class="custom-button btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Screenshot">
                 <div class="button-icon">
                     <span class="iconify" data-icon="fluent:camera-24-regular" data-width="24" data-height="24"></span>

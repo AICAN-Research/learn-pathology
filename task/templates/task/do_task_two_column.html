@@ -28,7 +28,7 @@
 
 {% block button_row %}
 <div class="custom-button" style="">
-    <a href="{% if course_id %}{% url 'course:view' course_id=course_id active_tab='tasks' %}{% else %}{% url 'task:list' %}{% endif %}" style="display: inline-flex;">
+    <a href="{% if course_id %}{% url 'course:view' course_id=course_id active_tab='tasks' %}{% else %}{% url 'task:list' slide_id=slide_id %}{% endif %}" style="display: inline-flex;">
         <div class="button-icon">
             <span class="iconify" data-icon="fluent:arrow-circle-left-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
         </div>
