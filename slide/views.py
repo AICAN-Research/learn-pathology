@@ -237,7 +237,7 @@ def organ_tag_id_list_to_queryset(id_list):
     return queryset
 
 
-def whole_slide_view_full(request, slide_id):
+def whole_slide_view_full(request, slide_id, course_id=None):
     slide = slide_cache.load_slide_to_cache(slide_id)
     stain = slide.tags.get(is_stain=True)
     selected_general_pathology_tags = [tag for tag in slide.tags.filter(is_organ=False, is_stain=False)
@@ -255,7 +255,8 @@ def whole_slide_view_full(request, slide_id):
         'slide': slide,
         'stain_name': stain.name,
         'general_pathology_tags': selected_general_pathology_tags,
-        'all_general_pathology_tags' : all_general_pathology_tags
+        'all_general_pathology_tags' : all_general_pathology_tags,
+        'course_id': course_id,
     }
 
     try:
