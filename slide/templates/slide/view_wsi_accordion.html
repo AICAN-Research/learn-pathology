@@ -257,7 +257,7 @@
                 <div class="button-group">
                     <button id="annotationListButton" class="custom-button btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Annotation List">
                         <div class="button-icon">
-                            <span class="iconify" data-icon="fluent:pin-12-regular" data-width="24" data-height="24"></span>
+                            <span class="iconify" data-icon="fluent:text-effects-24-regular" data-width="24" data-height="24"></span>
                         </div>
                     </button>
                 </div>
@@ -457,13 +457,10 @@ $(document).ready(function(){
         // Hide popup
         document.getElementById("collapsePopupWindow").style.display = "none";
         html2canvas($("#wsi-canvas")[0]).then(canvas => {
-            let now = new Date();
-            let formattedDate = now.format("yyyy-MM-dd hh-mm-ss");
-            console.log(now);
             // Trigger download
             let link = document.createElement('a');
             link.href = canvas.toDataURL("image/jpeg");
-            link.download = 'LearnPathology_screenshot_' + formattedDate + '.jpg';
+            link.download = 'LP_{{ slide.id }}.jpg';
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
