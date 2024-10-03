@@ -270,25 +270,43 @@ $(document).ready(function() {
         alert('Couldn\'t get scaling factor')
     }
 
-    let anno1 = OpenSeadragon.Annotorious(viewer1);
-    anno1.readOnly = true;
-    anno1.setVisible(visible_annotorious1);
+// Initialize Annotorious instances
+let anno1 = OpenSeadragon.Annotorious(viewer1);
+anno1.readOnly = true;  // Set read-only mode
+anno1.setVisible(visible_annotorious1);
 
-    let anno2 = OpenSeadragon.Annotorious(viewer2);
-    anno2.readOnly = true;
-    anno2.setVisible(visible_annotorious2);
+let anno2 = OpenSeadragon.Annotorious(viewer2);
+anno2.readOnly = true;  // Set read-only mode
+anno2.setVisible(visible_annotorious2);
 
-    {% if annotations_1 %}
-        {% for a1 in annotations_1 %}
-        anno1.addAnnotation({{ a1|safe }});
-        {% endfor %}
-    {% endif %}
+// Load annotations for viewer 1
+{% if annotations_1 %}
+    {% for a1 in annotations_1 %}
+    anno1.addAnnotation({{ a1|safe }});
+    {% endfor %}
+{% endif %}
 
-    {% if annotations_2 %}
-        {% for a2 in annotations_2 %}
-        anno2.addAnnotation({{ a2|safe }});
-        {% endfor %}
-    {% endif %}
+// Load annotations for viewer 2
+{% if annotations_2 %}
+    {% for a2 in annotations_2 %}
+    anno2.addAnnotation({{ a2|safe }});
+    {% endfor %}
+{% endif %}
+
+
+function updateReadOnlyStyles() {
+    setTimeout(function() {
+        if (anno1.readOnly || anno2.readOnly) {
+            document.body.classList.add('read-only-mode');
+            console.log('Apply read-only mode');
+        } else {
+            document.body.classList.remove('read-only-mode');
+            console.log('Remove read-only mode');
+        }
+    }, 100);
+}
+updateReadOnlyStyles();
+
 
     viewer1.addControl(document.getElementById("toolbarTopDiv1"), { anchor: OpenSeadragon.ControlAnchor.TOP_RIGHT });
     viewer2.addControl(document.getElementById("toolbarTopDiv2"), { anchor: OpenSeadragon.ControlAnchor.TOP_RIGHT });

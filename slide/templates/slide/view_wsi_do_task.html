@@ -102,6 +102,19 @@
         anno.setVisible(false);
     }
 
+    function updateReadOnlyStyles() {
+    setTimeout(function() {
+        if (anno.readOnly) {
+            document.body.classList.add('read-only-mode');
+            console.log('Apply read-only mode');
+        } else {
+            document.body.classList.remove('read-only-mode');
+            console.log('Remove read-only mode');
+        }
+    }, 100);
+}
+updateReadOnlyStyles();
+
 
     try {
         let pixelsPerMeter = {{ slide|get_pixels_per_meter }};
