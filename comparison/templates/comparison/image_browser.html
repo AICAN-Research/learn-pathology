@@ -16,28 +16,8 @@ Select the two images you want to compare
 
 
 {% block button_row %}
-{#    <div id="compare-button-container" class="custom-button" style="display: none; margin-top: 20px;">#}
-{#        <a href="" style="display: inline-flex;">#}
-{#            <div class="button-icon">#}
-{#                <span class="iconify" data-icon="fluent:arrows-bidirectional-20-filled" data-width="24" data-height="24"#}
-{#                      style="font-weight: bolder;"></span>#}
-{#            </div>#}
-{#            <div style="justify-content: flex-start; align-items: center; display: flex">#}
-{#                <div class="button-text">Compare</div>#}
-{#            </div>#}
-{#        </a>#}
-{#    </div>#}
 
-{#    <form id="compare-form" method="POST" action="{% url 'comparison:compare' %}">#}
-{#    {% csrf_token %}#}
-{#    <input type="hidden" name="selected_slides" id="selected-slides-input">#}
-{#    <div id="compare-button-container" style="display: none;">#}
-{#        <button type="submit">Compare</button>#}
-{#    </div>#}
-{#</form>#}
-
-
-    <form id="compare-form" method="POST" action="{% url 'comparison:compare' %}">
+    <form id="compare-form" method="POST" action="">
     {% csrf_token %}
     <input type="hidden" name="selected_slides" id="selected-slides-input">
 

@@ -122,12 +122,15 @@ def index(request):
 
     context['course'] = None
     context['slides_in_course'] = None
+    context['slide_1']=0
+    context['slide_2']=0
 
 
     return render(request, 'comparison/image_browser.html', context)
 
 
-def comparision_view(request):
+
+def comparision_view(request, slide_1=None, slide_2=None):
     # Check if the request is a POST and contains the 'selected_slides' data
     if request.method == 'POST' and 'selected_slides' in request.POST:
         # Get the selected slide IDs from the form
@@ -137,56 +140,60 @@ def comparision_view(request):
             # Split the string to get a list of slide IDs
             slide_ids = selected_slides.split(',')
 
-            # Initialize context dictionary to hold data for each slide
-            slides_data = {}
+    elif slide_1 and slide_2:
+        slide_ids =[slide_1,slide_2]
 
-            # Iterate over each slide ID and gather the necessary information
-            for index, slide_id in enumerate(slide_ids):
-                # Load the slide from the cache
-                slide = slide_cache.load_slide_to_cache(slide_id)
+    else:
+        return redirect(reverse('comparison:index'))
 
-                # Get stain tag
-                stain = slide.tags.get(is_stain=True)
+    # Initialize context dictionary to hold data for each slide
+    slides_data = {}
 
-                # Filter general pathology tags
-                selected_general_pathology_tags = [
-                    tag for tag in slide.tags.filter(is_organ=False, is_stain=False)
-                    if tag.name.lower() in GENERAL_PATHOLOGY_TAGS
-                ]
+    # Iterate over each slide ID and gather the necessary information
+    for index, slide_id in enumerate(slide_ids):
+        # Load the slide from the cache
+        slide = slide_cache.load_slide_to_cache(slide_id)
 
-                # Collect other general pathology tags
-                other_tags = Tag.objects.filter(is_organ=False, is_stain=False)
-                all_general_pathology_tags = [
-                    tag for tag in other_tags if tag.name.lower() in GENERAL_PATHOLOGY_TAGS
-                ]
+        # Get stain tag
+        stain = slide.tags.get(is_stain=True)
 
-                # Attempt to get the annotated slide
-                try:
-                    annotated_slide = AnnotatedSlide.objects.get(slide_id=slide.id, task__isnull=True)
-                except MultipleObjectsReturned as err:
-                    print(f"Multiple descriptive AnnotatedSlide objects found for slide {slide.id}. Clean up DB!")
-                    raise MultipleObjectsReturned(err)
-                except ObjectDoesNotExist:
-                    print(f"Did not find descriptive AnnotatedSlide for slide with id {slide.id}.")
-                    annotated_slide = None
+        # Filter general pathology tags
+        selected_general_pathology_tags = [
+            tag for tag in slide.tags.filter(is_organ=False, is_stain=False)
+            if tag.name.lower() in GENERAL_PATHOLOGY_TAGS
+        ]
 
-                # Get annotations for the slide
-                annotations = Annotation.objects.filter(annotated_slide=annotated_slide)
-                serialized_annotations = [ann.deserialize() for ann in annotations]
+        # Collect other general pathology tags
+        other_tags = Tag.objects.filter(is_organ=False, is_stain=False)
+        all_general_pathology_tags = [
+            tag for tag in other_tags if tag.name.lower() in GENERAL_PATHOLOGY_TAGS
+        ]
 
-                # Store each slide's data in the context dictionary with individual keys
-                slides_data[f'slide_{index + 1}'] = slide
-                slides_data[f'stain_name_{index + 1}'] = stain.name if stain else None
-                slides_data[f'general_pathology_tags_{index + 1}'] = selected_general_pathology_tags
-                slides_data[f'all_general_pathology_tags_{index + 1}'] = all_general_pathology_tags
-                slides_data[f'annotated_slide_{index + 1}'] = annotated_slide
-                slides_data[f'annotations_{index + 1}'] = serialized_annotations
+        # Attempt to get the annotated slide
+        try:
+            annotated_slide = AnnotatedSlide.objects.get(slide_id=slide.id, task__isnull=True)
+        except MultipleObjectsReturned as err:
+            print(f"Multiple descriptive AnnotatedSlide objects found for slide {slide.id}. Clean up DB!")
+            raise MultipleObjectsReturned(err)
+        except ObjectDoesNotExist:
+            print(f"Did not find descriptive AnnotatedSlide for slide with id {slide.id}.")
+            annotated_slide = None
 
-            # Render the comparison page with the collected slide data
-            return render(request, 'comparison/comparison_page.html', slides_data)
+        # Get annotations for the slide
+        annotations = Annotation.objects.filter(annotated_slide=annotated_slide)
+        serialized_annotations = [ann.deserialize() for ann in annotations]
 
-    # If no slides are selected or it's not a POST request, redirect to the index page
-    return redirect(reverse('comparison:index'))
+        # Store each slide's data in the context dictionary with individual keys
+        slides_data[f'slide_{index + 1}'] = slide
+        slides_data[f'stain_name_{index + 1}'] = stain.name if stain else None
+        slides_data[f'general_pathology_tags_{index + 1}'] = selected_general_pathology_tags
+        slides_data[f'all_general_pathology_tags_{index + 1}'] = all_general_pathology_tags
+        slides_data[f'annotated_slide_{index + 1}'] = annotated_slide
+        slides_data[f'annotations_{index + 1}'] = serialized_annotations
+
+    # Render the comparison page with the collected slide data
+    return render(request, 'comparison/comparison_page.html', slides_data)
+
 
 
 def reset_image_browser(request):

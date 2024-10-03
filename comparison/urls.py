@@ -6,6 +6,7 @@ app_name = 'comparison'
 urlpatterns = [
     path('index', views.index, name='index'),
     path('compare', views.comparision_view, name='compare'),
+    path('compare/<int:slide_1>/<int:slide_2>/', views.comparision_view, name='compare'),
     path('reset', views.reset_image_browser, name='reset'),
 
 ]
