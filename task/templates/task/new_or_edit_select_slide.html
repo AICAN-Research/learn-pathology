@@ -9,7 +9,7 @@
 {% block content %}
 
     <div class="card w-100 mx-auto">
-        <div class="card-body">
+        <div class="card-body" style="height: 100%">
             <!-- TODO: Instead of card-body, add same padding as on other pages (e.g. image browser) -->
 
 
@@ -52,24 +52,17 @@
             <div class="two-column-container">
 
                 <div class="content-left">
-                    <div class="card" style="width: 100%; height: 600px;">
                         {% include 'task/filtering_sidebar.html' %}
-
-                    </div>
-
                 </div>
 
-                <form id="radioForm" method="POST">
-                    {% csrf_token %}
-                    <div class="content-right">
-                        <div class="card" style="width: 100%; height: 600px;">
-                            {% include 'task/grid_view_task.html' with slides=slides %}
-                        </div>
 
-                    </div>
-                </form>
+
+                    <div class="content-right">
+                        <form id="radioForm" method="POST"> {% csrf_token %}
+                            {% include 'task/grid_view_task.html' with slides=slides %}
+                    </form> </div>
+
             </div>
-            </form>
         </div>
     </div>
 

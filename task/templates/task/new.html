@@ -39,84 +39,12 @@
             {% endif %}
         </div>
     </a>
-
-
 </div>
 {% endblock button_row %}
 
 
 {% block content %}
 
-<div class="card w-100 mx-auto" style="height: 85%; min-height: 600px;">
-<div class="card-body"> <!-- TODO: Instead of card-body, add same padding as on other pages (e.g. image browser) -->
-
-    <div class="w-100" style="padding-bottom: 12px;">
-        <div class="progress " style="width: 25%; height: 32px; margin-left: auto;">
-            <div class="progress-bar" role="progressbar" style="width: 33%; background-color: var(--color-blue-dark);">
-                1/3 <!-- TODO: Update with current value for each step -->
-            </div>
-        </div>
-    </div>
-
-    <div style="padding: 6px 24px 6px 24px;">
-        <h2>
-            Select the type of task
-        </h2>
-        <h3 style="color: var(--color-blue-dark);">
-            Choose from the options presented below
-        </h3>
-    </div>
-
-    <div class="card transparentBackground border-0 text-center">
-    <div class="card-text">
-        <div class="row">
-            <div class="column">
-                <div class="column">
-                    <div class="LPButton" style="margin-top: 0; ">
-                        {% if course_id %}
-                            <a href="{% url 'multiple_choice:new' slide_id=slide_id course_id=course_id %}">Single/Multiple
-                                Choice</a>
-                        {% else %}
-                            <a href="{% url 'multiple_choice:new' slide_id=slide_id %}">Single/Multiple
-                                Choice</a>
-                        {% endif %}
-                    </div>
-                    <br>
-                    <div class="LPButton" style="margin-top: 0; ">
-                        {% if course_id %}
-                            <a href="{% url 'free_text:new' slide_id=slide_id course_id=course_id %}">Free Text
-                                Question</a>
-                        {% else %}
-                            <a href="{% url 'free_text:new' slide_id=slide_id %}">Free Text Question</a>
-                        {% endif %}
-                    </div>
-                    <br>
-                    <div class="LPButton" style="margin-top: 0; ">
-                        {% if course_id %}
-                            <a href="{% url 'click_question:new' slide_id=slide_id course_id=course_id %}">Click
-                                Question</a>
-                        {% else %}
-                            <a href="{% url 'click_question:new' slide_id=slide_id %}">Click Question</a>
-                        {% endif %}
-                    </div>
-                    <br>
-                    <div class="LPButton" style="margin-top: 0; ">
-                        {% if course_id %}
-                            <a href="{% url 'one_to_one:new' slide_id=slide_id course_id=course_id %}">One-to-One
-                                Sorting Task</a>
-                        {% else %}
-                            <a href="{% url 'one_to_one:new' slide_id=slide_id %}">One-to-One Sorting Task</a>
-                        {% endif %}
-                    </div>
-                   <br>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    </div>
-</div>
-</div>
 
 {% endblock content %}
 
