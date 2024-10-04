@@ -1,0 +1,105 @@
+{% extends 'task/new.html' %}
+
+
+{% block page_title %}
+    New task: Select task type and image
+{% endblock page_title %}
+
+
+{% block content %}
+
+    <div class="card w-100 mx-auto">
+        <div class="card-body">
+            <!-- TODO: Instead of card-body, add same padding as on other pages (e.g. image browser) -->
+
+
+            <div style="overflow:auto;">
+                <div style="float:right;">
+                    <div id="slide-button" class="custom-button">
+                        <button type="submit"
+                                style="background: none; border: none; padding: 0; cursor: pointer; display: inline-flex;">
+                            <div class="button-icon">
+                                <span class="iconify" data-icon="fluent:arrow-right-24-regular" data-width="24"
+                                      data-height="24" style="font-weight: bolder;"></span>
+                            </div>
+                            <div style="justify-content: flex-start; align-items: center; display: flex;">
+                                <div class="button-text">Next</div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="w-100" style="padding-bottom: 12px;">
+                <div class="progress " style="width: 25%; height: 32px; margin-left: auto;">
+                    <div class="progress-bar" role="progressbar"
+                         style="width: 50%; background-color: var(--color-blue-dark);">
+                        2/4
+                    </div>
+                </div>
+            </div>
+
+            <div style="padding: 6px 24px 6px 24px;">
+                <h2>
+                    Select image for the task
+                </h2>
+                <h3 style="color: var(--color-blue-dark);">
+                    Check a slide or confirm that the one you chose is selected. Press Next.
+                </h3>
+            </div>
+
+            <div class="two-column-container">
+
+                <div class="content-left">
+                    <div class="card" style="width: 100%; height: 600px;">
+                        {% include 'task/filtering_sidebar.html' %}
+
+                    </div>
+
+                </div>
+
+                <form id="radioForm" method="POST">
+                    {% csrf_token %}
+                    <div class="content-right">
+                        <div class="card" style="width: 100%; height: 600px;">
+                            {% include 'task/grid_view_task.html' with slides=slides %}
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+
+        document.getElementById('slide-button').addEventListener('click', function () {
+            console.log('submit')
+
+            // Get the selected radio button value
+            const selectedOption = document.querySelector('input[name="selected_slide_id"]:checked');
+
+            if (selectedOption) {
+                // Submit the form if an option is selected
+                document.getElementById('radioForm').submit();
+            } else {
+                // Alert if no option is selected
+                alert('Please select slide before submitting.');
+            }
+        });
+
+    </script>
+
+{% endblock content %}
+
+
+{% block javascript %}
+
+    $(document).ready(function(){
+    collapseSidebar();
+    });
+
+{% endblock javascript %}

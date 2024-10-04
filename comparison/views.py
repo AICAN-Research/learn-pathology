@@ -122,8 +122,7 @@ def index(request):
 
     context['course'] = None
     context['slides_in_course'] = None
-    context['slide_1']=0
-    context['slide_2']=0
+
 
 
     return render(request, 'comparison/image_browser.html', context)

@@ -1,0 +1,104 @@
+{% extends 'task/new.html' %}
+
+
+{% block page_title %}
+New task: Select task type and image
+{% endblock page_title %}
+
+
+{% block content %}
+
+<div class="card w-100 mx-auto">
+<div class="card-body"> <!-- TODO: Instead of card-body, add same padding as on other pages (e.g. image browser) -->
+
+
+
+        <div style="overflow:auto;">
+            <div style="float:right;">
+
+
+    <form id="radioForm" action={% if course_id %}{% url 'task:new2' course_id %}{% else %}{% url 'task:new2' %}{% endif %}  method="GET">
+
+    <!-- Custom Button Design with Form Submit -->
+<div id="type-button" class="custom-button" >
+    <button type="submit" style="background: none; border: none; padding: 0; cursor: pointer; display: inline-flex;" >
+        <div class="button-icon">
+            <span class="iconify" data-icon="fluent:arrow-right-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
+        </div>
+        <div style="justify-content: flex-start; align-items: center; display: flex;">
+            <div class="button-text">Next</div>
+        </div>
+    </button>
+</div>
+
+
+            </div>
+        </div>
+
+                <div class="w-100" style="padding-bottom: 12px;">
+                    <div class="progress " style="width: 25%; height: 32px; margin-left: auto;">
+                        <div class="progress-bar" role="progressbar" style="width: 25%; background-color: var(--color-blue-dark);">
+                            1/4
+                        </div>
+                    </div>
+                </div>
+
+                <div style="padding: 6px 24px 6px 24px;">
+                    <h2>
+                        Select the type of task
+                    </h2>
+                    <h3 style="color: var(--color-blue-dark);">
+                        Choose from the options presented below
+                    </h3>
+                </div>
+
+                <div class="card transparentBackground border-0 text-center">
+                <div class="card-text">
+                    <div class="row">
+                        <div class="column">
+                            <div class="column">
+                                <div class="radio-toolbar">
+
+                                    <!-- Task type selection -->
+                                    <div>
+                                        <input type="radio" name="task_type" id="multiple_choice" value="multiple_choice"> <!-- onchange="this.form.submit();"> -->
+                                        <label for="multiple_choice" class="body-text">Multiple choice</label>
+                                    </div>
+                                    <div>
+                                        <input type="radio" name="task_type" id="free_text" value="free_text"> <!-- onchange="this.form.submit();"> -->
+                                        <label for="free_text" class="body-text">Paragraph/short answer question</label>
+                                    </div>
+                                    <div>
+                                        <input type="radio" name="task_type" id="click_question" value="click_question"> <!-- onchange="this.form.submit();"> -->
+                                        <label for="click_question" class="body-text">Click question</label>
+                                    </div>
+                                    <div>
+                                        <input type="radio" name="task_type" id="one_to_one_sort" value="one_to_one_sort"> <!-- onchange="this.form.submit();"> -->
+                                        <label for="one_to_one_sort" class="body-text">One-to-one sorting task</label>
+                                    </div>
+                                    <div>
+                                        <input type="radio" name="task_type" id="annotation_task" value="annotation_task"> <!-- onchange="this.form.submit();"> -->
+                                        <label for="annotation_task" class="body-text">Annotation task</label>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+        </div>
+</div>
+</div>
+
+
+
+{% endblock content %}
+
+
+{% block javascript %}
+
+    $(document).ready(function(){
+        collapseSidebar();
+    });
+
+{% endblock javascript %}

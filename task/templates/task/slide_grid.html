@@ -1,0 +1,75 @@
+{% load slide_filters %}
+
+{% block grid_loop %}
+
+<div class="container-fluid" style="width: 100%">
+    {% for chunk in slides|as_chunks:12 %}
+        <div class="row">
+            {% for slide in chunk %}
+                <div class="column col-xs-6 col-sm-6 col-md-4 col-lg-3 col-xl-3 slide-card"
+                     style="padding: 24px; border: 1px solid lightgrey; position: relative; cursor: pointer;">
+                    <!-- Hidden checkbox with better positioning -->
+                    <input type="radio" name="selected_slide_id" id="{{ slide.id }}" value="{{ slide.id }}" style="visibility: hidden; position: absolute">
+
+
+                    <!-- Label acts as a clickable area for the entire card -->
+                    <label for="{{ slide.id }}" class="compareSlide" style="display: block; height: 100%;">
+                        {% include grid_card_url with slide=slide %}
+                    </label>
+
+                    <!-- Checkmark positioned absolutely within the card -->
+                    <div id="slide_{{ slide.id }}_checkmark"
+                         style="{% if slide_selected == 'true' %}display: block;{% else %}display: none;{% endif %}
+                         position: absolute; top: 5px; right: 5px;">
+                        <svg class="bi text-success" width="32px" height="32px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                            {% include 'svg_icons/check-circle.svg' %}
+                        </svg>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+</div>
+
+
+
+
+<script>
+
+    // When a slide card is clicked
+$('.slide-card').on('click', function (event) {
+    // Prevent the event from propagating to other elements (like Next button)
+    event.stopPropagation();
+
+    // Find the radio button inside the card and check it
+    const radioButton = $(this).find('input[type="radio"]')[0];
+    radioButton.checked = true;
+
+    // Trigger the change event for visual updates
+    $(radioButton).trigger('change');
+
+    // Call function to update the checkmark display
+    updateCheckmark();
+});
+
+// Update the checkmark based on the selected radio button
+function updateCheckmark() {
+    const selectedSlideId = $("input[name='selected_slide_id']:checked").val();
+    $('input[name="selected_slide_id"]').each(function () {
+        const slideId = $(this).attr('id');
+        const checkmark = $(this).closest('.slide-card').find('[id^="slide_"][id$="_checkmark"]');
+        if (slideId === selectedSlideId) {
+            checkmark.css('display', 'block');
+        } else {
+            checkmark.css('display', 'none');
+        }
+    });
+}
+
+
+
+
+</script>
+
+
+{% endblock grid_loop %}
