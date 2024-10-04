@@ -728,11 +728,17 @@ Annotorious
 ============================================= */
 
 .r6o-editor-inner{
-    width: 200px
+    width: 200px;
 }
 .read-only-mode .r6o-footer {
     display: none;
 }
+.r6o-widget.r6o-tag{
+    display: none; !important;
+}
+
+
+
 
 
 /* =============================================
