@@ -15,6 +15,6 @@ class FreeTextForm(ModelForm):
         }
         widgets = {
             'question': Textarea(attrs={'rows': 1, 'cols': 70, 'resize': 'none'}),
-            'instructions': Textarea(attrs={'rows': 1, 'cols': 70}),
-            'answer': Textarea(attrs={'rows':10, 'col':70}),
+            'instructions': Textarea(attrs={'rows': 2, 'cols': 70}),
+            'answer': Textarea(attrs={'rows': 10, 'cols': 70}),
         }

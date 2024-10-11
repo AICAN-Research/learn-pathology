@@ -9,7 +9,7 @@ class FreeText(models.Model):
     task = models.OneToOneField(Task, on_delete=models.CASCADE)
     question = models.CharField(max_length=2048)
     instructions = models.CharField(max_length=2048, default='Answer the question with your own words. Use as many '
-                                                             'terminology as possible  ')
+                                                             'terminology as possible.')
     answer = models.CharField(max_length=2048)
 
 
