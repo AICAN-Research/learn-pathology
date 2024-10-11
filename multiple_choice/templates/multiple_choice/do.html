@@ -11,7 +11,7 @@
 
 {% block content_left %}
     <div class="row">
-        <form action="{% url 'multiple_choice:do' task_id=task.id course_id=course_id %}" method="post">
+        <form action="{% url 'multiple_choice:do' task_id=task.id course_id=course_id slide_id=slide_id %}" method="post">
             {% csrf_token %}
             {% for choice in multiple_choice.choice_set.all %}
                 {% if counter_corr_answ <= 1 %}

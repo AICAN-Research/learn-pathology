@@ -11,11 +11,10 @@ New task: Select task type
 <div class="card w-100 mx-auto">
     <div class="card-body" style="height: 100%;"> <!-- TODO: Instead of card-body, add same padding as on other pages (e.g. image browser) -->
 
-        <div style="overflow:auto;">
-            <div style="float:right;">
+        <form id="radioForm" action="{% if course_id %}{% url 'task:new2' course_id %}{% else %}{% url 'task:new2' %}{% endif %}" method="GET" onsubmit="return validateForm();">
 
-                <form id="radioForm" action="{% if course_id %}{% url 'task:new2' course_id %}{% else %}{% url 'task:new2' %}{% endif %}" method="GET" onsubmit="return validateForm();">
-
+            <div style="overflow:auto;">
+                <div style="float:right;">
                     <!-- Custom Button Design with Form Submit -->
                     <div id="type-button" class="custom-button">
                         <button type="submit" style="background: none; border: none; padding: 0; cursor: pointer; display: inline-flex;">
@@ -27,33 +26,29 @@ New task: Select task type
                             </div>
                         </button>
                     </div>
-
-                </form>
-            </div>
-        </div>
-
-        <div class="w-100" style="padding-bottom: 12px;">
-            <div class="progress" style="width: 25%; height: 32px; margin-left: auto;">
-                <div class="progress-bar" role="progressbar" style="width: 25%; background-color: var(--color-blue-dark);">
-                    1/4
                 </div>
             </div>
-        </div>
 
-        <div style="padding: 6px 24px 6px 24px;">
-            <h2>Select the type of task</h2>
-            <h3 style="color: var(--color-blue-dark);">Choose from the options presented below</h3>
-        </div>
+            <div class="w-100" style="padding-bottom: 12px;">
+                <div class="progress" style="width: 25%; height: 32px; margin-left: auto;">
+                    <div class="progress-bar" role="progressbar" style="width: 25%; background-color: var(--color-blue-dark);">
+                        1/4
+                    </div>
+                </div>
+            </div>
 
-        <div class="card transparentBackground border-0 text-center">
-            <div class="card-text">
-                <div class="row">
-                    <div class="column">
+            <div style="padding: 6px 24px 6px 24px;">
+                <h2>Select the type of task</h2>
+                <h3 style="color: var(--color-blue-dark);">Choose from the options presented below</h3>
+            </div>
+
+            <div class="card transparentBackground border-0 text-center">
+                <div class="card-text">
+                    <div class="row">
                         <div class="column">
-                            <div class="radio-toolbar">
-
-                                <!-- Task type selection -->
-                                <form id="radioForm" method="GET">
+                            <div class="column">
+                                <div class="radio-toolbar">
+                                    <!-- Task type selection -->
                                     <div>
                                         <input type="radio" name="task_type" id="multiple_choice" value="multiple_choice">
                                         <label for="multiple_choice" class="body-text">Multiple choice</label>
@@ -74,15 +69,13 @@ New task: Select task type
                                         <input type="radio" name="task_type" id="annotation_task" value="annotation_task">
                                         <label for="annotation_task" class="body-text">Annotation task</label>
                                     </div>
-                                </form>
-
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-
+        </form>
     </div>
 </div>
 

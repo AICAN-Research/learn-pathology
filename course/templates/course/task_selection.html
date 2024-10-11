@@ -87,7 +87,7 @@ Select tasks for <span style="color: var(--color-blue-dark);">{{ course.title }}
                                 {% for task in filtered_tasks %}
                                     <tr>
                                         <td>
-                                            <a href="{% url task.do_url task_id=task.id course_id=course.id %}">{{ task.name }}</a>
+                                            <a href="{% url task.do_url task_id=task.id course_id=0 slide_id=0 %}">{{ task.name }}</a>
                                         </td>
                                         <td>{{ task.type }}</td>
                                         <td><a class="LPButton btn add_button" style="margin: 0;"
@@ -126,7 +126,7 @@ Select tasks for <span style="color: var(--color-blue-dark);">{{ course.title }}
                                         {% for task in tasks_in_course %}
                                             <tr>
                                                 <td>
-                                                    <a href="{% url task.do_url task_id=task.id course_id=course.id %}">{{ task.name }}</a>
+                                                    <a href="{% url task.do_url task_id=task.id course_id=course.id slide_id=0 %}">{{ task.name }}</a>
                                                 </td>
                                                 <td>{{ task.type }}</td>
                                                 <td><a class="LPButton btn remove_button" style="margin: 0;"
@@ -141,7 +141,7 @@ Select tasks for <span style="color: var(--color-blue-dark);">{{ course.title }}
                                 </form>
                             {% else %}
                                 <p>
-                                    No slides have been added to the course.
+                                    No tasks have been added to the course.
                                 </p>
                             {% endif %}
                         </td>
