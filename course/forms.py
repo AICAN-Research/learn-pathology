@@ -17,6 +17,7 @@ class CourseForm(forms.ModelForm):
             'teacher': 'Teachers'
         }
         widgets = {
+            'title': forms.Textarea(attrs={'rows': 1, 'cols': 100}),
             'description': forms.Textarea(attrs={'rows': 1, 'cols': 100}),
         }
 
