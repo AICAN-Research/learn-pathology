@@ -316,7 +316,7 @@ def task_selection(request, course_id):
         filteredTasks = filteredTasks.filter(tags__in=stains)
     tags = request.GET.getlist('tag[]')
     if len(tags) > 0:
-        filteredTasks = filteredTasks.filter(tags__in=tags)
+        filteredTasks = filteredTasks.filter(tags__in=tags).distinct()
 
     # Get list of the tasks that are NOT in course
     tasksXor = []
