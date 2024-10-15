@@ -92,10 +92,6 @@ def new(request, slide_id, course_id=None):
 
         with transaction.atomic():  # Make save operation atomic
             if multiple_choice_form.is_valid() and task_form.is_valid() and choice_formset.is_valid():
-                # Create annotated slide
-                annotated_slide = AnnotatedSlide()
-                annotated_slide.slide = slide
-                annotated_slide.save()
 
                 task = process_new_task_request(request, slide_id, course_id)
 
