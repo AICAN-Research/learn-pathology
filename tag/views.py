@@ -59,7 +59,7 @@ def edit(request, tag_id):
                 tag = form.save()
                 messages.add_message(request, messages.SUCCESS, f'Tag {tag.name} was updated')
                 return redirect('tag:index')
-        return render(request, 'tag/edit.html', {'form': form})
+        return render(request, 'tag/edit.html', {'form': form, 'tag': tag})
     except Tag.DoesNotExist:
         return HttpResponseNotFound()
 
