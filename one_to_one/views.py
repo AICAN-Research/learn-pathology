@@ -117,7 +117,7 @@ def edit(request, task_id,course_id=None):
 
     context = setup_common_edit_task_context(task_id, course_id)
 
-    SortingPairFormSet = modelformset_factory(SortingPair, form=SortingPairForm, extra=4, max_num=4)
+    SortingPairFormSet = modelformset_factory(SortingPair, form=SortingPairForm, extra=5)
     one_to_one = get_object_or_404(OneToOne, task=context['task'])
     sorting_pair = SortingPair.objects.filter(task=one_to_one)
 
@@ -167,7 +167,7 @@ def edit(request, task_id,course_id=None):
     return render(request, 'one_to_one/new.html', context)
 
 
-def get_sorting_pair_formset():
-    SortingPairFormSet = formset_factory(SortingPairForm, extra=4)
+def get_sorting_pair_formset(num_extra_fields=5):
+    SortingPairFormSet = formset_factory(SortingPairForm, extra=num_extra_fields)
     sorting_pair_formset = SortingPairFormSet()
     return sorting_pair_formset
