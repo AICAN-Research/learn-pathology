@@ -7,7 +7,7 @@ from django.urls import reverse
 
 def index(request):
     last_url = request.META.get('HTTP_REFERER', '')
-    prev_context = {} if ('course/slide_selection/' not in last_url) else request.session.get('image_browser_context',
+    prev_context = {} if ('comparison/index' not in last_url) else request.session.get('image_browser_context',
                                                                                               {})
     request.session['image_browser_context'] = {}
     # Initialize empty context dictionary
