@@ -65,6 +65,8 @@ function highlightMenuItem() {
         app_name = 'task';
     } else if (location.href.includes('tag/')) {
         menu_item = 'tag';
+    } else if (location.href.includes('comparison/')) {
+        menu_item = 'comparison';
     } else {
         return;
     }
