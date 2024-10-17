@@ -1,0 +1,492 @@
+{% extends 'learnpathology/single_content_layout.html' %}
+{% load slide_filters %}
+{% load static %}
+{% load bootstrap_icons %}
+
+{% block breadcrumb_items %}
+    <li class="breadcrumb-item"><a href="{% url 'comparison:index' %}">Comparison browser</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ slide_1.name }} & {{ slide_2.name }}</li>
+{% endblock breadcrumb_items %}
+
+{% block page_title %}
+    {{ slide_1.name }} & {{ slide_2.name }}
+{% endblock page_title %}
+
+{% block button_row %}
+     <div class="custom-button" id="screenshotButton" style="">
+            <div class="button-icon">
+                <span class="iconify" data-icon="fluent:camera-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
+            </div>
+            <div style="justify-content: flex-start; align-items: center; display: flex">
+                <div class="button-text">Screenshot</div>
+            </div>
+        </a>
+    </div>
+{% endblock button_row %}
+
+{% block content %}
+<div class="card transparentBackground centerCardHorizontally border-0" style="width: 100%; height: 100%;">
+    <div id="imageViewer" class="row" style="height: 95%; width: auto">
+        <div class="col-md-6">
+            <div class="card slideViewerCard transparentBackground">
+                <div id="wsi-canvas1" class="wsi_canvas" style="height: 100%;"></div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card slideViewerCard transparentBackground">
+                <div id="wsi-canvas2" class="wsi_canvas" style="height: 100%;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="toolbarTopDiv1">
+    <div class="navigatorWrapper">
+        <div class="navigatorDiv" id="navigatorDiv1"></div>
+    </div>
+
+    <div class="row gx-0 justify-content-end" id="collapsePopupWindow1">
+        <div class="col-auto">
+            <button id="collapsePopupButton1" class="custom-button border-0" style="display: none;">
+                <div class="button-icon" style="color: var(--color-white);">
+                    <span class="iconify" data-icon="fluent:chevron-right-24-regular" data-width="24" data-height="24"></span>
+                </div>
+            </button>
+        </div>
+
+        <div class="col-auto">
+            <button id="annotationListButton1" class="custom-button btn btn-secondary"
+                    data-toggle="tooltip" data-placement="left" title="Annotation List">
+                <div class="button-icon">
+                    <span class="iconify" data-icon="fluent:text-effects-24-regular" data-width="24" data-height="24"></span>
+                </div>
+            </button>
+        </div>
+
+        <div class="col-auto" id="popupContainer1" style="display: none;">
+            <div id="popup" class="popup-content">
+                <div id="annotationListContent1" style="max-height: 350px; overflow-y: auto;">
+                    <div class="stickyDiv">
+                        <h3>Annotations</h3>
+                        <div class="form-check form-switch" style="margin-left: 8px;">
+                            <input class="form-check-input" type="checkbox" id="toggleAnnotationButton1">
+                            <label class="form-check-label" for="toggleAnnotationButton1">Show Annotations</label>
+                        </div>
+                    </div>
+                    <div id="annotationList1">
+                        <!-- Annotation items will be dynamically populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="toolbarTopDiv2">
+    <div class="navigatorWrapper">
+        <div class="navigatorDiv" id="navigatorDiv2"></div>
+    </div>
+
+    <div class="row gx-0 justify-content-end" id="collapsePopupWindow2">
+        <div class="col-auto">
+            <button id="collapsePopupButton2" class="custom-button border-0" style="display: none;">
+                <div class="button-icon" style="color: var(--color-white);">
+                    <span class="iconify" data-icon="fluent:chevron-right-24-regular" data-width="24" data-height="24"></span>
+                </div>
+            </button>
+        </div>
+
+        <div class="col-auto">
+            <button id="annotationListButton2" class="custom-button btn btn-secondary"
+                    data-toggle="tooltip" data-placement="left" title="Annotation List">
+                <div class="button-icon">
+                    <span class="iconify" data-icon="fluent:text-effects-24-regular" data-width="24" data-height="24"></span>
+                </div>
+            </button>
+        </div>
+
+        <div class="col-auto" id="popupContainer2" style="display: none;">
+            <div id="popup" class="popup-content">
+                <div id="annotationListContent2" style="max-height: 350px; overflow-y: auto;">
+                    <div class="stickyDiv">
+                        <h3>Annotations</h3>
+                        <div class="form-check form-switch" style="margin-left: 8px;">
+                            <input class="form-check-input" type="checkbox" id="toggleAnnotationButton2">
+                            <label class="form-check-label" for="toggleAnnotationButton2">Show Annotations</label>
+                        </div>
+                    </div>
+                    <div id="annotationList2">
+                        <!-- Annotation items will be dynamically populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<div id="toolbarBottomDiv1">
+    <div class="slideViewerToolbarButtonGroup">
+        <div class="button-group">
+            <button id="zoomInButton1" class="custom-button btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Zoom In">
+                <div class="button-icon">
+                    <span class="iconify" data-icon="fluent:add-24-regular" data-width="24" data-height="24"></span>
+                </div>
+            </button>
+        </div>
+        <div class="button-group">
+            <button id="zoomOutButton1" class="custom-button btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Zoom Out">
+                <div class="button-icon">
+                    <span class="iconify" data-icon="fluent:subtract-24-regular" data-width="24" data-height="24"></span>
+                </div>
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="toolbarBottomDiv2">
+    <div class="slideViewerToolbarButtonGroup">
+        <div class="button-group">
+            <button id="zoomInButton2" class="custom-button btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Zoom In">
+                <div class="button-icon">
+                    <span class="iconify" data-icon="fluent:add-24-regular" data-width="24" data-height="24"></span>
+                </div>
+            </button>
+        </div>
+        <div class="button-group">
+            <button id="zoomOutButton2" class="custom-button btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Zoom Out">
+                <div class="button-icon">
+                    <span class="iconify" data-icon="fluent:subtract-24-regular" data-width="24" data-height="24"></span>
+                </div>
+            </button>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block javascript %}
+$(document).ready(function() {
+    collapseSidebar();
+
+    let visible_annotorious1 = false;
+    let visible_annotorious2 = false;
+
+    // Initialize OpenSeadragon viewers
+    let viewer1 = OpenSeadragon({
+        id: "wsi-canvas1",
+        zoomPerScroll: 2,
+        minScrollDeltaTime: 150,
+        prefixUrl: "{% static 'slide/images/' %}",
+        showNavigator: true,
+        navigatorId: 'navigatorDiv1',
+        showHomeControl: false,
+        showFullPageControl: false,
+        showZoomControl: false,
+        minZoomLevel: 0.25,
+        maxZoomLevel: 40,
+{#        rotationIncrement: 0,#}
+        tileSources: {
+            width: {{ slide_1.width }},
+            height: {{ slide_1.height }},
+            tileWidth: {{ slide_1.tile_width }},
+            tileHeight: {{ slide_1.tile_height }},
+            minLevel: 0,
+            maxLevel: {{ slide_1.osd_levels }} - 1,
+            getTileUrl: function (level, x, y) {
+                return "/viewer/tile/{{ slide_1.id }}/" + ({{ slide_1.osd_levels }} - 1 - level) + "/" + x + "/" + y + "/";
+            },
+        }
+    });
+
+    let viewer2 = OpenSeadragon({
+        id: "wsi-canvas2",
+        zoomPerScroll: 2,
+        minScrollDeltaTime: 150,
+        prefixUrl: "{% static 'slide/images/' %}",
+        showNavigator: true,
+        navigatorId: 'navigatorDiv2',
+        showHomeControl: false,
+        showFullPageControl: false,
+        showZoomControl: false,
+        minZoomLevel: 0.25,
+        maxZoomLevel: 40,
+{#        rotationIncrement: 0,#}
+        tileSources: {
+            width: {{ slide_2.width }},
+            height: {{ slide_2.height }},
+            tileWidth: {{ slide_2.tile_width }},
+            tileHeight: {{ slide_2.tile_height }},
+            minLevel: 0,
+            maxLevel: {{ slide_2.osd_levels }} - 1,
+            getTileUrl: function (level, x, y) {
+                return "/viewer/tile/{{ slide_2.id }}/" + ({{ slide_2.osd_levels }} - 1 - level) + "/" + x + "/" + y + "/";
+            },
+        }
+    });
+
+    try {
+        let pixelsPerMeter = {{ slide_1|get_pixels_per_meter }};
+        viewer1.scalebar({
+            type: OpenSeadragon.ScalebarType.MICROSCOPY,
+            pixelsPerMeter: pixelsPerMeter,
+            minWidth: "250px",
+            location: OpenSeadragon.ScalebarLocation.BOTTOM_LEFT,
+            xOffset: 10,
+            yOffset: 20,
+            stayInsideImage: true,
+            color: "rgba(100,100,100,0.9)",
+            fontColor: "rgb(50,50,50)",
+            backgroundColor: "rgba(230, 230, 230, 0.5)",
+            fontSize: "large",
+            barThickness: 3
+        });
+    } catch (e) {
+        alert('Couldn\'t get scaling factor')
+    }
+
+    try {
+        let pixelsPerMeter = {{ slide_2|get_pixels_per_meter }};
+        viewer2.scalebar({
+            type: OpenSeadragon.ScalebarType.MICROSCOPY,
+            pixelsPerMeter: pixelsPerMeter,
+            minWidth: "250px",
+            location: OpenSeadragon.ScalebarLocation.BOTTOM_LEFT,
+            xOffset: 10,
+            yOffset: 20,
+            stayInsideImage: true,
+            color: "rgba(100,100,100,0.9)",
+            fontColor: "rgb(50,50,50)",
+            backgroundColor: "rgba(230, 230, 230, 0.5)",
+            fontSize: "large",
+            barThickness: 3
+        });
+    } catch (e) {
+        alert('Couldn\'t get scaling factor')
+    }
+
+// Initialize Annotorious instances
+let anno1 = OpenSeadragon.Annotorious(viewer1);
+anno1.readOnly = true;  // Set read-only mode
+anno1.setVisible(visible_annotorious1);
+
+let anno2 = OpenSeadragon.Annotorious(viewer2);
+anno2.readOnly = true;  // Set read-only mode
+anno2.setVisible(visible_annotorious2);
+
+// Load annotations for viewer 1
+{% if annotations_1 %}
+    {% for a1 in annotations_1 %}
+    anno1.addAnnotation({{ a1|safe }});
+    {% endfor %}
+{% endif %}
+
+// Load annotations for viewer 2
+{% if annotations_2 %}
+    {% for a2 in annotations_2 %}
+    anno2.addAnnotation({{ a2|safe }});
+    {% endfor %}
+{% endif %}
+
+
+function updateReadOnlyStyles() {
+    setTimeout(function() {
+        if (anno1.readOnly || anno2.readOnly) {
+            document.body.classList.add('read-only-mode');
+            console.log('Apply read-only mode');
+        } else {
+            document.body.classList.remove('read-only-mode');
+            console.log('Remove read-only mode');
+        }
+    }, 100);
+}
+updateReadOnlyStyles();
+
+
+    viewer1.addControl(document.getElementById("toolbarTopDiv1"), { anchor: OpenSeadragon.ControlAnchor.TOP_RIGHT });
+    viewer2.addControl(document.getElementById("toolbarTopDiv2"), { anchor: OpenSeadragon.ControlAnchor.TOP_RIGHT });
+    viewer1.addControl(document.getElementById("toolbarBottomDiv1"), { anchor: OpenSeadragon.ControlAnchor.BOTTOM_RIGHT });
+    viewer2.addControl(document.getElementById("toolbarBottomDiv2"), { anchor: OpenSeadragon.ControlAnchor.BOTTOM_RIGHT });
+
+    // Zoom controls for both viewers
+    document.getElementById("zoomInButton1").addEventListener('click', function() { zoomIn(viewer1); });
+    document.getElementById("zoomOutButton1").addEventListener('click', function() { zoomOut(viewer1); });
+    document.getElementById("zoomInButton2").addEventListener('click', function() { zoomIn(viewer2); });
+    document.getElementById("zoomOutButton2").addEventListener('click', function() { zoomOut(viewer2); });
+
+
+    // Zoom in function
+    function zoomIn(viewer) {
+        let currentZoom = viewer.viewport.getZoom();
+        let newZoom = currentZoom * viewer.zoomPerScroll;
+        if (newZoom <= viewer.viewport.getMaxZoom()) {
+            viewer.viewport.zoomTo(newZoom);
+        }
+    }
+
+    // Zoom out function
+    function zoomOut(viewer) {
+        let currentZoom = viewer.viewport.getZoom();
+        let newZoom = currentZoom / viewer.zoomPerScroll;
+        if (newZoom >= viewer.viewport.getMinZoom()) {
+            viewer.viewport.zoomTo(newZoom);
+        }
+    }
+
+    function updateAnnotationList(anno, annotationListId, toggleButtonId, visible_annotorious) {
+    let annotationList = document.getElementById(annotationListId);
+    annotationList.innerHTML = ''; // Clear previous list
+
+    let annotations = anno.getAnnotations();
+    annotations.sort(function (a, b) {
+        let textA = a.body[0].value.toUpperCase();
+        let textB = b.body[0].value.toUpperCase();
+        return textA.localeCompare(textB);
+    });
+
+    annotations.forEach(function (annotation) {
+        let listItem = document.createElement('div');
+        listItem.classList.add('annotationListElement');
+
+        let annotationButton = document.createElement('button');
+        annotationButton.textContent = annotation.body[0].value;
+        annotationButton.classList.add('annotationListElementButton', 'transparentBackground');
+        annotationButton.addEventListener('click', function () {
+            anno.setVisible(true);
+            visible_annotorious = true;
+            anno.selectAnnotation(annotation);
+            anno.fitBoundsWithConstraints(annotation, { 'padding': 200 });
+            document.getElementById(toggleButtonId).checked = true;
+        });
+
+        listItem.appendChild(annotationButton);
+        annotationList.appendChild(listItem);
+    });
+}
+
+function toggleAnnotationVisibility(anno, toggleButtonId, visible_annotorious) {
+    const isVisible = document.getElementById(toggleButtonId).checked;
+    anno.setVisible(isVisible);
+}
+
+function setupAnnotationPopup(annotationListButtonId, popupContainerId, collapsePopupButtonId, anno, toggleButtonId, annotationListId, visible_annotorious) {
+    // Get the elements
+    const annotationListButton = document.getElementById(annotationListButtonId);
+    const popupContainer = document.getElementById(popupContainerId);
+    const collapsePopupButton = document.getElementById(collapsePopupButtonId);
+
+    // Initially hide the popup container and collapse button
+    popupContainer.style.display = 'none';
+    collapsePopupButton.style.display = 'none';
+
+    // When the Annotation List button is clicked
+    annotationListButton.addEventListener('click', () => {
+        // Hide the Annotation List button
+        annotationListButton.style.display = 'none';
+        // Show the popup container and the collapse button
+        popupContainer.style.display = 'block';
+        updateAnnotationList(anno, annotationListId, toggleButtonId, visible_annotorious);
+        collapsePopupButton.style.display = 'block';
+    });
+
+    // When the Collapse button is clicked
+    collapsePopupButton.addEventListener('click', () => {
+        // Hide the popup container and the collapse button
+        popupContainer.style.display = 'none';
+        collapsePopupButton.style.display = 'none';
+        // Show the Annotation List button again
+        annotationListButton.style.display = 'block';
+    });
+
+    // Initialize annotation visibility toggle
+    document.getElementById(toggleButtonId).addEventListener('change', function () {
+        toggleAnnotationVisibility(anno, toggleButtonId, visible_annotorious);
+    });
+}
+
+// Usage for viewer1
+setupAnnotationPopup(
+    'annotationListButton1',
+    'popupContainer1',
+    'collapsePopupButton1',
+    anno1,
+    'toggleAnnotationButton1',
+    'annotationList1',
+    'visible_annotorious1'
+);
+
+// Usage for viewer2
+setupAnnotationPopup(
+    'annotationListButton2',
+    'popupContainer2',
+    'collapsePopupButton2',
+    anno2,
+    'toggleAnnotationButton2',
+    'annotationList2',
+    'visible_annotorious2'
+);
+
+document.getElementById("screenshotButton").addEventListener('click', function () {
+    // Hide unnecessary UI elements (buttons, popups, etc.)
+    document.getElementById("toolbarBottomDiv1").style.display = "none";
+    document.getElementById("toolbarBottomDiv2").style.display = "none";
+    document.getElementById("collapsePopupWindow1").style.display = "none";
+    document.getElementById("collapsePopupWindow2").style.display = "none";
+    document.getElementById("annotationListButton1").style.display = "none";
+    document.getElementById("annotationListButton2").style.display = "none";
+
+    // Ensure that necessary elements like annotations and navigators are visible
+    document.getElementById("navigatorDiv1").style.visibility = "visible";
+    document.getElementById("navigatorDiv2").style.visibility = "visible";
+    document.getElementById("popupContainer1").style.visibility = "visible";
+    document.getElementById("popupContainer2").style.visibility = "visible";
+
+    // Capture the canvas for viewer1 and viewer2 along with the annotations and navigator
+    Promise.all([
+        html2canvas(document.getElementById("wsi-canvas1")),
+        html2canvas(document.getElementById("wsi-canvas2"))
+    ]).then(canvases => {
+        const canvas1 = canvases[0];
+        const canvas2 = canvases[1];
+
+        // Create a merged canvas to combine viewer1 and viewer2
+        const mergedCanvas = document.createElement('canvas');
+        mergedCanvas.width = canvas1.width + canvas2.width; // Combine widths of both canvases
+        mergedCanvas.height = canvas1.height;  // Use the height of one viewer (assuming they are the same height)
+        const ctx = mergedCanvas.getContext('2d');
+
+        // Draw both canvases side by side
+        ctx.drawImage(canvas1, 0, 0);
+        ctx.drawImage(canvas2, canvas1.width, 0);
+
+        // Create download link for the combined screenshot
+        let link = document.createElement('a');
+        link.href = mergedCanvas.toDataURL("image/jpeg");
+        link.download = `LP_{{ slide_1.id }}_{{ slide_2.id }}.jpg`;
+
+        // Trigger download
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        // Restore UI elements after screenshot
+        document.getElementById("toolbarBottomDiv1").style.display = "block";
+        document.getElementById("toolbarBottomDiv2").style.display = "block";
+        document.getElementById("collapsePopupWindow1").style.display = "flex";
+        document.getElementById("collapsePopupWindow2").style.display = "flex";
+       document.getElementById("annotationListButton1").style.display = "block";
+        document.getElementById("annotationListButton2").style.display = "block";
+    });
+});
+
+
+
+
+});
+
+{% endblock javascript %}

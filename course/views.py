@@ -16,7 +16,7 @@ from slide.models import Slide
 from slide.views import queryset_to_id_list, GENERAL_PATHOLOGY_TAGS
 from tag.models import Tag
 from task.models import Task
-from task.views import new as new_task
+
 from user.decorators import teacher_required
 
 
@@ -175,11 +175,7 @@ def delete(request, course_id):
     return redirect('course:index')
 
 
-@teacher_required
-def new_task_and_add_to_course(request, course_id, slide_id):
-    # Call/render new task template from here for user to fill in
-    http_response = new_task(request, slide_id=slide_id, course_id=course_id)
-    return http_response
+
 
 
 @teacher_required
@@ -320,7 +316,7 @@ def task_selection(request, course_id):
         filteredTasks = filteredTasks.filter(tags__in=stains)
     tags = request.GET.getlist('tag[]')
     if len(tags) > 0:
-        filteredTasks = filteredTasks.filter(tags__in=tags)
+        filteredTasks = filteredTasks.filter(tags__in=tags).distinct()
 
     # Get list of the tasks that are NOT in course
     tasksXor = []

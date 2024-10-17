@@ -21,19 +21,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'Insert secret key here!'
+SECRET_KEY = 'ih^&f=k6+5n0+-$lgcr#$9z75n00f$zmnptk#od3mikayz6md9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 # To enable FEIDE login you also have to add a social applications object with the client id and secret key to the database
-USE_FEIDE_LOGIN = True
+USE_FEIDE_LOGIN = False
 
 # To enable TILE CACHE you need to install the python package pymemcache and the linux package memcached.
 # Remember to configure the size of the memcached in /etc/memcached.conf
 USE_TILE_CACHE = True
 
-ALLOWED_HOSTS = ['10.20.93.218', 'learnpathology.no', 'www.learnpathology.no']
+ALLOWED_HOSTS = ['*']
 
 # For using flatpages, set to site corresponding to this settings.py file
 APPEND_SLASH = True
@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'one_to_one',
     'course',
     'tag',
+    'comparison',
 
 
 ]

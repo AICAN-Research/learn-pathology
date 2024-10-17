@@ -16,6 +16,17 @@
 
 
 {% block button_row %}
+{% if course_id %}
+    <div class="custom-button" style="">
+    <a href="{% url 'course:view' course_id=course_id active_tab='slides' %}" style="display: inline-flex;">
+        <div class="button-icon">
+            <span class="iconify" data-icon="fluent:arrow-circle-left-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
+        </div>
+        <div style="justify-content: flex-start; align-items: center; display: flex">
+            <div class="button-text">Return to course</div>
+        </div>
+    </a>
+</div>{% endif %}
 {% endblock button_row %}
 
 
@@ -257,7 +268,7 @@
                 <div class="button-group">
                     <button id="annotationListButton" class="custom-button btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Annotation List">
                         <div class="button-icon">
-                            <span class="iconify" data-icon="fluent:pin-12-regular" data-width="24" data-height="24"></span>
+                            <span class="iconify" data-icon="fluent:text-effects-24-regular" data-width="24" data-height="24"></span>
                         </div>
                     </button>
                 </div>
@@ -269,7 +280,17 @@
 
 <div id="toolbarBottomDiv">
     <div class="slideViewerToolbarButtonGroup">
+
+        <a class="sidebar-item noLinkStyling" href="{% url 'task:list' slide.id %}" title="Related Tasks">
         <div class="button-group">
+            <button id="related_tasks" class="custom-button btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Related Tasks">
+                <div class="button-icon">
+                    <span class="iconify" data-icon="fluent:task-list-square-rtl-20-regular" data-width="24" data-height="24"></span>
+                </div>
+            </button>
+        </div>
+        </a>
+            <div class="button-group">
             <button id="screenshotButton" class="custom-button btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Screenshot">
                 <div class="button-icon">
                     <span class="iconify" data-icon="fluent:camera-24-regular" data-width="24" data-height="24"></span>
@@ -332,7 +353,7 @@ $(document).ready(function(){
         showZoomControl: false,     // Hide the zoom-in and zoom-out buttons
         minZoomLevel: 0.25, // Set your minimum zoom level
         maxZoomLevel: 40,
-        rotationIncrement: 0,
+{#        rotationIncrement: 0,#}
         tileSources: {
             width: {{ slide.width }},
             height: {{ slide.height }},
@@ -399,6 +420,19 @@ $(document).ready(function(){
     updateAnnotationList();
 
 
+    function updateReadOnlyStyles() {
+    setTimeout(function() {
+        if (anno.readOnly ) {
+            document.body.classList.add('read-only-mode');
+            console.log('Apply read-only mode');
+        } else {
+            document.body.classList.remove('read-only-mode');
+            console.log('Remove read-only mode');
+        }
+    }, 100);
+}
+updateReadOnlyStyles();
+
     // Annotorious + annotation storing
     anno.on('createAnnotation', function(annotation) {
         // Save new annotation
@@ -457,13 +491,10 @@ $(document).ready(function(){
         // Hide popup
         document.getElementById("collapsePopupWindow").style.display = "none";
         html2canvas($("#wsi-canvas")[0]).then(canvas => {
-            let now = new Date();
-            let formattedDate = now.format("yyyy-MM-dd hh-mm-ss");
-            console.log(now);
             // Trigger download
             let link = document.createElement('a');
             link.href = canvas.toDataURL("image/jpeg");
-            link.download = 'LearnPathology_screenshot_' + formattedDate + '.jpg';
+            link.download = 'LP_{{ slide.id }}.jpg';
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);

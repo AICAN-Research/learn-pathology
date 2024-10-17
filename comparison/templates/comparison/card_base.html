@@ -1,0 +1,25 @@
+{% load static %}
+<div class="slideGridViewCard card">
+
+    {# Image display #}
+    <a class="cardImageHeader card border-0" href="#">
+        <div class="card transparentBackground border-0 w-100 h-100">
+            <div class="headerImageContainer card">
+                <img class="headerImage" src="{% get_static_prefix %}slide/thumbnails/{{ slide.id }}.jpg" alt="WSI thumbnail for {{ slide.name }}">
+                <!-- Use below line to crop image to fit the header container -->
+                {# <img class="headerImage croppedImage" src="/slide/thumbnails/{{ slide.id }}.jpg" alt="WSI thumbnail"> #}
+            </div>
+        </div>
+    </a>
+
+    {# Card content (slide name, description, buttons, ...) #}
+    <div class="gridCardContent">
+        <a class="card noLinkStyling border-0" href="#">
+            <h3 class="card-title">{{ slide.name }}</h3>
+            <p class="card-subtitle" style="font-size: medium;"><span class="body-text">{{ slide.description }}</span></p>
+            {% block gridCardQuestions %}
+            {% endblock gridCardQuestions %}
+        </a>
+    </div>
+
+</div>

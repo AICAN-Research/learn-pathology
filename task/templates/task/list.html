@@ -19,11 +19,23 @@ Task list
 
 
 {% block button_row %}
+{% if slide_id %}
+    <div class="custom-button" style="">
+    <a href="{% url 'slide:view_full' slide_id=slide_id %}" style="display: inline-flex;">
+        <div class="button-icon">
+            <span class="iconify" data-icon="fluent:arrow-circle-left-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
+        </div>
+        <div style="justify-content: flex-start; align-items: center; display: flex">
+            <div class="button-text">Return to slide</div>
+        </div>
+    </a>
+</div>{% endif %}
+
 
 {% if user.is_superuser or user.is_teacher %}
     <div class="custom-button" style="">
         <!-- TODO: Update url to not include slide_id since slide is selected when making task -->
-        <a href="{% url 'task:new' %}" style="display: inline-flex;">
+        <a href="{% url 'task:new1' %}" style="display: inline-flex;">
             <div class="button-icon">
                 <span class="iconify" data-icon="fluent:add-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
             </div>
@@ -96,9 +108,9 @@ Task list
                         </thead>
                         {% for task in tasks %}
                             <tr>
-                                <td><a href="{% url task.do_url task_id=task.id course_id=0 %}">{{ task.name }}</a></td>
+                                <td><a href="{% url task.do_url task_id=task.id course_id=0 slide_id=slide_id%}">{{ task.name }}</a></td>
                                 <td>{{ task.type }}</td>
-                                <td><a href="{% url task.do_url task_id=task.id course_id=0 %}">Do task</a></td>
+                                <td><a href="{% url task.do_url task_id=task.id course_id=0 slide_id=slide_id %}">Do task</a></td>
                                 {% if request.user.is_teacher or request.user.is_superuser %}
                                     <td><a href="{% url task.edit_url task.id %}">Edit</a></td>
                                     <td><a href="{% url 'task:task_delete' task.id %}">Delete</a></td>

@@ -1,0 +1,122 @@
+{% load slide_filters %}
+
+{% block grid_loop %}
+
+<div class="container-fluid" style="width: 100%">
+    {% for chunk in slides|as_chunks:12 %}
+        <div class="row">
+            {% for slide in chunk %}
+                <div class="column col-xs-6 col-sm-6 col-md-4 col-lg-3 col-xl-3 slide-card"
+                     style="padding: 24px; border: 1px solid lightgrey; position: relative; cursor: pointer;">
+                    <!-- Hidden checkbox with better positioning -->
+                    <input type="checkbox" name="selected_slide_id" id="{{ slide.id }}" value="{{ slide.id }}"
+                           style="visibility: hidden; position: absolute;">
+
+                    <!-- Label acts as a clickable area for the entire card -->
+                    <label for="{{ slide.id }}" class="compareSlide" style="display: block; height: 100%;">
+                        {% include grid_card_url with slide=slide %}
+                    </label>
+
+                    <!-- Checkmark positioned absolutely within the card -->
+                    <div id="slide_{{ slide.id }}_checkmark"
+                         style="{% if slide_selected == 'true' %}display: block;{% else %}display: none;{% endif %}
+                         position: absolute; top: 5px; right: 5px;">
+                        <svg class="bi text-success" width="32px" height="32px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                            {% include 'svg_icons/check-circle.svg' %}
+                        </svg>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+</div>
+
+
+
+
+<script>
+    $(document).ready(function () {
+        let checkedBoxes = [];
+
+        // Function to update the visibility of the compare button
+        function updateCompareButton() {
+            if (checkedBoxes.length === 2) {
+                $('#compare-button-container').show(); // Show button if 2 are checked
+            } else {
+                $('#compare-button-container').hide(); // Hide button if less or more than 2
+            }
+        }
+
+        // Function to update the checkmarks based on the checkedBoxes array
+        function updateCheckmarks() {
+            $('input[type="checkbox"]').each(function () {
+                const slideId = $(this).attr('id');
+                const checkmark = $(this).closest('.slide-card').find('[id^="slide_"][id$="_checkmark"]');
+                // Show checkmark only if the slide is in checkedBoxes list
+                if (checkedBoxes.includes(slideId)) {
+                    checkmark.css('display', 'block');
+                } else {
+                    checkmark.css('display', 'none');
+                }
+            });
+        }
+
+        // Handle the slide-card click event
+        $('.slide-card').on('click', function (event) {
+            event.stopPropagation();
+
+            const checkbox = $(this).find('input[type="checkbox"]');
+            const slideId = checkbox.attr('id');
+            const isChecked = checkbox.prop('checked');
+
+            // If the current box is unchecked (new selection)
+            if (!isChecked) {
+                // If there are already 2 selected slides, uncheck the oldest one
+                if (checkedBoxes.length >= 2) {
+                    const oldestCheckboxId = checkedBoxes.shift(); // Remove the first (oldest) checkbox from the array
+                    const oldestCheckbox = $('#' + oldestCheckboxId);
+                    oldestCheckbox.prop('checked', false); // Uncheck the oldest checkbox
+                }
+
+                // Add the current slide to the list of selected slides
+                checkedBoxes.push(slideId);
+            } else {
+                // If the checkbox was already checked and now unchecked, remove it from the list
+                checkedBoxes = checkedBoxes.filter(id => id !== slideId);
+            }
+
+            // Toggle the current checkbox state
+            checkbox.prop('checked', !isChecked);
+
+            updateCheckmarks();
+            updateCompareButton();
+        });
+
+
+        $('#compare-form').on('submit', function (event) {
+            event.preventDefault();
+
+            // Ensure two slides are selected
+            if (checkedBoxes.length === 2) {
+                const slide_1 = checkedBoxes[0];
+                const slide_2 = checkedBoxes[1];
+
+                // Dynamically update the form action attribute
+                const url = `/comparison/compare/${slide_1}/${slide_2}/`;
+                $('#compare-form').attr('action', url);
+
+                // Add the selected slide IDs to the hidden input field as a comma-separated string
+                $('#selected-slides-input').val(checkedBoxes.join(','));
+
+                // Submit the form
+                this.submit();
+            } else {
+                alert('Please select exactly two slides for comparison.');
+            }
+        });
+    });
+
+</script>
+
+
+{% endblock grid_loop %}

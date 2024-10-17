@@ -681,6 +681,13 @@ Slide viewer
     height: 190px;
 }
 
+.navigatorDiv {
+    background: var(--color-light-gray);
+    border: 2px solid var(--color-gray);
+    width: 250px;
+    height: 190px;
+}
+
 .annotationList {
     padding: 4px;
 }
@@ -716,6 +723,17 @@ Slide viewer
     padding: 5px;
     border: 0 solid var(--color-white);
 }
+/* =============================================
+Annotorious
+============================================= */
+
+.r6o-editor-inner{
+    width: 200px
+}
+.read-only-mode .r6o-footer {
+    display: none;
+}
+
 
 /* =============================================
 Image browser

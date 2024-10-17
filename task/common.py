@@ -8,7 +8,7 @@ from slide.models import Slide, AnnotatedSlide, Annotation
 from course.models import Course
 
 
-def setup_common_new_task_context(task_id, course_id=None):
+def setup_common_new_task_context(task_id, slide_id=None, course_id=None):
 
     task = Task.objects.get(id=task_id)
     slide = task.annotated_slide.slide
@@ -28,6 +28,8 @@ def setup_common_new_task_context(task_id, course_id=None):
     if course_id:
         course = Course.objects.get(id=course_id)
         all_tasks = Task.objects.filter(course=course)
+    elif slide_id:
+        all_tasks = Task.objects.filter(annotated_slide__slide=slide_id)
     else:
         all_tasks = Task.objects.all()
 
@@ -40,6 +42,7 @@ def setup_common_new_task_context(task_id, course_id=None):
     next_task = Task.objects.get(id=next_task_id)
     context['next_task_id'] = next_task_id
     context['next_task'] = next_task
+    context['slide_id'] = slide_id
 
     return context
 

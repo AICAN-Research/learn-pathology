@@ -1,0 +1,81 @@
+{% extends 'learnpathology/two_column_layout.html' %}
+{% load slide_filters %}
+{% load bootstrap_icons %}
+
+
+{% block page_title %}
+Select the two images you want to compare
+{% endblock page_title %}
+
+
+{% block breadcrumb_items %}
+
+<li class="breadcrumb-item active" aria-current="page">Comparison</li>
+
+{% endblock breadcrumb_items %}
+
+
+{% block button_row %}
+
+    <form id="compare-form" method="POST" action="">
+    {% csrf_token %}
+    <input type="hidden" name="selected_slides" id="selected-slides-input">
+
+    <!-- Custom Button Design with Form Submit -->
+    <div id="compare-button-container" class="custom-button" style="display: none; margin-top: 20px;">
+        <button type="submit" style="background: none; border: none; padding: 0; cursor: pointer; display: inline-flex;">
+            <div class="button-icon">
+                <span class="iconify" data-icon="fluent:arrows-bidirectional-20-filled" data-width="24" data-height="24" style="font-weight: bolder;"></span>
+            </div>
+            <div style="justify-content: flex-start; align-items: center; display: flex;">
+                <div class="button-text">Compare</div>
+            </div>
+        </button>
+    </div>
+</form>
+
+{% endblock button_row %}
+
+
+{% block content_left %}
+    {% include 'comparison/filtering_sidebar.html' %}
+{% endblock content_left %}
+
+
+{% block content_right %}
+<!-- Slide grid -->
+
+<div class="card border-0">
+    {% if slides %}
+        <div class="card border-0" style="min-height: 600px">
+            {% include 'comparison/grid_view_task.html' with slides=slides %}
+        </div>
+
+    {% else %}
+        <div class="card" style="min-height: 200px; padding-top: 10px">
+            No slides available.
+        </div>
+    {% endif %}
+</div>
+
+{% endblock content_right %}
+
+
+{% block javascript %}
+
+$(document).ready(function(){
+    /*activateTab('aaa');*/
+    collapseSidebar();
+});
+
+function activateTab(tab){
+  $('.nav-tabs a[href="#' + tab + '"]').tab('show');
+}
+
+{#$(document).ready(function() {#}
+{#    $('.btn').onclick(function (event) {#}
+{#        this.form.submit();#}
+{#    });#}
+{#});#}
+
+{% endblock javascript %}

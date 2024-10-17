@@ -26,8 +26,20 @@
 
 
 {% block button_row %}
+   {% if slide_id %}
 <div class="custom-button" style="">
-    <a href="{% if course_id %}{% url 'course:view' course_id=course_id active_tab='tasks' %}{% else %}{% url 'task:list' %}{% endif %}" style="display: inline-flex;">
+    <a href="{% url 'slide:view_full' slide_id%}" style="display: inline-flex;">
+        <div class="button-icon">
+            <span class="iconify" data-icon="fluent:arrow-circle-left-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
+        </div>
+        <div style="justify-content: flex-start; align-items: center; display: flex">
+            <div class="button-text">Return to slide</div>
+        </div>
+    </a>
+</div>    {% endif %}
+
+<div class="custom-button" style="">
+    <a href="{% if course_id %}{% url 'course:view' course_id=course_id active_tab='tasks' %}{% else %}{% url 'task:list' slide_id=slide_id %}{% endif %}" style="display: inline-flex;">
         <div class="button-icon">
             <span class="iconify" data-icon="fluent:arrow-circle-left-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
         </div>
