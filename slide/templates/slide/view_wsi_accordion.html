@@ -321,7 +321,7 @@
     </div>
 </div>
 
-<div id="AICAN-logo" class="container text-center" style="margin-top: 2rem; margin-bottom: 2rem; visibility: hidden"> Copyright by <br>
+<div id="AICAN-logo" class="container text-center" style="margin-top: 2rem; margin-bottom: 2rem; visibility: hidden; height: 0; width: 0"> Copyright by <br>
     <img src="{% static 'learnpathology/images/logo_v0.png' %}" alt="LearnPathology logo" style="max-width: 400px;align-self: center; opacity: 0.5">
 </div>
 
@@ -487,6 +487,8 @@ updateReadOnlyStyles();
         document.getElementById("toolbarBottomDiv").style.display = "none";
         {% if not request.user.is_teacher  %}
         document.getElementById("AICAN-logo").style.visibility  = "visible";
+        document.getElementById("AICAN-logo").style.height  = "auto";
+        document.getElementById("AICAN-logo").style.width  = "auto";
         {% endif %}
         // Hide popup
         document.getElementById("collapsePopupWindow").style.display = "none";
@@ -503,6 +505,8 @@ updateReadOnlyStyles();
             document.getElementById("buttonColumn").style.display = "block";
             document.getElementById("toolbarBottomDiv").style.display = "block";
             document.getElementById("AICAN-logo").style.visibility  = "hidden";
+            document.getElementById("AICAN-logo").style.height  = "0";
+            document.getElementById("AICAN-logo").style.width  = "0";
             // Display popup again
             document.getElementById("collapsePopupWindow").style.display = "flex";
         });
