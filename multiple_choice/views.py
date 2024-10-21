@@ -142,7 +142,7 @@ def edit(request, task_id, course_id=None):
 
     context = setup_common_edit_task_context(task_id, course_id)
 
-    ChoiceFormset = modelformset_factory(Choice, form=ChoiceForm, extra=5)
+    ChoiceFormset = modelformset_factory(Choice, form=ChoiceForm, extra=4, max_num=4)
     multiple_choice = get_object_or_404(MultipleChoice, task=context['task'])
     choices = Choice.objects.filter(task=multiple_choice)
 
@@ -209,7 +209,7 @@ def edit(request, task_id, course_id=None):
         return render(request, 'multiple_choice/new.html', context)
 
 
-def get_choice_formset(num_extra_fields=5):
-    ChoiceFormset = formset_factory(ChoiceForm, extra=num_extra_fields)
+def get_choice_formset():
+    ChoiceFormset = formset_factory(ChoiceForm, extra=4)
     choice_formset = ChoiceFormset()
     return choice_formset
