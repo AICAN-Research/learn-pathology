@@ -19,7 +19,7 @@
     <form id="my-form" method="POST">
         {% csrf_token %}
         <div class="row">
-            <div class="col">
+            <div class="col col-2">
                 <ul class="list-group " id="fixed-list">
                     {% for annotation in annotations %}
                         <li class="list-group-item ui-state-default " id="fixed-element-{{ forloop.counter }}">{{ annotation.body.0.value }}</li>
