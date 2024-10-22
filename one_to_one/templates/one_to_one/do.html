@@ -10,6 +10,9 @@
 {% endblock task_question %}
 
 {% block content_left %}
+<style>
+    .color-hovered-element { background-color: var(--color-blue-light); }
+</style>
     <form id="my-form" method="POST">
         <div class="row">
             <div class="col">
@@ -103,8 +106,11 @@ $(document).ready(function(){
     }
 
     //var sortableList = document.querySelector('.sortable');
-    var sortableList = document.getElementById('sortable-list');
-    var sortable_list = new Sortable(sortableList);
+    let sortableList = document.getElementById('sortable-list');
+    let jquerySortable = new Sortable(sortableList, {
+        swap: true, // Enable swapping (rather than sorting/shifting elements)
+        swapClass: 'color-hovered-element', // The class applied to the hovered swap item
+    });
 
     // Capture the order of the list items on form submission
     var myForm = document.querySelector('#my-form');
