@@ -45,6 +45,14 @@ Multiple choice
         </tr>
     {% endfor %}
 
+    <thead class="thead-light">
+        <tr><th colspan="2">Explanation of answer</th></tr>
+    </thead>
+    <tr>
+        <th>{{ multipleChoiceForm.explanation.label }} (optional)</th>
+        <td>{{ multipleChoiceForm.explanation }}</td>
+    </tr>
+
 </table>
 
 {% endblock specific_task_type_form %}
