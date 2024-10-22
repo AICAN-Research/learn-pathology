@@ -165,6 +165,13 @@
         }
     }
 
+    function onAddOrEndSortable(event) {
+        resizeListElements();
+        if (taskReadyForSubmit()) {
+            document.getElementById('submit-button').disabled = false;
+        }
+    }
+
     $(document).ready(function(){
         var mode = "{{ mode }}";
         var idOrder = JSON.parse("{{id_order}}");
@@ -177,12 +184,6 @@
         let sortableList = document.getElementById('sortable-list');
         let sortableListInitial = document.getElementById('sortable-list-initial');
 
-        function onAddOrEndSortable(event) {
-            resizeListElements();
-            if (taskReadyForSubmit()) {
-                document.getElementById('submit-button').disabled = false;
-            }
-        }
         let jquerySortable = new Sortable(sortableList, {
             group: 'answers',
             swap: true, // Enable swapping (rather than sorting/shifting elements)
