@@ -16,6 +16,7 @@
     .list-group-item { min-height: 45px; }
 </style>
     <form id="my-form" method="POST">
+        {% csrf_token %}
         <div class="row">
             <div class="col">
                 <ul class="list-group " id="fixed-list">
@@ -25,7 +26,6 @@
                 </ul>
             </div>
             <div class="col">
-                {% csrf_token %}
                 <ul class="list-group sortable" id="sortable-list">
                     {% for pair in one_to_one.sortingpair_set.all %}
                         {% if mode == 'get' %}
@@ -42,7 +42,6 @@
                 <div id="mode" data-mode="{{ mode }}"></div>
             </div>
             <div class="col">
-                {% csrf_token %}
                 <ul class="list-group sortable" id="sortable-list-initial">
                     {% for pair in one_to_one.sortingpair_set.all %}
                         {% if mode == 'get' %}
@@ -160,7 +159,7 @@ $(document).ready(function(){
         resizeListElements();
         if (taskReadyForSubmit()) {
             document.getElementById('submit-button').disabled = false;
-        };
+        }
     }
     let jquerySortable = new Sortable(sortableList, {
         group: 'answers',
