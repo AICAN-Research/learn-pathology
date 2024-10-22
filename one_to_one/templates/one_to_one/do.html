@@ -67,11 +67,6 @@
 
 {% block task_javascript %}
 
-$(document).ready(function(){
-    var mode = "{{ mode }}"; //document.getElementById('mode').dataset.mode;
-    var idOrder = JSON.parse("{{id_order}}");
-    var answerOrder = JSON.parse("{{answer_order}}");
-
     function shuffleList() {
         var sortableListInitial = document.querySelector('#sortable-list-initial');
         for (var i = sortableListInitial.children.length; i >= 0; i--) {
@@ -152,63 +147,70 @@ $(document).ready(function(){
         }
     }
 
-    let sortableList = document.getElementById('sortable-list');
-    let sortableListInitial = document.getElementById('sortable-list-initial');
-
     function onAddOrEndSortable(event) {
         resizeListElements();
         if (taskReadyForSubmit()) {
             document.getElementById('submit-button').disabled = false;
         }
     }
-    let jquerySortable = new Sortable(sortableList, {
-        group: 'answers',
-        swap: true, // Enable swapping (rather than sorting/shifting elements)
-        swapClass: 'color-hovered-element', // The class applied to the hovered swap item
-        //handle: ".drag-handle",
-        onEnd: onAddOrEndSortable,
-        onAdd: onAddOrEndSortable,
-    });
-    let jquerySortableInitial = new Sortable(sortableListInitial, {
-        group: 'answers',
-        swap: true,
-        swapClass: 'color-hovered-element',
-        onEnd: function(event) {
+
+    $(document).ready(function(){
+        var mode = "{{ mode }}"; //document.getElementById('mode').dataset.mode;
+        var idOrder = JSON.parse("{{id_order}}");
+        var answerOrder = JSON.parse("{{answer_order}}");
+
+        let sortableList = document.getElementById('sortable-list');
+        let sortableListInitial = document.getElementById('sortable-list-initial');
+
+        let jquerySortable = new Sortable(sortableList, {
+            group: 'answers',
+            swap: true, // Enable swapping (rather than sorting/shifting elements)
+            swapClass: 'color-hovered-element', // The class applied to the hovered swap item
+            //handle: ".drag-handle",
+            onEnd: onAddOrEndSortable,
+            onAdd: onAddOrEndSortable,
+        });
+        let jquerySortableInitial = new Sortable(sortableListInitial, {
+            group: 'answers',
+            swap: true,
+            swapClass: 'color-hovered-element',
+            onEnd: function(event) {
+                if (taskReadyForSubmit()) {
+                    this.option("disabled", true);
+                }
+            },
+        });
+
+        if (mode === 'get') {
+            console.log('Shuffle List.')
+            shuffleList();
+            resizeListElementsInitial();
+        } else if (mode === 'post') {
+            console.log(idOrder);
+            console.log("Don't shuffle List.");
+            rearrangeList(idOrder);
+            colorAnswers(idOrder, answerOrder);
+            resizeListElements();
+            jquerySortableInitial.option("disabled", true);
             if (taskReadyForSubmit()) {
-                this.option("disabled", true);
-            }
-        },
-    });
-
-    if (mode === 'get') {
-        console.log('Shuffle List.')
-        shuffleList();
-        resizeListElementsInitial();
-    } else if (mode === 'post') {
-        console.log(idOrder);
-        console.log("Don't shuffle List.");
-        rearrangeList(idOrder);
-        colorAnswers(idOrder, answerOrder);
-        resizeListElements();
-        jquerySortableInitial.option("disabled", true);
-        if (taskReadyForSubmit()) {
-            document.getElementById('submit-button').disabled = false;
-        };
-    }
-
-    // Capture the order of the list items on form submission
-    var myForm = document.querySelector('#my-form');
-    myForm.addEventListener('submit', function (event) {
-        var itemIds = [];
-        var listItems = document.querySelectorAll('#sortable-list li');
-        for (var i = 0; i < listItems.length; i++) {
-            itemIds.push(listItems[i].getAttribute('id'));
+                document.getElementById('submit-button').disabled = false;
+            };
         }
-        var input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'item_ids';
-        input.value = itemIds;
-        myForm.appendChild(input);
+
+        // Capture the order of the list items on form submission
+        var myForm = document.querySelector('#my-form');
+        myForm.addEventListener('submit', function (event) {
+            var itemIds = [];
+            var listItems = document.querySelectorAll('#sortable-list li');
+            for (var i = 0; i < listItems.length; i++) {
+                itemIds.push(listItems[i].getAttribute('id'));
+            }
+            var input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'item_ids';
+            input.value = itemIds;
+            myForm.appendChild(input);
+        });
     });
-});
+
 {% endblock task_javascript %}
