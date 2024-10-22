@@ -12,13 +12,14 @@
 {% block content_left %}
 <style>
     .color-hovered-element { background-color: var(--color-blue-light); }
+    .color-drag-handle { color: var(--color-blue-dark); }
 </style>
     <form id="my-form" method="POST">
         <div class="row">
             <div class="col">
                 <ul class="list-group " id="fixed-list">
                     {% for pair in one_to_one.sortingpair_set.all %}
-                        <li class="list-group-item ui-state-default ui-state-disabled disabled">{{ pair.fixed }}</li>
+                        <li class="list-group-item ui-state-default ui-state-disabled disabled" id="fixed-element-{{ forloop.counter }}">{{ pair.fixed }}</li>
                     {% endfor %}
                 </ul>
             </div>
@@ -26,7 +27,13 @@
                 {% csrf_token %}
                 <ul class="list-group sortable" id="sortable-list">
                     {% for pair in one_to_one.sortingpair_set.all %}
-                        <li class="list-group-item" id="{{ forloop.counter }}">{{ pair.draggable }}</li>
+                        <li class="list-group-item" id="{{ forloop.counter }}">
+                            <!-- TODO: Decide which icon to use. Color? -->
+{#                            <span class="iconify drag-handle" data-icon="fluent:re-order-dots-vertical-24-regular" data-width="24" data-height="24"></span>#}
+{#                            <span class="iconify drag-handle" data-icon="fluent:arrow-bidirectional-up-down-24-regular" data-width="24" data-height="24"></span>#}
+                            <span class="iconify drag-handle color-drag-handle" data-icon="fluent:arrow-bidirectional-up-down-24-regular" data-width="24" data-height="24"></span>
+                            {{ pair.draggable }}
+                        </li>
                     {% endfor %}
                 </ul>
                 <br>
@@ -58,6 +65,7 @@ $(document).ready(function(){
         rearrangeList(idOrder);
         colorAnswers(idOrder, answerOrder);
     }
+    resizeListElements();
 
     function shuffleList() {
         var ul = document.querySelector('#sortable-list');
@@ -87,6 +95,16 @@ $(document).ready(function(){
         }
     }
 
+    function resizeListElements() {
+        let fixedListChildren = document.getElementById("fixed-list").children;
+        let sortableListChildren = document.getElementById("sortable-list").children;
+
+        for (let i = 0; i < fixedListChildren.length; i++) {
+            let heightSortableElement = sortableListChildren[i].clientHeight;
+            document.getElementById(fixedListChildren[i].id).style.height = heightSortableElement + "px";
+        }
+    }
+
     function colorAnswers(idOrder, answerOrder) {
         var list = document.getElementById("sortable-list");
         var items = list.getElementsByTagName("li");
@@ -110,6 +128,10 @@ $(document).ready(function(){
     let jquerySortable = new Sortable(sortableList, {
         swap: true, // Enable swapping (rather than sorting/shifting elements)
         swapClass: 'color-hovered-element', // The class applied to the hovered swap item
+        //handle: ".drag-handle",
+        onEnd: function(event) {
+            resizeListElements();
+        },
     });
 
     // Capture the order of the list items on form submission
