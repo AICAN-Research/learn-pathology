@@ -53,35 +53,35 @@
                 data-bs-target="#course-description"
                 type="button" role="tab" aria-controls="course-description"
                 aria-controls="course-description" aria-selected="true"
-        >{% bs_icon 'body-text' %} Course description
+        >{% include 'svg_icons/body-text.svg' %} Course description
         </button>
     </li>
     <li class="nav-item" role="presentation">
         <button class="nav-link {% if active_tab == 'learning-outcomes' %} active{% endif %}" data-bs-toggle="pill" data-bs-target="#learning-outcomes"
                 type="button"
                 role="tab" aria-controls="learning-outcomes"
-                aria-selected="true">{% bs_icon 'flag' %}
+                aria-selected="true">{% include 'svg_icons/flag.svg' %}
             Learning outcomes
         </button>
     </li>
     <li class="nav-item" role="presentation">
         <button class="nav-link {% if active_tab == 'slides' %} active{% endif %}" data-bs-toggle="pill" data-bs-target="#slides" type="button"
                 role="tab" aria-controls="slides"
-                aria-selected="false">{% bs_icon 'image' %}
+                aria-selected="false">{% include 'svg_icons/image.svg' %}
             Slides
         </button>
     </li>
     <li class="nav-item" role="presentation">
         <button class="nav-link {% if active_tab == 'tasks' %} active{% endif %}" data-bs-toggle="pill" data-bs-target="#tasks" type="button"
                 role="tab" aria-controls="tasks"
-                aria-selected="false">{% bs_icon 'question-square' %} Tasks/quizzes
+                aria-selected="false">{% include 'svg_icons/question-square.svg' %} Tasks/quizzes
         </button>
     </li>
     <li class="nav-item" role="presentation">
         <button class="nav-link {% if active_tab == 'course-material' %} active{% endif %}" data-bs-toggle="pill" data-bs-target="#course-material"
                 type="button"
                 role="tab" aria-controls="course-material"
-                aria-selected="false">{% bs_icon 'stack' %}Learning materials
+                aria-selected="false">{% include 'svg_icons/stack.svg' %} Learning materials
         </button>
     </li>
 </ul>
