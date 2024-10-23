@@ -90,7 +90,7 @@
                                            {% if tag == selected_general_pathology %}checked="checked"{% endif %}
                                            onchange="this.form.submit();">
                                     <label for="general_pathology-id-{{ tag.id }}" class="body-text">{{ tag.name }}</label>
-                                <div>
+                                </div>
                             {% endfor %}
                         </ul>
                     {% endif %}
