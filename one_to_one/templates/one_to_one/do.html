@@ -10,28 +10,54 @@
 {% endblock task_question %}
 
 {% block content_left %}
+<style>
+    .color-hovered-element { background-color: var(--color-blue-light); }
+    .color-drag-handle { color: var(--color-blue-dark); }
+    .list-group-item { min-height: 45px; }
+</style>
     <form id="my-form" method="POST">
+        {% csrf_token %}
         <div class="row">
             <div class="col">
                 <ul class="list-group " id="fixed-list">
                     {% for pair in one_to_one.sortingpair_set.all %}
-                        <li class="list-group-item ui-state-default ui-state-disabled disabled">{{ pair.fixed }}</li>
+                        <li class="list-group-item ui-state-default ui-state-disabled disabled" id="fixed-element-{{ forloop.counter }}">{{ pair.fixed }}</li>
                     {% endfor %}
                 </ul>
             </div>
             <div class="col">
-                {% csrf_token %}
                 <ul class="list-group sortable" id="sortable-list">
                     {% for pair in one_to_one.sortingpair_set.all %}
-                        <li class="list-group-item" id="{{ forloop.counter }}">{{ pair.draggable }}</li>
+                        {% if mode == 'get' %}
+                            <li class="list-group-item" id="sortable-placeholder-{{ forloop.counter }}"></li>
+                        {% else %}
+                            <li class="list-group-item" id="{{ forloop.counter }}">
+                                <span class="iconify drag-handle color-drag-handle" data-icon="fluent:re-order-dots-vertical-24-regular" data-width="24" data-height="24"></span>
+                                {{ pair.draggable }}
+                            </li>
+                        {% endif %}
                     {% endfor %}
                 </ul>
                 <br>
                 <div id="mode" data-mode="{{ mode }}"></div>
             </div>
+            <div class="col">
+                <ul class="list-group sortable" id="sortable-list-initial">
+                    {% for pair in one_to_one.sortingpair_set.all %}
+                        {% if mode == 'get' %}
+                            <li class="list-group-item" id="{{ forloop.counter }}">
+                                <span class="iconify drag-handle color-drag-handle" data-icon="fluent:re-order-dots-vertical-24-regular" data-width="24" data-height="24"></span>
+                                {{ pair.draggable }}
+                            </li>
+                        {% else %}
+                            <li class="list-group-item" id="sortable-placeholder-{{ forloop.counter }}"></li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
 
-        <input class="LPButton" type="submit" value="Submit">
+        <input class="LPButton" type="submit" value="Submit" id="submit-button" disabled="disabled">
         <div class="LPButton" style="margin-top: 0; ">
             <a href="{% url next_task.do_url task_id=next_task_id course_id=course_id slide_id=slide_id %}">Next Task</a>
         </div>
@@ -41,25 +67,10 @@
 
 {% block task_javascript %}
 
-$(document).ready(function(){
-    var mode = "{{ mode }}"; //document.getElementById('mode').dataset.mode;
-    var idOrder = JSON.parse("{{id_order}}");
-    var answerOrder = JSON.parse("{{answer_order}}");
-
-    if (mode === 'get') {
-        console.log('Shuffle List.')
-        shuffleList();
-    } else if (mode === 'post') {
-        console.log(idOrder);
-        console.log("Don't shuffle List.");
-        rearrangeList(idOrder);
-        colorAnswers(idOrder, answerOrder);
-    }
-
     function shuffleList() {
-        var ul = document.querySelector('#sortable-list');
-        for (var i = ul.children.length; i >= 0; i--) {
-            ul.appendChild(ul.children[Math.random() * i | 0]);
+        var sortableListInitial = document.querySelector('#sortable-list-initial');
+        for (var i = sortableListInitial.children.length; i >= 0; i--) {
+            sortableListInitial.appendChild(sortableListInitial.children[Math.random() * i | 0]);
         }
     }
 
@@ -84,6 +95,40 @@ $(document).ready(function(){
         }
     }
 
+    function resizeListElements() {
+        let fixedListChildren = document.getElementById("fixed-list").children;
+        let sortableListChildren = document.getElementById("sortable-list").children;
+
+        for (let i = 0; i < fixedListChildren.length; i++) {
+            let heightSortableElement = sortableListChildren[i].clientHeight;
+            document.getElementById(fixedListChildren[i].id).style.height = heightSortableElement + "px";
+        }
+    }
+
+    function resizeListElementsInitial() {
+        /* Resize placeholders in the list where answer is given */
+        let fixedListChildren = document.getElementById("fixed-list").children;
+        let sortableListChildren = document.getElementById("sortable-list").children;
+        for (let i = 0; i < fixedListChildren.length; i++) {
+            let heightFixedElement = fixedListChildren[i].clientHeight;
+            document.getElementById(sortableListChildren[i].id).style.height = heightFixedElement + "px";
+        }
+    }
+
+    function taskReadyForSubmit() {
+        /*
+        If any placeholder elements are left in the answer list, task is not ready for submit
+        */
+        let listElements = document.getElementById("sortable-list").children;
+        for (let i = 0; i < listElements.length; i++) {
+            console.log(listElements[i].id);
+            if ( listElements[i].id.includes('placeholder')) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     function colorAnswers(idOrder, answerOrder) {
         var list = document.getElementById("sortable-list");
         var items = list.getElementsByTagName("li");
@@ -102,23 +147,70 @@ $(document).ready(function(){
         }
     }
 
-    //var sortableList = document.querySelector('.sortable');
-    var sortableList = document.getElementById('sortable-list');
-    var sortable_list = new Sortable(sortableList);
-
-    // Capture the order of the list items on form submission
-    var myForm = document.querySelector('#my-form');
-    myForm.addEventListener('submit', function (event) {
-        var itemIds = [];
-        var listItems = document.querySelectorAll('.sortable li');
-        for (var i = 0; i < listItems.length; i++) {
-            itemIds.push(listItems[i].getAttribute('id'));
+    function onAddOrEndSortable(event) {
+        resizeListElements();
+        if (taskReadyForSubmit()) {
+            document.getElementById('submit-button').disabled = false;
         }
-        var input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'item_ids';
-        input.value = itemIds;
-        myForm.appendChild(input);
+    }
+
+    $(document).ready(function(){
+        var mode = "{{ mode }}"; //document.getElementById('mode').dataset.mode;
+        var idOrder = JSON.parse("{{id_order}}");
+        var answerOrder = JSON.parse("{{answer_order}}");
+
+        let sortableList = document.getElementById('sortable-list');
+        let sortableListInitial = document.getElementById('sortable-list-initial');
+
+        let jquerySortable = new Sortable(sortableList, {
+            group: 'answers',
+            swap: true, // Enable swapping (rather than sorting/shifting elements)
+            swapClass: 'color-hovered-element', // The class applied to the hovered swap item
+            //handle: ".drag-handle",
+            onEnd: onAddOrEndSortable,
+            onAdd: onAddOrEndSortable,
+        });
+        let jquerySortableInitial = new Sortable(sortableListInitial, {
+            group: 'answers',
+            swap: true,
+            swapClass: 'color-hovered-element',
+            onEnd: function(event) {
+                if (taskReadyForSubmit()) {
+                    this.option("disabled", true);
+                }
+            },
+        });
+
+        if (mode === 'get') {
+            console.log('Shuffle List.')
+            shuffleList();
+            resizeListElementsInitial();
+        } else if (mode === 'post') {
+            console.log(idOrder);
+            console.log("Don't shuffle List.");
+            rearrangeList(idOrder);
+            colorAnswers(idOrder, answerOrder);
+            resizeListElements();
+            jquerySortableInitial.option("disabled", true);
+            if (taskReadyForSubmit()) {
+                document.getElementById('submit-button').disabled = false;
+            };
+        }
+
+        // Capture the order of the list items on form submission
+        var myForm = document.querySelector('#my-form');
+        myForm.addEventListener('submit', function (event) {
+            var itemIds = [];
+            var listItems = document.querySelectorAll('#sortable-list li');
+            for (var i = 0; i < listItems.length; i++) {
+                itemIds.push(listItems[i].getAttribute('id'));
+            }
+            var input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'item_ids';
+            input.value = itemIds;
+            myForm.appendChild(input);
+        });
     });
-});
+
 {% endblock task_javascript %}
