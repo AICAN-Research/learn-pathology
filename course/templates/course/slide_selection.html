@@ -47,14 +47,17 @@ Select slides for <span style="color: var(--color-blue-dark);">{{ course.title }
 <div class="card-text">
 
 
-  <div class="row" style="width: 100%">
+<div class="row" style="width: 100%">
 
-      <div class="col" style="float: left; width: 50%"  > <p>Click on a slide to add it to/remove it from the course <i>{{ course.code }} - {{ course.title }}</i></p></div>
+    <div class="col" style="float: left; width: 50%">
+        <p>Click on a slide to add it to/remove it from the course <i>{{ course.code }} - {{ course.title }}</i></p>
+    </div>
 
     <div class="col" style="text-align: right; width: 50%">
-      <p>Number of slides in the course: <span id="numberOfSlides" style="font-weight: bold">{{ numberOfSlides }}</span></p>
+        <p>Number of slides in the course: <span id="numberOfSlides" style="font-weight: bold">{{ numberOfSlides }}</span></p>
     </div>
-  </div>
+
+</div>
 
 
 <div class="row" style="margin: 0 0 0 0;">
@@ -67,8 +70,6 @@ Select slides for <span style="color: var(--color-blue-dark);">{{ course.title }
                 text-transform:capitalize;
             }
         </style>
-
-
 
         {% include 'slide/filtering_sidebar.html' %}
 
@@ -105,9 +106,9 @@ Select slides for <span style="color: var(--color-blue-dark);">{{ course.title }
 $(document).ready(function(){
     collapseSidebar();
 
-        var svgs = document.querySelectorAll('svg.bi.text-success');
-        var numberOfSlides = svgs.length;
-        document.getElementById('numberOfSlides').innerText = numberOfSlides;
+    var svgs = document.querySelectorAll('svg.bi.text-success');
+    var numberOfSlides = svgs.length;
+    document.getElementById('numberOfSlides').innerText = numberOfSlides;
 
 
 });
