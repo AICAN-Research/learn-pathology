@@ -63,7 +63,7 @@ Select slides for <span style="color: var(--color-blue-dark);">{{ course.title }
 <div class="row" style="margin: 0 0 0 0;">
 
     <!-- Menu/toolbar -->
-    <div class="col" style="padding: 0 0 0 0;">
+    <div class="col col-md-2" style="padding: 0 0 0 0;">
 
         <style>
             label::first-letter {
@@ -75,8 +75,26 @@ Select slides for <span style="color: var(--color-blue-dark);">{{ course.title }
 
     </div>
 
+    <!-- If there are slides selected for the course, display them in a separate column -->
+    {% if slides_in_course|length > 0 %}
+        <div class="col col-md-2">
+        <div class="card border-0">
+            {% if slides_in_course %}
+                <div class="card" style="min-height: 600px; padding: 10px">
+                    <h2>Currently selected slides:</h2>
+                    {% include 'slide/slide_grid_selection_one_column.html' with slides=slides_in_course slides_in_course=slides_in_course course_id=course.id %}
+                </div>
+            {% else %}
+                <div class="card" style="min-height: 200px; padding-top: 10px">
+                    No slides selected.
+                </div>
+            {% endif %}
+        </div>
+        </div>
+    {% endif %}
+
     <!-- Slide grid/list -->
-    <div class="col-md-10 col-xs-1">
+    <div class="col-md-8 col-xs-1">
     <div class="card border-0">
         {% if slides %}
             <div class="card border-0" style="min-height: 600px; padding-top: 10px">
