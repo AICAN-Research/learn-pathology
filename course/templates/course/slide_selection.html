@@ -76,28 +76,24 @@ Select slides for <span style="color: var(--color-blue-dark);">{{ course.title }
     </div>
 
     <!-- If there are slides selected for the course, display them in a separate column -->
-    {% if slides_in_course|length > 0 %}
-        <div class="col col-md-2">
-        <div class="card border-0">
-            {% if slides_in_course %}
-                <div class="card" style="min-height: 600px; padding: 10px">
-                    <h2>Currently selected slides:</h2>
-                    {% include 'slide/slide_grid_selection_one_column.html' with slides=slides_in_course slides_in_course=slides_in_course course_id=course.id %}
-                </div>
-            {% else %}
-                <div class="card" style="min-height: 200px; padding-top: 10px">
-                    No slides selected.
-                </div>
-            {% endif %}
-        </div>
-        </div>
-    {% endif %}
+    <div class="col col-md-3" style=" position: sticky; top: 20px;">
+    <div class="card" style="min-height: 150px; max-height: 800px; padding: 10px;">
+        <h2>Currently selected slides:</h2>
+        {% if slides_in_course|length > 0 %}
+            {% include 'slide/slide_grid_selection_one_column.html' with slides=slides_in_course slides_in_course=slides_in_course course_id=course.id %}
+        {% else %}
+            <div class="card border-0" style="min-height: 100px; padding-top: 10px">
+                No slides selected.
+            </div>
+        {% endif %}
+    </div>
+    </div>
 
     <!-- Slide grid/list -->
-    <div class="col-md-8 col-xs-1">
+    <div class="col-md-7 col-xs-1">
     <div class="card border-0">
         {% if slides %}
-            <div class="card border-0" style="min-height: 600px; padding-top: 10px">
+            <div class="card border-0" style="min-height: 600px;">
                 {% include 'slide/slide_grid_selection.html' with slides=slides slides_in_course=slides_in_course course_id=course.id %}
             </div>
         {% else %}

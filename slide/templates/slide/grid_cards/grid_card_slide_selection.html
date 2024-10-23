@@ -4,7 +4,7 @@
 
 
 <div class="slideGridViewCard card {% if slide_selected == 'true' %}remove_button border-success{% else %}add_button{% endif %}"
-     style="max-height: 300px;{% if slide_selected == 'true' %} border: 3px solid;{% endif %}"
+     style="max-height: {{ card_height }}px;{% if slide_selected == 'true' %} border: 3px solid;{% endif %}"
      data-course_id={{ course.id }} data-model_name={{ slide | to_class_name }} data-instance_id={{ slide.id }}>
 
     {# Image display #}
