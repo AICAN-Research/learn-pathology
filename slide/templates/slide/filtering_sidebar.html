@@ -13,13 +13,13 @@
         <div class="card-body" style="padding-bottom: 0;">
             <div class="radio-toolbar" style="margin-top: 2px;">
                 {% if course %}
-                    <a href="{% url 'course:reset_slide_selection' course_id=course.id %}">
+                <a href="{% url 'course:reset_slide_selection' course_id=course.id %}">
                 {% else %}
-                    <a href="{% url 'slide:browser_reset' %}">
+                <a href="{% url 'slide:browser_reset' %}">
                 {% endif %}
-                        <button class="wideLabel" style="text-align: center; border: 2px solid #c65127;">
-                            Clear selection {% include 'svg_icons/x-circle.svg' %}
-                        </button>
+                    <button class="wideLabel" style="text-align: center; border: 2px solid #c65127;">
+                        Clear selection {% include 'svg_icons/x-circle.svg' %}
+                    </button>
                 </a>
             </div>
         </div>
