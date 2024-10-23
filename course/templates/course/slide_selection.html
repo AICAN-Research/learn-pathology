@@ -54,7 +54,7 @@ Select slides for <span style="color: var(--color-blue-dark);">{{ course.title }
     </div>
 
     <div class="col" style="text-align: right; width: 50%">
-        <p>Number of slides in the course: <span id="numberOfSlides" style="font-weight: bold">{{ numberOfSlides }}</span></p>
+        <p>Number of slides in the course: <span style="font-weight: bold">{{ slides_in_course|length }}</span></p>
     </div>
 
 </div>
@@ -97,20 +97,11 @@ Select slides for <span style="color: var(--color-blue-dark);">{{ course.title }
 </div>
 {% endblock content %}
 
-<script>
-
-</script>
 
 {% block javascript %}
 
 $(document).ready(function(){
     collapseSidebar();
-
-    var svgs = document.querySelectorAll('svg.bi.text-success');
-    var numberOfSlides = svgs.length;
-    document.getElementById('numberOfSlides').innerText = numberOfSlides;
-
-
 });
 
 {% endblock javascript %}
