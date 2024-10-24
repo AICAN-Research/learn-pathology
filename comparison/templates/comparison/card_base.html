@@ -1,10 +1,19 @@
 {% load static %}
-<div class="slideGridViewCard card">
+<div class="slideGridViewCard card" id="slide_{{ slide.id }}_card" style="border: 1px solid lightgrey;">
 
     {# Image display #}
     <a class="cardImageHeader card border-0" href="#">
         <div class="card transparentBackground border-0 w-100 h-100">
             <div class="headerImageContainer card">
+                <!-- Checkmark positioned absolutely within the card -->
+                <div id="slide_{{ slide.id }}_checkmark"
+                     style="{% if slide_selected == 'true' %}display: block;{% else %}display: none;{% endif %};
+                     position: absolute; top: 5px; right: 5px;">
+                    <svg class="bi text-success" width="32px" height="32px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                        {% include 'svg_icons/check-circle.svg' %}
+                    </svg>
+                </div>
+
                 <img class="headerImage" src="{% get_static_prefix %}slide/thumbnails/{{ slide.id }}.jpg" alt="WSI thumbnail for {{ slide.name }}">
                 <!-- Use below line to crop image to fit the header container -->
                 {# <img class="headerImage croppedImage" src="/slide/thumbnails/{{ slide.id }}.jpg" alt="WSI thumbnail"> #}

@@ -47,20 +47,23 @@ Select slides for <span style="color: var(--color-blue-dark);">{{ course.title }
 <div class="card-text">
 
 
-  <div class="row" style="width: 100%">
+<div class="row" style="width: 100%">
 
-      <div class="col" style="float: left; width: 50%"  > <p>Click on a slide to add it to/remove it from the course <i>{{ course.code }} - {{ course.title }}</i></p></div>
+    <div class="col" style="float: left; width: 50%">
+        <p>Click on a slide to add it to/remove it from the course <i>{{ course.code }} - {{ course.title }}</i></p>
+    </div>
 
     <div class="col" style="text-align: right; width: 50%">
-      <p>Number of slides in the course: <span id="numberOfSlides" style="font-weight: bold">{{ numberOfSlides }}</span></p>
+        <p>Number of slides in the course: <span style="font-weight: bold">{{ slides_in_course|length }}</span></p>
     </div>
-  </div>
+
+</div>
 
 
 <div class="row" style="margin: 0 0 0 0;">
 
     <!-- Menu/toolbar -->
-    <div class="col" style="padding: 0 0 0 0;">
+    <div class="col col-md-2" style="padding: 0 0 0 0;">
 
         <style>
             label::first-letter {
@@ -68,17 +71,29 @@ Select slides for <span style="color: var(--color-blue-dark);">{{ course.title }
             }
         </style>
 
-
-
         {% include 'slide/filtering_sidebar.html' %}
 
     </div>
 
+    <!-- If there are slides selected for the course, display them in a separate column -->
+    <div class="col col-md-3" style=" position: sticky; top: 20px;">
+    <div class="card" style="min-height: 150px; max-height: 800px; padding: 10px;">
+        <h2>Currently selected slides:</h2>
+        {% if slides_in_course|length > 0 %}
+            {% include 'slide/slide_grid_selection_one_column.html' with slides=slides_in_course slides_in_course=slides_in_course course_id=course.id %}
+        {% else %}
+            <div class="card border-0" style="min-height: 100px; padding-top: 10px">
+                No slides selected.
+            </div>
+        {% endif %}
+    </div>
+    </div>
+
     <!-- Slide grid/list -->
-    <div class="col-md-10 col-xs-1">
+    <div class="col-md-7 col-xs-1">
     <div class="card border-0">
         {% if slides %}
-            <div class="card border-0" style="min-height: 600px; padding-top: 10px">
+            <div class="card border-0" style="min-height: 600px;">
                 {% include 'slide/slide_grid_selection.html' with slides=slides slides_in_course=slides_in_course course_id=course.id %}
             </div>
         {% else %}
@@ -96,20 +111,11 @@ Select slides for <span style="color: var(--color-blue-dark);">{{ course.title }
 </div>
 {% endblock content %}
 
-<script>
-
-</script>
 
 {% block javascript %}
 
 $(document).ready(function(){
     collapseSidebar();
-
-        var svgs = document.querySelectorAll('svg.bi.text-success');
-        var numberOfSlides = svgs.length;
-        document.getElementById('numberOfSlides').innerText = numberOfSlides;
-
-
 });
 
 {% endblock javascript %}
