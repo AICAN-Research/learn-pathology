@@ -32,20 +32,7 @@ def do(request, task_id, course_id=None, slide_id=None):
     # ======== Click question specific ========
     click_question = context['task'].clickquestion
 
-    answered = None
-    student_selection = None
-    if request.method == 'POST':
-        # Process form
-        # TODO: Update 'studentText' to something more descriptive - stuck from copying from free_text task?
-        student_selection = request.POST.get('studentText',None)
-        if student_selection:
-            answered = 'yes'
-        else:
-            answered = 'no'
-
     context['click_question'] = click_question
-    context['answered'] = answered,
-    context['student_selection'] = student_selection,
     return render(request, 'click_question/do.html', context)
 
 
