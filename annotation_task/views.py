@@ -26,13 +26,13 @@ def do(request, task_id, course_id=None, slide_id=None):
 
     # ======== Annotation task specific ========
     annotation_task = context['task'].annotationtask
-    context['annotations_correct']= copy.deepcopy(context['annotations'])
+    context['annotations_correct'] = copy.deepcopy(context['annotations'])
 
-    for i,  annotation in enumerate(context['annotations']):
+    for i, annotation in enumerate(context['annotations']):
         annotation['body'][0]['value'] = chr(65 + i)
 
     mode = 'get'
-    id_order = [1, 2, 3,4,5,6,7,8,9,10]
+    id_order = []
     answer_order = []
     if request.method == 'POST':
         # Process form
