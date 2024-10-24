@@ -10,32 +10,36 @@
 {% endblock task_question %}
 
 {% block content_left %}
-    <form id="my-form" method="POST">
-        <div class="row">
-            <div class="col">
-                <ul class="list-group " id="fixed-list">
-                    {% for pair in one_to_one.sortingpair_set.all %}
-                        <li class="list-group-item ui-state-default ui-state-disabled disabled">{{ pair.fixed }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-            <div class="col">
-                {% csrf_token %}
-                <ul class="list-group sortable" id="sortable-list">
-                    {% for pair in one_to_one.sortingpair_set.all %}
-                        <li class="list-group-item" id="{{ forloop.counter }}">{{ pair.draggable }}</li>
-                    {% endfor %}
-                </ul>
-                <br>
-                <div id="mode" data-mode="{{ mode }}"></div>
-            </div>
+<form id="my-form" method="POST">
+    <div class="row">
+        <div class="col">
+            <ul class="list-group " id="fixed-list">
+                {% for pair in one_to_one.sortingpair_set.all %}
+                    <li class="list-group-item ui-state-default ui-state-disabled disabled">{{ pair.fixed }}</li>
+                {% endfor %}
+            </ul>
         </div>
+        <div class="col">
+            {% csrf_token %}
+            <ul class="list-group sortable" id="sortable-list">
+                {% for pair in one_to_one.sortingpair_set.all %}
+                    <li class="list-group-item" id="{{ forloop.counter }}">{{ pair.draggable }}</li>
+                {% endfor %}
+            </ul>
+            <br>
+            <div id="mode" data-mode="{{ mode }}"></div>
+        </div>
+    </div>
 
-        <input class="LPButton" type="submit" value="Submit">
+    <input class="LPButton" type="submit" value="Submit">
+
+    {% if mode == "post" %}
         <div class="LPButton" style="margin-top: 0; ">
             <a href="{% url next_task.do_url task_id=next_task_id course_id=course_id slide_id=slide_id %}">Next Task</a>
         </div>
-    </form>
+    {% endif %}
+
+</form>
 {% endblock content_left %}
 
 
