@@ -6,11 +6,11 @@
     {% for chunk in slides|as_chunks:12 %}
         <div class="row">
             {% for slide in chunk %}
-                <div class="column col-xs-6 col-sm-6 col-md-4 col-lg-4 col-xl-4" style="border: 1px solid lightgrey">
+                <div class="column col-xs-6 col-sm-6 col-md-4 col-lg-4 col-xl-4" style="margin-bottom: 10px; padding: 0 6px 0 6px;">
                     {% if slide in slides_in_course %}
-                        {% include 'slide/grid_cards/grid_card_slide_selection.html' with slide=slide slide_selected='true' %}
+                        {% include 'slide/grid_cards/grid_card_slide_selection.html' with slide=slide slide_selected='true' max_card_height=300 %}
                     {% else %}
-                        {% include 'slide/grid_cards/grid_card_slide_selection.html' with slide=slide slide_selected='false' %}
+                        {% include 'slide/grid_cards/grid_card_slide_selection.html' with slide=slide slide_selected='false' max_card_height=300 %}
                     {% endif %}
                 </div>
             {% endfor %}

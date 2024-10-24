@@ -6,7 +6,7 @@
     <div class="row" style="width: 100%">
         {% for slide in slides %}
             <div class="col col-12" style="max-height: 230px; margin-bottom: 20px;"> <!-- style="border: 1px solid lightgrey"> -->
-                {% include 'slide/grid_cards/grid_card_slide_selection.html' with slide=slide slide_selected='true' card_height=200 %}
+                {% include 'slide/grid_cards/grid_card_slide_selection.html' with slide=slide slide_selected='true' max_card_height=200 %}
             </div>
         {% endfor %}
     </div>
