@@ -1,5 +1,5 @@
 {% load static %}
-<div class="slideGridViewCard card">
+<div class="slideGridViewCard card" style="border: 1px solid lightgrey;">
 
     {# Image display #}
     {% if course %} <a class="cardImageHeader card border-0" href="{% url 'slide:view_full' slide.id  course.id  %}">
