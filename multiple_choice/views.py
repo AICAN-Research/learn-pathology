@@ -1,17 +1,13 @@
-import random
-
 from django.contrib import messages
 from django.db import transaction
 from django.forms import formset_factory, modelformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 
-from slide.models import AnnotatedSlide
 from task.common import process_new_task_request, process_edit_task_request, \
     setup_common_new_task_context, setup_common_edit_task_context
-from slide.models import Slide
 from slide.views import slide_cache
 from task.forms import TaskForm
-from multiple_choice.models import MultipleChoice, Choice, RandomMCChoice
+from multiple_choice.models import MultipleChoice, Choice
 from multiple_choice.forms import MultipleChoiceForm, ChoiceForm
 from course.models import Course
 from user.decorators import teacher_required
@@ -40,7 +36,6 @@ def do(request, task_id, course_id=None, slide_id=None):
     answered = []
     choice_text = []
     if request.method == 'POST':
-        print('POST')
         # Process form
         id_post_choice = request.POST.getlist('choice', None)
         if id_post_choice:

@@ -51,9 +51,13 @@
 
     <div style="margin-top: 10px;">
         <input class="LPButton" type="submit" value="Submit">
-        <div class="LPButton" style="margin-top: 0;">
-            <a href="{% url next_task.do_url task_id=next_task.id course_id=course_id slide_id=slide_id %}">Next Task</a>
-        </div>
+
+        {% if answered and 'no' not in answered %}
+            <div class="LPButton" style="margin-top: 0;">
+                <a href="{% url next_task.do_url task_id=next_task.id course_id=course_id slide_id=slide_id %}">Next Task</a>
+            </div>
+        {% endif %}
+
     </div>
 </form>
 
