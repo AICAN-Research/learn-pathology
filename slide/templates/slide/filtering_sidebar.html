@@ -13,13 +13,13 @@
         <div class="card-body" style="padding-bottom: 0;">
             <div class="radio-toolbar" style="margin-top: 2px;">
                 {% if course %}
-                    <a href="{% url 'course:reset_slide_selection' course_id=course.id %}">
+                <a href="{% url 'course:reset_slide_selection' course_id=course.id %}">
                 {% else %}
-                    <a href="{% url 'slide:browser_reset' %}">
+                <a href="{% url 'slide:browser_reset' %}">
                 {% endif %}
-                        <button class="wideLabel" style="text-align: center; border: 2px solid #c65127;">
-                            Clear selection {% bs_icon 'x-circle' %}
-                        </button>
+                    <button class="wideLabel" style="text-align: center; border: 2px solid #c65127;">
+                        Clear selection {% include 'svg_icons/x-circle.svg' %}
+                    </button>
                 </a>
             </div>
         </div>
@@ -29,7 +29,7 @@
         <div class="card-body" style="padding-bottom: 0;">
             <div class="search-bar-container">
             <div style="display: flex;">
-                <button type="submit" class="btn" name="submit_button">{% bs_icon 'search' %}</button>
+                <button type="submit" class="btn" name="submit_button">{% include 'svg_icons/search.svg' %}</button>
             </div>
             <div style="display: inline-flex">
                 <input type="text" id="main-search-input" name="search" class="main-search-input" placeholder="Search"
@@ -90,7 +90,7 @@
                                            {% if tag == selected_general_pathology %}checked="checked"{% endif %}
                                            onchange="this.form.submit();">
                                     <label for="general_pathology-id-{{ tag.id }}" class="body-text">{{ tag.name }}</label>
-                                <div>
+                                </div>
                             {% endfor %}
                         </ul>
                     {% endif %}
