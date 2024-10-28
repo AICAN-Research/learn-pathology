@@ -57,16 +57,16 @@
 <div class="card w-100 mx-auto text-center" style="height: 85%; min-height: 600px;">
 <div class="card-body" style="height: 100%">
 
-    <div style="padding: 6px 24px 6px 24px;">
-        <h3>
-            {% block task_instructions %}
-            {% endblock task_instructions %}
-        </h3>
-    </div>
-
     <div class="row h-100">
         <div class="col-6">
             <div id="contentLeft" style="width: 100%;">
+                <div style="padding: 6px 24px 6px 24px;">
+                    <h3>
+                        {% block task_instructions %}
+                        {% endblock task_instructions %}
+                    </h3>
+                </div>
+
                 <h4 style="margin-top: 20px; margin-bottom: 20px;">
                     {% block task_question %}
                     {% endblock task_question %}
