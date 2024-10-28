@@ -455,6 +455,7 @@ def remove_tag(request):
 
 
 
+@teacher_required
 def create_annotation(request):
     """
     Async saving of annotorious annotations
@@ -481,7 +482,7 @@ def create_annotation(request):
 
     return JsonResponse(data={})
 
-
+@teacher_required
 def update_annotation(request):
     """
     Async updating of annotorious annotations
@@ -511,7 +512,7 @@ def update_annotation(request):
 
     return JsonResponse(data={})
 
-
+@teacher_required
 def delete_annotation(request):
     """
     Async deleting of annotorious annotations
