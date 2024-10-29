@@ -71,8 +71,15 @@ To setup Learn Pathology for deployment on a server use apache2 and mod_wsgi.
 
 **1. First install packages**
 ```bash
-sudo apt-get install python3-pip apache2 libapache2-mod-wsgi-py3
+sudo apt install python3-pip apache2 libapache2-mod-wsgi-py3
 ```
+
+Also make sure you have all [requirements for FAST installed](https://fast.eriksmistad.no/install-ubuntu-linux.html):
+```bash
+sudo apt install libgl1 libopengl0 libopenslide0 libusb-1.0-0 libxcb-xinerama0
+```
+You also need OpenCL. To install OpenCL on Linux, download an implementation depending on the CPU/GPU you have.
+
 
 **2. Then clone the repo on the server** for instance to /var/www/
 ```bash
@@ -106,7 +113,7 @@ See here for more info: https://medium.com/@bayraktar.eralp/changing-rotating-dj
 Disable debug mode by setting `debug = False`.
 For security reasons this should always be off on a production server, only turn it on if you need to actually debug.
 
-Add your down to ALLOWED_HOST, for example like so:  
+Add your domain to ALLOWED_HOST, for example like so:  
 ```ALLOWED_HOSTS = ['learnpathology.no', 'www.learnpathology.no']```
 
 
@@ -145,9 +152,9 @@ sudo chmod g+w db.sqlite3
 sudo nano /etc/apache2/sites-available/learnpathology.conf
 ```
 You should always use HTTPS and SSL encryption.
-f you are not using HTTPS, you are essentially transferring everything, login password, images, on the webpage totally unencrypted over the internet! 
+If you are not using HTTPS, you are essentially transferring everything, login password, images, on the webpage totally unencrypted over the internet! 
 To use HTTPS/SSL encryption you need an SSL certificate, you can buy one cheap from services like [namecheap.com](https://www.namecheap.com) or free from [Let's encrypt](https://letsencrypt.org/). 
-Store the certificate, the key, and the CA certificate files on the server, e.g. in folder /var/www/learnpathology/ssl/.
+Store the certificate, the key, and the CA certificate files on the server, e.g. in folder /var/www/learn-pathology/ssl/.
 The config with SSL/HTTPS end-to-end-encryption will then look something like this:
 ```
 # Redirect to secure site
@@ -180,6 +187,7 @@ The config with SSL/HTTPS end-to-end-encryption will then look something like th
         </Files>
     </Directory>
 
+    # Modify this to fit your python version:
     WSGIDaemonProcess learnpathologywsgi python-path=/var/www/learn-pathology/:/var/www/learn-pathology/environment/lib/python3.10/site-packages processes=32 threads=32
     # This setting is needed for FAST to run properly:
     WSGIApplicationGroup %{GLOBAL}
@@ -234,15 +242,21 @@ sudo service apache2 restart
 
 **Enable turbojpeg**
 
-Requested image tiles have to be compressed to JPEG before they are sent to the users.
-By default, PIL is used for this which is slow. Turbo JPEG is a faster option, to use this 
-install turbo jpeg:
+Requested image tiles have to be compressed with JPEG before they are sent to the users.
+By default, PIL is used for compression which is slow. Turbo JPEG is a faster option.
+
+To use TurboJPEG, first install it: 
 ```bash
 sudo apt install libturbojpeg
 ```
-and enable it in learnpathology/settings.py:
-```
+then enable it in learnpathology/settings.py:
+```python
 USE_TURBOJPEG = True
+```
+
+Reload apache after changes:
+```bash
+sudo service apache2 reload
 ```
 
 **Cache tiles in memory using memcached**
@@ -278,7 +292,7 @@ sudo service memcached restart
 ```
 
 Enable the tile caching in learnpathology/settings.py:
-```
+```python
 USE_TILE_CACHE = True
 ```
 
@@ -290,4 +304,29 @@ sudo service apache2 reload
 You can check if memcached is working by looking at its statistics (how many items are stored, number of cache hits/misses etc.):
 ```bash
 memcstat --servers="127.0.0.1"
+```
+
+The images are stored for 30 minutes in memory as defined in slide/views.py:
+```python
+@cache_page(60 * 30)
+def tile(request, slide_id, osd_level, x, y):
+    ...
+```
+
+Learn Pathology is set to store a maximum of 100 000 images, here are the settings we have used (defined in learnpathology/settings.py):
+```python
+if USE_TILE_CACHE:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
+            'LOCATION': '127.0.0.1:11211',
+            'MAX_ENTRIES': 100000,
+            'OPTIONS': {
+                'no_delay': True,
+                'ignore_exc': True,
+                'max_pool_size': 4,
+                'use_pooling': True,
+            }
+        }
+    }
 ```
