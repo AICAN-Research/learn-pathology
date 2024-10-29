@@ -261,13 +261,33 @@ sudo apt install memcached libmemcached-tools
 sudo service memcached start
 ```
 
+Modify memcached config to allow it to use a lot of memory and large enough objects to be stored:
+`nano /etc/memcached.conf`:
+```
+# Depending how much RAM you have, set the limit of you much
+# memory memcached should be allowed to use, here we have set it
+# to 100 GB = 100*1024 = 102400 MB:
+-m 102400
+# Allow file sizes up to 3 MB
+-I 3m
+```
+
+Restart after modifying the config:
+```bash
+sudo service memcached restart
+```
+
 Enable the tile caching in learnpathology/settings.py:
 ```
 USE_TILE_CACHE = True
 ```
 
+Reload apache after modifying settings:
+```bash
+sudo service apache2 reload
+```
 
-Check if memcached is working by looking at it statistics (how many items are stored, number of cache hits/misses etc.):
+You can check if memcached is working by looking at its statistics (how many items are stored, number of cache hits/misses etc.):
 ```bash
 memcstat --servers="127.0.0.1"
 ```
