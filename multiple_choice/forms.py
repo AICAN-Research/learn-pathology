@@ -21,14 +21,16 @@ class ChoiceForm(ModelForm):
 class MultipleChoiceForm(ModelForm):
     class Meta:
         model = MultipleChoice
-        fields = ['question', 'instructions']
+        fields = ['question', 'instructions', 'explanation']
         labels = {
             'question': 'Question',
             'instructions': 'Instructions',
+            'explanation': 'Explanation of answer'
         }
         widgets = {
             'question': Textarea(attrs={'rows': 1, 'cols': 70, 'resize': 'none'}),
             'instructions': Textarea(attrs={'rows': 1, 'cols': 70}),
+            'explanation': Textarea(attrs={'rows': 10, 'cols': 70}),
         }
 
 

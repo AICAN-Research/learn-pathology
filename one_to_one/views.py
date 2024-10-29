@@ -36,7 +36,7 @@ def do(request, task_id, course_id=None, slide_id=None):
     one_to_one = context['task'].onetoone
 
     mode = 'get'
-    id_order = [1, 2, 3]
+    id_order = []
     answer_order = []
     if request.method == 'POST':
         # Process form

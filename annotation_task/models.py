@@ -8,5 +8,5 @@ class AnnotationTask(models.Model):
     """
 
     task = models.OneToOneField(Task, on_delete=models.CASCADE)
-    question = models.CharField(max_length=2048)
-    instructions = models.CharField(max_length=2048, default='Match the letters to the correct labels by dragging the labels up and down. Click on the letter to find the annotation.')
+    question = models.CharField(max_length=2048, default='Click on the letter to find the annotation.')
+    instructions = models.CharField(max_length=2048, default='Match the letters to the correct labels by dragging the labels up and down.')

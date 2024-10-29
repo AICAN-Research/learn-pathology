@@ -12,33 +12,29 @@
 
 
 {% block card_content_top %}
-    <div class="row">
-        <div class="col">
-        <form action="{% url 'click_question:do' task_id=task.id course_id=course_id slide_id=slide_id %}" method="post">
-            {% csrf_token %}
-            <div class="row">
-                <div class="col"></div>
-                <div class="col">
-                    <div class="LPButton" style="margin-top: 0;" onclick="anno.setVisible(true);">
-                        Show solution
-                    </div>
-                     <div class="LPButton" style="margin-top: 0; ">
-                        <a href="{% url next_task.do_url task_id=next_task_id course_id=course_id slide_id=slide_id %}">Next Task</a>
-                    </div>
+<div class="row">
+    <div class="col">
+        <div class="row">
+            <div class="col"></div>
+            <div class="col">
+                <div class="LPButton" style="margin-top: 0;" onclick="anno.setVisible(true); Next_task()">
+                    Show solution
                 </div>
-                <div class="col">
-                    <div class="card" style="border-color: green; border-width: thick; display: none" id="answered_correct">
-                        This is right!
-                    </div>
-                    <div class="card" style="border-color: red; border-width: thick; display: none" id="answered_false">
-                        This is wrong! Try again
-                    </div>
+                <div class="LPButton" style="margin-top: 0; display: none" id="next_task">
+                    <a href="{% url next_task.do_url task_id=next_task_id course_id=course_id slide_id=slide_id %}">Next Task</a>
                 </div>
             </div>
-
-        </form>
+            <div class="col">
+                <div class="card" style="border-color: green; border-width: thick; display: none" id="answered_correct">
+                    This is right!
+                </div>
+                <div class="card" style="border-color: red; border-width: thick; display: none" id="answered_false">
+                    This is wrong! Try again
+                </div>
+            </div>
         </div>
     </div>
+</div>
 {% endblock card_content_top %}
 
 
@@ -168,6 +164,11 @@ function isPointInsidePolygon(point, polygon) {
 
     return inside;
 }
+
+function Next_task(){
+    document.getElementById("next_task").style.display = "inline-block";
+}
+
 </script>
 {% endblock card_content_bottom %}
 
