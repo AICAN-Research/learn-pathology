@@ -330,3 +330,22 @@ if USE_TILE_CACHE:
         }
     }
 ```
+
+**13. Setting up FEIDE login**
+
+To enable users to login using FEIDE/dataporten make sure you have got your client ID and secret key from your 
+local FEIDE administration.
+
+Then enable FEIDE login in learnpathology/settings.py:
+```python
+USE_FEIDE_LOGIN = True
+```
+
+Reload apache after modifying settings:
+```bash
+sudo service apache2 reload
+```
+
+Then go the admin page using your browser and create a new item under "Social applications"
+and set the provider to *Dataporten* and enter your client id and secret key, also rember to add a site and select it
+with your domain.
