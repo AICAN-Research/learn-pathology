@@ -89,7 +89,7 @@ git clone https://github.com/AICAN-Research/learn-pathology
 
 **3. Setup up virtual environment on the server**
 ```bash
-cd annotationweb
+cd learn-pathology
 virtualenv -ppython3 environment
 source environment/bin/activate
 ```
