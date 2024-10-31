@@ -87,7 +87,7 @@ cd /var/www/
 git clone https://github.com/AICAN-Research/learn-pathology
 ```
 
-**3. Setup up virtual environment on the server**
+**3. Setup virtual environment on the server**
 ```bash
 cd learn-pathology
 virtualenv -ppython3 environment
@@ -261,7 +261,7 @@ sudo service apache2 reload
 
 **Cache tiles in memory using memcached**
 
-In an educational setting, you might have several hundred student which will
+In an educational setting, you might have several hundred students which will
 access the same few images at the same time during class.
 Since reading images from the harddrive is one of the slowest operations, you
 can considerably improve performance by having the images in memory instead.
@@ -347,5 +347,5 @@ sudo service apache2 reload
 ```
 
 Then go the admin page using your browser and create a new item under "Social applications"
-and set the provider to *Dataporten* and enter your client id and secret key, also rember to add a site and select it
+and set the provider to *Dataporten* and enter your client id and secret key, also remember to add a site and select it
 with your domain.
