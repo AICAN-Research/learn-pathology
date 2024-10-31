@@ -249,6 +249,10 @@ To use TurboJPEG, first install it:
 ```bash
 sudo apt install libturbojpeg
 ```
+and install it in your python environment:
+```bash
+pip install PyTurboJPEG==1.7.*
+```
 then enable it in learnpathology/settings.py:
 ```python
 USE_TURBOJPEG = True
@@ -289,6 +293,11 @@ Modify memcached config to allow it to use a lot of memory and large enough obje
 Restart after modifying the config:
 ```bash
 sudo service memcached restart
+```
+
+Install the pymemcache binding in your python environment:
+```bash
+pip install pymemcache==4.*
 ```
 
 Enable the tile caching in learnpathology/settings.py:
