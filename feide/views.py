@@ -111,7 +111,7 @@ class DataportenAdapter(OAuth2Adapter):
                     for aff in group['membership']['affiliation']:
                         if aff == 'student':
                             student = True
-                if group['id'] == 'fc:fs:fs:prg:ntnu.no:CMED':
+                if group['id'] == 'fc:fs:fs:prg:ntnu.no:CMED' or group['id'].startswith('fc:fs:fs:kull:ntnu.no:CMED'):
                     for aff in group['membership']['fsroles']:
                         if aff == 'STUDENT':
                             medical_student = True
