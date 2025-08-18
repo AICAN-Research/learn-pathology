@@ -1,4 +1,3 @@
-import os
 from datetime import datetime
 from io import BytesIO
 import json
@@ -64,20 +63,27 @@ class Slide(models.Model):
             osd_tile_width = {0: tile_width}
             osd_tile_height = {0: tile_height}
             osd_to_fast_level_map = {0: 0}
-            #print('Smallest width', smallest_width)
-            while abs(current_width - smallest_width/2) > 1:
+
+            # Create an OSD image pyramid level by dividing the width and height for 2 for each level
+            while abs(current_width - smallest_width/2) > 1: # do this until smallest_width is reached
                 current_width = int(current_width/2)
                 current_height = int(current_height/2)
                 osd_level += 1
+                # Create three maps, mapping the OSD image pyramid level to a real level in the WSI
+                # and the tile width and heights
                 # If current_width is closer to previous FAST level width, than the next FAST level width, then use that.
                 if osd_to_fast_level_map[osd_level-1] < levels-1 and abs(current_width - image.getLevelWidth(osd_to_fast_level_map[osd_level-1]+1)) < 1:
+                    # Next level
                     osd_tile_width[osd_level] = tile_width
                     osd_tile_height[osd_level] = tile_height
                     osd_to_fast_level_map[osd_level] = osd_to_fast_level_map[osd_level - 1] + 1
                 else:
+                    # Map OSD level to previous WSI level, and double the tile width and height
                     osd_tile_width[osd_level] = osd_tile_width[osd_level-1]*2
                     osd_tile_height[osd_level] = osd_tile_height[osd_level-1]*2
                     osd_to_fast_level_map[osd_level] = osd_to_fast_level_map[osd_level - 1]
+
+                # Don't bother adding very small levels
                 if current_width < 1024:
                     break
 
@@ -91,10 +97,10 @@ class Slide(models.Model):
             self._osd_tile_height = osd_tile_height
             self._osd_to_fast_level = osd_to_fast_level_map
             spacing = image.getSpacing()
-            if isinstance(spacing, tuple): # Change in pyfast
-                self._scale_factor = spacing[0]
+            if isinstance(spacing, tuple): # Change in pyfast version 4.11
+                self._scale_factor = spacing[0] # New
             else:
-                self._scale_factor = spacing[0, 0]
+                self._scale_factor = spacing[0, 0] # Old
 
     @property
     def image(self):
