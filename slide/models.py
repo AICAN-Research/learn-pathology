@@ -1,15 +1,15 @@
 import os
+from datetime import datetime
 from io import BytesIO
 import json
 import fast
 import numpy as np
 from PIL import Image
-from pathlib import Path
-import xml.etree.ElementTree as ET
 from django.db import models
 from django.conf import settings
 from slide.timing import Timer
 from tag.models import Tag
+from user.models import User
 
 if settings.USE_TURBOJPEG:
     from turbojpeg import TurboJPEG, TJPF_RGB
@@ -26,6 +26,8 @@ class Slide(models.Model):
     long_description = models.TextField(null=True, blank=True)  # (optional) longer description
     pathology = models.BooleanField(default=False, help_text='Does the slide show pathology or histology')
     tags = models.ManyToManyField(Tag)
+    date_added = models.DateTimeField(default=datetime.now)
+    uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return self.name
@@ -51,7 +53,6 @@ class Slide(models.Model):
             self.timers['import'].stop()
 
             # Count how many OSD levels we need: OSD requires that every level is downsampled by a factor of 2
-            # TODO This assumes that every level size of WSI in FAST is a multiple of 2
             current_width = image.getFullWidth()
             current_height = image.getFullHeight()
             levels = image.getNrOfLevels()
@@ -63,26 +64,20 @@ class Slide(models.Model):
             osd_tile_width = {0: tile_width}
             osd_tile_height = {0: tile_height}
             osd_to_fast_level_map = {0: 0}
-            print('Smallest width', smallest_width)
+            #print('Smallest width', smallest_width)
             while abs(current_width - smallest_width/2) > 1:
-
                 current_width = int(current_width/2)
                 current_height = int(current_height/2)
-                #if self.path.endswith('.vsi'): # TODO Hack for now
-                #    current_width += current_width % tile_width
-                #    current_height += current_height % tile_height
                 osd_level += 1
                 # If current_width is closer to previous FAST level width, than the next FAST level width, then use that.
                 if osd_to_fast_level_map[osd_level-1] < levels-1 and abs(current_width - image.getLevelWidth(osd_to_fast_level_map[osd_level-1]+1)) < 1:
                     osd_tile_width[osd_level] = tile_width
                     osd_tile_height[osd_level] = tile_height
                     osd_to_fast_level_map[osd_level] = osd_to_fast_level_map[osd_level - 1] + 1
-
                 else:
                     osd_tile_width[osd_level] = osd_tile_width[osd_level-1]*2
                     osd_tile_height[osd_level] = osd_tile_height[osd_level-1]*2
                     osd_to_fast_level_map[osd_level] = osd_to_fast_level_map[osd_level - 1]
-
                 if current_width < 1024:
                     break
 
@@ -95,8 +90,11 @@ class Slide(models.Model):
             self._osd_tile_width = osd_tile_width
             self._osd_tile_height = osd_tile_height
             self._osd_to_fast_level = osd_to_fast_level_map
-
-            self.find_image_scale_factor()
+            spacing = image.getSpacing()
+            if isinstance(spacing, tuple): # Change in pyfast
+                self._scale_factor = spacing[0]
+            else:
+                self._scale_factor = spacing[0, 0]
 
     @property
     def image(self):
@@ -144,7 +142,7 @@ class Slide(models.Model):
         """
         self.load_image()
         try:
-            return self._scale_factor[0]
+            return self._scale_factor
         except:
             return None  # Returning None will display slide without scalebar
 
@@ -168,10 +166,14 @@ class Slide(models.Model):
         width, height = self.get_osd_tile_size(osd_level)
         tile_width = width
         tile_height = height
+        osd_tile_width = self._tile_width
+        osd_tile_height = self._tile_height
         if x*width + tile_width >= self._image.getLevelWidth(fast_level):
             tile_width = self._image.getLevelWidth(fast_level) - x*width - 1
+            osd_tile_width = round(tile_width*(self._tile_width/width)) # Handle edge cases
         if y*height + tile_height >= self._image.getLevelHeight(fast_level):
             tile_height = self._image.getLevelHeight(fast_level) - y*height - 1
+            osd_tile_height = round(tile_height*(self._tile_height/height)) # Handle edge cases
 
         self.timers['getPatchImage'].start()
         access = self._image.getAccess(fast.ACCESS_READ)
@@ -184,11 +186,11 @@ class Slide(models.Model):
             image = fast.ImageSharpening.create(1.5).connect(image).runAndGetOutputData()
             self.timers['sharpening'].stop()
 
-        # TODO DO we really need this?:
-        #if tile_width != self._tile_width or tile_height != self._tile_height:
-        #    self.timers['resize'].start()
-        #    image = fast.ImageResizer.create(self._tile_width, self._tile_height).connect(image).runAndGetOutputData()
-        #    self.timers['resize'].stop()
+        # When OSD level is not the same as FAST level, the sizes will be different, thus have to resize to the OSD tile size
+        if tile_width != osd_tile_width or tile_height != osd_tile_height:
+            self.timers['resize'].start()
+            image = fast.ImageResizer.create(osd_tile_width, osd_tile_height).connect(image).runAndGetOutputData()
+            self.timers['resize'].stop()
 
         self.timers['conversion'].start()
         image = np.asarray(image)
@@ -199,11 +201,11 @@ class Slide(models.Model):
         buffer = BytesIO()
         if settings.USE_TURBOJPEG:
             # Use turbo jpeg to compress image since it is quite fast
-            buffer.write(jpeg.encode(image, pixel_format=TJPF_RGB, quality=75))
+            buffer.write(jpeg.encode(image, pixel_format=TJPF_RGB, quality=settings.JPEG_QUALITY_LEVEL))
         else:
             # Use pillow to compress which is slow
             tile = Image.fromarray(image, mode='RGB')
-            tile.save(buffer, 'jpeg', quality=75)  # TODO Set quality
+            tile.save(buffer, 'jpeg', quality=settings.JPEG_QUALITY_LEVEL)
         self.timers['jpeg'].stop()
 
         if settings.PRINT_RUNTIME:
@@ -213,31 +215,6 @@ class Slide(models.Model):
                 timer.print()
 
         return buffer
-
-    def find_image_scale_factor(self):
-        """
-        Finds the slide scale (in um/px) from the WSI's metadata.xml file.
-        The scale is given for the highest level (lowest resolution) of the
-        image pyramid.
-        """
-        try:
-            slide_folder = os.path.dirname(self.path)
-            path_to_metadata = os.path.join(slide_folder, 'metadata.xml')
-
-            # Parse XML tree
-            tree = ET.parse(Path(path_to_metadata))
-            root = tree.getroot()
-
-            # Find the scale property
-            property_elem = root.find(".//Property[@ID='20007']")   # ImagePlaneScale property
-            cdvec2_elem = property_elem.find('CdVec2')
-            scale_xy = [float(d.text) for d in cdvec2_elem.findall('double')]
-
-            self._scale_factor = scale_xy   # scale factor in um/px
-
-        except Exception as err:
-            print(f"An error occurred: The requested metadata.xml file for {self.path} was not found. Setting scale factor None")
-            self._scale_factor = None
 
 
 class AnnotatedSlide(models.Model):
@@ -271,7 +248,15 @@ class Annotation(models.Model):
         raise NotImplementedError('Annotation property "type" has not been implemented yet')
 
 
+class SlideUpload(models.Model):
+    path = models.CharField(max_length=512)
+    name = models.CharField(max_length=255)
+    finished = models.BooleanField(default=False)
+    checked = models.BooleanField(default=False)
+    uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    date_uploaded = models.DateTimeField(default=datetime.now)
 
-
+    def __str__(self):
+        return self.name
 
 

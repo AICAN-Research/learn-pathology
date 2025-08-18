@@ -4,6 +4,7 @@ from user.models import User
 
 
 class CustomUserAdmin(UserAdmin):
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_superuser', 'is_teacher', 'is_uploader', 'is_teacher')
     fieldsets = (
         *UserAdmin.fieldsets,  # original form fieldsets, expanded
         (                      # new fieldset added on to the bottom
@@ -12,6 +13,7 @@ class CustomUserAdmin(UserAdmin):
                 'fields': (
                     'is_student',
                     'is_teacher',
+                    'is_uploader',
                 ),
             },
         ),

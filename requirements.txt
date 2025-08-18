@@ -1,5 +1,5 @@
 django==3.2.*
-pyfast==4.9.*
+pyfast==4.12.*
 pillow==8.*
 pyyaml==6.*
 numpy~=1.23.5

@@ -1,0 +1,34 @@
+{% extends 'learnpathology/base.html' %}
+{% load static %}
+
+{% block header %}
+<script src="{% static 'slide/upload_slides.js' %}"></script>
+{% endblock header %}
+
+{% block content %}
+<form enctype="multipart/form-data" method="post" style="text-align: center;">
+    {% csrf_token %}
+    <h1>Upload whole slide images to LearnPathology</h1>
+    {% if existing_slide_upload_count > 0 %}
+    <div>
+        <h3>You have {{ existing_slide_upload_count }} uploaded slides which have not been added to the database yet.</h3>
+        <p><a href="{% url 'slide:process_uploads' %}" class="btn btn-success form-control">View uploaded slides</a></p>
+    </div>
+    <div>
+        <h3>Upload new files</h3>
+    {% else %}
+    <div>
+    {% endif %}
+    <label id="files-label">Select files and/or directories to upload</label>
+    <p>
+    <input type="file" class="form-control" id="files" placeholder="Select files" multiple><!-- webkitdirectory directory>-->
+    </p>
+    <p>
+    <input type="file" class="form-control" id="directories" placeholder="Select folders" multiple webkitdirectory directory>
+    </p>
+    <input type="submit" value="Upload" id="submit" class="btn btn-success form-control">
+    </div>
+</form>
+<div id="uploadInfo"></div>
+<div id="uploads"></div>
+{% endblock content %}

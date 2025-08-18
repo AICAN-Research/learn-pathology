@@ -1,0 +1,39 @@
+{% extends 'learnpathology/base.html' %}
+
+{% block javascript %}
+$(document).ready(function() {
+    $('.delete-button').click(function(event) {
+        event.preventDefault();
+        this.form.submit();
+    });
+});
+{% endblock %}
+
+
+{% block content %}
+{% if files %}
+<h1>The following slides have been uploaded successfully</h1>
+<p>
+    Please fill in the metadata about each slide to add them to the LearnPathology database:
+</p>
+{% endif %}
+{% for file in files %}
+    <div style="background: white; border-radius: 8px; padding: 10px; margin: 10px;">
+        <form method="post">
+            {% csrf_token %}
+        <h3>{{ file.name }}</h3>
+        <img src="/slide/uploads/thumbnails/{{ file.id }}.jpg" height="256"><br>
+        <table>
+        {{ file.form.as_table }}
+        </table>
+        <input type="hidden" name="upload_file_id" value="{{ file.id }}">
+        <input type="submit" name="action" value="Add to database" class="btn btn-success">
+        <input type="submit" value="Delete" class="btn btn-danger delete-button">
+        </form>
+    </div>
+{% empty %}
+<h1>No more uploaded slides to add to the database.</h1>
+<a href="{% url 'slide:upload_slides' %}" class="btn btn-success">Upload more slides</a>
+{% endfor %}
+{% endblock content %}
+

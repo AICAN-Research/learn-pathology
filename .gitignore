@@ -4,5 +4,7 @@
 environment
 venv
 env
-
 media/*
+uploads/
+thumbnails/
+uploaded_slides/

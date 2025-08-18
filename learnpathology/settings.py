@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'ih^&f=k6+5n0+-$lgcr#$9z75n00f$zmnptk#od3mikayz6md9'
+SECRET_KEY = None
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -31,7 +31,7 @@ USE_FEIDE_LOGIN = False
 
 # To enable TILE CACHE you need to install the python package pymemcache and the linux package memcached.
 # Remember to configure the size of the memcached in /etc/memcached.conf
-USE_TILE_CACHE = True
+USE_TILE_CACHE = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -271,3 +271,10 @@ if USE_TILE_CACHE:
 
 USE_TURBOJPEG = False
 USE_IMAGE_SHARPENING = False
+JPEG_QUALITY_LEVEL = 80
+
+# Where uploaded slides are stored after being added to the database:
+UPLOADED_SLIDE_DIR = os.path.join(BASE_DIR, 'uploaded_slides')
+
+# Where uploaded SLIDES are stored just after being uploaded:
+TEMP_UPLOADED_SLIDE_DIR = os.path.join(BASE_DIR, 'uploads')

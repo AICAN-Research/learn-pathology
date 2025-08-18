@@ -1,7 +1,13 @@
 import os.path
 import json
+import shutil
+import string
+import random
+from os.path import join
 
 import django.urls
+import fast
+from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.db import transaction
@@ -10,13 +16,10 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.core.files.uploadedfile import UploadedFile
 from django.views.decorators.cache import cache_page
-
 from tag.models import Tag
-
-from user.decorators import teacher_required
-from slide.models import Slide, AnnotatedSlide, Annotation
-from slide.forms import SlideForm
-
+from user.decorators import teacher_required, uploader_required
+from slide.models import Slide, AnnotatedSlide, Annotation, SlideUpload
+from slide.forms import SlideMetadataForm
 
 GENERAL_PATHOLOGY_TAGS = (
     'inflammation', 'squamous cell carcinoma', 'adenocarcinoma', 'necrosis'
@@ -304,54 +307,22 @@ def tile(request, slide_id, osd_level, x, y):
     return HttpResponse(buffer.getvalue(), content_type='image/jpeg')
 
 
-def create_thumbnail(slide_id):
+def create_thumbnail(wsi, path):
     import fast
-    slide = slide_cache.load_slide_to_cache(slide_id)
-    access = slide.image.getAccess(fast.ACCESS_READ)
-    image = access.getLevelAsImage(slide.image.getNrOfLevels()-1)
-    scale = float(image.getWidth())/image.getHeight()
-    resize = fast.ImageResizer.create(round(512*scale), 512).connect(image)
-    fast.ImageFileExporter\
-        .create(f'thumbnails/{slide_id}.jpg')\
-        .connect(resize)\
+    access = wsi.getAccess(fast.ACCESS_READ)
+    # Select best level
+    thumbnail_level = wsi.getNrOfLevels() - 1
+    for level in range(wsi.getNrOfLevels() - 1, 0, -1):
+        if wsi.getLevelHeight(level) >= 1024 and wsi.getLevelHeight(level) < 16000:
+            thumbnail_level = level
+            break
+    image = access.getLevelAsImage(thumbnail_level)
+    scale = float(image.getWidth()) / image.getHeight()
+    resize = fast.ImageResizer.create(round(512 * scale), 512).connect(image)
+    fast.ImageFileExporter \
+        .create(path) \
+        .connect(resize) \
         .run()
-
-
-@teacher_required
-def add(request):
-    if request.method == 'POST':
-        form = SlideForm(request.POST, request.FILES)
-        with transaction.atomic():
-            if form.is_valid():
-                # Save form and create thumbnail
-                file_path = store_file_in_db(form.files['image_file'])
-                slide = form.save(file_path)
-                create_thumbnail(slide.id)
-
-                organ_tags = form.cleaned_data['organ_tags']
-                stain_tags = form.cleaned_data['stain_tags']
-                other_tags = form.cleaned_data['other_tags']
-                slide.tags.set(organ_tags | stain_tags | other_tags)
-
-                messages.add_message(request, messages.SUCCESS, 'Image added to database')
-                return redirect('slide:view_full', slide.id)
-    else:
-        form = SlideForm()
-
-    return render(request, 'slide/add.html', {'form': form})
-
-
-def store_file_in_db(f: UploadedFile):
-    destination_path = os.path.join(os.getcwd(), 'uploaded_images', f.name)  # TODO: improve destination path according to future DB
-    # TODO: Ask the user if to substitute or keep both files
-    if os.path.exists(destination_path):
-        os.remove(destination_path)
-
-    with open(destination_path, 'wb+') as destination:
-        for chunk in f.chunks():
-            destination.write(chunk)
-
-    return destination_path
 
 
 @teacher_required
@@ -412,8 +383,6 @@ def edit_general_pathology_tags(request, slide_id):
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
 
-
-
 @teacher_required
 def add_tag(request):
     """
@@ -452,9 +421,6 @@ def remove_tag(request):
     return JsonResponse(data={})
 
 
-
-
-
 @teacher_required
 def create_annotation(request):
     """
@@ -481,6 +447,7 @@ def create_annotation(request):
     annotation.save()
 
     return JsonResponse(data={})
+
 
 @teacher_required
 def update_annotation(request):
@@ -512,6 +479,7 @@ def update_annotation(request):
 
     return JsonResponse(data={})
 
+
 @teacher_required
 def delete_annotation(request):
     """
@@ -541,5 +509,202 @@ def delete_annotation(request):
     return JsonResponse(data={})
 
 
+@uploader_required
+def upload_slides(request):
+    if request.method == 'POST':
+        file = request.FILES['file'].read()
+        upload_id = request.POST['upload_id']
+        finished = request.POST['finished'] == 'true'
+
+        filename = request.POST['filename']
+        if upload_id == 'null': # New upload
+            path = os.path.join(settings.TEMP_UPLOADED_SLIDE_DIR, request.user.username, filename)
+            # Check if filename exists before uploading, if so try to add random prefix
+            while os.path.exists(path):
+                characters = string.ascii_letters + string.digits  # Pool of possible characters
+                random_string = ''.join(random.choice(characters) for _ in range(5))
+                filename = random_string + '_' + filename
+                path = os.path.join(settings.TEMP_UPLOADED_SLIDE_DIR, request.user.username, filename)
+            upload = SlideUpload()
+            upload.uploaded_by = request.user
+            upload.name = filename
+            upload.finished = False
+            upload.path = path
+            upload.save()
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, 'wb+') as destination:
+                destination.write(file)
+            if finished:
+                upload.finished = True
+                upload.save()
+                res = JsonResponse({'data': 'Uploaded Successfully', 'upload_id': upload.id})
+            else:
+                res = JsonResponse({'upload_id': upload.id})
+            return res
+        else: # existing upload
+            try:
+                upload = SlideUpload.objects.get(uploaded_by=request.user, id=upload_id)
+            except SlideUpload.DoesNotExist:
+                return JsonResponse({'data': 'No such upload exists'})
+
+            if not upload.finished:
+                with open(upload.path, 'ab+') as destination:
+                    destination.write(file)
+                if finished:
+                    upload.finished = True
+                    upload.save()
+                    return JsonResponse({'data': 'Uploaded Successfully', 'upload_id': upload.id})
+                else:
+                    return JsonResponse({'upload_id': upload.id})
+            else:
+                return JsonResponse({'data': 'Upload is already finished'})
+    else: # If not POST
+        # Remove old (failed) downloads
+        slides = SlideUpload.objects.filter(uploaded_by=request.user, finished=False)
+        for slide in slides:
+            try:
+                os.remove(slide.path)
+            except Exception as e:
+                print('Error deleting file:', str(e))
+            try:
+                os.remove(join(settings.TEMP_UPLOADED_SLIDE_DIR, 'thumbnails' + slide.id + '.jpg'))
+            except Exception as e:
+                print('Error deleting file:', str(e))
+            slide.delete()
+    existing_slide_upload_count = SlideUpload.objects.filter(uploaded_by=request.user, finished=True).count()
+    return render(request, 'slide/upload_slides.html', {'existing_slide_upload_count': existing_slide_upload_count})
 
 
+@uploader_required
+def process_uploaded_slides(request):
+    # TODO only do this once?
+    # Process the slides uploaded by this user
+    uploads = SlideUpload.objects.filter(uploaded_by=request.user, finished=True, checked=False)
+    progress = 0
+    currentUpload = 0
+    dicom_seriesUID = {}
+    uploads_to_move = {}
+    for upload in uploads:
+        # For each uploaded file
+        path = upload.path
+        try:
+            # 1. Try to open it:
+            wsi = fast.WholeSlideImageImporter.create(path).runAndGetOutputData()
+
+            # Check if dicom
+            try:
+                # Dicom is stored in multiple files, but they should all have the same series instance UID
+                seriesUID = wsi.getMetadata('dicom.SeriesInstanceUID')
+                print(seriesUID)
+                if seriesUID in dicom_seriesUID.keys():
+                    # Skip this file
+                    uploads_to_move[dicom_seriesUID[seriesUID]][2].append(upload.path)
+                    upload.delete()
+                    currentUpload += 1
+                    continue
+                else:
+                    dicom_seriesUID[seriesUID] = upload.id
+                    print(seriesUID, 'stored', dicom_seriesUID[seriesUID], seriesUID in dicom_seriesUID.keys())
+            except Exception as e:
+                seriesUID = ''
+
+            # 2. Create thumbnail
+            os.makedirs(join(settings.TEMP_UPLOADED_SLIDE_DIR, 'thumbnails'), exist_ok=True)
+            create_thumbnail(wsi, join(settings.TEMP_UPLOADED_SLIDE_DIR, 'thumbnails', f'{upload.id}.jpg'))
+
+            upload.checked = True
+            upload.save()
+            uploads_to_move[upload.id] = (
+                upload,
+                os.path.join(os.path.dirname(upload.path), str(upload.id), upload.name),
+                [upload.path]
+            )
+        except Exception as e:
+            # 4. Remove invalid files
+            print('Error: ' + str(e))
+            os.remove(path)
+            if seriesUID:
+                del dicom_seriesUID[seriesUID]
+            upload.delete()
+
+        progress = int(round((currentUpload/len(uploads))*100))
+        currentUpload += 1
+        print(progress)
+
+    # 3. Group and move files to subfolders
+    for upload, new_path, filepaths in uploads_to_move.values():
+        upload.path = new_path
+        upload.save()
+        os.makedirs(os.path.dirname(new_path), exist_ok=True)
+        for filepath in filepaths:
+            shutil.move(
+                filepath,
+                os.path.dirname(new_path)
+            )
+
+    return redirect('slide:view_uploads')
+
+
+@uploader_required
+def view_uploaded_slides(request):
+    unprocessedSlides = SlideUpload.objects.filter(uploaded_by=request.user, finished=True, checked=False).count()
+    if unprocessedSlides > 0:
+        return redirect('slide:process_uploads')
+
+    if request.method == 'POST':
+        upload = SlideUpload.objects.get(uploaded_by=request.user, id=request.POST['upload_file_id'])
+        slide_path = upload.path
+        thumbnail_path = os.path.join(settings.TEMP_UPLOADED_SLIDE_DIR, 'thumbnails', str(upload.id) + '.jpg')
+        if 'action' not in request.POST: # If action not set, user wants to delete
+            error = ''
+            try:
+                # Delete entire slide upload folder
+                shutil.rmtree(os.path.dirname(slide_path))
+            except Exception as e:
+                error = 'Failed to delete slide: ' + str(e)
+            try:
+                os.remove(thumbnail_path)
+            except Exception as e:
+                error += 'Failed to delete thumbnail: ' + str(e)
+            upload.delete()
+            if len(error) > 0:
+                messages.error(request, f'Error occured while deleting slide upload {upload.name}: ' + error)
+            else:
+                messages.success(request, f'Slide upload {upload.name} was deleted.')
+        else:
+            form = SlideMetadataForm(request.POST)
+            if form.is_valid():
+                slide = form.save(commit=False)
+                slide.uploaded_by = request.user
+                slide.save()
+                organ_tags = form.cleaned_data['organ_tags']
+                stain_tags = form.cleaned_data['stain_tags']
+                other_tags = form.cleaned_data['other_tags']
+                slide.tags.set(organ_tags | stain_tags | other_tags)
+                new_slide_path = os.path.join(settings.UPLOADED_SLIDE_DIR, str(slide.id), os.path.basename(upload.path))
+                os.makedirs(os.path.dirname(new_slide_path), exist_ok=True)
+                slide.path = new_slide_path
+                slide.save()
+                # Move thumbnail
+                shutil.move(
+                    thumbnail_path,
+                    os.path.join('thumbnails', str(slide.id) + '.jpg')
+                )
+                # Move slide folder
+                os.rename(
+                    os.path.dirname(slide_path),
+                    os.path.dirname(new_slide_path)
+                )
+                upload.delete()
+                messages.success(request, f'Slide {slide.name} was saved to the database.')
+            else:
+                messages.error(request, f'Invalid metadata.')
+                # TODO
+
+    # Create form for each slide allowing user to insert metadata, and display thumbnail created
+    files = SlideUpload.objects.filter(uploaded_by=request.user, finished=True, checked=True)
+    for file in files:
+        form = SlideMetadataForm()
+        file.form = form
+
+    return render(request, 'slide/view_uploaded_slides.html', {'files': files})
