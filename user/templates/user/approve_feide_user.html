@@ -1,0 +1,13 @@
+{% extends "learnpathology/base.html" %}
+
+{% block content %}
+    <h1>Approve a Feide user</h1>
+    Provide the username of the Feide user to approve. Example: greatusername@ntnu.no
+    <form action="" method="post">
+        {% csrf_token %}
+        <table>
+            {{ form.as_table }}
+        </table>
+        <input type="submit" class="btn btn-success" value="Approve">
+    </form>
+{% endblock %}

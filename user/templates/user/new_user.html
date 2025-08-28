@@ -1,0 +1,13 @@
+{% extends "learnpathology/base.html" %}
+
+{% block content %}
+<h1>Add a new user</h1>
+The user has to create their own password first time logging in.
+<form action="" method="post">
+    {% csrf_token %}
+    <table>
+    {{ form.as_table }}
+    </table>
+    <input type="submit" class="btn btn-success" value="Add">
+</form>
+{% endblock %}

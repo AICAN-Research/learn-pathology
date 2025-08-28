@@ -10,7 +10,9 @@
     <h2 class="text-center" style="align-self: center;">Welcome to LearnPathology. The AICAN online learning platform</h2>
     <div class="container text-center">
         <p>
-             To use this system you have to login with the <a href="https://www.feide.no/">FEIDE</a> system.<br>
+             To use this system you have to login.<br>
+             Students and teachers can login using their regular university account using the <a href="https://www.feide.no/">FEIDE</a> system.<br>
+             Others can login with a username provided by an administrator.
         </p>
           <p>
             <strong>
@@ -20,7 +22,11 @@
                 <a href="{% url 'privacy' %}">See here for more privacy and cookie information.</a>
             </strong>
         </p>
-        <a href="{% url 'dataporten_login' %}"><button class="imageBrowserSearchButtons" style="border: 1px solid black"><h3>Login with FEIDE</h3></button></a>
+        <p>
+            <a href="{% url 'dataporten_login' %}" class="btn btn-primary btn-lg">Login with FEIDE (Students & Teachers)</a>
+            <strong>OR</strong>
+            <a href="{% url 'login' %}" class="btn btn-secondary btn-lg">Login with username and password</a>
+        </p>
 
     </div>
 

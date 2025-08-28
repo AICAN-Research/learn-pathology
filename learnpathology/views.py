@@ -1,9 +1,17 @@
-from django.contrib.auth.decorators import login_required
+from datetime import timedelta
+from django.conf import settings
 from django.shortcuts import render
+from django.utils import timezone
+from user.models import User
 
 
 def index(request):
-    return render(request, 'learnpathology/frontpage.html')
+    context = {}
+    if request.user.is_superuser or request.user.is_teacher:
+        # Count number of online users, using the User.last_seen field
+        context['active_users'] = User.objects.filter(
+            last_seen__lt=timezone.now() + timedelta(minutes=settings.LAST_SEEN_TIMEOUT)).count()
+    return render(request, 'learnpathology/frontpage.html', context)
 
 
 def test_one_column(request):

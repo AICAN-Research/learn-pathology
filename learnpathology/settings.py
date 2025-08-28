@@ -134,6 +134,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "OPTIONS": {
+            "min_length": 12,
+        },
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
@@ -249,7 +252,7 @@ SOCIALACCOUNT_LOGIN_ON_GET = True
 if USE_FEIDE_LOGIN:
     # TODO don't use hard coded urls
     LOGIN_URL = '/user/login/feide/'
-    LOGIN_EXEMPT_URLS = ['accounts/dataporten/login/', 'privacy/']
+    LOGIN_EXEMPT_URLS = ['accounts/dataporten/login/', 'privacy/', 'user/login/']
 
 
 #BS_ICONS_CACHE = BASE_DIR.joinpath('bs_icon_cache')
@@ -271,3 +274,5 @@ if USE_TILE_CACHE:
 
 USE_TURBOJPEG = False
 USE_IMAGE_SHARPENING = False
+
+LAST_SEEN_TIMEOUT = 20 # In minutes

@@ -1,8 +1,11 @@
 *.pyc
 .idea
-*.sqlite3
+*.sqlite3*
 environment
 venv
 env
 
 media/*
+thumbnails/*
+uploads/*
+uploaded_slides/*

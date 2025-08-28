@@ -116,7 +116,7 @@
 
                     {% if request.user.is_superuser %}
                         <!-- specific options for superuser-->
-                        <a class="sidebar-item noLinkStyling" href="/admin/" title="Admin page">
+                        <a class="sidebar-item noLinkStyling" href="{% url 'user_admin' %}" title="Admin page">
                             <div class="sidebar-item-icon">
 {#                                <i class="bi-gear-fill"></i>#}
                                 <span class="iconify" data-icon="fluent:settings-28-regular" data-width="24" data-height="24"></span>
