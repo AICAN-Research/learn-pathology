@@ -615,6 +615,7 @@ def process_uploaded_slides(request):
             # 2. Create thumbnail
             os.makedirs(join(settings.TEMP_UPLOADED_SLIDE_DIR, 'thumbnails'), exist_ok=True)
             create_thumbnail(wsi, join(settings.TEMP_UPLOADED_SLIDE_DIR, 'thumbnails', f'{upload.id}.jpg'))
+            del wsi
 
             upload.checked = True
             upload.save()
@@ -686,7 +687,7 @@ def view_uploaded_slides(request):
                 other_tags = form.cleaned_data['other_tags']
                 slide.tags.set(organ_tags | stain_tags | other_tags)
                 new_slide_path = os.path.join(settings.UPLOADED_SLIDE_DIR, str(slide.id), os.path.basename(upload.path))
-                os.makedirs(os.path.dirname(new_slide_path), exist_ok=True)
+                os.makedirs(settings.UPLOADED_SLIDE_DIR, exist_ok=True)
                 slide.path = new_slide_path
                 slide.save()
                 # Move thumbnail
