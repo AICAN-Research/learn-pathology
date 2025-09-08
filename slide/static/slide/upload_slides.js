@@ -149,10 +149,7 @@ $(document).ready(function() {
         if(allFiles.length > 0) {
             let uploader = new SlideUploader(allFiles);
             uploader.startUpload();
-            $('#submit').remove();
-            $('#files').remove();
-            $('#directories').remove();
-            $('#files-label').remove();
+            $('#upload-form').hide();
             g_pressed = true;
         }
     });
