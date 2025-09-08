@@ -20,12 +20,16 @@
     <div>
     {% endif %}
     <label id="files-label">Select files and/or directories to upload</label>
-    <p>
-    <input type="file" class="form-control" id="files" placeholder="Select files" multiple><!-- webkitdirectory directory>-->
-    </p>
-    <p>
-    <input type="file" class="form-control" id="directories" placeholder="Select folders" multiple webkitdirectory directory>
-    </p>
+<table>
+    <tr>
+        <th style="text-align:right">Files:</th>
+        <td style="width:100%"><input type="file" class="form-control" id="files" placeholder="Select files" multiple></td>
+    </tr>
+    <tr>
+        <th style="text-align:right">Directory:</th>
+        <td style="width:100%"><input type="file" class="form-control" id="directories" placeholder="Select folders" multiple webkitdirectory></td>
+    </tr>
+</table>
     <input type="submit" value="Upload" id="submit" class="btn btn-success form-control">
     </div>
 </form>

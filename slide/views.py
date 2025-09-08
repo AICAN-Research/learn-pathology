@@ -311,18 +311,22 @@ def create_thumbnail(wsi, path):
     import fast
     access = wsi.getAccess(fast.ACCESS_READ)
     # Select best level
-    thumbnail_level = wsi.getNrOfLevels() - 1
+    thumbnail_level = None
     for level in range(wsi.getNrOfLevels() - 1, 0, -1):
-        if wsi.getLevelHeight(level) >= 1024 and wsi.getLevelHeight(level) < 16000:
+        print(level, wsi.getLevelHeight(level), wsi.getLevelWidth(level))
+        if wsi.getLevelHeight(level) >= 1024 and wsi.getLevelHeight(level) < 16000 and wsi.getLevelWidth(level) < 16000:
             thumbnail_level = level
             break
-    image = access.getLevelAsImage(thumbnail_level)
-    scale = float(image.getWidth()) / image.getHeight()
-    resize = fast.ImageResizer.create(round(512 * scale), 512).connect(image)
-    fast.ImageFileExporter \
-        .create(path) \
-        .connect(resize) \
-        .run()
+    if thumbnail_level is None:
+        raise ValueError('Unable to find a level to create a thumbnail from in the WSI. Are you sure it is pyramidal?')
+    else:
+        image = access.getLevelAsImage(thumbnail_level)
+        scale = float(image.getWidth()) / image.getHeight()
+        resize = fast.ImageResizer.create(round(512 * scale), 512).connect(image)
+        fast.ImageFileExporter \
+            .create(path) \
+            .connect(resize) \
+            .run()
 
 
 @teacher_required
