@@ -20,7 +20,8 @@ class Command(BaseCommand):
         slides = Slide.objects.all()
         for slide in slides:
             try:
-                create_thumbnail(slide.id)
+                slide.load_image()  # This will load slide with FAST, so it is ready to use
+                create_thumbnail(slide.image, f'thumbnails/{slide.id}.jpg')
                 print('Thumbnail for', slide.id, 'recreated')
             except Exception as e:
                 print('Failed to recreate thumbnail for ', slide.id, 'because: ', str(e))

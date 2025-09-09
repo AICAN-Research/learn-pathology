@@ -12,6 +12,9 @@
     <div class="card border-0 w-100 text-start">
         <div class="card-body" style="padding-bottom: 0;">
             <div class="radio-toolbar" style="margin-top: 2px;">
+                {% if request.user.is_uploader or request.user.is_superuser %}
+                    <a href="{% url 'slide:upload_slides' %}" class="btn btn-success">Upload new slides</a>
+                {% endif %}
                 {% if course %}
                 <a href="{% url 'course:reset_slide_selection' course_id=course.id %}">
                 {% else %}

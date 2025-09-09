@@ -6,3 +6,4 @@ class User(AbstractUser):
     """A LearnPathology user"""
     is_student = models.BooleanField(default=True)
     is_teacher = models.BooleanField(default=False)
+    is_uploader = models.BooleanField(default=False)
