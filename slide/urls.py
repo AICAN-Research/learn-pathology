@@ -26,6 +26,6 @@ urlpatterns = [
     path('upload/process/', views.process_uploaded_slides, name='process_uploads'),
     path('upload/view/', views.view_uploaded_slides, name='view_uploads'),
 
-] + static('thumbnails/', document_root=os.path.join(settings.BASE_DIR, 'thumbnails')) \
+] + static('thumbnails/', document_root=settings.SLIDE_THUMBNAILS_DIR) \
   + static('uploads/thumbnails/', document_root=os.path.join(settings.TEMP_UPLOADED_SLIDE_DIR, 'thumbnails'))
 

@@ -283,4 +283,6 @@ UPLOADED_SLIDE_DIR = os.path.join(BASE_DIR, 'uploaded_slides')
 # Where uploaded SLIDES are stored just after being uploaded:
 TEMP_UPLOADED_SLIDE_DIR = os.path.join(BASE_DIR, 'uploads')
 
+SLIDE_THUMBNAILS_DIR = os.path.join(BASE_DIR, 'thumbnails')
+
 LAST_SEEN_TIMEOUT = 20 # In minutes

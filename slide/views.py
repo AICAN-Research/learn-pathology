@@ -313,7 +313,6 @@ def create_thumbnail(wsi, path):
     # Select best level
     thumbnail_level = None
     for level in range(wsi.getNrOfLevels() - 1, 0, -1):
-        print(level, wsi.getLevelHeight(level), wsi.getLevelWidth(level))
         if wsi.getLevelHeight(level) >= 1024 and wsi.getLevelHeight(level) < 16000 and wsi.getLevelWidth(level) < 16000:
             thumbnail_level = level
             break
@@ -693,7 +692,7 @@ def view_uploaded_slides(request):
                 # Move thumbnail
                 shutil.move(
                     thumbnail_path,
-                    os.path.join('thumbnails', str(slide.id) + '.jpg')
+                    os.path.join(settings.SLIDE_THUMBNAILS_DIR, str(slide.id) + '.jpg')
                 )
                 # Move slide folder
                 os.rename(
