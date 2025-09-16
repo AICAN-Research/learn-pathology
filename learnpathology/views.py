@@ -10,7 +10,7 @@ def index(request):
     if request.user.is_superuser or request.user.is_teacher:
         # Count number of online users, using the User.last_seen field
         context['active_users'] = User.objects.filter(
-            last_seen__lt=timezone.now() + timedelta(minutes=settings.LAST_SEEN_TIMEOUT)).count()
+            last_seen__gt=timezone.now() - timedelta(minutes=settings.LAST_SEEN_TIMEOUT)).count()
     return render(request, 'learnpathology/frontpage.html', context)
 
 

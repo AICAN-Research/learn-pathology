@@ -249,10 +249,11 @@ SITE_ID = 1
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'
 SOCIALACCOUNT_LOGIN_ON_GET = True
+LOGIN_EXEMPT_URLS = ['privacy/']
 if USE_FEIDE_LOGIN:
     # TODO don't use hard coded urls
     LOGIN_URL = '/user/login/feide/'
-    LOGIN_EXEMPT_URLS = ['accounts/dataporten/login/', 'privacy/', 'user/login/']
+    LOGIN_EXEMPT_URLS += ['accounts/dataporten/login/', 'user/login/']
 
 
 #BS_ICONS_CACHE = BASE_DIR.joinpath('bs_icon_cache')
