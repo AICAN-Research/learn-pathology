@@ -11,6 +11,13 @@ def index(request):
         # Count number of online users, using the User.last_seen field
         context['active_users'] = User.objects.filter(
             last_seen__gt=timezone.now() - timedelta(minutes=settings.LAST_SEEN_TIMEOUT)).count()
+        if settings.USE_FEIDE_LOGIN:
+            from allauth.socialaccount.models import SocialAccount
+            # Check if user is FEIDE user, if so no need to check for password reset
+            context['feide_users'] = SocialAccount.objects.all().count()
+            context['users'] = User.objects.exclude(username__in=SocialAccount.objects.values('user__username')).count()
+        else:
+            context['users'] = User.objects.all().count()
     return render(request, 'learnpathology/frontpage.html', context)
 
 

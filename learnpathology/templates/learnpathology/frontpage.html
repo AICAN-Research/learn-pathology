@@ -8,7 +8,13 @@
 
     <h2 class="text-center" style="align-self: center;">Welcome to LearnPathology. The AICAN online learning platform</h2>
     {% if request.user.is_superuser or request.user.is_teacher %}
-        Logged in users: {{ active_users }}
+        Logged in users: {{ active_users }}<br>
+        {% if feide_users %}
+        Feide users registered: {{ feide_users }}<br>
+        Non-Feide users registered: {{ users }}<br>
+        {% else %}
+        Users registered: {{ users }}<br>
+        {% endif %}
     {% endif %}
 
 {% endblock %}
