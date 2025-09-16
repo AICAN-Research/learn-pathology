@@ -4,6 +4,7 @@
 
 <div class="card mx-auto">
 <div class="card-body">
+    <h1>Login</h1>
 {% if form.errors %}
 <p>Your username and password didn't match. Please try again.</p>
 {% endif %}
@@ -30,7 +31,7 @@
 </tr>
 </table>
 
-<input type="submit" value="Login">
+<input type="submit" class="btn btn-primary" value="Login">
 <input type="hidden" name="next" value="{{ next }}">
 </form>
 </div>

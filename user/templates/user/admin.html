@@ -1,0 +1,15 @@
+{% extends 'learnpathology/base.html' %}
+{% block content %}
+<h1>User Admin</h1>
+<p>
+    <a href="{% url 'create_new_user' %}" class="btn btn-primary">Create a new user</a>
+</p>
+{% if USE_FEIDE_LOGIN %}
+<p>
+    <a href="{% url 'approve_feide_user' %}" class="btn btn-primary">Approve a Feide user to login</a>
+</p>
+{% endif %}
+<p>
+    <a href="/admin/" class="btn btn-danger">Advanced Admin</a>
+</p>
+{% endblock %}
