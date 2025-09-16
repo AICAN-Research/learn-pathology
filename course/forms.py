@@ -1,11 +1,14 @@
 from django import forms
 from django.forms import FileField, FileInput
-
 from course.models import Course, CourseMaterial
+from user.models import User
 
 
 class CourseForm(forms.ModelForm):
-
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['teachers'].queryset = User.objects.filter(is_teacher=True)
+        
     class Meta:
         model = Course
         fields = ['code', 'title', 'description', 'long_description', 'teacher']
