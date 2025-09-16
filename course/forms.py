@@ -7,7 +7,7 @@ from user.models import User
 class CourseForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['teachers'].queryset = User.objects.filter(is_teacher=True)
+        self.fields['teacher'].queryset = User.objects.filter(is_teacher=True)
         
     class Meta:
         model = Course
