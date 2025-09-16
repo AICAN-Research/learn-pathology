@@ -3,6 +3,7 @@ from django.conf import settings
 from django.shortcuts import render
 from django.utils import timezone
 from user.models import User
+from slide.models import Slide
 
 
 def index(request):
@@ -18,6 +19,7 @@ def index(request):
             context['users'] = User.objects.exclude(username__in=SocialAccount.objects.values('user__username')).count()
         else:
             context['users'] = User.objects.all().count()
+        context['images'] = Slide.objects.all().count()
     return render(request, 'learnpathology/frontpage.html', context)
 
 
