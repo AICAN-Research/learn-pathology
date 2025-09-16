@@ -70,7 +70,7 @@
             </thead>
             {% for slide in search_result %}
                 <tr>
-                    <td><a href="{% url 'slide:view_full' slide.id %}"><img src="/slide/thumbnails/{{ slide.id }}.jpg" style="width: 100px"></a></td>
+                    <td><a href="{% url 'slide:view_full' slide.id %}"><img loading="lazy" src="/slide/thumbnails/{{ slide.id }}.jpg" style="width: 100px"></a></td>
                     <td>{{ slide.name }}</td>
                     <td>{{ slide.description }}</td>
                     <td><a href="">Tasks</a></td>
@@ -104,7 +104,7 @@
         </thead>
         {% for slide in slides %}
             <tr>
-                <td><a href="{% url 'slide:view_full' slide.id %}"><img src="/slide/thumbnails/{{ slide.id }}.jpg" style="width: 100px"></a></td>
+                <td><a href="{% url 'slide:view_full' slide.id %}"><img loading="lazy" src="/slide/thumbnails/{{ slide.id }}.jpg" style="width: 100px"></a></td>
                 <td>{{ slide.name }}</td>
                 <td>{{ slide.description }}</td>
                 <td><a href="">Tasks</a></td>
