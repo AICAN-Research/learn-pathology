@@ -582,11 +582,28 @@ def upload_slides(request):
 def process_uploaded_slides(request):
     # TODO only do this once?
     # Process the slides uploaded by this user
-    uploads = SlideUpload.objects.filter(uploaded_by=request.user, finished=True, checked=False)
+    uploads = SlideUpload.objects.filter(uploaded_by=request.user, finished=True, checked=False).order_by('name')
     progress = 0
     currentUpload = 0
     dicom_seriesUID = {}
     uploads_to_move = {}
+
+    # Correct dicom files if needed
+    for upload in uploads:
+        path = upload.path
+        # Check if dicom
+        if path.endswith('.dcm'):
+            import pydicom
+            from pydicom.datadict import tag_for_keyword
+            with pydicom.dcmread(path) as ds:
+                tag = tag_for_keyword('ICCProfile')
+                if tag not in ds:
+                    icc_profile_data = b"ICC Profile Data"
+                    ds.ICCProfile = icc_profile_data
+                    ds.save_as(path)
+                    print('Corrected')
+
+    seriesUID = ''
     for upload in uploads:
         # For each uploaded file
         path = upload.path
@@ -594,7 +611,6 @@ def process_uploaded_slides(request):
             # 1. Try to open it:
             wsi = fast.WholeSlideImageImporter.create(path).runAndGetOutputData()
 
-            # Check if dicom
             try:
                 # Dicom is stored in multiple files, but they should all have the same series instance UID
                 seriesUID = wsi.getMetadata('dicom.SeriesInstanceUID')
@@ -626,6 +642,7 @@ def process_uploaded_slides(request):
         except Exception as e:
             # 4. Remove invalid files
             print('Error: ' + str(e))
+            messages.error(request, f'The file upload {upload.name} was invalid and removed because: {str(e)}')
             os.remove(path)
             if seriesUID:
                 del dicom_seriesUID[seriesUID]
@@ -710,5 +727,22 @@ def view_uploaded_slides(request):
     for file in files:
         form = SlideMetadataForm()
         file.form = form
+
+        # Get some metainfo from file
+        wsi = fast.WholeSlideImageImporter.create(file.path).runAndGetOutputData()
+        file.levels = wsi.getNrOfLevels()
+        file.width = wsi.getFullWidth()
+        file.height = wsi.getFullHeight()
+        if wsi.getSpacing()[0] != 1 and wsi.getSpacing()[1] != 1:
+            file.physical_width = round(wsi.getFullWidth()*wsi.getSpacing()[0], 2)
+            file.physical_height = round(wsi.getFullHeight() * wsi.getSpacing()[1], 2)
+        else:
+            file.physical_width = -1
+            file.physical_height = -1
+        try:
+            file.magnification = wsi.getMagnification()
+        except:
+            file.magnification = -1
+        del wsi
 
     return render(request, 'slide/view_uploaded_slides.html', {'files': files})

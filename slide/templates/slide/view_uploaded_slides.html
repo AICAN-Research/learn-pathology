@@ -23,6 +23,44 @@ $(document).ready(function() {
             {% csrf_token %}
         <h3>{{ file.name }}</h3>
         <img src="/slide/uploads/thumbnails/{{ file.id }}.jpg" height="256"><br>
+        {% if file.levels == 1 %}
+        <div class="bg-warning">
+            This image is not pyramidal. Perhaps it is an overview image? Are you sure you want to add this?
+        </div>
+        {% endif %}
+            <hr>
+        <div class="">
+            <table>
+                <tr>
+                    <th colspan="2">Image Information</th>
+                </tr>
+                <tr>
+                    <th>Width</th>
+                    {% if file.physical_width > 0 %}
+                    <td>{{ file.width }} pixels - {{ file.physical_width }} mm</td>
+                    {% else %}
+                    <td>{{ file.width }} pixels</td>
+                    {% endif %}
+                </tr>
+                <tr>
+                    <th>Height</th>
+                    {% if file.physical_height > 0 %}
+                    <td>{{ file.height }} pixels - {{ file.physical_height }} mm</td>
+                    {% else %}
+                        <td>{{ file.height }} pixels</td>
+                    {% endif %}
+                </tr>
+                <tr>
+                    <th>Magnification</th>
+                    {% if file.magnification > 0 %}
+                    <td>{{ file.magnification }}</td>
+                    {% else %}
+                    <td>Unknown</td>
+                    {% endif %}
+                </tr>
+            </table>
+        </div>
+        <hr>
         <table>
         {{ file.form.as_table }}
         </table>
