@@ -28,6 +28,7 @@ class SlideMetadataForm(ModelForm):
             'long_description': Textarea(attrs={'cols': '40', 'rows': '10'}),
         }
 
+
     organ_tags = ModelMultipleChoiceField(
         queryset=Tag.objects.filter(is_organ=True),
         required=True,
@@ -43,3 +44,12 @@ class SlideMetadataForm(ModelForm):
         required=False,
         blank=True,
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if self.instance and self.instance.pk:
+            # Initial must have list of id, not a query sets
+            self.fields['organ_tags'].initial = [x.pk for x in self.instance.tags.filter(is_organ=True)]
+            self.fields['stain_tags'].initial = [x.pk for x in self.instance.tags.filter(is_stain=True)]
+            self.fields['other_tags'].initial = [x.pk for x in self.instance.tags.filter(is_organ=False, is_stain=False)]

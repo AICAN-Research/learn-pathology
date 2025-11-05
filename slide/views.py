@@ -12,7 +12,7 @@ from django.contrib import messages
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.db import transaction
 from django.db.models import Q
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseNotFound
 from django.shortcuts import render, redirect
 from django.core.files.uploadedfile import UploadedFile
 from django.views.decorators.cache import cache_page
@@ -746,3 +746,28 @@ def view_uploaded_slides(request):
         del wsi
 
     return render(request, 'slide/view_uploaded_slides.html', {'files': files})
+
+
+@uploader_required
+def edit_slide_metadata(request, slide_id):
+    try:
+        slide = Slide.objects.get(pk=slide_id)
+    except Slide.DoesNotExist:
+        return HttpResponseNotFound()
+
+    if request.method == 'POST':
+        form = SlideMetadataForm(request.POST, instance=slide)
+        if form.is_valid():
+            slide = form.save(commit=False)
+            organ_tags = form.cleaned_data['organ_tags']
+            stain_tags = form.cleaned_data['stain_tags']
+            other_tags = form.cleaned_data['other_tags']
+            slide.tags.set(organ_tags | stain_tags | other_tags)
+            slide.save()
+            messages.success(request, f'Slide {slide.name} was updated.')
+            return redirect('slide:browser')
+    else:
+        form = SlideMetadataForm(instance=slide)
+
+    return render(request, 'slide/edit_slide_metadata.html', {'form': form, 'slide': slide})
+
