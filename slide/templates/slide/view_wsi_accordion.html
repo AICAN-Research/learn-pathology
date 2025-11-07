@@ -44,7 +44,7 @@
 
 <div class="card transparentBackground centerCardHorizontally border-0" style="width: 100%; height: 100%;">
     <!-- WSI Viewer -->
-    <div id="imageViewer" style="height: 95%; width: auto">
+    <div id="imageViewer" style="height: 100%; width: auto">
         <div class="card slideViewerCard transparentBackground">
             <div id="wsi-canvas" class="wsi_canvas" style="height: 100%;"></div>
         </div>
@@ -53,11 +53,11 @@
 
 
 <div id="toolbarTopDiv">
-
     <div class="navigatorWrapper">
         <div id="navigatorDiv"></div>
     </div>
-
+</div>
+<div id="toolbarBottomDiv">
     <div class="row gx-0" id="collapsePopupWindow">
         <div class="col fit-content-width">
             <button id="collapsePopup" class="custom-button border-0" style="display: none;">
@@ -264,51 +264,47 @@
                         </div>
                     </button>
                 </div>
+
+
+                <a class="sidebar-item noLinkStyling" href="{% url 'task:list' slide.id %}" title="Related Tasks">
+                    <div class="button-group">
+                        <button id="related_tasks" class="custom-button btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Related Tasks">
+                            <div class="button-icon">
+                                <span class="iconify" data-icon="fluent:task-list-square-rtl-20-regular" data-width="24" data-height="24"></span>
+                            </div>
+                        </button>
+                    </div>
+                </a>
+                <div class="button-group">
+                    <button id="screenshotButton" class="custom-button btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Screenshot">
+                        <div class="button-icon">
+                            <span class="iconify" data-icon="fluent:camera-24-regular" data-width="24" data-height="24"></span>
+                        </div>
+                    </button>
+                </div>
+                <div class="button-group">
+                    <button id="zoomInButton" class="custom-button btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Zoom In">
+                        <div class="button-icon">
+                            <span class="iconify" data-icon="fluent:add-24-regular" data-width="24" data-height="24"></span>
+                        </div>
+                    </button>
+                </div>
+                <div class="button-group">
+                    <button id="zoomOutButton" class="custom-button btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Zoom Out">
+                        <div class="button-icon">
+                            <span class="iconify" data-icon="fluent:subtract-24-regular" data-width="24" data-height="24"></span>
+                        </div>
+                    </button>
+                </div>
+                <div class="button-group">
+                    <button id="FullScreenButton" class="custom-button btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Fullscreen">
+                        <div class="button-icon" >
+                            <span class="iconify" id="FullScreenButtonIcon" data-icon="fluent:arrow-expand-24-regular" data-width="24" data-height="24"></span>
+                        </div>
+                    </button>
+                </div>
             </div>
 
-        </div>
-    </div>
-</div>
-
-<div id="toolbarBottomDiv">
-    <div class="slideViewerToolbarButtonGroup">
-
-        <a class="sidebar-item noLinkStyling" href="{% url 'task:list' slide.id %}" title="Related Tasks">
-        <div class="button-group">
-            <button id="related_tasks" class="custom-button btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Related Tasks">
-                <div class="button-icon">
-                    <span class="iconify" data-icon="fluent:task-list-square-rtl-20-regular" data-width="24" data-height="24"></span>
-                </div>
-            </button>
-        </div>
-        </a>
-            <div class="button-group">
-            <button id="screenshotButton" class="custom-button btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Screenshot">
-                <div class="button-icon">
-                    <span class="iconify" data-icon="fluent:camera-24-regular" data-width="24" data-height="24"></span>
-                </div>
-            </button>
-        </div>
-        <div class="button-group">
-            <button id="zoomInButton" class="custom-button btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Zoom In">
-                <div class="button-icon">
-                    <span class="iconify" data-icon="fluent:add-24-regular" data-width="24" data-height="24"></span>
-                </div>
-            </button>
-        </div>
-        <div class="button-group">
-           <button id="zoomOutButton" class="custom-button btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Zoom Out">
-               <div class="button-icon">
-                   <span class="iconify" data-icon="fluent:subtract-24-regular" data-width="24" data-height="24"></span>
-               </div>
-           </button>
-        </div>
-        <div class="button-group">
-             <button id="FullScreenButton" class="custom-button btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Fullscreen">
-                 <div class="button-icon" >
-                     <span class="iconify" id="FullScreenButtonIcon" data-icon="fluent:arrow-expand-24-regular" data-width="24" data-height="24"></span>
-                 </div>
-             </button>
         </div>
     </div>
 </div>

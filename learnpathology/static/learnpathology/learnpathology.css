@@ -620,11 +620,10 @@ Slide viewer
 #toolbarTopDiv {
     display: inline-block;
     text-align: center;
-    width: 450px;
 }
 
 #toolbarBottomDiv {
-
+    max-width: 450px;
 }
 
 .fit-content-width {
