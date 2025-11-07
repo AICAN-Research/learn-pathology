@@ -24,7 +24,7 @@
             <p class="card-subtitle" style="font-size: medium;">
                 <span class="body-text">{{ slide.description }}</span>
               {% if request.user.is_superuser or request.user.is_uploader %}
-              <a href="{% url 'slide:edit_metadata' slide.id %}">
+              <a href="{% url 'slide:edit_metadata' slide.id %}" title="Edit slide metadata">
                 <button class="custom-button btn btn-secondary" style="margin-left: auto; float: right;">
                     <div class="button-icon">
                         <span class="iconify" data-icon="fluent:edit-12-regular" data-width="24" data-height="24"></span>

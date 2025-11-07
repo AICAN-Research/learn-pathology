@@ -125,6 +125,30 @@
                 </div>
             </div>
         </div>
+
+        <h6>Other tags</h6>
+           <div class="card border-0 w-100 text-start">
+            <div class="card-body container-fluid">
+                <div class="radio-toolbar">
+{#                    <input type="radio" name="other-tag" id="other-all" value="all" onchange="this.form.submit();">#}
+{#                    <label for="other-all" class="wideLabel {% if 'all' in selected_other_tag %}active{% endif %}">All</label>#}
+                    <div>
+                        <input type="radio" name="other-tag" id="other-all" value="all" {% if 'all' in selected_other_tag %}checked="checked"{% endif %} onchange="this.form.submit();">
+                        <label for="other-all" class="body-text">All</label>
+                    </div>
+
+                    {% for tag in other_tags %}
+{#                        <input type="radio" name="other-tag" id="{{ tag.id }}" value="{{ tag.id }}" onchange="this.form.submit();">#}
+{#                        <label for="{{ tag.id }}" class="wideLabel{% if tag in selected_other_tag %} active{% endif %}">{{ tag.name }}</label>#}
+                        <div>
+                            <input type="radio" name="other-tag" id="{{ tag.id }}" value="{{ tag.id }}" {% if tag in selected_other_tag %}checked="checked"{% endif %} onchange="this.form.submit();">
+                            <label for="{{ tag.id }}" class="body-text">{{ tag.name }}</label>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
     </div>
     </form>
 </div>

@@ -1,0 +1,18 @@
+{% extends 'learnpathology/base.html' %}
+
+{% block content %}
+<div style="background: white; border-radius: 8px; padding: 10px; margin: 10px;">
+<h1>Edit Slide Metadata</h1>
+    <form method="post">
+        {% csrf_token %}
+        <h3>{{ slide.name }}</h3>
+        <img src="/slide/thumbnails/{{ slide.id }}.jpg" height="256"><br>
+        <hr>
+        <table>
+            {{ form.as_table }}
+        </table>
+        <input type="submit" name="action" value="Update" class="btn btn-success">
+    </form>
+</div>
+{% endblock content %}
+

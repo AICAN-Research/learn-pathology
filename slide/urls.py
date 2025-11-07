@@ -14,7 +14,6 @@ urlpatterns = [
     #path('browser/list-view', views.list_view, name='list_view'),
     path('view/<int:slide_id>/', views.whole_slide_view_full, name='view_full'),
     path('view/<int:slide_id>/<int:course_id>', views.whole_slide_view_full, name='view_full'),
-    path('edit/<int:slide_id>', views.edit_description, name='edit_description'),
     path('edit-tags/<int:slide_id>', views.edit_general_pathology_tags, name='edit_tags'),
     path('add-tag/', views.add_tag, name='add_tag'),
     path('remove-tag/', views.remove_tag, name='remove_tag'),
@@ -25,7 +24,7 @@ urlpatterns = [
     path('upload/', views.upload_slides, name='upload_slides'),
     path('upload/process/', views.process_uploaded_slides, name='process_uploads'),
     path('upload/view/', views.view_uploaded_slides, name='view_uploads'),
-    path('edit-metadata/<int:slide_id>', views.edit_slide_metadata, name='edit_metadata'),
+    path('edit/<int:slide_id>', views.edit_slide_metadata, name='edit_metadata'),
 ] + static('thumbnails/', document_root=settings.SLIDE_THUMBNAILS_DIR) \
   + static('uploads/thumbnails/', document_root=os.path.join(settings.TEMP_UPLOADED_SLIDE_DIR, 'thumbnails'))
 

@@ -48,6 +48,10 @@ class SlideCache:
     def get_slide(self, slide_id):
         return self.slides[slide_id]
 
+    def remove(self, slide_id):
+        if slide_id in self.slides:
+            del self.slides[slide_id]
+
 
 # Initialize global slide cache as a global variable. This should only happen once..
 slide_cache = SlideCache()
@@ -121,6 +125,7 @@ def image_browser(request):
     # Set up variables for which filtering options have been applied
     # ==================================================================
     organ_changed = ('organ-system' in request.GET)                     # Organ selection changed
+    other_changed = ('other-tag' in request.GET)                     # Other tag selection changed
     general_path_changed = ('general_pathology_button' in request.GET)  # General pathology changed
     hist_path_changed = ('histology-pathology' in request.GET)          # Histology/pathology changed
     search_button_clicked = ('submit_button' in request.GET)            # Search query entered
@@ -140,6 +145,19 @@ def image_browser(request):
         organ_tags = Tag.objects.filter(is_organ=True)
     else:
         organ_tags = Tag.objects.filter(is_organ=True, id__in=selected_organ_tag_id)
+
+    # OTHER FILTER
+    if other_changed:
+        # Update the organ selection from the GET request
+        selected_other_tag_id = [request.GET.get('other-tag')]
+    else:
+        # Retrieve the previous other selection or set to 'all'
+        selected_other_tag_id = prev_context['selected_other_tag_ids'] if (
+                    'selected_other_tag_ids' in prev_context) else ['all']
+    if 'all' in selected_other_tag_id:
+        other_tags = None
+    else:
+        other_tags = Tag.objects.filter(is_organ=False, is_stain=False, id__in=selected_other_tag_id)
 
     # HISTOLOGY/PATHOLOGY FILTER
     if hist_path_changed:
@@ -173,6 +191,8 @@ def image_browser(request):
     # ==================================================================
     slides = Slide.objects.all()
     slides = slides.filter(tags__in=organ_tags)
+    if other_tags is not None:
+        slides = slides.filter(tags__in=other_tags)
     if not selected_both:
         slides = slides.filter(pathology=selected_pathology)
     if not (hist_path_changed and 'selected_general_pathology_ids' in prev_context):
@@ -194,26 +214,29 @@ def image_browser(request):
     # ==================================================================
     context['slides'] = sorted(slides, key=lambda s: s.name)
     context['selected_organ_tag'] = ['all'] if 'all' in selected_organ_tag_id else Tag.objects.filter(id__in=selected_organ_tag_id)
+    context['selected_other_tag'] = ['all'] if 'all' in selected_other_tag_id else Tag.objects.filter(id__in=selected_other_tag_id)
     context['selected_both'] = selected_both
     context['selected_histology'] = selected_histology
     context['selected_pathology'] = selected_pathology
     context['search_query'] = search_query
     context['organ_tags'] = Tag.objects.filter(is_organ=True).order_by('name')
+    context['other_tags'] = Tag.objects.filter(is_organ=False, is_stain=False).order_by('name')
     general_pathology_tags = [tag for tag in Tag.objects.filter(is_organ=False, is_stain=False) if tag.name.lower() in GENERAL_PATHOLOGY_TAGS]
     context['general_pathology_tags'] = sorted(general_pathology_tags, key=lambda tag: tag.name)
 
     for key, val in prev_context.items():
-        if key not in context and key not in ('selected_organ_tag_ids', 'selected_general_pathology_ids'):
+        if key not in context and key not in ('selected_organ_tag_ids', 'selected_general_pathology_ids', 'selected_other_tag_ids'):
             context[key] = prev_context[key]
 
     # ==================================================================
     # Update session variable to store selection
     # ==================================================================
-    keys_that_contain_querysets = ('slides', 'selected_organ_tag', 'organ_tags', 'general_pathology_tags', 'selected_general_pathology', 'selected_general_pathology_ids')
+    keys_that_contain_querysets = ('slides', 'selected_organ_tag', 'organ_tags', 'other_tags', 'selected_other_tag', 'general_pathology_tags', 'selected_general_pathology', 'selected_general_pathology_ids')
     for key, val in context.items():
         if key not in request.session['image_browser_context'] and key not in keys_that_contain_querysets:
             request.session['image_browser_context'][key] = context[key]
     request.session['image_browser_context']['selected_organ_tag_ids'] = queryset_to_id_list(context['selected_organ_tag'])
+    request.session['image_browser_context']['selected_other_tag_ids'] = queryset_to_id_list(context['selected_other_tag'])
     request.session.modified = True
 
     return render(request, 'slide/image_browser.html', context)
@@ -326,27 +349,6 @@ def create_thumbnail(wsi, path):
             .create(path) \
             .connect(resize) \
             .run()
-
-
-@teacher_required
-def edit_description(request, slide_id):
-    """
-    Form for editing a slide's long_description field
-    """
-
-    slide = slide_cache.load_slide_to_cache(slide_id)
-    new_description = request.POST.get('new_description')
-    new_description = new_description.replace('\n', '<br>')
-
-    try:
-
-        slide.long_description = new_description
-        slide.save()
-        return JsonResponse({'success': True})
-    except Slide.DoesNotExist:
-        return JsonResponse({'success': False, 'error': 'Slide not found'}, status=404)
-    except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
 
 @teacher_required
@@ -764,6 +766,7 @@ def edit_slide_metadata(request, slide_id):
             other_tags = form.cleaned_data['other_tags']
             slide.tags.set(organ_tags | stain_tags | other_tags)
             slide.save()
+            slide_cache.remove(slide.id) # Have to this to get updated information
             messages.success(request, f'Slide {slide.name} was updated.')
             return redirect('slide:browser')
     else:

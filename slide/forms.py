@@ -28,19 +28,18 @@ class SlideMetadataForm(ModelForm):
             'long_description': Textarea(attrs={'cols': '40', 'rows': '10'}),
         }
 
-
     organ_tags = ModelMultipleChoiceField(
-        queryset=Tag.objects.filter(is_organ=True),
+        queryset=Tag.objects.filter(is_organ=True).order_by('name'),
         required=True,
         label='Organ System',
     )
     stain_tags = ModelMultipleChoiceField(
-        queryset=Tag.objects.filter(is_stain=True),
+        queryset=Tag.objects.filter(is_stain=True).order_by('name'),
         required=True,
         label='Stain',
     )
     other_tags = ModelMultipleChoiceField(
-        queryset=Tag.objects.filter(is_organ=False, is_stain=False),
+        queryset=Tag.objects.filter(is_organ=False, is_stain=False).order_by('name'),
         required=False,
         blank=True,
     )

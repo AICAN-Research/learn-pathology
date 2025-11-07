@@ -3,14 +3,23 @@
 {% load static %}
 {% load bootstrap_icons %}
 
-
 {% block breadcrumb_items %}
+   <!--
     <li class="breadcrumb-item"><a href="{% url 'slide:browser' %}">Image browser</a></li>
     <li class="breadcrumb-item active" aria-current="page">{{ slide.name }}</li>
+    -->
 {% endblock breadcrumb_items %}
 
 
 {% block page_title %}
+    {% if request.user.is_superuser or request.user.is_uploader %}
+        <a href="{% url 'slide:edit_metadata' slide.id %}" title="Edit slide metadata">
+            <button class="custom-button btn btn-secondary">
+                <div class="button-icon">
+                    <span class="iconify" data-icon="fluent:edit-12-regular" data-width="24" data-height="24"></span>
+                </div>
+            </button></a>
+    {% endif %}
     {{ slide.name }}
 {% endblock page_title %}
 
@@ -75,6 +84,14 @@
                             <div class="align-items-center" style="padding-top: 18px; padding-bottom: 3%;">
                                 <div class="card-title">
                                     <h4 style="color: var(--color-blue-dark); font-weight: bolder; font-size: 18px;">
+                                         {% if request.user.is_superuser or request.user.is_uploader %}
+                                            <a href="{% url 'slide:edit_metadata' slide.id %}" title="Edit slide metadata">
+                                                <button class="custom-button btn btn-secondary" >
+                                                    <div class="button-icon">
+                                                        <span class="iconify" data-icon="fluent:edit-12-regular" data-width="24" data-height="24"></span>
+                                                    </div>
+                                                </button></a>
+                                        {% endif %}
                                         {{ slide.name }}
                                     </h4>
                                 </div>
@@ -132,36 +149,11 @@
                                                 <tr>
                                                     <th>
                                                         Long description
-                                                        {% if request.user.is_teacher or request.user.is_superuser %}
-                                                        <div class="card-content" style="padding-top: 5px; position: relative;">
-                                                            <button id="editDescriptionButton" class="custom-button btn btn-secondary">
-                                                                <div class="button-icon">
-                                                                    <span class="iconify" data-icon="fluent:edit-12-regular" data-width="24" data-height="24"></span>
-                                                                </div>
-                                                            </button>
-                                                            </a>
-                                                        </div>
-                                                        {% endif %}
                                                     </th>
                                                     <td>
-                                                        <div id="editField" style="display: none;">
-                                                            <div class="form-group">
-                                                                <textarea id="newDescription" name="newDescription" class="form-control" rows="3"></textarea>
-                                                            </div>
-                                                            <button id="saveDescriptionButton" class="custom-button btn btn-secondary">
-                                                                Save
-                                                            </button>
-                                                        </div>
-
-
-                                                        {% if slide.long_description %}
                                                         <span id="longDescriptionSpan" style="white-space: pre-line">{{ slide.long_description | safe }}</span>
-                                                        {% else %}
-                                                        <span id="longDescriptionSpan" style="display: none;">-</span>
-                                                        {% endif %}
                                                     </td>
                                                 </tr>
-
                                                 {% if slide.pathology %}
                                                 <tr>
                                                     <th>
@@ -718,51 +710,10 @@ updateReadOnlyStyles();
     let changed_description = '';
     const slide_id = {{ slide.id }};
 
-    document.getElementById('editDescriptionButton').addEventListener('click', showEditField);
-    document.getElementById('saveDescriptionButton').addEventListener('click', saveDescription);
-    document.getElementById('editTagsButton').addEventListener('click', showEditTagsForm);
-    document.getElementById('saveTagsButton').addEventListener('click', saveTagsChanges);
-
-    function showEditField() {
-        if (changed_description) {
-            var description = changed_description;
-        } else {
-            var description = "{{ slide.long_description | safe }}";
-            description = description.replace(/<br\s*\/?>/g, '\n');
-        }
-        document.getElementById("newDescription").value = description;
-        document.getElementById("editField").style.display = "block";
-        document.getElementById("longDescriptionSpan").style.display = "none";
-    }
-
-    function saveDescription() {
-        var newDescription = $("#newDescription").val();
-        $.ajax({
-            url: "{% url 'slide:edit_description' slide.id %}",
-            type: "POST",
-            headers: {"X-CSRFToken": "{{ csrf_token }}"},
-            data: {
-                'slide_id': slide_id,
-                'new_description': newDescription
-            },
-            dataType: "json",
-            success: function (response) {
-                if (response.success) {
-                    $("#longDescriptionSpan").text(newDescription);
-                    $("#editField").hide();
-                    $("#longDescriptionSpan").show();
-
-                    changed_description = newDescription;
-
-                } else {
-                    alert("Failed to update description: " + response.error);
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error("AJAX request failed with status: " + status + ", error: " + error);
-                alert("Failed to update description. Please try again later.");
-            }
-        });
+    let editTagsButton = document.getElementById('editTagsButton');
+    if(editTagsButton) {
+        editTagsButton.addEventListener('click', showEditTagsForm);
+        document.getElementById('saveTagsButton').addEventListener('click', saveTagsChanges);
     }
 
     function showEditTagsForm() {
