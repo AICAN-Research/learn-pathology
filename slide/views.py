@@ -85,7 +85,7 @@ def index(request):
         search_query = request.GET.get('search')
         if search_query is not None and len(search_query) > 0:
             filter_result = Slide.objects.filter(
-                Q(name__contains=search_query) | Q(description__contains=search_query)
+                Q(name__contains=search_query) | Q(description__contains=search_query) | Q(long_description__contains=search_query)
             )
             search_result = filter_result
         else:
@@ -207,7 +207,7 @@ def image_browser(request):
             context['selected_general_pathology'] = gen_path_tag
             request.session['image_browser_context']['selected_general_pathology_ids'] = queryset_to_id_list(Tag.objects.filter(id=gen_path_tag_id))  # function takes queryset
     if search_query is not None:    # If search was updated, search among applicable_slides
-        slides = slides.filter(Q(name__contains=search_query) | Q(description__contains=search_query))
+        slides = slides.filter(Q(name__contains=search_query) | Q(description__contains=search_query) | Q(long_description__contains=search_query))
 
     # ==================================================================
     # Update context
