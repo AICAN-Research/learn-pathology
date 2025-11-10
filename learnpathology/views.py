@@ -3,12 +3,14 @@ from django.conf import settings
 from django.shortcuts import render
 from django.utils import timezone
 from user.models import User
-from slide.models import Slide
+from slide.models import Slide, Annotation
+from task.models import Task
+from course.models import Course
 
 
 def index(request):
     context = {}
-    if request.user.is_superuser or request.user.is_teacher:
+    if request.user.is_superuser or request.user.is_teacher or request.user.is_uploader:
         # Count number of online users, using the User.last_seen field
         context['active_users'] = User.objects.filter(
             last_seen__gt=timezone.now() - timedelta(minutes=settings.LAST_SEEN_TIMEOUT)).count()
@@ -20,6 +22,9 @@ def index(request):
         else:
             context['users'] = User.objects.all().count()
         context['images'] = Slide.objects.all().count()
+        context['annotations'] = Annotation.objects.all().count()
+        context['tasks'] = Task.objects.all().count()
+        context['courses'] = Course.objects.all().count()
     return render(request, 'learnpathology/frontpage.html', context)
 
 

@@ -7,15 +7,44 @@
     </div>
 
     <h2 class="text-center" style="align-self: center;">Welcome to LearnPathology. The AICAN online learning platform</h2>
-    {% if request.user.is_superuser or request.user.is_teacher %}
-        Logged in users: {{ active_users }}<br>
+    {% if request.user.is_superuser or request.user.is_teacher or request.user.is_uploader %}
+    <table id="frontpage-table">
+        <tr>
+            <td>Current logged in users</td>
+            <td>{{ active_users }}</td>
+        </tr>
         {% if feide_users %}
-        Feide users registered: {{ feide_users }}<br>
-        Non-Feide users registered: {{ users }}<br>
+        <tr>
+            <td>Feide users registered</td>
+            <td>{{ feide_users }}</td>
+        </tr>
+        <tr>
+            <td>Non-Feide users registered</td>
+            <td>{{ users }}</td>
+        </tr>
         {% else %}
-        Users registered: {{ users }}<br>
+        <tr>
+            <td>Users registered</td>
+            <td>{{ users }}</td>
+        </tr>
         {% endif %}
-        Whole slide images in the database: {{ images }}<br>
+        <tr>
+            <td>Whole slide images</td>
+            <td>{{ images }}</td>
+        </tr>
+        <tr>
+            <td>Annotations</td>
+            <td>{{ annotations }}</td>
+        </tr>
+        <tr>
+            <td>Tasks</td>
+            <td>{{ annotations }}</td>
+        </tr>
+        <tr>
+            <td>Courses</td>
+            <td>{{ courses }}</td>
+        </tr>
+    </table>
     {% endif %}
 
 {% endblock %}

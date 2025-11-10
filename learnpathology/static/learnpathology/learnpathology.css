@@ -1422,3 +1422,9 @@ Header of page main content
 .a9s-toolbar-btn svg ellipse
 {    stroke: var(--color-white);
 }
+
+#frontpage-table td, #frontpage-table th {
+    text-align: left;
+    padding: 2px;
+    padding-right: 12px;
+}
