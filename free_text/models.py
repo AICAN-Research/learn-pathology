@@ -1,6 +1,7 @@
 from django.db import models
 from task.models import Task
 
+
 class FreeText(models.Model):
     """
     A free text task
@@ -8,8 +9,7 @@ class FreeText(models.Model):
 
     task = models.OneToOneField(Task, on_delete=models.CASCADE)
     question = models.CharField(max_length=2048)
-    instructions = models.CharField(max_length=2048, default='Answer the question with your own words. Use as many '
-                                                             'terminology as possible.')
+    instructions = models.CharField(max_length=2048, default='Answer the question in your own words. Then compare to the teacher’s suggestion.')
     answer = models.CharField(max_length=2048)
 
 
