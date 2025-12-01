@@ -39,7 +39,6 @@ def model_name(model):
 
 @register.filter
 def get_pixels_per_meter(slide):
-    scale_factor = slide.scale_factor  # in um/px
-    if scale_factor is None:
+    if slide.scale_factor is None:
         return 0    # Setting pixelsPerMeter to 0 will hide scalebar
-    return round(1e6 / slide.scale_factor)  # px/m
+    return 1./(slide.scale_factor/1000.)  # FAST returns in mm, need in meter
