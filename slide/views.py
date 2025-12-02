@@ -115,7 +115,7 @@ def image_browser(request):
     and if search has been applied to search only among those relevant slides.
     """
 
-    last_url = request.META.get('HTTP_REFERER', '')
+    last_url = request.headers.get('referer', '')
     prev_context = {} if ('slide/browser/' not in last_url) else request.session.get('image_browser_context', {})
     request.session['image_browser_context'] = {}
     # Initialize empty context dictionary

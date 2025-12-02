@@ -6,7 +6,7 @@ from django.urls import reverse
 # Create your views here.
 
 def index(request):
-    last_url = request.META.get('HTTP_REFERER', '')
+    last_url = request.headers.get('referer', '')
     prev_context = {} if ('comparison/index' not in last_url) else request.session.get('image_browser_context',
                                                                                               {})
     request.session['image_browser_context'] = {}

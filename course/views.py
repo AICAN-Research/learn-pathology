@@ -184,7 +184,7 @@ def slide_selection(request, course_id):
     Teacher form for adding slide(s) to a course
     """
 
-    last_url = request.META.get('HTTP_REFERER', '')
+    last_url = request.headers.get('referer', '')
     prev_context = {} if ('course/slide_selection/' not in last_url) else request.session.get('image_browser_context', {})
     request.session['image_browser_context'] = {}
     # Initialize empty context dictionary

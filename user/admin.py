@@ -3,6 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from user.models import User
 
 
+@admin.register(User)
 class CustomUserAdmin(UserAdmin):
     list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_superuser', 'is_teacher', 'is_uploader', 'is_teacher')
     fieldsets = (
@@ -19,4 +20,3 @@ class CustomUserAdmin(UserAdmin):
         ),
     )
 
-admin.site.register(User, CustomUserAdmin)

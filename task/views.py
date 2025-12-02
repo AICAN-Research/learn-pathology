@@ -84,7 +84,7 @@ def new3(request, course_id=None):
 
 @teacher_required
 def new2(request, course_id=None):
-    last_url = request.META.get('HTTP_REFERER', '')
+    last_url = request.headers.get('referer', '')
     prev_context = {} if ('task/new2/' not in last_url) else request.session.get('image_browser_context',
                                                                                               {})
     request.session['image_browser_context'] = {}
