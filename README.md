@@ -18,7 +18,7 @@ The system is built using the following open source technologies:
 
 Requirements
 -------------------
-* Python 3
+* Python 3.10
 * For FAST backend you must have OpenCL installed
 
 Development setup
