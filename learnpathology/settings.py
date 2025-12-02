@@ -50,7 +50,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django.contrib.flatpages',
-    'django_bootstrap_icons',
     'ckeditor',
     'ckeditor_uploader',
     'learnpathology',

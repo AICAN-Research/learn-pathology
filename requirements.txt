@@ -1,8 +1,7 @@
 django==4.2.*
 pyfast==4.14.1
-pillow==8.*
-pyyaml==6.*
+pillow>=8
 numpy
 django-ckeditor~=6.5.1
-django-allauth==0.63.*
+django-allauth[socialaccount,dataporten]==0.63.*
 asgiref==3.8.*

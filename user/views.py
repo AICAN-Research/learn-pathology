@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import PasswordChangeView, LoginView
+from django.contrib.auth import logout
 from django.http import HttpResponseForbidden
 from django.shortcuts import render, redirect
 from learnpathology import settings
@@ -81,3 +82,9 @@ def approve_feide_user(request):
         else:
             form = ApproveFeideUserForm()
         return render(request, 'user/approve_feide_user.html', {'form': form})
+
+
+@login_required
+def logout_view(request):
+    logout(request)
+    return redirect('frontpage')
