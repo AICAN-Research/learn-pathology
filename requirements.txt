@@ -2,6 +2,7 @@ django==3.2.*
 pyfast==4.14.1
 pillow==8.*
 pyyaml==6.*
-numpy~=1.23.5
+numpy
 django-ckeditor~=6.5.1
-django-allauth==0.59.*
+django-allauth==0.63.*
+asgiref==3.8.*
