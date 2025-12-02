@@ -1,4 +1,4 @@
-django==4.2.*
+django==5.*
 pyfast==4.14.1
 pillow>=8
 numpy
