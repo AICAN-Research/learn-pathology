@@ -46,12 +46,13 @@ class FeideCallbackView(OAuth2CallbackView):
                 request, app, token, response=access_token
             )
             login.token = token
-            if self.adapter.supports_state:
-                login.state = SocialLogin.verify_and_unstash_state(
-                    request, get_request_param(request, "state")
-                )
-            else:
-                login.state = SocialLogin.unstash_state(request)
+            # verify_and_unstash_state does not exist anymore:
+            #if self.adapter.supports_state:
+            #    login.state = SocialLogin.verify_and_unstash_state(
+            #        request, get_request_param(request, "state")
+            #    )
+            #else:
+            login.state = SocialLogin.unstash_state(request)
 
             return complete_social_login(request, login)
         except (

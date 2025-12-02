@@ -2,6 +2,6 @@ django==5.*
 pyfast==4.14.1
 pillow>=8
 numpy
-django-ckeditor~=6.5.1
-django-allauth[socialaccount,dataporten]==0.63.*
+django-ckeditor==6.7.3
+django-allauth[socialaccount,dataporten]==65.13.1
 asgiref==3.8.*
