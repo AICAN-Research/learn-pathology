@@ -7,8 +7,8 @@ from user.models import User
 class CourseForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['teacher'].queryset = User.objects.filter(is_teacher=True)
-        
+        self.fields['teacher'].queryset = User.objects.filter(is_teacher=True).order_by('username')
+
     class Meta:
         model = Course
         fields = ['code', 'title', 'description', 'long_description', 'teacher']
