@@ -14,22 +14,20 @@ class Task(models.Model):
     annotated_slide = models.ForeignKey(AnnotatedSlide, on_delete=models.CASCADE)
     pathology = models.BooleanField(default=False, help_text='Is the task about pathology or not (general histology)')
     tags = models.ManyToManyField(Tag)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
 
     @property
     def type(self):
         for app in apps.get_app_configs():
-            # print(app.name)
+            if app.label == 'user': continue
             models = app.get_models()
             for model in models:
                 if str(model).find('AnnotatedSlide') >= 0: continue
-                # print(model)
                 try:
                     task_field = model._meta.get_field('task')
                     if task_field.remote_field.model.__name__ == 'Task':
-                        # print('has task')
                         try:
                             if model.objects.filter(task=self).exists():
-                                # print('exists')
                                 return app.name
                         except:
                             # print('err')
@@ -48,17 +46,14 @@ class Task(models.Model):
     @property
     def type_model(self):
         for app in apps.get_app_configs():
-            # print(app.name)
+            if app.label == 'user': continue
             models = app.get_models()
             for model in models:
-                # print(model)
                 try:
                     task_field = model._meta.get_field('task')
                     if task_field.remote_field.model.__name__ == 'Task':
-                        # print('has task')
                         try:
                             if model.objects.filter(task=self).exists():
-                                # print('exists')
                                 return model.objects.get(task=self)
                         except:
                             # print('err')

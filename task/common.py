@@ -79,6 +79,7 @@ def process_new_task_request(request, slide_id, course_id=None):
     task_form = TaskForm(request.POST)
     task = task_form.save(commit=False)
     task.annotated_slide = annotated_slide
+    task.created_by = request.user
     task.save()
 
     organ_tags = task_form.cleaned_data['organ_tags']
