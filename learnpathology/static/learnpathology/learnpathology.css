@@ -1428,3 +1428,9 @@ Header of page main content
     padding: 2px;
     padding-right: 12px;
 }
+
+a.disabled-link{
+    pointer-events: none;
+    color: gray;
+    cursor: default;
+}
