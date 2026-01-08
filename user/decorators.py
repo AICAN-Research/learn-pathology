@@ -1,6 +1,7 @@
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth.decorators import user_passes_test, login_required
 from django.shortcuts import get_object_or_404, redirect
+from django.utils.http import url_has_allowed_host_and_scheme
 from functools import wraps
 from django.contrib import messages
 from task.models import Task
@@ -75,6 +76,14 @@ def creator_required(view):
                 request,
                 "You are not allowed to " + action + " this task."
             )
+
+            next_url = request.GET.get('next')
+            referer = request.META.get('HTTP_REFERER')
+
+            for url in (next_url, referer):
+                if url and url_has_allowed_host_and_scheme(url, allowed_hosts={request.get_host()}):
+                    return redirect(url)
+
             return redirect("task:list")
         return view(request, *args, **kwargs)
     return _wrapped
