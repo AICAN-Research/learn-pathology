@@ -17,7 +17,7 @@ from slide.views import queryset_to_id_list, GENERAL_PATHOLOGY_TAGS
 from tag.models import Tag
 from task.models import Task
 
-from user.decorators import teacher_required
+from user.decorators import teacher_required, teacher_involved_required
 
 
 def index(request):
@@ -73,6 +73,7 @@ def new(request):
     return render(request, 'course/new.html', {'form': courseForm})
 
 
+@teacher_involved_required
 @teacher_required
 def edit(request, course_id):
     """
@@ -95,6 +96,7 @@ def edit(request, course_id):
     })
 
 
+@teacher_involved_required
 @teacher_required
 def edit_long_description(request, course_id):
     """
@@ -117,6 +119,7 @@ def edit_long_description(request, course_id):
     })
 
 
+@teacher_involved_required
 @teacher_required
 def edit_learning_outcomes(request, course_id):
     """
@@ -139,6 +142,7 @@ def edit_learning_outcomes(request, course_id):
     })
 
 
+@teacher_involved_required
 @teacher_required
 def delete(request, course_id):
     """
@@ -174,9 +178,7 @@ def delete(request, course_id):
     return redirect('course:index')
 
 
-
-
-
+@teacher_involved_required
 @teacher_required
 def slide_selection(request, course_id):
     """
@@ -296,6 +298,7 @@ def slide_selection(request, course_id):
     return render(request, 'course/slide_selection.html', context)
 
 
+@teacher_involved_required
 @teacher_required
 def task_selection(request, course_id):
     """

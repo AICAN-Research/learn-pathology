@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from course.models import Course
 from slide.models import Slide
 from slide.views import *
-from user.decorators import teacher_required, creator_required
+from user.decorators import teacher_required, creator_required, teacher_involved_required
 from task.models import Task
 from tag.models import Tag
 
@@ -67,6 +67,7 @@ def list(request, slide_id=None):
         'slide_id': slide_id,
     })
 
+@teacher_involved_required
 @teacher_required
 def new1(request, course_id=None):
     context = {}

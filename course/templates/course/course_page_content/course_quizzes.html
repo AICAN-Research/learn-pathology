@@ -9,10 +9,10 @@
 
             {% if request.user.is_teacher or request.user.is_superuser %}
                 <div class="LPButton">
-                    <a href="{% url 'course:task_selection' course.id %}">Browse existing tasks</a>
+                    <a href="{% url 'course:task_selection' course.id %}?next={{ request.path }}">Browse existing tasks</a>
                 </div>
                 <div class="LPButton">
-                    <a href="{% url 'task:new1' course_id=course.id %}">Add new task</a>
+                    <a href="{% url 'task:new1' course_id=course.id %}?next={{ request.path }}">Add new task</a>
                 </div>
             {% endif %}
             <br>
@@ -53,10 +53,10 @@
                     You can add some now!
                     <br>
                     <div class="LPButton">
-                        <a href="{% url 'course:task_selection' course.id %}">Browse existing tasks</a>
+                        <a href="{% url 'course:task_selection' course.id %}?next={{ request.path }}">Browse existing tasks</a>
                     </div>
                     <div class="LPButton">
-                        <a  href="{% url 'task:new1' course_id=course.id %}">Add new task</a>
+                        <a  href="{% url 'task:new1' course_id=course.id %}?next={{ request.path }}">Add new task</a>
                     </div>
                 {% endif %}
             </div>
@@ -74,9 +74,5 @@
 
     }
     </script>
-
-
-
-
 
 {% endblock courseTabContent %}

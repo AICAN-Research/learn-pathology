@@ -7,7 +7,7 @@
             <div class="card-text" style="text-align: left;">
                 {% if request.user.is_teacher or request.user.is_superuser %}
                 <div class="LPButton">
-                    <a href="{% url 'course:edit_learning_outcomes' course.id  %}">Edit learning outcomes</a>
+                    <a href="{% url 'course:edit_learning_outcomes' course.id %}?next={{ request.path }}">Edit learning outcomes</a>
                 </div>
                 <br>
                 {% endif %}
@@ -26,7 +26,7 @@
                 You can add learning outcomes now!
                 <br>
                 <div class="LPButton">
-                    <a href="{% url 'course:edit_learning_outcomes' course.id  %}">Add learning outcomes</a>
+                    <a href="{% url 'course:edit_learning_outcomes' course.id %}?next={{ request.path }}">Add learning outcomes</a>
                 </div>
                 {% endif %}
             </div>

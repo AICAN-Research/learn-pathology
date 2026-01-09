@@ -5,7 +5,7 @@
         {% if slides %}
             {% if request.user.is_teacher or request.user.is_superuser %}
             <div class="LPButton">
-                <a href="{% url 'course:slide_selection' course.id %}">Click here to add or remove slides</a>
+                <a href="{% url 'course:slide_selection' course.id %}?next={{ request.path }}">Click here to add or remove slides</a>
             </div>
             {% endif %}
             <div class="card border-0" style="padding: 20px">
@@ -20,7 +20,7 @@
                 You can add some now!
                 <br>
                 <div class="LPButton">
-                    <a href="{% url 'course:slide_selection' course.id %}">Click here to add slides</a>
+                    <a href="{% url 'course:slide_selection' course.id %}?next={{ request.path }}">Click here to add slides</a>
                 </div>
                 {% endif %}
             </div>
