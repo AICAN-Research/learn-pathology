@@ -60,8 +60,7 @@ def new(request):
     if request.method == 'POST':  # Form was submitted
         courseForm = CourseForm(request.POST)
         if courseForm.is_valid():
-            course = courseForm.save(commit=False)
-            course.save()
+            course = courseForm.save()
             # Give a message back to the user
             messages.add_message(request, messages.SUCCESS, 'Course added successfully!')
             return redirect('course:view', course_id=course.id)
