@@ -73,8 +73,8 @@ def new(request):
     return render(request, 'course/new.html', {'form': courseForm})
 
 
-@teacher_involved_required
 @teacher_required
+@teacher_involved_required
 def edit(request, course_id):
     """
     Teacher form for editing a course
@@ -96,8 +96,8 @@ def edit(request, course_id):
     })
 
 
-@teacher_involved_required
 @teacher_required
+@teacher_involved_required
 def edit_long_description(request, course_id):
     """
     Teacher form for editing the course (long) description
@@ -119,8 +119,8 @@ def edit_long_description(request, course_id):
     })
 
 
-@teacher_involved_required
 @teacher_required
+@teacher_involved_required
 def edit_learning_outcomes(request, course_id):
     """
     Teacher form for editing the course learning outcomes
@@ -142,8 +142,8 @@ def edit_learning_outcomes(request, course_id):
     })
 
 
-@teacher_involved_required
 @teacher_required
+@teacher_involved_required
 def delete(request, course_id):
     """
     View to delete a course from the course database
@@ -178,8 +178,8 @@ def delete(request, course_id):
     return redirect('course:index')
 
 
-@teacher_involved_required
 @teacher_required
+@teacher_involved_required
 def slide_selection(request, course_id):
     """
     Teacher form for adding slide(s) to a course
@@ -298,8 +298,8 @@ def slide_selection(request, course_id):
     return render(request, 'course/slide_selection.html', context)
 
 
-@teacher_involved_required
 @teacher_required
+@teacher_involved_required
 def task_selection(request, course_id):
     """
     Teacher form for adding task(s) to a course

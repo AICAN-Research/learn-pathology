@@ -67,8 +67,8 @@ def list(request, slide_id=None):
         'slide_id': slide_id,
     })
 
-@teacher_involved_required
 @teacher_required
+@teacher_involved_required
 def new1(request, course_id=None):
     context = {}
 
