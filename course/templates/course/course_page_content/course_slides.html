@@ -3,7 +3,7 @@
 
     <div class="card-body">
         {% if slides %}
-            {% if request.user.is_teacher or request.user.is_superuser %}
+            {% if request.user.is_teacher and request.user in course.teacher.all or request.user.is_superuser %}
             <div class="LPButton">
                 <a href="{% url 'course:slide_selection' course.id %}?next={{ request.path }}">Click here to add or remove slides</a>
             </div>
@@ -16,7 +16,7 @@
 
             <div class="card-text" style="text-align: left;">
                 No slides have been added to this course yet.
-                {% if request.user.is_teacher or request.user.is_superuser %}
+                {% if request.user.is_teacher and request.user in course.teacher.all or request.user.is_superuser %}
                 You can add some now!
                 <br>
                 <div class="LPButton">

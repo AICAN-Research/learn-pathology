@@ -71,7 +71,7 @@ def creator_required(view):
     @wraps(view)
     def _wrapped(request, *args, **kwargs):
         task = get_object_or_404(Task, pk=kwargs.get("task_id"))
-        if task.created_by != request.user:
+        if task.created_by != request.user and not request.user.is_superuser:
             action = 'edit' if request.path.__contains__('edit') else 'delete'
             messages.error(
                 request,
@@ -101,7 +101,7 @@ def teacher_involved_required(view):
 
         course = get_object_or_404(Course, pk=kwargs.get("course_id"))
 
-        if not course.teacher.filter(pk=request.user.pk).exists():
+        if not course.teacher.filter(pk=request.user.pk).exists() and not request.user.is_superuser:
             action = 'edit' if request.path.__contains__('edit') or request.path.__contains__('selection') or request.path.__contains__('new1') else 'delete'
             messages.error(
                 request,

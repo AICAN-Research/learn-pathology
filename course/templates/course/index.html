@@ -51,7 +51,8 @@ Course database
                 <td><a href="{% url 'course:view' course.id %}">{{ course.title }}</a></td>
                 <td>{{ course.description }}</td>
                 {% if request.user.is_teacher or request.user.is_superuser %}
-                    <td><a href="{% url 'course:edit' course.id %}?next={{ request.path }}">Edit</a></td>
+                    <td><a href="{% url 'course:edit' course.id %}?next={{ request.path }}"
+                           class="{% if request.user not in course.teacher.all and not request.user.is_superuser %}disabled-link{% endif %}">Edit</a></td>
                 {% endif %}
             </tr>
         {% endfor %}

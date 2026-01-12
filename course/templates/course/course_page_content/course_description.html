@@ -5,7 +5,7 @@
         {% if course.long_description %}
 
             <div class="card-text" style="text-align: left;">
-                {% if request.user.is_teacher or request.user.is_superuser %}
+                {% if request.user.is_teacher and request.user in course.teacher.all or request.user.is_superuser %}
                 <div class="LPButton">
                     <a href="{% url 'course:edit_description' course.id %}?next={{ request.path }}">Edit course description</a>
                 </div>
@@ -22,7 +22,7 @@
 
             <div class="card-text" style="text-align: left">
                 This course lacks a course description.
-                {% if request.user.is_teacher or request.user.is_superuser %}
+                {% if request.user.is_teacher and request.user in course.teacher.all or request.user.is_superuser %}
                 You can add one now!
                 <br>
                 <div class="LPButton">
