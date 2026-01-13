@@ -89,8 +89,8 @@ def new(request, slide_id, course_id=None):
     })
 
 
-@creator_required
 @teacher_required
+@creator_required
 def edit(request, task_id,course_id = None):
     """
     Teacher form for editing a free text task

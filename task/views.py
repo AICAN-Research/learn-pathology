@@ -273,8 +273,8 @@ def new2(request, course_id=None):
 
 
 
-@creator_required
 @teacher_required
+@creator_required
 def delete(request, task_id):
     task = Task.objects.get(pk=task_id)
 
