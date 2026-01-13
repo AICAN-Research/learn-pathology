@@ -14,8 +14,8 @@ class Course(models.Model):
     description = models.TextField()
     long_description = RichTextUploadingField(null=True, blank=True)  # longer description
     teacher = models.ManyToManyField(User)
-    task = models.ManyToManyField(Task)
-    slide = models.ManyToManyField(Slide)
+    task = models.ManyToManyField(Task, blank=True)
+    slide = models.ManyToManyField(Slide, blank=True)
     # TODO add annotations later
     learning_outcomes = RichTextField(null=True, blank=True, config_name='featherweight')
 
