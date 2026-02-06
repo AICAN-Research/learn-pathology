@@ -14,7 +14,7 @@ class Task(models.Model):
     annotated_slide = models.ForeignKey(AnnotatedSlide, on_delete=models.CASCADE)
     pathology = models.BooleanField(default=False, help_text='Is the task about pathology or not (general histology)')
     tags = models.ManyToManyField(Tag)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
 
     @property
     def type(self):
@@ -46,7 +46,7 @@ class Task(models.Model):
     @property
     def type_model(self):
         for app in apps.get_app_configs():
-            if app.label == 'user': continue
+            # if app.label == 'user': continue
             models = app.get_models()
             for model in models:
                 try:
