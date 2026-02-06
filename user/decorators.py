@@ -79,7 +79,7 @@ def creator_required(view):
             )
 
             next_url = request.GET.get('next')
-            referer = request.META.get('HTTP_REFERER')
+            referer = request.headers.get('Referer')
 
             for url in (next_url, referer):
                 if url and url_has_allowed_host_and_scheme(url, allowed_hosts={request.get_host()}):
@@ -109,7 +109,7 @@ def teacher_involved_required(view):
             )
 
             next_url = request.GET.get('next')
-            referer = request.META.get('HTTP_REFERER')
+            referer = request.headers.get('Referer')
 
             for url in (next_url, referer):
                 if url and url_has_allowed_host_and_scheme(url, allowed_hosts={request.get_host()}):
