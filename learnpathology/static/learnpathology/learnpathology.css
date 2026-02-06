@@ -1433,4 +1433,5 @@ a.disabled-link{
     pointer-events: none;
     color: gray;
     cursor: default;
+    text-decoration: none;
 }
