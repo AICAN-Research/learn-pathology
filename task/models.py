@@ -46,7 +46,7 @@ class Task(models.Model):
     @property
     def type_model(self):
         for app in apps.get_app_configs():
-            # if app.label == 'user': continue
+            if app.label == 'user': continue
             models = app.get_models()
             for model in models:
                 try:
