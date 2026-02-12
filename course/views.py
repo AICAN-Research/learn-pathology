@@ -17,7 +17,7 @@ from slide.views import queryset_to_id_list, GENERAL_PATHOLOGY_TAGS
 from tag.models import Tag
 from task.models import Task
 
-from user.decorators import teacher_required
+from user.decorators import teacher_required, teacher_involved_required
 
 
 def index(request):
@@ -60,8 +60,7 @@ def new(request):
     if request.method == 'POST':  # Form was submitted
         courseForm = CourseForm(request.POST)
         if courseForm.is_valid():
-            course = courseForm.save(commit=False)
-            course.save()
+            course = courseForm.save()
             # Give a message back to the user
             messages.add_message(request, messages.SUCCESS, 'Course added successfully!')
             return redirect('course:view', course_id=course.id)
@@ -75,6 +74,7 @@ def new(request):
 
 
 @teacher_required
+@teacher_involved_required
 def edit(request, course_id):
     """
     Teacher form for editing a course
@@ -97,6 +97,7 @@ def edit(request, course_id):
 
 
 @teacher_required
+@teacher_involved_required
 def edit_long_description(request, course_id):
     """
     Teacher form for editing the course (long) description
@@ -119,6 +120,7 @@ def edit_long_description(request, course_id):
 
 
 @teacher_required
+@teacher_involved_required
 def edit_learning_outcomes(request, course_id):
     """
     Teacher form for editing the course learning outcomes
@@ -141,6 +143,7 @@ def edit_learning_outcomes(request, course_id):
 
 
 @teacher_required
+@teacher_involved_required
 def delete(request, course_id):
     """
     View to delete a course from the course database
@@ -175,10 +178,8 @@ def delete(request, course_id):
     return redirect('course:index')
 
 
-
-
-
 @teacher_required
+@teacher_involved_required
 def slide_selection(request, course_id):
     """
     Teacher form for adding slide(s) to a course
@@ -298,6 +299,7 @@ def slide_selection(request, course_id):
 
 
 @teacher_required
+@teacher_involved_required
 def task_selection(request, course_id):
     """
     Teacher form for adding task(s) to a course

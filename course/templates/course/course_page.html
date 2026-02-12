@@ -16,7 +16,7 @@
 
 {% block button_row %}
 
-{% if request.user.is_teacher or request.user.is_superuser %}
+{% if request.user.is_teacher and request.user in course.teacher.all or request.user.is_superuser %}
 
 <div class="custom-button"> <!-- TODO: removed style, should add with class instead -->
     <a href="{% url 'course:delete' course_id=course.id %}" style="display: inline-flex;">
@@ -29,7 +29,7 @@
     </a>
 </div>
 <div class="custom-button">
-    <a href="{% url 'course:edit' course_id=course.id %}" style="display: inline-flex; width: 100%; height: 100%">
+    <a href="{% url 'course:edit' course_id=course.id %}?next={{ request.path }}" style="display: inline-flex; width: 100%; height: 100%">
         <div class="button-icon">
             <span class="iconify" data-icon="fluent:edit-24-regular" data-width="24" data-height="24" style="font-weight: bolder;"></span>
         </div>

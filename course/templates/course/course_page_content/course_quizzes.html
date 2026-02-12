@@ -7,12 +7,12 @@
     <div class="card-body">
         {% if tasks %}
 
-            {% if request.user.is_teacher or request.user.is_superuser %}
+            {% if request.user.is_teacher and request.user in course.teacher.all or request.user.is_superuser %}
                 <div class="LPButton">
-                    <a href="{% url 'course:task_selection' course.id %}">Browse existing tasks</a>
+                    <a href="{% url 'course:task_selection' course.id %}?next={{ request.path }}">Browse existing tasks</a>
                 </div>
                 <div class="LPButton">
-                    <a href="{% url 'task:new1' course_id=course.id %}">Add new task</a>
+                    <a href="{% url 'task:new1' course_id=course.id %}?next={{ request.path }}">Add new task</a>
                 </div>
             {% endif %}
             <br>
@@ -34,8 +34,8 @@
                             <td><a class="LPButton btn" style="margin: 0;" href="{% url task.do_url task_id=task.id course_id=course.id slide_id=0 %}">Do task</a>
                             </td>
                             {% if request.user.is_teacher or request.user.is_superuser %}
-                                <td><a class="LPButton btn" style="margin: 0;" href="{% url task.edit_url task_id=task.id course_id=course.id %}">Edit</a></td>
-                                <td><a class="LPButton btn remove_button" style="margin: 0;"
+                                <td><a class="LPButton btn {% if user != task.created_by and not request.user.is_superuser %}disabled{% endif %}" style="margin: 0;" href="{% url task.edit_url task_id=task.id course_id=course.id %}">Edit</a></td>
+                                <td><a class="LPButton btn remove_button {% if request.user not in course.teacher.all and not request.user.is_superuser %}disabled{% endif %}" style="margin: 0;"
                                        data-course_id="{{ course.id }}" data-model_name="{{ task | to_class_name }}" data-instance_id="{{ task.id }}">
                                     Remove
                                 </a></td>
@@ -49,14 +49,14 @@
 
             <div class="card-text" style="text-align: left;">
                 No tasks have been added to this course yet.
-                {% if request.user.is_teacher or request.user.is_superuser %}
+                {% if request.user.is_teacher and request.user in course.teacher.all or request.user.is_superuser %}
                     You can add some now!
                     <br>
                     <div class="LPButton">
-                        <a href="{% url 'course:task_selection' course.id %}">Browse existing tasks</a>
+                        <a href="{% url 'course:task_selection' course.id %}?next={{ request.path }}">Browse existing tasks</a>
                     </div>
                     <div class="LPButton">
-                        <a  href="{% url 'task:new1' course_id=course.id %}">Add new task</a>
+                        <a  href="{% url 'task:new1' course_id=course.id %}?next={{ request.path }}">Add new task</a>
                     </div>
                 {% endif %}
             </div>
@@ -74,9 +74,5 @@
 
     }
     </script>
-
-
-
-
 
 {% endblock courseTabContent %}

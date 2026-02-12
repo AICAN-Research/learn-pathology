@@ -9,7 +9,7 @@ from task.forms import TaskForm
 from free_text.forms import FreeTextForm
 from free_text.models import FreeText
 from course.models import Course
-from user.decorators import teacher_required
+from user.decorators import teacher_required, creator_required
 
 
 def do(request, task_id, course_id=None, slide_id=None):
@@ -90,6 +90,7 @@ def new(request, slide_id, course_id=None):
 
 
 @teacher_required
+@creator_required
 def edit(request, task_id,course_id = None):
     """
     Teacher form for editing a free text task
