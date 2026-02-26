@@ -117,6 +117,20 @@
             <div class="sidebar-bottom-group">
                 <div class="sidebar-bottom-items">
 
+                    {% if request.user.is_teacher or request.user.is_superuser %}
+                         <a class="sidebar-item noLinkStyling dropdown-toggle" href="#" id="dropdownTutorial" data-bs-toggle="dropdown" aria-expanded="false" title="Tutorials">
+                            <div class="sidebar-item-icon">
+                                <span class="iconify" data-icon="fluent:book-question-mark-24-regular" data-width="24" data-height="24"></span>
+                            </div>
+                            <span class="sidebar-item-text">Tutorials</span>
+                         </a>
+                         <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+                             {% for tutorial in tutorials %}
+                                 <li><a class="dropdown-item" href="{% url 'resources:download_tutorial' tutorial.id %}">{{ tutorial.title }}</a></li>
+                             {% endfor %}
+                         </ul>
+                    {% endif %}
+
                     {% if request.user.is_superuser %}
                         <!-- specific options for superuser-->
                         <a class="sidebar-item noLinkStyling" href="{% url 'user_admin' %}" title="Admin page">
@@ -127,6 +141,7 @@
                             <span class="sidebar-item-text">Admin</span>
                         </a>
                     {% endif %}
+
                     <a class="sidebar-item noLinkStyling dropdown-toggle" href="#" id="dropdownAbout" data-bs-toggle="dropdown" aria-expanded="false" title="Information about LearnPathology">
                         <div class="sidebar-item-icon">
                             <span class="iconify" data-icon="fluent:info-28-regular" data-width="24" data-height="24"></span>
@@ -139,6 +154,7 @@
                             <li><a class="dropdown-item" href="{{ page.url }}">{{ page.title }}</a></li>
                         {% endfor %}
                     </ul>
+
                     <a class="sidebar-item noLinkStyling dropdown-toggle" href="#" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false" title="Profile and Logout">
                         <div class="sidebar-item-icon">
                             <span class="iconify" data-icon="fluent:person-28-regular" data-width="24" data-height="24"></span>

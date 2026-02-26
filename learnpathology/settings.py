@@ -48,8 +48,7 @@ INSTALLED_APPS = [
     'course',
     'tag',
     'comparison',
-
-
+    'resources',
 ]
 
 if USE_FEIDE_LOGIN:
@@ -89,6 +88,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'resources.context_processors.tutorials_list',
             ],
         },
     },
@@ -265,5 +265,7 @@ UPLOADED_SLIDE_DIR = os.path.join(BASE_DIR, 'uploaded_slides')
 TEMP_UPLOADED_SLIDE_DIR = os.path.join(BASE_DIR, 'uploads')
 
 SLIDE_THUMBNAILS_DIR = os.path.join(BASE_DIR, 'thumbnails')
+
+RESOURCES_DIR = os.path.join(BASE_DIR, 'uploaded_resources')
 
 LAST_SEEN_TIMEOUT = 20 # In minutes
