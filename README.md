@@ -1,11 +1,11 @@
-Learn Pathology
+LearnPathology
 =====================
 
-Learn Pathology is a web-based system for teaching students the field of pathology. 
+LearnPathology is a web-based system for teaching students the field of pathology. 
 In the system, teachers can create online courses and assignments. 
 Students can view and interact with large whole slide microscopy images (WSIs) as well as answering questions and performing assignments.
 
-Learn Pathology is developed by the Norwegian University of Science and Technology (NTNU) and SINTEF Digital, the Health Department, and is released under the permissive [MIT license](https://mit-license.org).
+LearnPathology is developed by the Norwegian University of Science and Technology (NTNU) and SINTEF Digital, the Health Department, and is released under the permissive [MIT license](https://mit-license.org).
 
 The system is built using the following open source technologies:
 * [Django](https://www.djangoproject.com/)
@@ -60,4 +60,12 @@ Open your web browser at http://localhost:8000
 - Login
 - Go to admin page
 - Press slide, and add some slides to the database by specifying the path to the slides.
+
+
+Deployment and server setup
+-------------------
+To deploy this system to a server, you should consult the [Django deployment guide](https://docs.djangoproject.com/en/5.2/howto/deployment/) and configure the learnpathology/settings.py file properly for your use case.
+
+
+
 
