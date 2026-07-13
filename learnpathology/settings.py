@@ -96,6 +96,24 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'learnpathology.wsgi.application'
 
+# Where uploaded resources are stored
+RESOURCES_DIR = os.path.join(BASE_DIR, 'uploaded_resources')
+
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+    "resources": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "OPTIONS": {
+            "location": RESOURCES_DIR,
+        }
+    }
+}
+
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
@@ -265,7 +283,5 @@ UPLOADED_SLIDE_DIR = os.path.join(BASE_DIR, 'uploaded_slides')
 TEMP_UPLOADED_SLIDE_DIR = os.path.join(BASE_DIR, 'uploads')
 
 SLIDE_THUMBNAILS_DIR = os.path.join(BASE_DIR, 'thumbnails')
-
-RESOURCES_DIR = os.path.join(BASE_DIR, 'uploaded_resources')
 
 LAST_SEEN_TIMEOUT = 20 # In minutes
