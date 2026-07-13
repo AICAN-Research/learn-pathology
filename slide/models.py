@@ -9,6 +9,7 @@ from django.conf import settings
 from slide.timing import Timer
 from tag.models import Tag
 from user.models import User
+from django.utils import timezone
 
 if settings.USE_TURBOJPEG:
     from turbojpeg import TurboJPEG, TJPF_RGB
@@ -25,7 +26,7 @@ class Slide(models.Model):
     long_description = models.TextField(null=True, blank=True)  # (optional) longer description
     pathology = models.BooleanField(default=False, help_text='Does the slide show pathology or histology')
     tags = models.ManyToManyField(Tag)
-    date_added = models.DateTimeField(default=datetime.now)
+    date_added = models.DateTimeField(default=timezone.now)
     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
