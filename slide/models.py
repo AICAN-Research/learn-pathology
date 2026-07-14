@@ -1,4 +1,3 @@
-from datetime import datetime
 from io import BytesIO
 import json
 import fast
@@ -261,9 +260,7 @@ class SlideUpload(models.Model):
     finished = models.BooleanField(default=False)
     checked = models.BooleanField(default=False)
     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
-    date_uploaded = models.DateTimeField(default=datetime.now)
+    date_uploaded = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.name
-
-
