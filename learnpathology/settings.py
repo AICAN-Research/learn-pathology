@@ -5,10 +5,10 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = None
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(os.environ.get("DEBUG", default=0))
 
 # To enable FEIDE login you also have to add a social applications object with the client id and secret key to the database
 USE_FEIDE_LOGIN = False
@@ -17,7 +17,7 @@ USE_FEIDE_LOGIN = False
 # Remember to configure the size of the memcached in /etc/memcached.conf
 USE_TILE_CACHE = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(",")
 
 # For using flatpages, set to site corresponding to this settings.py file
 APPEND_SLASH = True
