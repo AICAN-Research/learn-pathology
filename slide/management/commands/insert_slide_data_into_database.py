@@ -5,7 +5,6 @@ import shutil
 from django.core.management import BaseCommand
 from django.db import transaction
 
-from learnpathology.settings import BASE_DIR
 from slide.models import Slide
 from tag.models import Tag
 from slide.views import create_thumbnail
@@ -129,7 +128,6 @@ class Command(BaseCommand):
         data = read_csv_file(file_path)
         data_dict = sort_data_by_row(data)
 
-        thumbnails_dir = os.path.join(BASE_DIR, 'thumbnails')
         new_paths = []
         for key, slide_data in data_dict.items():
 

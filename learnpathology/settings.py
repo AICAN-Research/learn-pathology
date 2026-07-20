@@ -4,6 +4,9 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Path to the /data directory
+DATA_DIR = os.environ.get("DATA_DIR")
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
@@ -97,7 +100,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'learnpathology.wsgi.application'
 
 # Where uploaded resources are stored
-RESOURCES_DIR = os.path.join(BASE_DIR, 'uploaded_resources')
+RESOURCES_DIR = os.path.join(DATA_DIR, 'uploaded_resources')
 
 STORAGES = {
     "default": {
@@ -277,11 +280,11 @@ USE_IMAGE_SHARPENING = False
 JPEG_QUALITY_LEVEL = 80
 
 # Where uploaded slides are stored after being added to the database:
-UPLOADED_SLIDE_DIR = os.path.join(BASE_DIR, 'uploaded_slides')
+UPLOADED_SLIDE_DIR = os.path.join(DATA_DIR, 'uploaded_slides')
 
-# Where uploaded SLIDES are stored just after being uploaded:
-TEMP_UPLOADED_SLIDE_DIR = os.path.join(BASE_DIR, 'uploads')
+# Where uploaded slides are stored just after being uploaded:
+TEMP_UPLOADED_SLIDE_DIR = os.path.join(DATA_DIR, 'uploads')
 
-SLIDE_THUMBNAILS_DIR = os.path.join(BASE_DIR, 'thumbnails')
+SLIDE_THUMBNAILS_DIR = os.path.join(DATA_DIR, 'thumbnails')
 
 LAST_SEEN_TIMEOUT = 20 # In minutes
