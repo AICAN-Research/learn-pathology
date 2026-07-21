@@ -706,6 +706,7 @@ def view_uploaded_slides(request):
                 slide.tags.set(organ_tags | stain_tags | other_tags)
                 new_slide_path = os.path.join(settings.UPLOADED_SLIDE_DIR, str(slide.id), os.path.basename(upload.path))
                 os.makedirs(settings.UPLOADED_SLIDE_DIR, exist_ok=True)
+                os.makedirs(settings.SLIDE_THUMBNAILS_DIR, exist_ok=True)
                 slide.path = new_slide_path
                 slide.save()
                 # Move thumbnail
