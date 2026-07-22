@@ -1,5 +1,6 @@
 *.pyc
 .idea
+__pycache__/
 *.sqlite3*
 environment
 venv
@@ -8,3 +9,5 @@ media/*
 thumbnails/*
 uploads/*
 uploaded_slides/*
+uploaded_resources/*
+data/
