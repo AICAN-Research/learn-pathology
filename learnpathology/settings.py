@@ -25,6 +25,8 @@ USE_TILE_CACHE = False
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(",")
 
+CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS").split(",")
+
 # For using flatpages, set to site corresponding to this settings.py file
 APPEND_SLASH = True
 
