@@ -8,7 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = os.environ.get("DATA_DIR", default=BASE_DIR)
 
 # Path where to save the db.sqlite3 file
-DATABASE_DIR = os.environ.get("DATABASE_DIR", default=BASE_DIR)
+DATABASE_DIR = Path(os.environ.get("DATABASE_DIR", default=BASE_DIR))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY")
