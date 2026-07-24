@@ -4,8 +4,11 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Path to the /data directory
-DATA_DIR = os.environ.get("DATA_DIR")
+# Path where to save slides and resources, usually the /data directory
+DATA_DIR = os.environ.get("DATA_DIR", default=BASE_DIR)
+
+# Path where to save the db.sqlite3 file
+DATABASE_DIR = os.environ.get("DATABASE_DIR", default=BASE_DIR)
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY")
@@ -124,7 +127,7 @@ STORAGES = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': DATABASE_DIR / 'db.sqlite3',
     }
 }
 
