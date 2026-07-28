@@ -14,14 +14,14 @@ DATABASE_DIR = Path(os.environ.get("DATABASE_DIR", default=BASE_DIR))
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(os.environ.get("DEBUG", default=0))
+DEBUG = os.environ.get("DEBUG", default="false")
 
 # To enable FEIDE login you also have to add a social applications object with the client id and secret key to the database
-USE_FEIDE_LOGIN = False
+USE_FEIDE_LOGIN = os.environ.get("USE_FEIDE_LOGIN", default="false")
 
 # To enable TILE CACHE you need to install the python package pymemcache and the linux package memcached.
 # Remember to configure the size of the memcached in /etc/memcached.conf
-USE_TILE_CACHE = False
+USE_TILE_CACHE = os.environ.get("USE_TILE_CACHE", default="false")
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(",")
 
@@ -280,7 +280,7 @@ if USE_TILE_CACHE:
         }
     }
 
-USE_TURBOJPEG = False
+USE_TURBOJPEG = os.environ.get("USE_TURBOJPEG", default="false")
 USE_IMAGE_SHARPENING = False
 JPEG_QUALITY_LEVEL = 80
 
