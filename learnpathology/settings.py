@@ -28,7 +28,7 @@ ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(",")
 CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS").split(",")
 
 # For using flatpages, set to site corresponding to this settings.py file
-APPEND_SLASH = True
+APPEND_SLASH = bool(os.environ.get("APPEND_SLASH", default=1))
 
 
 # Application definition
@@ -281,7 +281,7 @@ if USE_TILE_CACHE:
     }
 
 USE_TURBOJPEG = bool(os.environ.get("USE_TURBOJPEG", default=0))
-USE_IMAGE_SHARPENING = False
+USE_IMAGE_SHARPENING = bool(os.environ.get("USE_IMAGE_SHARPENING", default=0))
 JPEG_QUALITY_LEVEL = 80
 
 # Where uploaded slides are stored after being added to the database:
