@@ -1,34 +1,38 @@
 from pathlib import Path
 import os
+from environ import Env
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env = Env()
+env.read_env(os.path.join(BASE_DIR, '.env'))
+
 # Path where to save slides and resources, usually the /data directory
-DATA_DIR = os.environ.get("DATA_DIR", default=BASE_DIR)
+DATA_DIR = env("DATA_DIR", default=BASE_DIR)
 
 # Path where to save the db.sqlite3 file
-DATABASE_DIR = Path(os.environ.get("DATABASE_DIR", default=BASE_DIR))
+DATABASE_DIR = Path(env("DATABASE_DIR", default=BASE_DIR))
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(os.environ.get("DEBUG", default=0))
+DEBUG = env.bool("DEBUG", default=False)
 
 # To enable FEIDE login you also have to add a social applications object with the client id and secret key to the database
-USE_FEIDE_LOGIN = bool(os.environ.get("USE_FEIDE_LOGIN", default=0))
+USE_FEIDE_LOGIN = env.bool("USE_FEIDE_LOGIN", default=False)
 
 # To enable TILE CACHE you need to install the python package pymemcache and the linux package memcached.
 # Remember to configure the size of the memcached in /etc/memcached.conf
-USE_TILE_CACHE = bool(os.environ.get("USE_TILE_CACHE", default=0))
+USE_TILE_CACHE = env.bool("USE_TILE_CACHE", default=False)
 
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(",")
+ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS")
 
-CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS").split(",")
+CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS")
 
 # For using flatpages, set to site corresponding to this settings.py file
-APPEND_SLASH = bool(os.environ.get("APPEND_SLASH", default=1))
+APPEND_SLASH = env.bool("APPEND_SLASH", default=True)
 
 
 # Application definition
@@ -280,8 +284,8 @@ if USE_TILE_CACHE:
         }
     }
 
-USE_TURBOJPEG = bool(os.environ.get("USE_TURBOJPEG", default=0))
-USE_IMAGE_SHARPENING = bool(os.environ.get("USE_IMAGE_SHARPENING", default=0))
+USE_TURBOJPEG = env.bool("USE_TURBOJPEG", default=False)
+USE_IMAGE_SHARPENING = env.bool("USE_IMAGE_SHARPENING", default=False)
 JPEG_QUALITY_LEVEL = 80
 
 # Where uploaded slides are stored after being added to the database:

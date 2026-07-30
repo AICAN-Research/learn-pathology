@@ -4,4 +4,5 @@ pillow>=8
 numpy
 django-ckeditor==6.7.3
 django-allauth[socialaccount,dataporten]==65.13.1
+django-environ
 asgiref==3.8.*
