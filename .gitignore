@@ -11,3 +11,4 @@ uploads/*
 uploaded_slides/*
 uploaded_resources/*
 data/
+.env
