@@ -384,7 +384,14 @@ $(document).ready(function(){
     ANNOTORIOUS AND ANNOTATIONS
     */
     // Initialize the Annotorious plugin
-    let anno = OpenSeadragon.Annotorious(viewer);
+    const config = {
+        widgets: ['COMMENT'],
+        messages: {
+            'Add a comment...': 'Add annotation name...',
+            'Add a reply...': 'Add long description...'
+        }
+      };
+    let anno = OpenSeadragon.Annotorious(viewer, config);
 
     Annotorious.SelectorPack(anno); // [ 'rect', 'polygon', 'point', 'circle', 'ellipse', 'freehand' ]
     {% if request.user.is_teacher or request.user.is_superuser %}
