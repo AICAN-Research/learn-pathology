@@ -24,7 +24,7 @@ class Command(BaseCommand):
             print('Creating thumbnail for', slide.id)
             try:
                 slide.load_image()  # This will load slide with FAST, so it is ready to use
-                create_thumbnail(slide.image, join(settings.SLIDE_THUMBNAISL_DIR, f'{slide.id}.jpg'))
+                create_thumbnail(slide.image, join(settings.SLIDE_THUMBNAILS_DIR, f'{slide.id}.jpg'))
                 print('Thumbnail for', slide.id, 'recreated')
             except Exception as e:
                 print('Failed to recreate thumbnail for ', slide.id, 'because: ', str(e))
